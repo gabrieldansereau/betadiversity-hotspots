@@ -1,9 +1,11 @@
 target_taxon = GBIF.taxon("Cardinalis cardinalis"; rank=:SPECIES)
 
 occ_data = occurrences(target_taxon, Dict{Any,Any}("limit"=>200))
-@progress for i in 1:100
-    next!(occ_data)
+complete!(occ_data)
+#=@progress for i in 1:100
+next!(occ_data)
 end
+=#
 showall!(occ_data)
 
 function is_canada_or_us(r::GBIFRecord)
