@@ -1,5 +1,3 @@
-using GBIF
-using DelimitedFiles
 
 target_taxon = GBIF.taxon("Haemorhous purpureus"; rank=:SPECIES)
 
