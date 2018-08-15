@@ -24,4 +24,4 @@ for i in finch_occ
     push!(lon, i.longitude)
 end
 
-scatter(lon, lat, aspectratio=1.5, leg=false, msw=0, c=:red, ms=2, frame=:ticks)
+writedlm("assets/$(replace(target_taxon.name, " " => "_")).coordinates", hcat(lon, lat))
