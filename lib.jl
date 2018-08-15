@@ -3,8 +3,9 @@ Given a series of values (itr) and a value (p), returns the quantile to which p
 is closest. By default, uses `ql=200` steps between 0 and 1.
 """
 function find_quantile(itr, p; ql=200)
+    n_itr = filter(.!isnan, itr)
     qrange = range(0.0; stop=1.0, length=ql)
-    q = quantile(filter(.!isnan, itr), qrange)
+    q = quantile(n_itr, qrange; sorted=true)
     return qrange[findmin(abs.(q.-p))[2]]
 end
 
@@ -57,5 +58,53 @@ end
 function get_closest_grid_point(x::NTuple{2,Float64}, lon::Vector{Float64}, lat::Vector{Float64})
     dx = findmin(abs.(x[1].-lon))[2]
     dy = findmin(abs.(x[2].-lat))[2]
-    return (dx, dy)
+    return (dy, dx)
+end
+
+function get_value_at_position(x, v, lon, lat)
+    tx, ty = get_closest_grid_point(x, lon, lat)
+    return v[tx, ty]
+end
+
+
+function get_bioclim_values(records::GBIFRecords, bioclim_variables, longitudes, latitudes)
+    n_variables = length(bioclim_variables)
+    n_observations = sum(records.show)
+    values_table = zeros(Float64, (n_observations, n_variables))
+    i = 1
+    for record in records
+        coordinates = (record.longitude, record.latitude)
+        for (v_index, bioclim_variable) in enumerate(bioclim_variables)
+            values_table[i,v_index] = get_value_at_position(coordinates, bioclim_variable, longitudes, latitudes)
+        end
+        i += 1
+    end
+    for v_index in 1:length(bioclim_variables)
+        values_table[:,v_index] = sort(values_table[:,v_index])
+    end
+    return values_table
+end
+
+
+function get_quantile_matrix(bioclim_variable, observations, b_box, longitudes, latitudes)
+    b_pts = [get_closest_grid_point(b, longitudes, latitudes) for b in b_box]
+    x_span = b_pts[1][1]:b_pts[2][1]
+    y_span = b_pts[1][2]:b_pts[2][2]
+
+    q_matrix = zeros(Float64, (length(x_span), length(y_span)))
+
+    for (i, x) in enumerate(x_span)
+        for (j, y) in enumerate(y_span)
+            local_val = bioclim_variable[x, y]
+            if isnan(local_val)
+                q_matrix[i,j] = NaN
+            else
+                this_q = find_quantile(observations, local_val)
+                this_q = this_q > 0.5 ? 1.0-this_q : this_q
+                q_matrix[i,j] = this_q
+            end
+
+        end
+    end
+    return 2.0 .* q_matrix
 end

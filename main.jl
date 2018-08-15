@@ -2,71 +2,57 @@ using Plots
 using Statistics
 using GDAL
 using GBIF
-using DelimitedFiles
 
 include("lib.jl")
 
 # Extract coordinates
-bc_codes = lpad.(1:19, 2, "0")
+bioclim_codes = lpad.(1:19, 2, "0")
+bioclim_variables = [get_tiff_data("assets/wc2.0_bio_10m_$(x).tif") for x in bioclim_codes]
 
-bc_vars = [get_tiff_data("assets/wc2.0_bio_10m_$(x).tif") for x in bc_codes]
+latitudes = collect(range(-90.0; stop=90.0, length=size(bioclim_variables[1], 1)))
+longitudes = collect(range(-180.0; stop=180.0, length=size(bioclim_variables[1], 2)))
+heatmap(longitudes, latitudes, bioclim_variables[1], aspectratio=1, c=:viridis)
 
-lat = collect(range(-90.0; stop=90.0, length=size(bc_vars[1], 1)))
-lon = collect(range(-180.0; stop=180.0, length=size(bc_vars[1], 2)))
-heatmap(lon, lat, bc_vars[4], aspectratio=1, c=:viridis)
+predicates = get_bioclim_values(occ_data, bioclim_variables, longitudes, latitudes)
 
-# Read occurrences
-finch = readdlm("assets/Haemorhous_purpureus.coordinates")
-n_obs = size(finch, 1)
+b_box = [(-155.0, 20.0),(-50.0, 75.0)]
 
-predicates = zeros(Float64, (n_obs, length(bc_vars)))
-@progress for i in 1:n_obs
-    obs_point = (finch[i,1], finch[i,2])
-    grid_point = get_closest_grid_point(obs_point, lon, lat)
-    for j in 1:length(bc_vars)
-        predicates[i,j] = bc_vars[j][reverse(grid_point)...]
-    end
+model_per_variable = []
+for (i, v) in enumerate(bioclim_variables)
+    @info i
+    push!(model_per_variable, get_quantile_matrix(v, predicates[:,i], b_box, longitudes, latitudes))
 end
 
+retained_models = filter(x -> sum(filter(.!isnan, x)) > 1.90e4, model_per_variable)
 
-heatmap(predicates)
-
-heatmap(lon, lat, bc_vars[4])
-scatter!(finch[:,1], finch[:,2])
-xaxis!((-150,-50))
-yaxis!((25,75))
-
-bl = get_closest_grid_point((-130.0,25.0), lon, lat)
-tr = get_closest_grid_point((-50.0, 60.0), lon, lat)
-
-function quantile_matrix(bc_var::Matrix{Float64}, obs::Vector{Float64}, lower_left::NTuple{2,Int64}, upper_right::NTuple{2,Int64})
-    qtable = zeros(Float64, (upper_right[2]-lower_left[2], upper_right[1]-lower_left[1]))
-    @progress for (i, x) in enumerate(lower_left[2]:1:upper_right[2]-1)
-        for (j, y) in enumerate(lower_left[1]:1:upper_right[1]-1)
-            val = bc_var[x, y]
-            if isnan(val)
-                qtable[i,j] = NaN
-            else
-                this_q = find_quantile(obs, val)
-                this_q = this_q > 0.5 ? 1.0-this_q : this_q
-                qtable[i,j] = this_q
-            end
-
-        end
-    end
-    return 2.0 .* qtable
+consensus = zeros(Float64, size(retained_models[1]))
+for i in eachindex(consensus)
+    consensus[i] = minimum(getindex.(retained_models, i))
 end
 
-quantiles_by_var = [quantile_matrix(bc_vars[i], predicates[:,i], bl, tr) for i in 1:length(bc_vars)]
-
-consensus_matrix = zeros(Float64, size(quantiles_by_var[1]))
-for i in eachindex(consensus_matrix)
-    consensus_matrix[i] = minimum(getindex.(quantiles_by_var, i))
+obs_lon = []
+obs_lat = []
+for r in occ_data
+    push!(obs_lon, r.longitude)
+    push!(obs_lat, r.latitude)
 end
 
-bbox_lat = lat[bl[2]:tr[2]-1]
-bbox_lon = lon[bl[1]:tr[1]-1]
-heatmap(bbox_lon, bbox_lat, consensus_matrix, frame=:none, c=:Blues)
-scatter!(finch[:,1], finch[:,2], leg=false, msw=0, c=:black, m=:diamond, ms=2)
-xaxis!((minimum(bbox_lon), maximum(bbox_lon)))
-yaxis!((minimum(bbox_lat), maximum(bbox_lat)))
+b_box_lon = range(b_box[1][1]; stop=b_box[2][1], length=size(consensus, 2))
+b_box_lat = range(b_box[1][2]; stop=b_box[2][2], length=size(consensus, 1))
+p1 = heatmap(b_box_lon, b_box_lat, round.(consensus; digits=1), frame=:ticks, c=:viridis, clim=(0,1))
+p2 = heatmap(b_box_lon, b_box_lat, round.(consensus; digits=5).>0.0, frame=:ticks, c=:Greys_r, clim=(0,1))
+scatter!(p2, obs_lon, obs_lat, leg=false, m=:cross, ms=1, c=:orange, msw=0.0)
+for p in (p1, p2)
+    xaxis!(p, "Longitude", (minimum(b_box_lon), maximum(b_box_lon)))
+    yaxis!(p, "Latitude", (minimum(b_box_lat), maximum(b_box_lat)))
+end
+
+p2
+
+(model_per_variable .|> x -> filter(.!isnan, x) |> sum) |> sort |> scatter
+
+using Profile
+
+Profile.clear()
+@profile get_quantile_matrix(bioclim_variables[1], predicates[:,1], b_box, longitudes, latitudes)
+Juno.profiler()

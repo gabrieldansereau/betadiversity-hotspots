@@ -1,24 +1,13 @@
-target_taxon = GBIF.taxon("Haemorhous purpureus"; rank=:SPECIES)
+target_taxon = GBIF.taxon("Cardinalis cardinalis"; rank=:SPECIES)
 
-finch_occ = occurrences(target_taxon)
-@progress for i in 1:50
-    next!(finch_occ)
+occ_data = occurrences(target_taxon, Dict{Any,Any}("limit"=>200))
+@progress for i in 1:10
+    next!(occ_data)
 end
-showall!(finch_occ)
+showall!(occ_data)
 
 function is_canada_or_us(r::GBIFRecord)
     return r.country ∈ ["Canada", "United States"]
 end
 
-qualitycontrol!(finch_occ; filters=[have_ok_coordinates, have_both_coordinates, is_canada_or_us])
-
-lat = []
-lon = []
-
-for i in finch_occ
-    @info (latitude = i.latitude, longitude = i.longitude)
-    push!(lat, i.latitude)
-    push!(lon, i.longitude)
-end
-
-writedlm("assets/$(replace(target_taxon.name, " " => "_")).coordinates", hcat(lon, lat))
+qualitycontrol!(occ_data; filters=[have_ok_coordinates, have_both_coordinates, is_canada_or_us])
