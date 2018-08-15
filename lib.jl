@@ -2,10 +2,9 @@
 Given a series of values (itr) and a value (p), returns the quantile to which p
 is closest. By default, uses `ql=200` steps between 0 and 1.
 """
-function find_quantile(itr, p; ql=200)
-    n_itr = filter(.!isnan, itr)
+function find_quantile(itr, p; ql=100)
     qrange = range(0.0; stop=1.0, length=ql)
-    q = quantile(n_itr, qrange; sorted=true)
+    q = quantile(itr, qrange; sorted=true)
     return qrange[findmin(abs.(q.-p))[2]]
 end
 
@@ -70,17 +69,11 @@ end
 function get_bioclim_values(records::GBIFRecords, bioclim_variables, longitudes, latitudes)
     n_variables = length(bioclim_variables)
     n_observations = sum(records.show)
-    values_table = zeros(Float64, (n_observations, n_variables))
-    i = 1
-    for record in records
-        coordinates = (record.longitude, record.latitude)
-        for (v_index, bioclim_variable) in enumerate(bioclim_variables)
-            values_table[i,v_index] = get_value_at_position(coordinates, bioclim_variable, longitudes, latitudes)
-        end
-        i += 1
-    end
-    for v_index in 1:length(bioclim_variables)
-        values_table[:,v_index] = sort(values_table[:,v_index])
+    values_table = Vector{Vector{Float64}}()
+    for (v_index, bioclim_variable) in enumerate(bioclim_variables)
+        temp = [get_value_at_position((record.longitude, record.latitude), bioclim_variable, longitudes, latitudes) for record in records]
+        these_values = sort(filter(.!isnan, temp))
+        push!(values_table, these_values)
     end
     return values_table
 end
