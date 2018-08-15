@@ -15,9 +15,9 @@ version = "0.8.9"
 
 [[BinaryProvider]]
 deps = ["Libdl", "Pkg", "SHA", "Test"]
-git-tree-sha1 = "2883bc1b389e3d57a134796c39c788db3f298cef"
+git-tree-sha1 = "ffbf89cc49b073cffdb91381b7ee60557a03ec96"
 uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
-version = "0.4.0"
+version = "0.4.1"
 
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random", "Test"]
@@ -39,9 +39,9 @@ version = "1.0.1"
 
 [[Contour]]
 deps = ["LinearAlgebra", "StaticArrays", "Test"]
-git-tree-sha1 = "4e244ce551b993b721a6dbbd040b5f3d7cba0f48"
+git-tree-sha1 = "b974e164358fea753ef853ce7bad97afec15bb80"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
-version = "0.5.0"
+version = "0.5.1"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "REPL", "Random", "Serialization", "Test"]
@@ -73,11 +73,31 @@ git-tree-sha1 = "31cbf24d537a217475b37274df05de09882b53f1"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.5.2"
 
+[[GBIF]]
+deps = ["Dates", "HTTP", "JSON", "Test"]
+git-tree-sha1 = "4e14c7259d0af24b419017365e4edb5f75c93f36"
+repo-rev = "dev"
+repo-url = "https://github.com/EcoJulia/GBIF.jl"
+uuid = "f17ddd58-965f-11e8-340d-55efdb6b85f7"
+version = "0.1.0"
+
 [[GR]]
 deps = ["Base64", "DelimitedFiles", "Random", "Serialization", "Sockets", "Test"]
 git-tree-sha1 = "67fcefb82ea66d6488d2e3fa276d0b8a4602f634"
 uuid = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
 version = "0.32.2"
+
+[[HTTP]]
+deps = ["Base64", "Dates", "Distributed", "IniFile", "MbedTLS", "Sockets", "Test"]
+git-tree-sha1 = "8a0f75e8b09df01d9f1ba9ad3fbf8b4983595d20"
+uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+version = "0.6.14"
+
+[[IniFile]]
+deps = ["Test"]
+git-tree-sha1 = "098e4d2c533924c921f9f9847274f2ad89e018b8"
+uuid = "83e8ac13-25f8-5344-8a64-a9f2b223428f"
+version = "0.5.0"
 
 [[InteractiveUtils]]
 deps = ["LinearAlgebra", "Markdown"]
@@ -105,6 +125,12 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 [[Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+
+[[MbedTLS]]
+deps = ["BinaryProvider", "Compat", "Libdl", "Pkg", "Sockets"]
+git-tree-sha1 = "17d5a81dbb1e682d4ff707c01f0afe5948068fa6"
+uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
+version = "0.6.0"
 
 [[Measures]]
 deps = ["Compat"]
