@@ -7,7 +7,7 @@ using DelimitedFiles
 include("lib.jl")
 
 # Extract coordinates
-bc_codes = lpad.(1:4, 2, "0")
+bc_codes = lpad.(1:19, 2, "0")
 
 bc_vars = [get_tiff_data("assets/wc2.0_bio_10m_$(x).tif") for x in bc_codes]
 
@@ -39,33 +39,34 @@ yaxis!((25,75))
 bl = get_closest_grid_point((-130.0,25.0), lon, lat)
 tr = get_closest_grid_point((-50.0, 60.0), lon, lat)
 
-bc_var = bc_vars[2]
+function quantile_matrix(bc_var::Matrix{Float64}, obs::Vector{Float64}, lower_left::NTuple{2,Int64}, upper_right::NTuple{2,Int64})
+    qtable = zeros(Float64, (upper_right[2]-lower_left[2], upper_right[1]-lower_left[1]))
+    @progress for (i, x) in enumerate(lower_left[2]:1:upper_right[2]-1)
+        for (j, y) in enumerate(lower_left[1]:1:upper_right[1]-1)
+            val = bc_var[x, y]
+            if isnan(val)
+                qtable[i,j] = NaN
+            else
+                this_q = find_quantile(obs, val)
+                this_q = this_q > 0.5 ? 1.0-this_q : this_q
+                qtable[i,j] = this_q
+            end
 
-quantile_table = zeros(Float64, (tr[2]-bl[2], tr[1]-bl[1]))
-@progress for (i, x) in enumerate(bl[2]:1:tr[2]-1)
-    for (j, y) in enumerate(bl[1]:1:tr[1]-1)
-        val = bc_var[x, y]
-        if isnan(val)
-            quantile_table[i,j] = NaN
-        else
-            this_q = find_quantile(predicates[:,1], val)
-            this_q = this_q > 0.5 ? 1.0-this_q : this_q
-            quantile_table[i,j] = this_q
         end
-
     end
+    return 2.0 .* qtable
 end
 
-heatmap(2.0 .* quantile_table, c=:viridis)
+quantiles_by_var = [quantile_matrix(bc_vars[i], predicates[:,i], bl, tr) for i in 1:length(bc_vars)]
 
-for (i, ax) in enumerate(x)
-    qx = find_quantile(nx, ax)
-    qx = qx > 0.5 ? 1-qx : qx
-    for (j, ay) in enumerate(y)
-        qy = find_quantile(ny, ay)
-        qy = qy > 0.5 ? 1-qy : qy
-        this_q = minimum([qx, qy])
-        S[i,j] = this_q
-        S[i,j] = this_q > 0.5 ? 1 - this_q : this_q
-    end
+consensus_matrix = zeros(Float64, size(quantiles_by_var[1]))
+for i in eachindex(consensus_matrix)
+    consensus_matrix[i] = minimum(getindex.(quantiles_by_var, i))
 end
+
+bbox_lat = lat[bl[2]:tr[2]-1]
+bbox_lon = lon[bl[1]:tr[1]-1]
+heatmap(bbox_lon, bbox_lat, consensus_matrix, frame=:none, c=:Blues)
+scatter!(finch[:,1], finch[:,2], leg=false, msw=0, c=:black, m=:diamond, ms=2)
+xaxis!((minimum(bbox_lon), maximum(bbox_lon)))
+yaxis!((minimum(bbox_lat), maximum(bbox_lat)))

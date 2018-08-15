@@ -1,8 +1,7 @@
-
 target_taxon = GBIF.taxon("Haemorhous purpureus"; rank=:SPECIES)
 
 finch_occ = occurrences(target_taxon)
-@progress for i in 1:20
+@progress for i in 1:50
     next!(finch_occ)
 end
 showall!(finch_occ)
