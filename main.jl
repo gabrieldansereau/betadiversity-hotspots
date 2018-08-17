@@ -3,16 +3,18 @@ using Statistics
 using GDAL
 using GBIF
 
-include("lib.jl")
+# Core type
+include("lib/SDMPredictor.jl")
+
+# Read geotiff files
+include("lib/gdal.jl")
+
+# Format bioclim data
+include("lib/worldclim.jl")
+
+# Other
 include("distributions.jl")
 
-# Extract coordinates
-bioclim_codes = lpad.(1:19, 2, "0")
-bioclim_variables = [get_tiff_data("assets/wc2.0_bio_10m_$(x).tif") for x in bioclim_codes]
-
-latitudes = collect(range(-90.0; stop=90.0, length=size(bioclim_variables[1], 1)))
-longitudes = collect(range(-180.0; stop=180.0, length=size(bioclim_variables[1], 2)))
-heatmap(longitudes, latitudes, bioclim_variables[1], aspectratio=1, c=:viridis)
 
 predicates = get_bioclim_values(occ_data, bioclim_variables, longitudes, latitudes)
 
