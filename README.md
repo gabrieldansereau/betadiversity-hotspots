@@ -29,3 +29,6 @@ See in `main.jl` -- this will get up to about 5000 occurrences of the
 white-tailed jackrabbit in Canada, and output a SDM based on the 19 bioclim
 variables.
 
+![Example of the SDM][sdm]
+
+[sdm]: sdm.png
