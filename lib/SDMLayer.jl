@@ -51,3 +51,46 @@ end
 function Base.size(p::SDMLayer, i::Int64)
     return size(p.grid, i)
 end
+
+function Base.getindex(p::SDMLayer, r::GBIFRecord)
+    return p[r.longitude, r.latitude]
+end
+
+function Base.getindex(p::SDMLayer, r::GBIFRecords)
+    observations = eltype(p.grid)[]
+    for record in r
+        push!(observations, p[record])
+    end
+    return observations
+end
+
+function clip(p::SDMLayer, r::GBIFRecords)
+    lats = latitudes(r)
+    lons = longitudes(r)
+    return p[(minimum(lons)-1.0, maximum(lons)+1.0), (minimum(lats)-1.0, maximum(lats)+1.0)]
+end
+
+function longitudes(r::GBIFRecords)
+    l = Float64[]
+    for record in r
+        push!(l, record.longitude)
+    end
+    return l
+end
+
+function latitudes(r::GBIFRecords)
+    l = Float64[]
+    for record in r
+        push!(l, record.latitude)
+    end
+    return l
+end
+
+function Base.minimum(p1::SDMLayer, p2::SDMLayer)
+    n1 = copy(p1.grid)
+    for i in eachindex(p1.grid)
+        n1[i] = min(p1.grid[i], p2.grid[i])
+    end
+    return SDMLayer(n1, p1.left, p1.right, p1.bottom, p1.top)
+end
+
