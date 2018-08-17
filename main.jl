@@ -1,4 +1,5 @@
 using Plots
+using Statistics
 using GDAL
 using GBIF
 
@@ -9,7 +10,7 @@ include("lib/bioclim.jl")
 
 # Get some GBIF data
 q = Dict{Any,Any}("country" => "CA", "limit" => 100)
-occ = occurrences(taxon("Cyanocitta cristata"), q)
+occ = occurrences(taxon("Lepus townsendii"), q)
 [next!(occ) for i in 1:50]
 qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
 
@@ -22,10 +23,12 @@ qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
 
 heatmap(
         longitudes(prediction), latitudes(prediction), prediction.grid, 
-        aspectratio=1.3, c=:Spectral_r
+        aspectratio=1.3, c=:Greens
        )
+savefig("sdm.png")
 
 scatter!(
          longitudes(occ), latitudes(occ),
          c=:black, msw=0.0, ms=1, lab=""
         )
+savefig("sdm_occ.png")
