@@ -6,22 +6,40 @@ struct SDMLayer{T<:Number}
     top::Float64
 end
 
+function Base.size(p::SDMLayer)
+    return size(p.grid)
+end
+
+function Base.size(p::SDMLayer, i::Int64)
+    return size(p.grid, i)
+end
+
+
 function stride(p::SDMLayer)
-    lat_stride = (p.top-p.bottom)/size(p.grid, 1)/2.0
-    lon_stride = (p.right-p.left)/size(p.grid, 2)/2.0
+    lat_stride = (p.top-p.bottom)/size(p, 1)/2.0
+    lon_stride = (p.right-p.left)/size(p, 2)/2.0
     return (lon_stride, lat_stride)
+end
+
+function stride(p::SDMLayer, i::Int64)
+    @assert i ∈ [1,2]
+    return strid(p)[i]
 end
 
 function latitudes(p::SDMLayer)
     grid_size = stride(p)[2]
-    centers = range(p.bottom+grid_size; stop=p.top-grid_size, length=n)
+    centers = range(p.bottom+grid_size; stop=p.top-grid_size, length=size(p,1))
     return centers
 end
 
 function longitudes(p::SDMLayer)
     grid_size = stride(p)[1]
-    centers = range(p.left+grid_size; stop=p.right-grid_size, length=n)
+    centers = range(p.left+grid_size; stop=p.right-grid_size, length=size(p,2))
     return centers
+end
+
+function Base.getindex(p::SDMLayer, i::Int64, j::Int64)
+    return p.grid[i,j]
 end
 
 function Base.getindex(p::SDMLayer, longitude::Float64, latitude::Float64)
@@ -31,7 +49,11 @@ function Base.getindex(p::SDMLayer, longitude::Float64, latitude::Float64)
     latitude > p.top && return NaN
     i_lon = findmin(abs.(longitude .- longitudes(p)))[2]
     j_lat = findmin(abs.(latitude .- latitudes(p)))[2]
-    return p.grid[j_lat, i_lon]
+    return p[j_lat, i_lon]
+end
+
+function Base.getindex(p::SDMLayer, i::UnitRange{Int64}, j::UnitRange{Int64})
+    return p.grid[i,j]
 end
 
 function Base.getindex(p::SDMLayer, longitude::NTuple{2,Float64}, latitude::NTuple{2,Float64})
@@ -40,24 +62,16 @@ function Base.getindex(p::SDMLayer, longitude::NTuple{2,Float64}, latitude::NTup
     m_lat = findmin(abs.(minimum(latitude) .- latitudes(p)))[2]
     M_lat = findmin(abs.(maximum(latitude) .- latitudes(p)))[2]
 
-    n_lon = (p.right-p.left)/size(p.grid, 2)/2.0
+    n_lon = (p.right-p.left)/size(p, 2)/2.0
     n_left = longitudes(p)[m_lon]-n_lon
     n_right = longitudes(p)[M_lon]+n_lon
 
-    n_lat = (p.top-p.bottom)/size(p.grid, 1)/2.0
+    n_lat = (p.top-p.bottom)/size(p, 1)/2.0
     n_bottom = latitudes(p)[m_lat]-n_lat
     n_top = latitudes(p)[M_lat]+n_lat
 
-    n_grid = p.grid[m_lat:M_lat, m_lon:M_lon]
+    n_grid = p[m_lat:M_lat, m_lon:M_lon]
     return SDMLayer(n_grid, n_left, n_right, n_bottom, n_top)
-end
-
-function Base.size(p::SDMLayer)
-    return size(p.grid)
-end
-
-function Base.size(p::SDMLayer, i::Int64)
-    return size(p.grid, i)
 end
 
 function Base.getindex(p::SDMLayer, r::GBIFRecord)
