@@ -13,13 +13,13 @@ function stride(p::SDMLayer)
 end
 
 function latitudes(p::SDMLayer)
-    grid_size = stide(p)[2]
+    grid_size = stride(p)[2]
     centers = range(p.bottom+grid_size; stop=p.top-grid_size, length=n)
     return centers
 end
 
 function longitudes(p::SDMLayer)
-    grid_size = stide(p)[1]
+    grid_size = stride(p)[1]
     centers = range(p.left+grid_size; stop=p.right-grid_size, length=n)
     return centers
 end
