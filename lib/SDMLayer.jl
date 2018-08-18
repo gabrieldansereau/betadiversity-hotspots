@@ -21,6 +21,10 @@ function longitudes(p::SDMLayer)
 end
 
 function Base.getindex(p::SDMLayer, longitude::Float64, latitude::Float64)
+    longitude < p.left && return NaN
+    longitude > p.right && return NaN
+    latitude < p.bottom && return NaN
+    latitude > p.top && return NaN
     i_lon = findmin(abs.(longitude .- longitudes(p)))[2]
     j_lat = findmin(abs.(latitude .- latitudes(p)))[2]
     return p.grid[j_lat, i_lon]
