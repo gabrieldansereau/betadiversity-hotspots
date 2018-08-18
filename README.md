@@ -25,9 +25,9 @@ non-optimal function to find the quantiles, where most of the time is spent.
 
 ## Example code
 
-See in `main.jl` -- this will get up to about 5000 occurrences of the
-white-tailed jackrabbit in Canada, and output a SDM based on the 19 bioclim
-variables.
+See in `main.jl` -- this will get up to about 800 occurrences of the american
+robib (*Turdus migratorius*) in Canada, and display the prediction. The output
+is cropped so that only the values above the 10th percentile are returned.
 
 ![Example of the SDM][sdm]
 
