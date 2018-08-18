@@ -6,16 +6,20 @@ struct SDMLayer{T<:Number}
     top::Float64
 end
 
+function stride(p::SDMLayer)
+    lat_stride = (p.top-p.bottom)/size(p.grid, 1)/2.0
+    lon_stride = (p.right-p.left)/size(p.grid, 2)/2.0
+    return (lon_stride, lat_stride)
+end
+
 function latitudes(p::SDMLayer)
-    n = size(p.grid, 1)
-    grid_size = (p.top-p.bottom)/n/2.0
+    grid_size = stide(p)[2]
     centers = range(p.bottom+grid_size; stop=p.top-grid_size, length=n)
     return centers
 end
 
 function longitudes(p::SDMLayer)
-    n = size(p.grid, 2)
-    grid_size = (p.right-p.left)/n/2.0
+    grid_size = stide(p)[1]
     centers = range(p.left+grid_size; stop=p.right-grid_size, length=n)
     return centers
 end
