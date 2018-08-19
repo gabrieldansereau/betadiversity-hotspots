@@ -9,11 +9,12 @@ include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
 include("lib/worldclim.jl")
 include("lib/bioclim.jl")
+include("lib/shapefiles.jl")
 
 # Get some GBIF data
 q = Dict{Any,Any}("country" => "CA", "limit" => 100)
 occ = occurrences(taxon("Turdus migratorius"), q)
-[next!(occ) for i in 1:9]
+[next!(occ) for i in 1:19]
 qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
 
 # Get the worldclim data by their layer number
@@ -29,25 +30,14 @@ for i in eachindex(prediction.grid)
     prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
 end
 
-# Get the map and plot it
-function get_shape(res)
-    @assert res ∈ [50,110]
-    dir = "https://github.com/nvkelso/natural-earth-vector/raw/master/$(res)m_physical/"
-    fn = "ne_$(res)m_land.shp"
-    run(`wget $dir/$fn -P /tmp/`)
-    handle = open("/tmp/$fn", "r") do io
-        read(io, Shapefile.Handle)
-    end
-    return handle
-end
-lores = get_shape(50)
+
+worldmap = clip(worldshape(50), prediction)
 
 sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(1200,600), frame=:box)
 xaxis!(sdm_plot, (prediction.left,prediction.right), "Longitude")
 yaxis!(sdm_plot, (prediction.bottom,prediction.top), "Latitude")
 
-for p in lores.shapes
-    xy = map(x -> (x.x, x.y), p.points)
+for p in worldmap
     sh = Shape([pp.x for pp in p.points], [pp.y for pp in p.points])
     plot!(sdm_plot, sh, c=:lightgrey, lab="")
 end
@@ -58,7 +48,7 @@ heatmap!(
     aspectratio=1.3, c=:Oranges, frame=:box
     )
 
-for p in lores.shapes
+for p in worldmap
     xy = map(x -> (x.x, x.y), p.points)
     plot!(sdm_plot, xy, c=:grey, lab="")
 end

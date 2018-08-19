@@ -14,14 +14,13 @@ function Base.size(p::SDMLayer, i::Int64)
     return size(p.grid, i)
 end
 
-
-function stride(p::SDMLayer)
+function Base.stride(p::SDMLayer)
     lat_stride = (p.top-p.bottom)/size(p, 1)/2.0
     lon_stride = (p.right-p.left)/size(p, 2)/2.0
     return (lon_stride, lat_stride)
 end
 
-function stride(p::SDMLayer, i::Int64)
+function Base.stride(p::SDMLayer, i::Int64)
     @assert i ∈ [1,2]
     return strid(p)[i]
 end
