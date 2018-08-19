@@ -13,8 +13,8 @@ include("lib/shapefiles.jl")
 
 # Get some GBIF data
 q = Dict{Any,Any}("limit" => 100)
-occ = occurrences(taxon("Apis mellifera"), q)
-[next!(occ) for i in 1:29]
+occ = occurrences(taxon("Canis latrans"), q)
+[next!(occ) for i in 1:39]
 function is_ca_or_us(r::GBIFRecord)
     r.countryCode ∈ ["CA", "US"]
 end
@@ -26,10 +26,10 @@ qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates, is_ca_
 @time predictions = [bioclim(wc_vars[i], occ) for i in 1:length(wc_vars)];
 # Make the final prediction by taking the minimum
 @time prediction = reduce(minimum, predictions);
-
-# Filter the predictions so that everything below the 10th percentile is NaN
-threshold = quantile(prediction[occ], [0.1])[1]
-for i in eachindex(prediction.grid)
+# Get the threshold for NaN given a percentile
+@time threshold = first(quantile(prediction[occ], [0.05]))
+# Filter the predictions based on the threshold
+@time for i in eachindex(prediction.grid)
     prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
 end
 
@@ -59,7 +59,8 @@ end
 scatter!(
     sdm_plot,
     longitudes(occ), latitudes(occ),
-    c=:black, msw=0.0, ms=0.5, lab=""
+    c=:black, msw=0.0, ms=0.1, lab="",
+    alpha=0.5
     )
 
 savefig("sdm.png")
