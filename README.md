@@ -27,6 +27,8 @@ and that's pretty much it.
 
 ## Example code
 
+### Single species
+
 See in `main.jl` -- this will get up to about 3000 occurrences of some species
 in Canada and the US from [GBIF], and display the prediction. The output is
 cropped so that only the values above the 10th percentile are returned. Most
@@ -41,3 +43,16 @@ generating a prediction for the entire US + Canada takes about one second.
 ![Example of the SDM][sdm]
 
 [sdm]: sdm.png
+
+### Multiple species
+
+In `community.jl`, there is some code to generate SDMs for species of Warblers,
+and then aggregate the output. The output is, specifically, Pielou's evenness
+of every SDM score, so that higher values means equal habitat suitability,
+and lower values means unequal habitat suitability across species. The
+scores are corrected for the number of species *locally present*. *i.e.*
+species with a non-`NaN` suitability at the given pixel.
+
+![Example of the SDM on warblers][warblers]
+
+[warblers]: warblers.png
