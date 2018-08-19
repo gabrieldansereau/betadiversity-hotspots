@@ -12,9 +12,9 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 
 # Get some GBIF data
-q = Dict{Any,Any}("limit" => 100)
-occ = occurrences(taxon("Canis latrans"), q)
-[next!(occ) for i in 1:39]
+q = Dict{Any,Any}("limit" => 200)
+occ = occurrences(taxon("Cardinalis cardinalis"), q)
+[next!(occ) for i in 1:49]
 function is_ca_or_us(r::GBIFRecord)
     r.countryCode ∈ ["CA", "US"]
 end
@@ -48,7 +48,8 @@ end
 heatmap!(
     sdm_plot,
     longitudes(prediction), latitudes(prediction), prediction.grid, 
-    aspectratio=1.3, c=:Oranges, frame=:box
+    aspectratio=1.3, c=:viridis,
+    clim=(0.0, maximum(filter(!isnan, prediction.grid)))
     )
 
 for p in worldmap
@@ -56,11 +57,13 @@ for p in worldmap
     plot!(sdm_plot, xy, c=:grey, lab="")
 end
 
+#=
 scatter!(
     sdm_plot,
     longitudes(occ), latitudes(occ),
     c=:black, msw=0.0, ms=0.1, lab="",
     alpha=0.5
     )
+=#
 
 savefig("sdm.png")
