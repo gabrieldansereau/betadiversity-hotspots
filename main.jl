@@ -12,10 +12,13 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 
 # Get some GBIF data
-q = Dict{Any,Any}("country" => "CA", "limit" => 100)
-occ = occurrences(taxon("Turdus migratorius"), q)
-[next!(occ) for i in 1:19]
-qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
+q = Dict{Any,Any}("limit" => 100)
+occ = occurrences(taxon("Apis mellifera"), q)
+[next!(occ) for i in 1:29]
+function is_ca_or_us(r::GBIFRecord)
+    r.countryCode ∈ ["CA", "US"]
+end
+qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates, is_ca_or_us])
 
 # Get the worldclim data by their layer number
 @time wc_vars = [clip(worldclim(i), occ) for i in 1:19];

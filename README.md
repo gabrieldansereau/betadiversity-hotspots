@@ -25,9 +25,14 @@ non-optimal function to find the quantiles, where most of the time is spent.
 
 ## Example code
 
-See in `main.jl` -- this will get up to about 800 occurrences of the american
-robib (*Turdus migratorius*) in Canada, and display the prediction. The output
-is cropped so that only the values above the 10th percentile are returned.
+See in `main.jl` -- this will get up to about 3000 occurrences of some species
+in Canada and the US, and display the prediction. The output is cropped so
+that only the values above the 10th percentile are returned. Most of the
+code in `main.jl` is actually the downloading of data, and the plotting.
+
+The time to run the SDM scales with the size of the grid (linearly with
+the number of cells). On a standard laptop, using the 10m worldclim data,
+generating a prediction for the entire US + Canada takes about one second.
 
 ![Example of the SDM][sdm]
 

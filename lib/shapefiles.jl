@@ -21,10 +21,10 @@ end
 function isin(p::Shapefile.Polygon, l::SDMLayer)
     out = false
     for xy in p.points
-        xy.x < l.right  || (out = true)
-        xy.x > l.left   || (out = true)
-        xy.y < l.top    || (out = true)
-        xy.y > l.bottom || (out = true)
+        xy.x < l.right  && (out = true)
+        xy.x > l.left   && (out = true)
+        xy.y < l.top    && (out = true)
+        xy.y > l.bottom && (out = true)
     end
     return out
 end
