@@ -53,7 +53,7 @@ end
 heatmap!(
     sdm_plot,
     longitudes(prediction), latitudes(prediction), prediction.grid, 
-    aspectratio=1.3, c=:BuPu,
+    aspectratio=92.60/60.75, c=:BuPu,
     clim=(0.0, maximum(filter(!isnan, prediction.grid)))
     )
 
