@@ -57,7 +57,7 @@ version = "0.5.2"
 
 [[GBIF]]
 deps = ["Dates", "HTTP", "JSON", "Test"]
-git-tree-sha1 = "4e14c7259d0af24b419017365e4edb5f75c93f36"
+git-tree-sha1 = "c97a5699e5d316cf37a9d633a84dafd8980a88e6"
 repo-rev = "dev"
 repo-url = "https://github.com/EcoJulia/GBIF.jl"
 uuid = "f17ddd58-965f-11e8-340d-55efdb6b85f7"
