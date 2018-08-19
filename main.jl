@@ -13,7 +13,7 @@ include("lib/bioclim.jl")
 # Get some GBIF data
 q = Dict{Any,Any}("country" => "CA", "limit" => 100)
 occ = occurrences(taxon("Turdus migratorius"), q)
-[next!(occ) for i in 1:8]
+[next!(occ) for i in 1:9]
 qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
 
 # Get the worldclim data by their layer number
