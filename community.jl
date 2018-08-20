@@ -12,25 +12,19 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 
 function gbifdata(sp)
+    @info sp
     q = Dict{Any,Any}("limit" => 200, "country" => "CA")
-    occ = occurrences(taxon(sp), q)
-    [next!(occ) for i in 1:9]
+    occ = occurrences(sp, q)
+    [next!(occ) for i in 1:29]
     qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
     return occ
 end
 
-warblers = [
-    "Cardellina canadensis",
-    "Dendroica cerulea",
-    "Vermivora chrysoptera",
-    "Vermivora ruficapilla",
-    "Dendroica striata",
-    "Dendroica nigrescens",
-    "Dendroica townsendi"
-   ]
+parulidae = taxon("Parulidae"; strict=false)
+parulidae_latest_200 = occurrences(parulidae, Dict("limit"=>200, "country"=>"CA"))
+canadian_warblers = unique([p.taxon for p in parulidae_latest_200])
 
-
-warblers_occ = gbifdata.(warblers)
+warblers_occ = gbifdata.(canadian_warblers)
 lon_range = (-136.0, -58.0)
 lat_range = (40.5, 56.0)
 
