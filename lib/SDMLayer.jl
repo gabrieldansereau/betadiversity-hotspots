@@ -22,18 +22,18 @@ end
 
 function Base.stride(p::SDMLayer, i::Int64)
     @assert i ∈ [1,2]
-    return strid(p)[i]
+    return stride(p)[i]
 end
 
 function latitudes(p::SDMLayer)
-    grid_size = stride(p)[2]
-    centers = range(p.bottom+grid_size; stop=p.top-grid_size, length=size(p,1))
+    grid_size = stride(p, 2)
+    centers = range(p.bottom+grid_size; stop=p.top-grid_size, length=size(p, 1))
     return centers
 end
 
 function longitudes(p::SDMLayer)
-    grid_size = stride(p)[1]
-    centers = range(p.left+grid_size; stop=p.right-grid_size, length=size(p,2))
+    grid_size = stride(p, 1)
+    centers = range(p.left+grid_size; stop=p.right-grid_size, length=size(p, 2))
     return centers
 end
 

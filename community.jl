@@ -51,13 +51,21 @@ function pielou(a::Vector{T}) where {T <: Number}
     return abs(sum(p.*log.(p))/length(p))
 end
 
-shannon = zeros(Float64, size(predictions[1]))
-@time for i in 1:size(shannon, 1), j in 1:size(shannon, 2)
-    x = getindex.(predictions, i, j)
-    shannon[i,j] = pielou(x)
+function shannon(a::Vector{T}) where {T <: Number}
+    A = filter(!isnan, a)
+    length(A) == 0 && return NaN
+    sum(A) == zero(T) && return NaN
+    p = A ./ sum(A)
+    return abs(sum(p.*log.(p)))
 end
 
-evenness = SDMLayer(shannon, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
+output = zeros(Float64, size(predictions[1]))
+@time for i in 1:size(output, 1), j in 1:size(output, 2)
+    x = getindex.(predictions, i, j)
+    output[i,j] = shannon(x)
+end
+
+evenness = SDMLayer(output, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 worldmap = clip(worldshape(50), evenness)
 
