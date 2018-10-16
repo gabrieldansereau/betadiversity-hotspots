@@ -37,8 +37,16 @@ function longitudes(p::SDMLayer)
     return centers
 end
 
+function Base.eachindex(p::SDMLayer)
+    return eachindex(p.grid)
+end
+
 function Base.getindex(p::SDMLayer, i::Int64, j::Int64)
     return p.grid[i,j]
+end
+
+function Base.getindex(p::SDMLayer, i::Int64)
+    return p.grid[i]
 end
 
 function Base.getindex(p::SDMLayer, longitude::Float64, latitude::Float64)
@@ -114,4 +122,3 @@ function Base.minimum(p1::SDMLayer, p2::SDMLayer)
     end
     return SDMLayer(n1, p1.left, p1.right, p1.bottom, p1.top)
 end
-

@@ -80,7 +80,7 @@ end
 
 heatmap!(
     sdm_plot,
-    longitudes(evenness), latitudes(evenness), evenness.grid, 
+    longitudes(evenness), latitudes(evenness), evenness.grid,
     aspectratio=92.60/60.75, c=:BuPu,
     clim=(0.0, maximum(filter(!isnan, evenness.grid)))
     )
