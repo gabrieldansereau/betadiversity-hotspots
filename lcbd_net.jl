@@ -4,6 +4,7 @@ using Shapefile
 using GBIF
 using StatsBase
 using Statistics
+using EcologicalNetworks
 
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
@@ -13,20 +14,37 @@ include("lib/shapefiles.jl")
 
 function gbifdata(sp)
     @info sp
-    q = Dict{Any,Any}("limit" => 200, "country" => "CA")
+    q = Dict{Any,Any}("limit" => 200, "country" => "NZ")
     occ = occurrences(sp, q)
     [next!(occ) for i in 1:2]
     qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
     return occ
 end
 
-high_taxon = taxon("Anseriformes"; strict=false)
-high_taxon_latest_200 = occurrences(high_taxon, Dict("limit"=>200, "country"=>"CA"))
-canadian_taxa = unique([p.taxon for p in high_taxon_latest_200])
+N = nz_stream_foodweb()[1]
 
-taxa_occ = gbifdata.(canadian_taxa)
-lon_range = (-136.0, -58.0)
-lat_range = (40.5, 56.0)
+# Get taxa in GBIF
+taxa = []
+@progress for s in species(N)
+    @info s
+    try
+        t = taxon(s; strict=false)
+        push!(taxa, t)
+    catch
+        @info "$s has no match"
+    end
+end
+
+# Get occurrences
+taxa_occ = gbifdata.(taxa)
+
+filter!(x -> length(x) > 10, taxa_occ)
+
+LAT = vcat(map.(x -> x.latitude, taxa_occ)...)
+LON = vcat(map.(x -> x.longitude, taxa_occ)...)
+
+lon_range = (minimum(LON), maximum(LON))
+lat_range = (minimum(LAT), maximum(LAT))
 
 @time wc_vars = [worldclim(i)[lon_range, lat_range] for i in 1:19];
 
@@ -91,4 +109,4 @@ end
 
 sdm_plot
 
-savefig("lcbd-map.png")
+savefig("lcbd-network-map.png")
