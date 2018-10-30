@@ -5,6 +5,7 @@ using GBIF
 using StatsBase
 using Statistics
 using EcologicalNetworks
+using EcologicalNetworksPlots
 
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
@@ -21,30 +22,30 @@ function gbifdata(sp)
     return occ
 end
 
-N = nz_stream_foodweb()[1]
+N = nz_stream_foodweb()[3]
 
 # Get taxa in GBIF
-taxa = []
+taxa = Dict{last(eltype(N)),GBIFTaxon}()
 @progress for s in species(N)
     @info s
     try
         t = taxon(s; strict=false)
-        push!(taxa, t)
+        taxa[s] = t
     catch
         @info "$s has no match"
     end
 end
 
 # Get occurrences
-taxa_occ = gbifdata.(taxa)
+occ_data = Dict([taxon => gbifdata(taxon) for taxon in values(taxa)])
 
-filter!(x -> length(x) > 10, taxa_occ)
+filter!(p -> length(p.second) ≥ 10, occ_data)
 
-LAT = vcat(map.(x -> x.latitude, taxa_occ)...)
-LON = vcat(map.(x -> x.longitude, taxa_occ)...)
+LAT = vcat(map.(x -> x.latitude, values(occ_data))...)
+LON = vcat(map.(x -> x.longitude, values(occ_data))...)
 
-lon_range = (minimum(LON), maximum(LON))
-lat_range = (minimum(LAT), maximum(LAT))
+lon_range = (165.0, 180.0)
+lat_range = (-30.0, -50.0)
 
 @time wc_vars = [worldclim(i)[lon_range, lat_range] for i in 1:19];
 
@@ -59,13 +60,13 @@ function species_bclim(occ, vars)
     return prediction
 end
 
-@time predictions = [species_bclim(w, wc_vars) for w in taxa_occ]
+@time predictions = Dict([occ_d.first => species_bclim(occ_d.second, wc_vars) for occ_d in occ_data])
 
 # Get the LCBD
-Y = zeros(Int64, (prod(size(predictions[1])),length(taxa_occ)))
-@progress for gc in eachindex(predictions[1].grid)
-    R = map(x -> x.grid[gc], predictions)
-    global Y[gc,:] = .!isnan.(R)
+Y = zeros(Int64, (prod(size(first(predictions).second)), length(predictions)))
+@progress for (i, tax) in enumerate(keys(predictions))
+    layer = predictions[tax]
+    Y[:,i] = vec(.!isnan.(layer.grid))
 end
 
 S = (Y .- mean(Y; dims=1)).^2.0
@@ -76,17 +77,41 @@ SCBDj = SSj ./ SStotal
 SSi = sum(S; dims=2)
 LCBDi = SSi ./ SStotal
 
-t_lcbd = zeros(Float64, size(predictions[1]))
+
+# SCBD plotting
+scbd_val = Dict{last(eltype(N)),Float64}()
+scbd_temp = Dict(zip(keys(predictions), SCBDj))
+for s in species(N)
+    sp_key = get(taxa, s, NaN)
+    if typeof(sp_key) <: GBIFTaxon
+        scbd_val[s] = get(scbd_temp, sp_key, 0.0)
+    else
+        scbd_val[s] = 0.0
+    end
+end
+
+I0 = initial_random_layout(N)
+[graph_layout!(N, I0) for i in 1:2000]
+EcologicalNetworksPlots.finish_layout!(I0)
+
+plot(N, I0, nodesize=scbd_val, markercolor=:white, msw=1.0)
+
+savefig("lcbd-network-plot.png")
+
+
+# LCBD plotting
+
+t_lcbd = zeros(Float64, size(first(predictions).second))
 LCBDi = LCBDi./maximum(LCBDi)
 for i in eachindex(t_lcbd)
     t_lcbd[i] = Y[i] > 0 ? LCBDi[i] : NaN
 end
 
-LCBD = SDMLayer(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
+LCBD = SDMLayer(t_lcbd, first(predictions).second.left, first(predictions).second.right, first(predictions).second.bottom, first(predictions).second.top)
 
 worldmap = clip(worldshape(50), LCBD)
 
-sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box)
+sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, frame=:box, dpi=300)
 xaxis!(sdm_plot, (LCBD.left,LCBD.right), "Longitude")
 yaxis!(sdm_plot, (LCBD.bottom,LCBD.top), "Latitude")
 
@@ -98,7 +123,7 @@ end
 heatmap!(
     sdm_plot,
     longitudes(LCBD), latitudes(LCBD), LCBD.grid,
-    aspectratio=92.60/60.75, c=:viridis,
+    aspectratio=92.60/60.75, c=:plasma,
     clim=(0.0, maximum(filter(!isnan, LCBD.grid)))
     )
 

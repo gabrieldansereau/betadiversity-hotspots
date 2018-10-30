@@ -63,6 +63,14 @@ repo-url = "https://github.com/PoisotLab/EcologicalNetworks.jl"
 uuid = "26cd3c7c-942f-11e8-1e85-357945f36438"
 version = "1.0.0"
 
+[[EcologicalNetworksPlots]]
+deps = ["EcologicalNetworks", "Plots", "RecipesBase"]
+git-tree-sha1 = "973a566a8bfcb9fc98f8e5998cb3d5b3ee6aef8e"
+repo-rev = "master"
+repo-url = "https://github.com/PoisotLab/EcologicalNetworksPlots.jl"
+uuid = "1a178c60-9a7b-11e8-2a1a-8dce3be9a50c"
+version = "0.0.1"
+
 [[FixedPointNumbers]]
 deps = ["Test"]
 git-tree-sha1 = "b8045033701c3b10bf2324d7203404be7aef88ba"
