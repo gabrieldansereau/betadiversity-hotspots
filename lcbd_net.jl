@@ -22,7 +22,7 @@ function gbifdata(sp)
     return occ
 end
 
-N = nz_stream_foodweb()[3]
+N = nz_stream_foodweb()[1]
 
 # Get taxa in GBIF
 taxa = Dict{last(eltype(N)),GBIFTaxon}()
@@ -123,7 +123,7 @@ end
 heatmap!(
     sdm_plot,
     longitudes(LCBD), latitudes(LCBD), LCBD.grid,
-    aspectratio=92.60/60.75, c=:plasma,
+    aspectratio=92.60/60.75, c=:magma,
     clim=(0.0, maximum(filter(!isnan, LCBD.grid)))
     )
 
