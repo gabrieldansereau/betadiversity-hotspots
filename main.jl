@@ -12,8 +12,10 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 
 # Get some GBIF data
-q = Dict{Any,Any}("limit" => 200)
-occ = occurrences(taxon("Cypripedium reginae"), q)
+q_orig = Dict{Any,Any}("limit" => 200)
+occ_orig = occurrences(taxon("Cypripedium reginae"), q)
+q = Dict{Any,Any}("limit" => 200, "scientificName" => "Cypripedium reginae", "hasCoordinate" => true)
+occ= occurrences(q)
 [next!(occ) for i in 1:19]
 function is_ca_or_us(r::GBIFRecord)
     r.countryCode ∈ ["CA", "US"]
