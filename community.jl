@@ -37,6 +37,14 @@ include("lib/shapefiles.jl")
 # @save "../data/warblers_gbifdata.jld2" warblers_occ
 @load "../data/warblers_gbifdata.jld2" warblers_occ
 
+# Use DataFrame instead of GBIFRecords
+using DataFrames
+using CSV
+include("$(homedir())/github/SDM_Warblers/src/explo_functions.jl")
+df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
+df = prepare_csvdata(warblers_occ)
+warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
+
 lon_range = (-136.0, -58.0)
 lat_range = (40.5, 56.0)
 
@@ -103,3 +111,4 @@ for p in worldmap
 end
 
 savefig("warblers.png")
+savefig("warblers-qc2018.pdf")
