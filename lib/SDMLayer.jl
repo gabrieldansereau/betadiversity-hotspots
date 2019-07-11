@@ -92,7 +92,13 @@ function Base.getindex(p::SDMLayer, r::GBIFRecords)
     end
     return observations
 end
-
+function Base.getindex(p::SDMLayer, d::DataFrame)
+    observations = eltype(p.grid)[]
+    for i in 1:length(d.species)
+        push!(observations, p[d.longitude[i], d.latitude[i]])
+    end
+    return observations
+end
 function clip(p::SDMLayer, r::GBIFRecords)
     lats = latitudes(r)
     lons = longitudes(r)

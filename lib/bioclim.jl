@@ -1,4 +1,4 @@
-function bioclim(p::SDMLayer, r::GBIFRecords)
+function bioclim(p::SDMLayer, r::Union{GBIFRecords,DataFrame})
     observed_values = p[r]
     qfinder = ecdf(observed_values)
     lq = zeros(Float64, size(p))
