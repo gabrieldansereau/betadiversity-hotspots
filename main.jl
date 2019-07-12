@@ -4,7 +4,10 @@ using Shapefile
 using GBIF
 using StatsBase
 using Statistics
+using DataFrames
+using CSV
 
+cd("$(homedir())/github/BioClim/")
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
 include("lib/worldclim.jl")
@@ -21,6 +24,13 @@ function is_ca_or_us(r::GBIFRecord)
     r.countryCode ∈ ["CA", "US"]
 end
 qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates, is_ca_or_us])
+
+# Use DataFrame instead of GBIFRecord
+include("$(homedir())/github/SDM_Warblers/src/explo_functions.jl")
+df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
+df = prepare_csvdata(df)
+warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
+occ = warblers_occ[1]
 
 # Get the worldclim data by their layer number
 @info "Extract and crop bioclim variables"
