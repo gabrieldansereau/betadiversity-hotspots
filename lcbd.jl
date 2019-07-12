@@ -4,7 +4,10 @@ using Shapefile
 using GBIF
 using StatsBase
 using Statistics
+using DataFrames
+using CSV
 
+cd("$(homedir())/github/BioClim/")
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
 include("lib/worldclim.jl")
@@ -29,11 +32,9 @@ lon_range = (-136.0, -58.0)
 lat_range = (40.5, 56.0)
 
 # Use DataFrame instead of GBIFRecords
-using DataFrames
-using CSV
 include("$(homedir())/github/SDM_Warblers/src/explo_functions.jl")
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
-df = prepare_csvdata(warblers_occ)
+df = prepare_csvdata(df)
 taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]
 
 @time wc_vars = [worldclim(i)[lon_range, lat_range] for i in 1:19];

@@ -7,6 +7,8 @@ using Statistics
 using JLD2
 using FileIO
 using Dates
+using DataFrames
+using CSV
 
 cd("$(homedir())/github/BioClim/")
 include("lib/SDMLayer.jl")
@@ -38,11 +40,9 @@ include("lib/shapefiles.jl")
 @load "../data/warblers_gbifdata.jld2" warblers_occ
 
 # Use DataFrame instead of GBIFRecords
-using DataFrames
-using CSV
 include("$(homedir())/github/SDM_Warblers/src/explo_functions.jl")
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
-df = prepare_csvdata(warblers_occ)
+df = prepare_csvdata(df)
 warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 
 lon_range = (-136.0, -58.0)
