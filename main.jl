@@ -13,6 +13,7 @@ include("lib/gdal.jl")
 include("lib/worldclim.jl")
 include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
+include("lib/csvdata.jl")
 
 # Get some GBIF data
 q_orig = Dict{Any,Any}("limit" => 200)
@@ -26,7 +27,6 @@ end
 qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates, is_ca_or_us])
 
 # Use DataFrame instead of GBIFRecord
-include("$(homedir())/github/SDM_Warblers/src/explo_functions.jl")
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
 df = prepare_csvdata(df)
 warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]

@@ -13,6 +13,7 @@ include("lib/gdal.jl")
 include("lib/worldclim.jl")
 include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
+include("lib/csvdata.jl")
 
 function gbifdata(sp)
     @info sp
@@ -32,7 +33,6 @@ lon_range = (-136.0, -58.0)
 lat_range = (40.5, 56.0)
 
 # Use DataFrame instead of GBIFRecords
-include("$(homedir())/github/SDM_Warblers/src/explo_functions.jl")
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
 df = prepare_csvdata(df)
 taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]

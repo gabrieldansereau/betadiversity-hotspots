@@ -16,6 +16,7 @@ include("lib/gdal.jl")
 include("lib/worldclim.jl")
 include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
+include("lib/csvdata.jl")
 
 ## Get Parulidae data from GBIF
 # function gbifdata(sp)
@@ -40,7 +41,6 @@ include("lib/shapefiles.jl")
 @load "../data/warblers_gbifdata.jld2" warblers_occ
 
 # Use DataFrame instead of GBIFRecords
-include("$(homedir())/github/SDM_Warblers/src/explo_functions.jl")
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
 df = prepare_csvdata(df)
 warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
