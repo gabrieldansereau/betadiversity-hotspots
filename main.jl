@@ -84,3 +84,4 @@ scatter!(
 =#
 
 savefig("sdm.png")
+savefig("sdm-warbler-qc.pdf")
