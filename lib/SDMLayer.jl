@@ -104,6 +104,10 @@ function clip(p::SDMLayer, r::GBIFRecords)
     lons = longitudes(r)
     return p[(minimum(lons)-1.0, maximum(lons)+1.0), (minimum(lats)-1.0, maximum(lats)+1.0)]
 end
+function clip(p::SDMLayer, d::DataFrame)
+    return p[(minimum(d.longitude)-1.0, maximum(d.longitude)+1.0), (minimum(d.latitude)-1.0, maximum(d.latitude)+1.0)]
+end
+
 
 function longitudes(r::GBIFRecords)
     l = Float64[]
