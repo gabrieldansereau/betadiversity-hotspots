@@ -53,7 +53,8 @@ end
 
 worldmap = clip(worldshape(50), prediction)
 
-sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box)
+sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box,
+                title = first(unique(occ.species)))
 xaxis!(sdm_plot, (prediction.left,prediction.right), "Longitude")
 yaxis!(sdm_plot, (prediction.bottom,prediction.top), "Latitude")
 
@@ -74,6 +75,8 @@ for p in worldmap
     plot!(sdm_plot, xy, c=:grey, lab="")
 end
 
+sdm_plot
+
 #=
 scatter!(
     sdm_plot,
@@ -84,4 +87,4 @@ scatter!(
 =#
 
 savefig("sdm.png")
-savefig("sdm-warbler-qc.pdf")
+savefig("sdm-warbler-qc-$(first(unique(occ.species))).pdf")
