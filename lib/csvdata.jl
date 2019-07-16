@@ -4,9 +4,10 @@ function prepare_csvdata(csvdata::DataFrame)
     # Rename coordinate columns names
     rename!(df, :decimalLatitude => :latitude)
     rename!(df, :decimalLongitude => :longitude)
+    # Remove entries with missing data
+    dropmissing!(df, :year)
+    dropmissing!(df, :species)
     # Replace spaces by underscores in species names
     df.species .= replace.(df.species, " " .=> "_")
-    # Remove entries with missing year
-    dropmissing!(df, :year)
     return df
 end
