@@ -7,7 +7,6 @@ using Statistics
 using DataFrames
 using CSV
 
-cd("$(homedir())/github/BioClim/")
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
 include("lib/worldclim.jl")
@@ -15,24 +14,7 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 include("lib/csvdata.jl")
 
-function gbifdata(sp)
-    @info sp
-    q = Dict{Any,Any}("limit" => 200, "country" => "CA")
-    occ = occurrences(sp, q)
-    [next!(occ) for i in 1:2]
-    qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
-    return occ
-end
-
-high_taxon = taxon("Anseriformes"; strict=false)
-high_taxon_latest_200 = occurrences(high_taxon, Dict("limit"=>200, "country"=>"CA"))
-canadian_taxa = unique([p.taxon for p in high_taxon_latest_200])
-
-taxa_occ = gbifdata.(canadian_taxa)
-lon_range = (-136.0, -58.0)
-lat_range = (40.5, 56.0)
-
-# Use DataFrame instead of GBIFRecords
+## Get data from CSV files
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
 df = prepare_csvdata(df)
 taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]
@@ -100,5 +82,4 @@ end
 
 sdm_plot
 
-savefig("lcbd-map.png")
 savefig("lcbd-map-qc2018.pdf")

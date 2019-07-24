@@ -4,13 +4,9 @@ using Shapefile
 using GBIF
 using StatsBase
 using Statistics
-using JLD2
-using FileIO
-using Dates
 using DataFrames
 using CSV
 
-cd("$(homedir())/github/BioClim/")
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
 include("lib/worldclim.jl")
@@ -18,29 +14,7 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 include("lib/csvdata.jl")
 
-## Get Parulidae data from GBIF
-# function gbifdata(sp)
-#     @info sp
-#     q = Dict{Any,Any}("limit" => 200, "country" => "CA")
-#     occ = occurrences(sp, q)
-#     [next!(occ) for i in 1:29]
-#     qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates])
-#     return occ
-# end
-
-# parulidae = taxon("Parulidae"; strict=false)
-# q = Dict("limit"=>200, "country"=>"CA")
-# q[String(:family)*"Key"] = getfield(parulidae, :family).second
-# parulidae_latest_200 = occurrences(q)
-# canadian_warblers = unique([p.taxon for p in parulidae_latest_200])
-
-# canadian_warblers = canadian_warblers[.!ismissing.(getfield.(canadian_warblers, :species))]
-
-# @elapsed warblers_occ = gbifdata.(canadian_warblers)
-# @save "../data/warblers_gbifdata.jld2" warblers_occ
-@load "../data/warblers_gbifdata.jld2" warblers_occ
-
-# Use DataFrame instead of GBIFRecords
+## Get data from CSV files
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
 df = prepare_csvdata(df)
 warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
@@ -110,5 +84,4 @@ for p in worldmap
     plot!(sdm_plot, xy, c=:grey, lab="")
 end
 
-savefig("warblers.png")
 savefig("warblers-qc2018.pdf")

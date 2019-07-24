@@ -7,7 +7,6 @@ using Statistics
 using DataFrames
 using CSV
 
-cd("$(homedir())/github/BioClim/")
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
 include("lib/worldclim.jl")
@@ -15,19 +14,8 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 include("lib/csvdata.jl")
 
-# Get some GBIF data
-q_orig = Dict{Any,Any}("limit" => 200)
-occ_orig = occurrences(taxon("Cypripedium reginae"), q)
-q = Dict{Any,Any}("limit" => 200, "scientificName" => "Cypripedium reginae", "hasCoordinate" => true)
-occ= occurrences(q)
-[next!(occ) for i in 1:19]
-function is_ca_or_us(r::GBIFRecord)
-    r.countryCode ∈ ["CA", "US"]
-end
-qualitycontrol!(occ; filters=[have_ok_coordinates, have_both_coordinates, is_ca_or_us])
-
-# Use DataFrame instead of GBIFRecord
-df = CSV.read("../data/warblers_can.csv", header=true, delim="\t")
+## Get data from CSV files
+df = CSV.read("../data/warblers_qc.csv", header=true, delim="\t")
 df = prepare_csvdata(df)
 warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 # occ = warblers_occ[1]

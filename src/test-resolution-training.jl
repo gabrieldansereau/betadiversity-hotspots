@@ -7,7 +7,6 @@ using Statistics
 using DataFrames
 using CSV
 
-cd("$(homedir())/github/BioClim/")
 include("lib/SDMLayer.jl")
 include("lib/gdal.jl")
 include("lib/worldclim.jl")
@@ -15,7 +14,7 @@ include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 include("lib/csvdata.jl")
 
-# Use DataFrame instead of GBIFRecord
+## Get data from CSV files
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
 df = prepare_csvdata(df)
 warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
