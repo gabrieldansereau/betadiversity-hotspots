@@ -4,16 +4,15 @@ using Shapefile
 using GBIF
 using StatsBase
 using Statistics
+using DataFrames
 
-include("lib/SDMLayer.jl")
-include("lib/gdal.jl")
-include("lib/worldclim.jl")
-include("lib/bioclim.jl")
-include("lib/shapefiles.jl")
+include("../lib/SDMLayer.jl")
+include("../lib/gdal.jl")
+include("../lib/worldclim.jl")
+include("../lib/bioclim.jl")
+include("../lib/shapefiles.jl")
 
 # Get some GBIF data
-q_orig = Dict{Any,Any}("limit" => 200)
-occ_orig = occurrences(taxon("Cypripedium reginae"), q)
 q = Dict{Any,Any}("limit" => 200, "scientificName" => "Cypripedium reginae", "hasCoordinate" => true)
 occ= occurrences(q)
 [next!(occ) for i in 1:19]
@@ -73,4 +72,4 @@ scatter!(
     )
 =#
 
-savefig("sdm.png")
+savefig("fig/originals/sdm.png")
