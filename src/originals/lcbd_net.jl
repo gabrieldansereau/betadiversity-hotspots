@@ -6,12 +6,13 @@ using StatsBase
 using Statistics
 using EcologicalNetworks
 using EcologicalNetworksPlots
+using DataFrames
 
-include("lib/SDMLayer.jl")
-include("lib/gdal.jl")
-include("lib/worldclim.jl")
-include("lib/bioclim.jl")
-include("lib/shapefiles.jl")
+include("../lib/SDMLayer.jl")
+include("../lib/gdal.jl")
+include("../lib/worldclim.jl")
+include("../lib/bioclim.jl")
+include("../lib/shapefiles.jl")
 
 function gbifdata(sp)
     @info sp
@@ -96,7 +97,7 @@ EcologicalNetworksPlots.finish_layout!(I0)
 
 plot(N, I0, nodesize=scbd_val, markercolor=:white, msw=1.0)
 
-savefig("lcbd-network-plot.png")
+savefig("fig/originals/lcbd-network-plot.png")
 
 
 # LCBD plotting
@@ -134,4 +135,4 @@ end
 
 sdm_plot
 
-savefig("lcbd-network-map.png")
+savefig("fig/originals/lcbd-network-map.png")

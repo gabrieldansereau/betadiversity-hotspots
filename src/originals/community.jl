@@ -4,12 +4,13 @@ using Shapefile
 using GBIF
 using StatsBase
 using Statistics
+using DataFrames
 
-include("lib/SDMLayer.jl")
-include("lib/gdal.jl")
-include("lib/worldclim.jl")
-include("lib/bioclim.jl")
-include("lib/shapefiles.jl")
+include("../lib/SDMLayer.jl")
+include("../lib/gdal.jl")
+include("../lib/worldclim.jl")
+include("../lib/bioclim.jl")
+include("../lib/shapefiles.jl")
 
 function gbifdata(sp)
     @info sp
@@ -21,10 +22,15 @@ function gbifdata(sp)
 end
 
 parulidae = taxon("Parulidae"; strict=false)
-parulidae_latest_200 = occurrences(parulidae, Dict("limit"=>200, "country"=>"CA"))
+q = Dict("limit"=>200, "country"=>"CA")
+q[String(:family)*"Key"] = getfield(parulidae, :family).second
+parulidae_latest_200 = occurrences(q)
 canadian_warblers = unique([p.taxon for p in parulidae_latest_200])
 
-warblers_occ = gbifdata.(canadian_warblers)
+canadian_warblers = canadian_warblers[.!ismissing.(getfield.(canadian_warblers, :species))]
+
+@elapsed warblers_occ = gbifdata.(canadian_warblers)
+
 lon_range = (-136.0, -58.0)
 lat_range = (40.5, 56.0)
 
@@ -90,4 +96,4 @@ for p in worldmap
     plot!(sdm_plot, xy, c=:grey, lab="")
 end
 
-savefig("warblers.png")
+savefig("fig/originals/warblers.png")

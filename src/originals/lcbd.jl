@@ -4,12 +4,13 @@ using Shapefile
 using GBIF
 using StatsBase
 using Statistics
+using DataFrames
 
-include("lib/SDMLayer.jl")
-include("lib/gdal.jl")
-include("lib/worldclim.jl")
-include("lib/bioclim.jl")
-include("lib/shapefiles.jl")
+include("../lib/SDMLayer.jl")
+include("../lib/gdal.jl")
+include("../lib/worldclim.jl")
+include("../lib/bioclim.jl")
+include("../lib/shapefiles.jl")
 
 function gbifdata(sp)
     @info sp
@@ -21,8 +22,13 @@ function gbifdata(sp)
 end
 
 high_taxon = taxon("Anseriformes"; strict=false)
-high_taxon_latest_200 = occurrences(high_taxon, Dict("limit"=>200, "country"=>"CA"))
+q = Dict("limit"=>200, "country"=>"CA")
+q[String(:order)*"Key"] = getfield(high_taxon, :order).second
+high_taxon_latest_200 = occurrences(q)
 canadian_taxa = unique([p.taxon for p in high_taxon_latest_200])
+# Remove problematic taxa (no species)
+correct_taxa = [!ismissing(taxa.species) for taxa in canadian_taxa]
+canadian_taxa = canadian_taxa[correct_taxa]
 
 taxa_occ = gbifdata.(canadian_taxa)
 lon_range = (-136.0, -58.0)
@@ -91,4 +97,4 @@ end
 
 sdm_plot
 
-savefig("lcbd-map.png")
+savefig("fig/originals/lcbd-map.png")
