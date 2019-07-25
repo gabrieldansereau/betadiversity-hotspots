@@ -1,18 +1,7 @@
-using Plots
-using GDAL
-using Shapefile
-using GBIF
-using StatsBase
-using Statistics
-using DataFrames
-using CSV
+using Distributed
+addprocs(9)
 
-include("lib/SDMLayer.jl")
-include("lib/gdal.jl")
-include("lib/worldclim.jl")
-include("lib/bioclim.jl")
-include("lib/shapefiles.jl")
-include("lib/csvdata.jl")
+@time @everywhere include("src/required.jl")
 
 ## Get data from CSV files
 df = CSV.read("../data/warblers_qc.csv", header=true, delim="\t")
@@ -21,13 +10,13 @@ warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 # occ = warblers_occ[1]
 
 ## Create function
-function map_species_distribution(occ)
+@everywhere function map_species_distribution(occ)
     # Get the worldclim data by their layer number
     @info "Extract and crop bioclim variables"
-    @time wc_vars = [clip(worldclim(i), occ) for i in 1:19];
+    @time wc_vars = pmap(x -> clip(worldclim(x), occ), 1:19);
     # Make the prediction for each layer
     @info "Predictions for each layer"
-    @time predictions = [bioclim(wc_vars[i], occ) for i in 1:length(wc_vars)];
+    @time predictions = pmap(x -> bioclim(wc_vars[x], occ), 1:19);
     # Make the final prediction by taking the minimum
     @info "Minimum-consensus aggregation"
     @time prediction = reduce(minimum, predictions);
@@ -81,8 +70,12 @@ function map_species_distribution(occ)
 end
 
 # Test for 1 species
-@time map_species_distribution(warblers_occ[1])
+@time maps = pmap(x -> map_species_distribution(x), warblers_occ[1:2])
+@time maps = [map_species_distribution(occ) for occ in warblers_occ[1:2]]
+maps[1]
+maps[2]
 # savefig("sdm.png")
 savefig("fig/warblers/sdm-warbler-qc-$(first(unique(warblers_occ[1].species))).pdf")
 # Produce maps for all species
-[map_species_distribution(occ) for occ in warblers_occ]
+@time maps = pmap(x -> map_species_distribution(x), warblers_occ)
+@time maps = [map_species_distribution(occ) for occ in warblers_occ]

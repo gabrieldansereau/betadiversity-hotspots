@@ -1,18 +1,7 @@
-using Plots
-using GDAL
-using Shapefile
-using GBIF
-using StatsBase
-using Statistics
-using DataFrames
-using CSV
+using Distributed
+addprocs(9)
 
-include("lib/SDMLayer.jl")
-include("lib/gdal.jl")
-include("lib/worldclim.jl")
-include("lib/bioclim.jl")
-include("lib/shapefiles.jl")
-include("lib/csvdata.jl")
+@time @everywhere include("src/required.jl")
 
 ## Get data from CSV files
 df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
@@ -22,20 +11,9 @@ warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 lon_range = (-136.0, -58.0)
 lat_range = (40.5, 56.0)
 
-@time wc_vars = [worldclim(i)[lon_range, lat_range] for i in 1:19];
+@time wc_vars = pmap(x -> worldclim(x)[lon_range, lat_range], 1:19);
 
-function species_bclim(occ, vars)
-    predictions = [bioclim(vars[i], occ) for i in 1:length(vars)];
-    prediction = reduce(minimum, predictions);
-    for i in eachindex(prediction.grid)
-        if prediction.grid[i] == 0.0
-            prediction.grid[i] = NaN
-        end
-    end
-    return prediction
-end
-
-@time predictions = [species_bclim(w, wc_vars) for w in warblers_occ]
+@time predictions = pmap(x -> species_bclim(x, wc_vars), warblers_occ);
 
 function pielou(a::Vector{T}) where {T <: Number}
     A = filter(!isnan, a)
