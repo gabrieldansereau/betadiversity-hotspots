@@ -4,10 +4,14 @@ addprocs(9)
 @time @everywhere include("src/required.jl")
 
 ## Get data from CSV files
-df = CSV.read("../data/warblers_qc.csv", header=true, delim="\t")
-df = prepare_csvdata(df)
-warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
-# occ = warblers_occ[1]
+@time @everywhere begin
+    df = CSV.read("../data/warblers_qc.csv", header=true, delim="\t")
+    df = prepare_csvdata(df)
+    warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
+    # occ = warblers_occ[1]
+end
+# with @everywhere: 26.586195 seconds (36.20 M allocations: 1.756 GiB, 5.09% gc time)
+# without : 14.836300 seconds (35.36 M allocations: 1.716 GiB, 6.52% gc time)
 
 ## Create function
 @everywhere function map_species_distribution(occ)
