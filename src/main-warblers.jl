@@ -5,10 +5,14 @@ addprocs(9)
 
 ## Get data from CSV files
 @time @everywhere begin
+    # Load data
     df = CSV.read("../data/warblers_qc.csv", header=true, delim="\t")
+    # Prepare data (select columns, arrange values)
     df = prepare_csvdata(df)
+    # Separate species
     warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
-    # occ = warblers_occ[1]
+    # Select 1 species only
+    occ = warblers_occ[1]
 end
 # with @everywhere: 26.586195 seconds (36.20 M allocations: 1.756 GiB, 5.09% gc time)
 # without : 14.836300 seconds (35.36 M allocations: 1.716 GiB, 6.52% gc time)
@@ -16,8 +20,8 @@ end
 ## Get the worldclim data
 @time wc_vars_full = pmap(worldclim, 1:19)
 
-## Create function
-@everywhere function map_species_distribution(occ; distributed=true)
+## Create function - SDM & map for 1 species
+@everywhere function map_species_distribution(occ; distributed=true, scatter=false)
     # Get the worldclim data by their layer number
     @info "Extract and crop bioclim variables"
     @time wc_vars = pmap(x -> clip(wc_vars_full[x], occ), 1:19, distributed=distributed);
@@ -37,40 +41,54 @@ end
         prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
     end
 
+    # Load & clip worldmap background to SDMLayer (from shp in /assets folder)
+    # (points with coordinates -> polygons -> background map)
+    # is clip() working? --> worldshape(50).shapes is the same, no filter applied...
     worldmap = clip(worldshape(50), prediction)
 
+    # Create empty plot
     sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box,
                     title = first(unique(occ.species)))
+    # Adjust axes
     xaxis!(sdm_plot, (prediction.left,prediction.right), "Longitude")
     yaxis!(sdm_plot, (prediction.bottom,prediction.top), "Latitude")
 
-    for p in worldmap
+    # Add worldmap background
+    for p in worldmap # loop for each polygon
+        # Construct polygon from points
         sh = Shape([pp.x for pp in p.points], [pp.y for pp in p.points])
+        # Add polygon to plot
         plot!(sdm_plot, sh, c=:lightgrey, lab="")
     end
 
+    # Add SDM output as heatmap
     heatmap!(
-    sdm_plot,
-    longitudes(prediction), latitudes(prediction), prediction.grid,
-    aspectratio=92.60/60.75, c=:BuPu,
-    clim=(0.0, maximum(filter(!isnan, prediction.grid)))
-    )
+        sdm_plot,
+        longitudes(prediction), latitudes(prediction), # layer range
+        prediction.grid, # SDM values
+        aspectratio=92.60/60.75, # aspect ratio
+        c=:BuPu, # ~color palette
+        clim=(0.0, maximum(filter(!isnan, prediction.grid))) # colorbar limits
+        )
 
-    for p in worldmap
+    # Redraw polygons' outer lines over heatmap values
+    for p in worldmap # loop for each polygon
+        # Get outer lines coordinates
         xy = map(x -> (x.x, x.y), p.points)
+        # Add outer lines to plot
         plot!(sdm_plot, xy, c=:grey, lab="")
     end
 
-    sdm_plot
-
-    #=
-    scatter!(
-    sdm_plot,
-    longitudes(occ), latitudes(occ),
-    c=:black, msw=0.0, ms=0.1, lab="",
-    alpha=0.5
-    )
-    =#
+    # Add observations as scatter points (if scatter=true in function call)
+    if scatter == true
+        scatter!(
+            sdm_plot,
+            longitudes(occ), latitudes(occ),
+            c=:black, msw=0.0, ms=0.1, lab="",
+            alpha=0.5
+            )
+    end
+    #
 
     return sdm_plot
 
