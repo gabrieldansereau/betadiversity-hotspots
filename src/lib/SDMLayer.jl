@@ -99,13 +99,10 @@ function Base.getindex(p::SDMLayer, d::DataFrame)
     end
     return observations
 end
-function clip(p::SDMLayer, r::GBIFRecords)
+function clip(p::SDMLayer, r::Union{GBIFRecords,DataFrame})
     lats = latitudes(r)
     lons = longitudes(r)
     return p[(minimum(lons)-1.0, maximum(lons)+1.0), (minimum(lats)-1.0, maximum(lats)+1.0)]
-end
-function clip(p::SDMLayer, d::DataFrame)
-    return p[(minimum(d.longitude)-1.0, maximum(d.longitude)+1.0), (minimum(d.latitude)-1.0, maximum(d.latitude)+1.0)]
 end
 
 
@@ -116,11 +113,25 @@ function longitudes(r::GBIFRecords)
     end
     return l
 end
+function longitudes(d::DataFrame)
+    l = Float64[]
+    for lon in d.longitude
+        push!(l, lon)
+    end
+    return l
+end
 
 function latitudes(r::GBIFRecords)
     l = Float64[]
     for record in r
         push!(l, record.latitude)
+    end
+    return l
+end
+function latitudes(d::DataFrame)
+    l = Float64[]
+    for lat in d.latitude
+        push!(l, lat)
     end
     return l
 end
