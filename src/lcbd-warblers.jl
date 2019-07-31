@@ -59,8 +59,18 @@ begin
     # Fill-in grid
     for i in eachindex(t_lcbd)
         # Add LCBD values only if prediction != NaN
-        t_lcbd[i] = Y[i] > 0 ? LCBDi[i] : NaN
+        t_lcbd[i] = any(Y[i,:] .> 0) ? LCBDi[i] : NaN # ?: is ternary operator, ~if-else
     end
+    #=
+    ## Show error in initial code
+    # Reverse column order (last colimn/species has very few obs)
+    Y = Y[:,sort(1:end, rev=true)]
+    # Fill-in grid
+    for i in eachindex(t_lcbd)
+        # Add LCBD values only if prediction != NaN
+        t_lcbd[i] = Y[i] > 0 ? LCBDi[i] : NaN # ?: is ternary operator, ~if-else
+    end
+    =#
 
     # Create SDMLayer with LCBD values
     LCBD = SDMLayer(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
