@@ -96,4 +96,4 @@ begin
 end
 
 ## Save result
-savefig("warblers-qc2018.pdf")
+savefig(sdm_plot, "fig/warblers/warblers-qc2018.pdf")

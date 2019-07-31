@@ -94,9 +94,9 @@ end
 end
 
 ##  Map 1 species
-@time map_species_distribution(warblers_occ[1])
-@time [map_species_distribution(occ) for occ in warblers_occ[1:1]]
-savefig("fig/warblers/sdm-warbler-qc-$(first(unique(warblers_occ[1].species))).pdf")
+@time map1 = map_species_distribution(warblers_occ[1])
+@time map1 = [map_species_distribution(occ) for occ in warblers_occ[1:1]]
+savefig(map1, "fig/warblers/sdm-warbler-qc-$(first(unique(warblers_occ[1].species))).pdf")
 
 ## Map all species
 @time maps = pmap(x -> map_species_distribution(x, distributed=false), warblers_occ)

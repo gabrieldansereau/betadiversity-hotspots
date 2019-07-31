@@ -115,4 +115,4 @@ begin
 end
 
 ## Save result
-savefig("lcbd-map-qc2018.pdf")
+savefig(sdm_plot, "fig/warblers/lcbd-map-qc2018.pdf")
