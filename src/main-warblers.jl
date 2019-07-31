@@ -88,7 +88,6 @@ end
             alpha=0.5
             )
     end
-    #
 
     return sdm_plot
 
