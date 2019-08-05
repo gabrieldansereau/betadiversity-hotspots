@@ -1,31 +1,23 @@
 using Distributed
-addprocs(9)
+using JLD2
+@time include("required.jl")
 
-@time @everywhere include("src/required.jl")
-
-## Get & prepare data
-@time @everywhere begin
+## Get & prepare occurence data
+@time begin
     # Load data from CSV files
-    df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
+    df = CSV.read("../data/warblers_can.csv", header=true, delim="\t")
     # Prepare data (select columns, arrange values)
     df = prepare_csvdata(df)
     # Separate species
     taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]
-
-    # Define coordinates range
-    lon_range = (-136.0, -58.0)
-    lat_range = (40.5, 56.0)
 end
 
-## Get the worldclim data
-@time wc_vars = pmap(x -> worldclim(x)[lon_range, lat_range], 1:19);
+## Load predictions for all species
+@load "../data/predictions-can.jld2" predictions
 
-# Make predictions for all species
-@time predictions = pmap(x -> species_bclim(x, wc_vars), taxa_occ);
-
-## Get the LCBD
+## Create matrix Y (site-by-species community data table)
 begin
-    # Create Y -> site-by-species community data table
+    # Create Y
     Y = zeros(Int64, (prod(size(predictions[1])),length(taxa_occ)))
     # Fill Y with community predictions
     @progress for gc in eachindex(predictions[1].grid) # loop for all sites
@@ -34,10 +26,12 @@ begin
         # Fill Y with binary values -> 1 if species prediction for site != NaN, 0 if == NaN
         global Y[gc,:] = .!isnan.(R)
     end
+end
 
-    ## Compute beta diversity statistics
+## Compute beta diversity statistics
+begin
     # Load functions
-    @everywhere include("src/lib/beta-div.jl")
+    include("lib/beta-div.jl")
     # Compute BD statistics
     resBD = BD(Y)
     # Extract LCBD values
@@ -72,4 +66,4 @@ end
 sdm_plot = plotSDM(LCBD, type="lcbd")
 
 ## Save result
-savefig(sdm_plot, "fig/warblers/lcbd-map-qc2018.pdf")
+savefig(sdm_plot, "fig/warblers/lcbd-map-can.pdf")
