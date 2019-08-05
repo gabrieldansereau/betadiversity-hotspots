@@ -1,12 +1,18 @@
-using CSV
-using Random
-using DataFrames
-using Statistics
+using Distributed
+addprocs(9)
+@everywhere begin
+    using CSV
+    using Random
+    using DataFrames
+    using Statistics
+end
 
+# Input Y matrix
 Y = CSV.read("../data/Y-can.csv", delim="\t")
 Y = Matrix(Y)
 
-function BD(Y)
+## Create function to calculate beta diversity statistics
+@everywhere function BD(Y)
     # S -> squared deviations from column mean
     S = (Y .- mean(Y; dims=1)).^2.0
     # SStotal -> total sum of squares
@@ -26,10 +32,24 @@ function BD(Y)
             SSj = SSj, SCBDj = SCBDj, SSi = SSi, LCBDi = LCBDi)
     return res
 end
+# Test function
+@time res = BD(Y)
 
-res = BD(Y)
+## Create function for permutation tests
+@everywhere function permtest(Y, res)
+    # Permutation of matrix Y
+    Y_perm = hcat(shuffle.(eachcol(Y))...)
+    # Recalculate BD statistics
+    res_p = BD(Y_perm)
+    # Test if permuted LCBD is greater than original LCBD
+    ge = res_p.LCBDi .>= res.LCBDi
+    return ge
+end
+# Test function
+@time permtest(Y, res)
 
-function BDperm(Y; nperm=999)
+## Create function combining BD calculation & permutation tests
+@everywhere function BDperm(Y; nperm=999, distributed=true)
     n = size(Y, 1)
     p = size(Y, 2)
     # Initial BD results
@@ -37,20 +57,28 @@ function BDperm(Y; nperm=999)
     # Permutations
     if nperm > 0
         nGE_L = ones(Int64, n)
-        for iperm in 1:nperm
-            Y_perm = hcat(shuffle.(eachcol(Y))...)
-            res_p = BD(Y_perm)
-            ge = res_p.LCBDi .>= res.LCBDi
-            nGE_L[findall(ge)] .+= 1
+        # Permutation test, clumsy parallelization
+        ge = pmap(x -> permtest(Y, res), 1:nperm, distributed=distributed)
+        # Compile number of permuted LCBDs greater than original LCBD
+        for bitarray in ge
+            nGE_L[findall(bitarray)] .+= 1
         end
+        # Standardize counts
         p_LCBD = nGE_L./(nperm+1)
     else
         p_LCBD = NaN
     end
+    # Combine results in tuple
     res_perm = (res..., pLCBD = p_LCBD)
     return res_perm
 end
-res_perm = BDperm(Y, nperm=0)
-res_perm = BDperm(Y, nperm=99)
+# Test function
+@time res_perm = BDperm(Y, nperm=0);
+@time res_perm = BDperm(Y, nperm=49);
+# 5 sec distributed vs 15 sec not distributed
+@time res_perm = BDperm(Y, nperm=999, distributed=false);
+# 90 sec distributed vs 300 sec
+# Parallelized function seems ~3x faster
 
+## Find sites with significant LCBD contributions
 findall(res_perm.pLCBD .<= 0.05)
