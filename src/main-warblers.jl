@@ -41,53 +41,10 @@ end
         prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
     end
 
-    # Load & clip worldmap background to SDMLayer (from shp in /assets folder)
-    # (points with coordinates -> polygons -> background map)
-    # is clip() working? --> worldshape(50).shapes is the same, no filter applied...
-    worldmap = clip(worldshape(50), prediction)
-
-    # Create empty plot
-    sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box,
-                    title = first(unique(occ.species)))
-    # Adjust axes
-    xaxis!(sdm_plot, (prediction.left,prediction.right), "Longitude")
-    yaxis!(sdm_plot, (prediction.bottom,prediction.top), "Latitude")
-
-    # Add worldmap background
-    for p in worldmap # loop for each polygon
-        # Construct polygon from points
-        sh = Shape([pp.x for pp in p.points], [pp.y for pp in p.points])
-        # Add polygon to plot
-        plot!(sdm_plot, sh, c=:lightgrey, lab="")
-    end
-
-    # Add SDM output as heatmap
-    heatmap!(
-        sdm_plot,
-        longitudes(prediction), latitudes(prediction), # layer range
-        prediction.grid, # SDM values
-        aspectratio=92.60/60.75, # aspect ratio
-        c=:BuPu, # ~color palette
-        clim=(0.0, maximum(filter(!isnan, prediction.grid))) # colorbar limits
-        )
-
-    # Redraw polygons' outer lines over heatmap values
-    for p in worldmap # loop for each polygon
-        # Get outer lines coordinates
-        xy = map(x -> (x.x, x.y), p.points)
-        # Add outer lines to plot
-        plot!(sdm_plot, xy, c=:grey, lab="")
-    end
-
-    # Add observations as scatter points (if scatter=true in function call)
-    if scatter == true
-        scatter!(
-            sdm_plot,
-            longitudes(occ), latitudes(occ),
-            c=:black, msw=0.0, ms=0.1, lab="",
-            alpha=0.5
-            )
-    end
+    # Plot SDM
+    sdm_plot = plotSDM(prediction, type="sdm", scatter=scatter, occ=occ)
+    # Add species name
+    plot!(sdm_plot, title=first(unique(occ.species)))
 
     return sdm_plot
 

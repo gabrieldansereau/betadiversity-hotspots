@@ -6,7 +6,7 @@ using JLD2
 ## Get & prepare data
 @time @everywhere begin
     # Load data from CSV files
-    df = CSV.read("../data/warblers_qc_2018.csv", header=true, delim="\t")
+    df = CSV.read("../data/warblers_can.csv", header=true, delim="\t")
     # Prepare data (select columns, arrange values)
     df = prepare_csvdata(df)
     # Separate species
@@ -89,49 +89,13 @@ begin
         t_lcbd[i] = Y[i] > 0 ? LCBDi[i] : NaN # ?: is ternary operator, ~if-else
     end
     =#
-end
-begin
+
     # Create SDMLayer with LCBD values
     LCBD = SDMLayer(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
-
-    # Load & clip worldmap background to SDMLayer (from shp in /assets folder)
-    worldmap = clip(worldshape(50), LCBD)
-
-    # Create empty plot
-    sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box)
-    # Adjust axes
-    xaxis!(sdm_plot, (LCBD.left,LCBD.right), "Longitude")
-    yaxis!(sdm_plot, (LCBD.bottom,LCBD.top), "Latitude")
-
-    # Add worldmap background
-    for p in worldmap # loop for each polygon
-        # Construct polygon from points
-        sh = Shape([pp.x for pp in p.points], [pp.y for pp in p.points])
-        # Add polygon to plot
-        plot!(sdm_plot, sh, c=:lightgrey, lab="")
-    end
-
-    # Add LCBD values as heatmap
-    heatmap!(
-        sdm_plot,
-        longitudes(LCBD), latitudes(LCBD), # layer range
-        LCBD.grid, # evenness values
-        aspectratio=92.60/60.75, # aspect ratio
-        c=:viridis, # ~colorpalette
-        clim=(0.0, maximum(filter(!isnan, LCBD.grid))) # colorbar limits
-    )
-
-    # Redraw polygons' outer lines over heatmap values
-    for p in worldmap
-        # Get outer lines coordinates
-        xy = map(x -> (x.x, x.y), p.points)
-        # Add outer lines to plot
-        plot!(sdm_plot, xy, c=:grey, lab="")
-    end
-
-    return sdm_plot
-
 end
+
+## Plot result
+plotSDM(LCBD, type="lcbd")
 
 ## Save result
 savefig(sdm_plot, "fig/warblers/lcbd-map-can-perm.pdf")

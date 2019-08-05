@@ -23,7 +23,7 @@ end
 ## Make predictions for all species
 @time predictions = pmap(x -> species_bclim(x, wc_vars), warblers_occ);
 
-## Plot results
+## Calculate diversity/evenness scores
 begin
     # Function for Pielou's evenness index
     function pielou(a::Vector{T}) where {T <: Number}
@@ -55,45 +55,10 @@ begin
 
     # Create SDMLayer with diversity/evenness scores
     evenness = SDMLayer(output, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
-
-    # Load & clip worldmap background to SDMLayer (from shp in /assets folder)
-    worldmap = clip(worldshape(50), evenness)
-
-    # Create empty plot
-    sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box)
-    # Adjust axes
-    xaxis!(sdm_plot, (evenness.left,evenness.right), "Longitude")
-    yaxis!(sdm_plot, (evenness.bottom,evenness.top), "Latitude")
-
-    # Add worldmap background
-    for p in worldmap # loop for each polygon
-        # Construct polygon from points
-        sh = Shape([pp.x for pp in p.points], [pp.y for pp in p.points])
-        # Add polygon to plot
-        plot!(sdm_plot, sh, c=:lightgrey, lab="")
-    end
-
-    # Add SDM output as heatmap
-    heatmap!(
-        sdm_plot,
-        longitudes(evenness), latitudes(evenness), # layer range
-        evenness.grid, # evenness values
-        aspectratio=92.60/60.75, # aspect ratio
-        c=:BuPu, # ~color palette
-        clim=(0.0, maximum(filter(!isnan, evenness.grid))) # colorbar limits
-    )
-
-    # Redraw polygons' outer lines over heatmap values
-    for p in worldmap # loop for each polygon
-        # Get outer lines coordinates
-        xy = map(x -> (x.x, x.y), p.points)
-        # Add outer lines to plot
-        plot!(sdm_plot, xy, c=:grey, lab="")
-    end
-
-    return sdm_plot
-
 end
+
+## Plot result
+sdm_plot = plotSDM(evenness, type="sdm")
 
 ## Save result
 savefig(sdm_plot, "fig/warblers/warblers-qc2018.pdf")
