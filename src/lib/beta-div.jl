@@ -1,17 +1,6 @@
-using Distributed
-addprocs(9)
-@everywhere begin
-    using CSV
-    using Random
-    using DataFrames
-    using Statistics
-end
+#### Beta diversity calculation functions
 
-# Input Y matrix
-Y = CSV.read("../data/Y-can.csv", delim="\t")
-Y = Matrix(Y)
-
-## Create function to calculate beta diversity statistics
+## Function to calculate beta diversity statistics
 @everywhere function BD(Y)
     # S -> squared deviations from column mean
     S = (Y .- mean(Y; dims=1)).^2.0
@@ -32,10 +21,8 @@ Y = Matrix(Y)
             SSj = SSj, SCBDj = SCBDj, SSi = SSi, LCBDi = LCBDi)
     return res
 end
-# Test function
-@time res = BD(Y)
 
-## Create function for permutation tests
+## Function for permutation tests
 @everywhere function permtest(Y, res)
     # Permutation of matrix Y
     Y_perm = hcat(shuffle.(eachcol(Y))...)
@@ -45,10 +32,8 @@ end
     ge = res_p.LCBDi .>= res.LCBDi
     return ge
 end
-# Test function
-@time permtest(Y, res)
 
-## Create function combining BD calculation & permutation tests
+## Function combining BD calculation & permutation tests
 @everywhere function BDperm(Y; nperm=999, distributed=true)
     n = size(Y, 1)
     p = size(Y, 2)
@@ -72,7 +57,27 @@ end
     res_perm = (res..., pLCBD = p_LCBD)
     return res_perm
 end
-# Test function
+
+########
+
+## Test functions
+
+#=
+using Distributed
+addprocs(9)
+@everywhere begin
+    using CSV
+    using Random
+    using DataFrames
+    using Statistics
+end
+
+# Input Y matrix
+Y = CSV.read("../data/Y-can.csv", delim="\t")
+Y = Matrix(Y)
+
+@time res = BD(Y)
+@time permtest(Y, res)
 @time res_perm = BDperm(Y, nperm=0);
 @time res_perm = BDperm(Y, nperm=49);
 # 5 sec distributed vs 15 sec not distributed
@@ -80,5 +85,6 @@ end
 # 90 sec distributed vs 300 sec
 # Parallelized function seems ~3x faster
 
-## Find sites with significant LCBD contributions
+# Find sites with significant LCBD contributions
 findall(res_perm.pLCBD .<= 0.05)
+=#
