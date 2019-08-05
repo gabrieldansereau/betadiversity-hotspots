@@ -35,21 +35,13 @@ begin
         global Y[gc,:] = .!isnan.(R)
     end
 
-    ## Compute statistics
-    # S -> squared deviations from column mean
-    S = (Y .- mean(Y; dims=1)).^2.0
-    # SStotal -> total sum of squares
-    SStotal = sum(S)
-    # BDtotal -> index of beta diversity, unbiased & comparable estimator of Var(Y)
-    BDtotal = SStotal / (size(Y,1)-1)
-    # SSj -> sum of squares for species j
-    SSj = sum(S; dims=1)
-    # SCBDj -> species contribution to beta diversity (species j, relative)
-    SCBDj = SSj ./ SStotal
-    # SSi -> sum of squares for site i
-    SSi = sum(S; dims=2)
-    # LCBD -> local contribution to beta diversity (site i, relative)
-    LCBDi = SSi ./ SStotal
+    ## Compute beta diversity statistics
+    # Load functions
+    @everywhere include("src/lib/beta-div.jl")
+    # Compute BD statistics
+    resBD = BD(Y)
+    # Extract LCBD values
+    LCBDi = resBD.LCBDi
 
     ## Arrange LCBD values as grid
     # Create empty grid
