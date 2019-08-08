@@ -2,16 +2,6 @@ using Distributed
 using JLD2
 @time include("required.jl")
 
-## Get & prepare occurence data
-@time begin
-    # Load data from CSV files
-    df = CSV.read("../data/warblers_can.csv", header=true, delim="\t")
-    # Prepare data (select columns, arrange values)
-    df = prepare_csvdata(df)
-    # Separate species
-    taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]
-end
-
 ## Load predictions for all species
 @load "../data/predictions-can.jld2" predictions
 
