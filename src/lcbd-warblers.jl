@@ -17,8 +17,11 @@ end
 
 ## Create matrix Y (site-by-species community data table)
 begin
+    # Get dimensions
+    nsites = prod(size(predictions[1]))
+    nspecies = length(predictions)
     # Create Y
-    Y = zeros(Int64, (prod(size(predictions[1])),length(taxa_occ)))
+    Y = zeros(Int64, (nsites, nspecies))
     # Fill Y with community predictions
     @progress for gc in eachindex(predictions[1].grid) # loop for all sites
         # Group predictions for all species in site

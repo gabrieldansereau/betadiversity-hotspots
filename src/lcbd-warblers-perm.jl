@@ -14,8 +14,11 @@ addprocs(9)
 
 ## Create matrix Y (site-by-species community data table)
 begin
+    # Get dimensions
+    nsites = prod(size(predictions[1]))
+    nspecies = length(predictions)
     # Create Y -> site-by-species community data table
-    Y = zeros(Int64, (prod(size(predictions[1])),length(predictions)))
+    Y = zeros(Int64, (nsites, nspecies))
     # Fill Y with community predictions
     @progress for gc in eachindex(predictions[1].grid) # loop for all sites
         # Group predictions for all species in site
@@ -60,7 +63,7 @@ t_lcbd = [fill(NaN, size(predictions[1])) for LCBDi in LCBDsets]
 t_lcbd[1][inds_pred] = LCBDsets[1][inds_pred]
 t_lcbd[2][inds_pred] = LCBDsets[2]
 # Get indices of sites with significant LCBDs
-inds_signif = [falses(prod(size(predictions[1]))) for LCBDi in LCBDsets]
+inds_signif = [falses(nsites) for LCBDi in LCBDsets]
 inds_signif[3] = Array{Bool}(resBD[3].pLCBD .<= 0.05)
 inds_signif[4][inds_pred] = Array{Bool}(resBD[4].pLCBD .<= 0.05)
 # Get indices of sites with significant LCBDs & predictions
