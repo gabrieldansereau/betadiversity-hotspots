@@ -35,22 +35,20 @@ function shannon(a::Vector{T}) where {T <: Number}
 end
 
 ## Calculate diversity/evenness scores
-begin
-    # Calculate diversity index
-    output = zeros(Float64, size(predictions[1]))
-    # Loop for each pixel/grid element
-    @time for i in 1:size(output, 1), j in 1:size(output, 2)
-        # Group predictions for all species in pixel [i,j]
-        x = getindex.(predictions, i, j)
-        # Calculate Shannon diversity index for pixel [i,j]
-        output[i,j] = shannon(x)
-    end
-    # Create SDMLayer with diversity/evenness scores
-    evenness = SDMLayer(output, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
+# Empty array for diversity scores
+output = zeros(Float64, size(predictions[1]))
+# Loop for each pixel/grid element
+@time for i in 1:size(output, 1), j in 1:size(output, 2)
+    # Group predictions for all species in pixel [i,j]
+    x = getindex.(predictions, i, j)
+    # Calculate Shannon diversity index for pixel [i,j]
+    output[i,j] = shannon(x)
 end
+# Create SDMLayer with diversity/evenness scores
+evenness = SDMLayer(output, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 ## Plot result
 sdm_plot = plotSDM(evenness, type="sdm")
 
 ## Save result
-savefig(sdm_plot, "fig/warblers/warblers-qc2018.pdf")
+savefig(sdm_plot, "fig/warblers/warblers-can.pdf")
