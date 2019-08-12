@@ -3,7 +3,7 @@ using JLD2
 @time include("required.jl")
 
 ## Load predictions for all species
-@load "../data/predictions-can.jld2" predictions
+@load "../data/predictions-am-larger2.jld2" predictions
 
 ## Create matrix Y (site-by-species community data table)
 begin
@@ -46,7 +46,8 @@ t_lcbd[inds_pred] = LCBDi
 LCBD = SDMLayer(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 ## Plot results
-sdm_plot = plotSDM(LCBD, type="lcbd")
+lcbd_plot = plotSDM(LCBD, type="lcbd")
+title!(lcbd_plot, "LCBD values per site (relative to maximum)")
 
 ## Save result
-savefig(sdm_plot, "fig/warblers/lcbd-map-can.pdf")
+# savefig(lcbd_plot, "fig/warblers/lcbd-map-am-larger2.pdf")

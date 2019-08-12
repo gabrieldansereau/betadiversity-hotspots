@@ -3,7 +3,7 @@ using JLD2
 @time include("required.jl")
 
 ## Load predictions for all species
-@load "../data/predictions-can.jld2" predictions
+@load "../data/predictions-am-larger2.jld2" predictions
 
 ## Create custom functions
 # Function for Pielou's evenness index
@@ -35,10 +35,11 @@ output = zeros(Float64, size(predictions[1]))
     output[i,j] = shannon(x)
 end
 # Create SDMLayer with diversity/evenness scores
-evenness = SDMLayer(output, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
+diversity = SDMLayer(output, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 ## Plot result
-sdm_plot = plotSDM(evenness, type="sdm")
+diversity_plot = plotSDM(diversity, type="sdm")
+title!(diversity_plot, "Species diversity (Shannon diversity index)")
 
 ## Save result
-savefig(sdm_plot, "fig/warblers/warblers-can.pdf")
+# savefig(diversity_plot, "fig/warblers/warblers-am-larger2.pdf")
