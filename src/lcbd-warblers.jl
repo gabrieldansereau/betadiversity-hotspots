@@ -24,21 +24,24 @@ end
 ## Compute beta diversity statistics
 # Load functions
 include("lib/beta-div.jl")
+## Option 2: Calculate LCBD only for sites with predictions
+# Get index of sites with predictions
+sites_pred = map(x -> any(x .> 0), eachrow(Y))
+inds_pred = findall(sites_pred)
+# Select sites with predictions only
+Ypred = Y[inds_pred,:]
 # Compute BD statistics
-resBD = BD(Y)
+resBDpred = BD(Ypred)
 # Extract LCBD values
-LCBDi = resBD.LCBDi
+LCBDi = resBDpred.LCBDi
+# Scale LCBDi values to maximum value
+LCBDi = LCBDi./maximum(LCBDi)
 
 ## Arrange LCBD values as grid
 # Create empty grid
-t_lcbd = zeros(Float64, size(predictions[1]))
-# Scale LCBDi values to maximum value
-LCBDi = LCBDi./maximum(LCBDi)
-# Fill-in grid
-for i in eachindex(t_lcbd)
-    # Add LCBD values only if prediction != NaN
-    t_lcbd[i] = any(Y[i,:] .> 0) ? LCBDi[i] : NaN # ?: is ternary operator, ~if-else
-end
+t_lcbd = fill(NaN, size(predictions[1]))
+# Fill in grid
+t_lcbd[inds_pred] = LCBDi
 # Create SDMLayer with LCBD values
 LCBD = SDMLayer(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
