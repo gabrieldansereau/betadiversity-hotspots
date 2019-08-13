@@ -87,4 +87,4 @@ title!(sdm_plot4, "Option 4 - Significant LCBDs without NaN sites")
 plots = plot(sdm_plot1, sdm_plot2, sdm_plot3, sdm_plot4, size=(1000,600))
 
 ## Save result
-savefig(plots, "fig/warblers/lcbd-map-can-4options.pdf")
+# savefig(plots, "fig/warblers/lcbd-can-4options.pdf")
