@@ -50,4 +50,4 @@ lcbd_plot = plotSDM(LCBD, type="lcbd")
 title!(lcbd_plot, "LCBD values per site (relative to maximum)")
 
 ## Save result
-# savefig(lcbd_plot, "fig/warblers/lcbd-am-larger2.pdf")
+# savefig(lcbd_plot, "fig/lcbd-am-larger2.pdf")
