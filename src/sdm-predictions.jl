@@ -9,7 +9,7 @@ addprocs(9)
     # Load data from CSV files
     df = CSV.read("../data/warblers_can.csv", header=true, delim="\t")
     # Prepare data (select columns, arrange values)
-    df = prepare_csvdata(df)
+    df = prepare_gbif_data(df)
     # Separate species
     warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 

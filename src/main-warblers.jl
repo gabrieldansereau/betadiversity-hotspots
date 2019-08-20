@@ -8,7 +8,7 @@ addprocs(9)
     # Load data
     df = CSV.read("../data/warblers_qc.csv", header=true, delim="\t")
     # Prepare data (select columns, arrange values)
-    df = prepare_csvdata(df)
+    df = prepare_gbif_data(df)
     # Separate species
     taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]
     # Select 1 species only
