@@ -1,12 +1,35 @@
-function prepare_csvdata(csvdata::DataFrame)
-    # Subset with specific columns
-    df = csvdata[:, [:species, :year, :decimalLatitude, :decimalLongitude]]
+function prepare_gbif_data(df::DataFrame)
     # Rename coordinate columns names
     rename!(df, :decimalLatitude => :latitude)
     rename!(df, :decimalLongitude => :longitude)
+    # Select subset with specific columns
+    select!(df, [:species, :year, :latitude, :longitude])
     # Remove entries with missing data
-    dropmissing!(df, :year)
-    dropmissing!(df, :species)
+    df = dropmissing(df, :year)
+    df = dropmissing(df, :species)
+    # Replace spaces by underscores in species names
+    df.species .= replace.(df.species, " " .=> "_")
+    return df
+end
+
+function prepare_ebd_data(df::DataFrame)
+    # Fix names case & spacing
+    newnames = names(df) .|>
+        string .|>
+        titlecase .|>
+        lowercasefirst .|>
+        x -> replace(x, " " => "") .|>
+        Symbol
+    names!(df, newnames)
+    # Rename species column
+    rename!(df, :scientificName => :species)
+    # Separate year-month-day
+    df.year = year.(df.observationDate)
+    # Select subset with specific columns
+    select!(df, [:species, :year, :latitude, :longitude])
+    # Remove entries with missing data
+    df = dropmissing(df, :year)
+    df = dropmissing(df, :species)
     # Replace spaces by underscores in species names
     df.species .= replace.(df.species, " " .=> "_")
     return df
