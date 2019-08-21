@@ -6,9 +6,9 @@ addprocs(9)
 ## Get data from CSV files
 @time @everywhere begin
     # Load data
-    df = CSV.read("../data/warblers_qc.csv", header=true, delim="\t")
+    df = CSV.read("../data/ebd/ebd_warblers_cut.csv", header=true, delim="\t")
     # Prepare data (select columns, arrange values)
-    df = prepare_gbif_data(df)
+    df = prepare_ebd_data(df)
     # Separate species
     taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]
     # Select 1 species only
@@ -53,7 +53,7 @@ end
 ##  Map 1 species
 @time map1 = map_species_distribution(taxa_occ[1])
 @time map1 = [map_species_distribution(occ) for occ in taxa_occ[1:1]]
-savefig(map1, "fig/sdm-qc-$(first(unique(taxa_occ[1].species))).pdf")
+savefig(map1, "fig/sdm-ebd-$(first(unique(taxa_occ[1].species))).pdf")
 
 ## Map all species
 @time maps = pmap(x -> map_species_distribution(x, distributed=false), taxa_occ)

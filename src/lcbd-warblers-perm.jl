@@ -10,7 +10,7 @@ using JLD2
 @everywhere include("src/lib/beta-div.jl")
 
 # Load predictions for all species
-@load "../data/predictions-am-larger2.jld2" predictions
+@load "../data/predictions-ebd.jld2" predictions
 
 ## Create matrix Y (site-by-species community data table)
 begin
@@ -45,18 +45,18 @@ Ypred = Y[inds_pred,:]
 resBDpred = BD(Ypred)
 
 ## Options 3-4: Permutation tests on options 1-2
-#= #### Remove to run section
+# #### Remove to run section
 nperm = 99
-# Compute BD Statistics
+#= Compute BD Statistics
 @time resBDperm = BDperm(Y, nperm = nperm, distributed = false) # 200 sec.
 @time resBDpredperm = BDperm(Ypred, nperm = nperm, distributed = false) # 100 sec.
 # Export permutation results
-@save "../data/resBDperm-am-larger2.jld2" resBDperm
-@save "../data/resBDpredperm-am-larger2.jld2" resBDpredperm
+@save "../data/resBDperm-ebd.jld2" resBDperm
+@save "../data/resBDpredperm-ebd.jld2" resBDpredperm
 =#
 # Load permutation results
-@load "../data/resBDperm-am-larger2.jld2" resBDperm
-@load "../data/resBDpredperm-am-larger2.jld2" resBDpredperm
+@load "../data/resBDperm-ebd.jld2" resBDperm
+@load "../data/resBDpredperm-ebd.jld2" resBDpredperm
 ## Extract LCBD values
 resBD = [resBDnorm, resBDpred, resBDperm, resBDpredperm]
 LCBDsets = [res.LCBDi for res in resBD]
@@ -94,5 +94,5 @@ title!(sdm_plot4, "Option 4 - Significant LCBDs without NaN sites")
 plots = plot(sdm_plot1, sdm_plot2, sdm_plot3, sdm_plot4, size=(1000,600))
 
 ## Save result
-# savefig(plots, "fig/lcbd-can-4options.pdf")
-# savefig(sdm_plot4, "fig/lcbd-am-larger2-significant.pdf")
+# savefig(plots, "fig/lcbd-ebd-4options.pdf")
+# savefig(sdm_plot4, "fig/lcbd-ebd-significant.pdf")

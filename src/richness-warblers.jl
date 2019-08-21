@@ -3,7 +3,7 @@ using JLD2
 @time include("required.jl")
 
 ## Load predictions for all species
-@load "../data/predictions-am-larger2.jld2" predictions
+@load "../data/predictions-ebd.jld2" predictions
 
 ## Create matrix Y (site-by-species community data table)
 begin
@@ -53,5 +53,5 @@ richness_zscores_plot = plotSDM(richness_zscores, type="lcbd")
 title!(richness_zscores_plot, "Number of species per site (absolute Z-scores)")
 
 ## Save result
-# savefig(richness_plot, "fig/richness-am-larger2.pdf")
-# savefig(richness_zscores_plot, "fig/richness-am-larger2-zscores.pdf")
+# savefig(richness_plot, "fig/richness-ebd.pdf")
+# savefig(richness_zscores_plot, "fig/richness-ebd-zscores.pdf")

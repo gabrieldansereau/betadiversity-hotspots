@@ -3,7 +3,7 @@ using JLD2
 @time include("required.jl")
 
 ## Load predictions for all species
-@load "../data/predictions-am-larger2.jld2" predictions
+@load "../data/predictions-ebd.jld2" predictions
 
 ## Create custom functions
 # Function for Pielou's evenness index
@@ -42,4 +42,4 @@ diversity_plot = plotSDM(diversity, type="sdm")
 title!(diversity_plot, "Species diversity (Shannon diversity index)")
 
 ## Save result
-# savefig(diversity_plot, "fig/diversity-am-larger2.pdf")
+# savefig(diversity_plot, "fig/diversity-ebd.pdf")
