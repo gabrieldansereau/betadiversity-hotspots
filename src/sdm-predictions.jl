@@ -5,7 +5,7 @@ addprocs(9)
 @time @everywhere include("src/required.jl")
 
 ## Get & prepare data
-@time @everywhere begin
+@time begin
     # Load data from CSV files
     df = CSV.read("../data/ebd/ebd_warblers_cut.csv", header=true, delim="\t")
     # Prepare data (select columns, arrange values)
