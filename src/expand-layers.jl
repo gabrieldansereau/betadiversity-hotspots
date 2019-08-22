@@ -34,9 +34,11 @@ p1 = temp
 p2 = pred
 =#
 
-function expand_layers(p1::SDMLayer, p2::SDMLayer)
-    layers = [p1, p2]
+# Combine layers
+layers = [temp, pred, pred2]
 
+# Create function
+function expand_layers(layers::Array{SDMLayer{Float64},1})
     # Get minimum coordinates
     min_lon = min(map(x -> x.left, layers)...)
     max_lon = max(map(x -> x.right, layers)...)
@@ -49,9 +51,7 @@ function expand_layers(p1::SDMLayer, p2::SDMLayer)
 
     # Get coordinate range of newlayer -> original layers must have same stride
     lons_newlayers = min_lon+grid_size_lons:2*grid_size_lons:max_lon-grid_size_lons
-    longitudes(p1)
     lats_newlayers = min_lat+grid_size_lats:2*grid_size_lats:max_lat-grid_size_lats
-    latitudes(p1)
 
     # Create expanded layers
     newlayers = []
@@ -73,13 +73,14 @@ function expand_layers(p1::SDMLayer, p2::SDMLayer)
     return newlayers
 end
 
-@time newlayers = expand_layers(pred, pred2)
+@time newlayers = expand_layers(layers)
 
 # Plot result
 plotp1 = plotSDM(temp)
 plotp2 = plotSDM(pred)
 plotn1 = plotSDM(newlayers[1])
 plotn2 = plotSDM(newlayers[2])
+plotn3 = plotSDM(newlayers[3])
 
 # Combine heatmaps
 sdm_plot = plotSDM(newlayers[1])
