@@ -6,16 +6,43 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
+\title{Présentation - Modèles de distribution d'espèces}
+\author{Gabriel Dansereau}
+
 \begin{document}
 
 \begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introduction}
+  \begin{itemize}
+    \item But : ...
+    \item Données
+    \begin{itemize}
+      \item GBIF
+      \item eBird
+    \end{itemize}
+    \item Méthodes
+    \begin{itemize}
+      \item BIOCLIM
+      \item Random Forests
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM 1 espèce - Amérique du Nord}
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/sdm-am-Mniotilta_varia.pdf}
+    \caption{Sortie d'un SDM pour 1 espèce (paruline noir et blanc)}
   \end{figure}
 \end{frame}
 
 \begin{frame}
+  \frametitle{SDM 1 espèce - Canada}
   \begin{figure}
     \centering
     \includegraphics[scale=0.32]{fig/sdm-can-Mniotilta_varia.pdf}
@@ -23,6 +50,7 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Résultats - Comparaison}
   \begin{figure}
     \centering
     \includegraphics[scale=0.32]{fig/comparison-am-larger2.pdf}
@@ -30,6 +58,7 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Résultats - Diversité spécifique}
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/diversity-am-larger2.pdf}
@@ -37,6 +66,7 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Résultats - LCBD}
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/lcbd-am-larger2.pdf}
@@ -44,6 +74,7 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Résultats - Richesse spécifique (nombre d'espèces)}
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/richness-am-larger2.pdf}
@@ -51,6 +82,7 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Résultats - Richesse spécifique (zscores absolus)}
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/richness-am-larger2-zscores.pdf}
@@ -58,6 +90,7 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Résultats - LCBD significatives}
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/lcbd-am-larger2-significant.pdf}
