@@ -25,12 +25,11 @@ function prepare_ebd_data(df::DataFrame)
     rename!(df, :scientificName => :species)
     # Separate year-month-day
     df.year = year.(df.observationDate)
-    # Select subset with specific columns
-    select!(df, [:species, :year, :latitude, :longitude])
     # Remove entries with missing data
-    df = dropmissing(df, :year)
     df = dropmissing(df, :species)
     # Replace spaces by underscores in species names
     df.species .= replace.(df.species, " " .=> "_")
+    # Remove not approved observations (exotic species, unvetted data)
+    filter!(obs -> obs[:approved] .== 1, df)
     return df
 end
