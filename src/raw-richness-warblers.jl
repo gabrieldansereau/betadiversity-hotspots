@@ -6,7 +6,7 @@ using JLD2
 @load "../data/pres-abs-ebd.jld2" pres_abs
 
 ## Load matrix Y
-@load "../data/Y-pres-abs-ebd.jld2" Y
+@load "../data/raw-Y-matrices.jld2" Y
 
 ## Get index of sites with observations
 sites_pred = map(x -> any(x .> 0), eachrow(Y))
