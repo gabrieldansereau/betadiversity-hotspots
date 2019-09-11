@@ -19,6 +19,7 @@ end
 ## Get the worldclim data
 @time wc_vars = pmap(x -> worldclim(x)[lon_range, lat_range], 1:19);
 
+## Create function to find site position in layer grid
 function siteinlayer(site, layer)
     # Get grid position
     i_lon = findmin(abs.(site.longitude .- longitudes(layer)))[2]
@@ -68,47 +69,3 @@ sort(pres_counts) # one with 0 sites
 
 ## Plot result
 plotSDM(pres_abs[1])
-
-# Get dimensions
-nsites = prod(size(pres_abs[1]))
-nspecies = length(pres_abs)
-# Create Y
-Y = zeros(Int64, (nsites, nspecies))
-# Fill Y with community predictions
-@progress for gc in 1:nsites # loop for all sites
-    # Group predictions for all species in site
-    R = map(x -> x.grid[gc], pres_abs)
-    # Fill Y with binary values
-    global Y[gc,:] = isone.(R)
-end
-
-## Compute beta diversity statistics
-# Load functions
-include("lib/beta-div.jl")
-## Option 2: Calculate LCBD only for sites with predictions
-# Get index of sites with predictions
-sites_pred = map(x -> any(x .> 0), eachrow(Y))
-inds_pred = findall(sites_pred)
-# Select sites with predictions only
-Ypred = Y[inds_pred,:]
-# Compute BD statistics
-resBDpred = BD(Ypred)
-# Extract LCBD values
-LCBDi = resBDpred.LCBDi
-# Scale LCBDi values to maximum value
-LCBDi = LCBDi./maximum(LCBDi)
-
-## Arrange LCBD values as grid
-# Create empty grid
-t_lcbd = fill(NaN, size(pres_abs[1]))
-# Fill in grid
-t_lcbd[inds_pred] = LCBDi
-# Create SDMLayer with LCBD values
-LCBD = SDMLayer(t_lcbd, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
-
-## Plot results
-lcbd_plot = plotSDM(LCBD, type="lcbd")
-title!(lcbd_plot, "LCBD values per site (relative to maximum)")
-
-## Save result
-# savefig(lcbd_plot, "fig/pres-abs-ebd.pdf")
