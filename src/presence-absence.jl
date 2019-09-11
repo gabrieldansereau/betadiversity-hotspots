@@ -7,9 +7,7 @@ addprocs(4)
 ## Get & prepare data
 @time begin
     # Load data from CSV files
-    df = CSV.read("../data/ebd/ebd_warblers_cut.csv", header=true, delim="\t")
-    # Prepare data (select columns, arrange values)
-    df = prepare_ebd_data(df)
+    df = CSV.read("../data/ebd/ebd_warblers_prep.csv", header=true, delim="\t")
     # Separate species
     warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 
