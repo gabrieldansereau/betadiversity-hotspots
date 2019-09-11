@@ -58,7 +58,11 @@ pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in pres_ab
 sort(pres_counts) # one with 0 sites
 
 ## Plot result
-plotSDM(pres_abs[1])
+map_sp1 = plotSDM(pres_abs[1])
+title!(map_sp1, "$(warblers_occ[1].species[1]) distribution (presence-absence)")
+
+# Export figure
+savefig(map_sp1, "fig/raw-sp-$(warblers_occ[1].species[1]).pdf")
 
 # Get dimensions
 nsites = prod(size(pres_abs[1]))
