@@ -76,17 +76,6 @@ end
 @save "../data/Y-pres-abs-ebd.jld2" Y
 @load "../data/Y-pres-abs-ebd.jld2" Y
 
-## Visualize patterns in Y
-# Heatmap of Y
-heat_raw = heatmap(Y)
-# Sort Y by rowsum (I think?)
-Y_sort = sortslices(Y, dims = 1)
-# Heatmap of Y_sort
-heat_sort = heatmap(Y_sort)
-# Check order
-sum(eachcol(Y_sort))
-sum(eachcol(Y_sort))[end-10:end] # not quite in order...
-
 ## Compute beta diversity statistics
 # Load functions
 include("lib/beta-div.jl")
@@ -96,6 +85,38 @@ sites_pred = map(x -> any(x .> 0), eachrow(Y))
 inds_pred = findall(sites_pred)
 # Select sites with predictions only
 Ypred = Y[inds_pred,:]
+
+## Visualize patterns in Y
+# Heatmap of Y
+heat_raw = heatmap(Ypred, title = "Presence-absence matrix Y (unsorted)",
+                   ylabel = "Site number", xlabel = "Species number")
+# Sort Y by rowsum (I think?)
+Ysort = sortslices(Ypred, dims = 1)
+# Heatmap of Y_sort
+heat_sort = heatmap(Ysort, title = "Presence-absence matrix Y (sortslices)",
+                   ylabel = "Site number", xlabel = "Species number")
+# Check order
+sum(eachcol(Ysort))
+sum(eachcol(Ysort))[end-10:end] # not quite in order...
+# Custom sorting
+rowsum = sum.(eachrow(Ypred))
+colsum = sum.(eachcol(Ypred))
+sortedrows = sortperm(rowsum)
+sortedcols = sortperm(colsum, rev=true)
+heat_sortrow = heatmap(Ypred[sortedrows, :], title = "Presence-absence matrix Y (sorted by row sums)",
+                   ylabel = "Site number", xlabel = "Species number")
+heat_sortrowcol = heatmap(Ypred[sortedrows, sortedcols], title = "Presence-absence matrix Y (sorted by row and column sums)",
+                   ylabel = "Site number", xlabel = "Species number")
+# Export results
+#=
+savefig(heat_raw, "fig/raw-Y-unsorted.png")
+savefig(heat_sortrow, "fig/raw-Y-rowsorted.png")
+savefig(heat_sortrowcol, "fig/raw-Y-rowcolsorted.png")
+=#
+#= # Funny looking smudge 😛
+heatmap(sort(Ypred, dims=1, by=sum))
+=#
+
 # Compute BD statistics
 resBDpred = BD(Ypred)
 # Extract LCBD values
