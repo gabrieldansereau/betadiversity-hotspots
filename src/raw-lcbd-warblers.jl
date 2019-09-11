@@ -17,7 +17,7 @@ resBDpres = BD(Ypred)
 resBDtransf = BD(Ytransf)
 #=
 # Run permutation tests on transformed data
-@time resBDperm = BDperm(Ytransf, nperm = 999, distributed = false) # 1600 sec/27 min for 999 permutations
+@time resBDperm = BDperm(Ytransf, nperm = 999, distributed = false) # 300 sec/5 min for 999 permutations on Ada
 # Export permutation results
 @save "../data/raw-resBDperm-transf.jld2" resBDperm
 =#
@@ -43,7 +43,7 @@ inds_signif[inds_pred] = Array{Bool}(resBD[3].pLCBD .<= 0.05)
 inds_signifpred = intersect(findall(inds_signif), inds_pred)
 # Fill in grid for resBDpred
 t_lcbd[3][inds_pred] .= 0.0
-t_lcbd[3][inds_signifpred[3]] .= 1.0
+t_lcbd[3][inds_signifpred] .= 1.0
 # Create SDMLayer with LCBD values
 LCBD = SDMLayer.(t_lcbd, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
 
