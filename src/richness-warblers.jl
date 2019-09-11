@@ -53,5 +53,5 @@ richness_zscores_plot = plotSDM(richness_zscores, type="lcbd")
 title!(richness_zscores_plot, "Number of species per site (absolute Z-scores)")
 
 ## Save result
-# savefig(richness_plot, "fig/richness-ebd.pdf")
-# savefig(richness_zscores_plot, "fig/richness-ebd-zscores.pdf")
+# savefig(richness_plot, "fig/sdm-richness.pdf")
+# savefig(richness_zscores_plot, "fig/sdm-richness-zscores.pdf")

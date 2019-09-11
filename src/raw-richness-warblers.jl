@@ -29,7 +29,7 @@ richness_plot = plotSDM(richness, type="lcbd")
 title!(richness_plot, "Number of species observed per site")
 
 ## Save result
-# savefig(richness_plot, "fig/richness-ebd-raw.pdf")
+# savefig(richness_plot, "fig/raw-richness.pdf")
 
 #### Calculate LCBDs (same as in presence-absence.jl)
 ## Compute beta diversity statistics
@@ -70,4 +70,4 @@ relation_plot = scatter(vec(richness.grid), vec(LCBD.grid),
         legend = :none, grid=:none)
 
 ## Save result
-savefig(relation_plot, "fig/relation-ebd-raw.pdf")
+# savefig(relation_plot, "fig/raw-relation-lcbd-richness.pdf")

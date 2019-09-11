@@ -42,4 +42,4 @@ diversity_plot = plotSDM(diversity, type="sdm")
 title!(diversity_plot, "Species diversity (Shannon diversity index)")
 
 ## Save result
-# savefig(diversity_plot, "fig/diversity-ebd.pdf")
+# savefig(diversity_plot, "fig/sdm-diversity.pdf")

@@ -137,4 +137,4 @@ lcbd_plot = plotSDM(LCBD, type="lcbd")
 title!(lcbd_plot, "LCBD values per site (relative to maximum)")
 
 ## Save result
-# savefig(lcbd_plot, "fig/pres-abs-ebd.pdf")
+# savefig(lcbd_plot, "fig/raw-lcbd.pdf")

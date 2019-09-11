@@ -54,5 +54,5 @@ diversity_plot2 = plotSDM(diversity2, type="sdm")
 title!(diversity_plot2, "Species diversity (Pielou's evenness index - Total richness)")
 
 ## Save result
-savefig(diversity_plot, "fig/diversity-ebd-raw-pielou.pdf")
-savefig(diversity_plot2, "fig/diversity-ebd-raw-pielou2.pdf")
+savefig(diversity_plot, "fig/raw-diversity-pielou.pdf")
+savefig(diversity_plot2, "fig/raw-diversity-pielou2.pdf")

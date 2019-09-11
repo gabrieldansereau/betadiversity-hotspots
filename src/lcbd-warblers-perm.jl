@@ -94,5 +94,5 @@ title!(sdm_plot4, "Option 4 - Significant LCBDs without NaN sites")
 plots = plot(sdm_plot1, sdm_plot2, sdm_plot3, sdm_plot4, size=(1000,600))
 
 ## Save result
-# savefig(plots, "fig/lcbd-ebd-4options.pdf")
-# savefig(sdm_plot4, "fig/lcbd-ebd-significant.pdf")
+# savefig(plots, "fig/sdm-lcbd-4options.pdf")
+# savefig(sdm_plot4, "fig/sdm-lcbd-significant.pdf")
