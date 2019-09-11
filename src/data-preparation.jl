@@ -18,7 +18,7 @@ df_groups_unique = unique(df_groups, [:species, :groupIdentifier])
 newdf = vcat(df_nogroups, df_groups_unique)
 
 # Select subset with specific columns
-select!(newdf, [:species, :year, :latitude, :longitude])
+select!(newdf, [:species, :year, :latitude, :longitude, :groupIdentifier])
 
 # Export prepared data
 CSV.write("../data/ebd/ebd_warblers_prep.csv", newdf, delim="\t")
