@@ -21,4 +21,4 @@ newdf = vcat(df_nogroups, df_groups_unique)
 select!(newdf, [:species, :year, :latitude, :longitude])
 
 # Export prepared data
-CSV.write("../data/ebd/processed/ebd_warblers_prep.csv", newdf, delim="\t")
+CSV.write("../data/ebd/ebd_warblers_prep.csv", newdf, delim="\t")
