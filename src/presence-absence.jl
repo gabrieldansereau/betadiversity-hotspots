@@ -76,6 +76,17 @@ end
 @save "../data/Y-pres-abs-ebd.jld2" Y
 @load "../data/Y-pres-abs-ebd.jld2" Y
 
+## Visualize patterns in Y
+# Heatmap of Y
+heat_raw = heatmap(Y)
+# Sort Y by rowsum (I think?)
+Y_sort = sortslices(Y, dims = 1)
+# Heatmap of Y_sort
+heat_sort = heatmap(Y_sort)
+# Check order
+sum(eachcol(Y_sort))
+sum(eachcol(Y_sort))[end-10:end] # not quite in order...
+
 ## Compute beta diversity statistics
 # Load functions
 include("lib/beta-div.jl")
