@@ -49,6 +49,9 @@ end
 # Loop function for each species
 @time pres_abs = pmap(x -> presence_absence(x, wc_vars[1]), warblers_occ)
 # @time pres_abs1 = pmap(x -> presence_absence(x, wc_vars[1], binary=false), warblers_occ)
+# Export result
+@save "../data/pres-abs-ebd.jld2" pres_abs
+@load "../data/pres-abs-ebd.jld2" pres_abs
 
 # Count sites with presence per species
 pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in pres_abs]
@@ -69,6 +72,9 @@ Y = zeros(Int64, (nsites, nspecies))
     # Fill Y with binary values
     global Y[gc,:] = isone.(R)
 end
+# Export matrix Y
+@save "../data/Y-pres-abs-ebd.jld2" Y
+@load "../data/Y-pres-abs-ebd.jld2" Y
 
 ## Compute beta diversity statistics
 # Load functions
