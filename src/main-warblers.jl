@@ -51,7 +51,7 @@ end
 ##  Map 1 species
 @time map1 = map_species_distribution(taxa_occ[1])
 @time map1 = [map_species_distribution(occ) for occ in taxa_occ[1:1]]
-savefig(map1, "fig/sdm-ebd-$(first(unique(taxa_occ[1].species))).pdf")
+savefig(map1, "fig/sdm-sp-$(first(unique(taxa_occ[1].species))).pdf")
 
 ## Map all species
 @time maps = pmap(x -> map_species_distribution(x, distributed=false), taxa_occ)
