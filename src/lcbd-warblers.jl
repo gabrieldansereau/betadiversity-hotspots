@@ -4,7 +4,7 @@ using Random
 @time include("required.jl")
 
 ## Load predictions for all species
-@load "../data/predictions-am-larger2.jld2" predictions
+@load "../data/predictions-ebd.jld2" predictions
 ## Load matrix Y
 @load "../data/sdm-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
