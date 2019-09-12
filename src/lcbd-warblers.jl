@@ -5,21 +5,8 @@ using JLD2
 ## Load predictions for all species
 @load "../data/predictions-am-larger2.jld2" predictions
 
-## Create matrix Y (site-by-species community data table)
-begin
-    # Get dimensions
-    nsites = prod(size(predictions[1]))
-    nspecies = length(predictions)
-    # Create Y
-    Y = zeros(Int64, (nsites, nspecies))
-    # Fill Y with community predictions
-    @progress for gc in eachindex(predictions[1].grid) # loop for all sites
-        # Group predictions for all species in site
-        R = map(x -> x.grid[gc], predictions)
-        # Fill Y with binary values -> 1 if species prediction for site != NaN, 0 if == NaN
-        global Y[gc,:] = .!isnan.(R)
-    end
-end
+## Load matrix Y
+@load "../data/sdm-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 ## Compute beta diversity statistics
 # Load functions
