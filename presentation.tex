@@ -21,10 +21,7 @@
   \begin{itemize}
     \item Objectif
     \item Description eBird
-    \begin{itemize}
-      \item Exemple données
-      \item Checklists
-    \end{itemize}
+    \item Données BIOCLIM
     \item Données brutes
     \begin{itemize}
       \item Méthode présence-absence
@@ -33,7 +30,7 @@
     \item Modèles de distribution d'espèces (SDM)
     \begin{itemize}
       \item Méthode BIOCLIM
-      \item Données BIOCLIM
+      \item Résultats
     \end{itemize}
     \item À venir
     \item Autres points
@@ -48,9 +45,9 @@
       \item Échelle continue, étendue
       \item Diversité beta: composition spécifique, interactions
       \item Prévision changements climatiques
-      \item Données science ouverte & science citoyenne
+      \item Données science ouverte \& science citoyenne
     \end{itemize}
-    \smallskip
+    \medskip
     \item 1ère partie: Test de la méthode
     \begin{itemize}
       \item LCBD sur données brutes
@@ -58,9 +55,8 @@
       \item LCBD sur sorties SDM
       \item Scénarios changements climatiques IPCC
     \end{itemize}
+    \medskip
     \item 2e partie: Applications aux interactions
-    \smallskip
-    \item Pour l'instant: LCBD sur données brutes & sorties SDM, SDM de base
   \end{itemize}
 \end{frame}
 
@@ -122,28 +118,6 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Données brutes - Méthodes}
-  Presence-absence par espèce
-  \begin{itemize}
-    \item Pixels - Résolution 5 arc-minutes
-    \item Matrice 661 x 1141 (env. 750 000 pixels)
-    \item 100 000 sites avec observations sur 400 000 sites
-  \end{itemize}
-  \medskip
-  Matrice Y sites x espèces
-  \begin{itemize}
-    \item 100 000 x 63
-    \item Transformation Hellinger
-  \end{itemize}
-  \medskip
-  Calcul LCBD
-  \begin{itemize}
-    \item Var(Y), SStotal, BDtotal, SSi, LCBDi...
-    \item Test permutation (correction?)
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
   \frametitle{SDM - Données BIOCLIM}
   \resizebox{\textwidth}{!}{%
     \begin{table}
@@ -178,6 +152,127 @@
 \end{frame}
 
 \begin{frame}
+  \vfill
+  \centering
+  \huge Données brutes
+  \vfill
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - Méthodes}
+  Presence-absence par espèce
+  \begin{itemize}
+    \item Pixels - Résolution 5 arc-minutes
+    \item Matrice 661 x 1141 (env. 750 000 pixels)
+    \item 100 000 sites avec observations sur 400 000 sites
+  \end{itemize}
+  \medskip
+  Matrice Y sites x espèces
+  \begin{itemize}
+    \item 100 000 x 63
+    \item Transformation Hellinger
+  \end{itemize}
+  \medskip
+  Calcul LCBD
+  \begin{itemize}
+    \item Var(Y), SStotal, BDtotal, SSi, LCBDi...
+    \item Test permutation (correction?)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - 1 espèce, beaucoup d'observations}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-sp-Setophaga_petechia.pdf}
+    \caption{Distribution des observations de la Paruline jaune (présence-absence)}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - 1 espèce, moins d'observations}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-sp-Setophaga_townsendi.pdf}
+    \caption{Distribution des observations de la Paruline de Townsend (présence-absence)}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - Matrice Y (non triée)}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-Y-unsorted.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - Matrice Y (triée par richesse, puis fréquence)}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{fig/raw-Y-rowcolsorted.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - Richesse spécifique (nombre d'espèces)}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-richness.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - Diversité spécifique}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-diversity-pielou2.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - Diversité spécifique}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-diversity-pielou.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes- LCBD}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-lcbd-transf.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - LCBD significatives}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/raw-lcbd-signif.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Données brutes - Relation LCBD-richesse}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{fig/raw-relation-lcbd-richness-transf.png}
+  \end{figure}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \vfill
+  \centering
+  \huge SDM
+  \vfill
+\end{frame}
+
+\begin{frame}
   \frametitle{SDM - Méthode BIOCLIM}
   \begin{figure}
     \centering
@@ -196,8 +291,8 @@
   Fonctionnement
   \begin{itemize}
     \item Distribution percentile var.env des sites connus
-    \item Comparaison chaque variable site inconnu, score 0 à 1 ramené entre 0 et 0.5
-    \item Loi Liebig du minimum, prédiction = plus petit score
+    \item Comparaison chaque variable site inconnu, score 0 à 1
+    \item Loi Liebig du minimum, prédiction = variable avec plus petit score
   \end{itemize}
   Avantages
   \begin{itemize}
@@ -207,6 +302,88 @@
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{bioclim-fig-only.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - 1 espèce, beaucoup d'observations}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-sp-Setophaga_petechia.pdf}
+    \caption{Sortie du SDM pour la Paruline jaune}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - 1 espèce, moins d'observations}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-sp-Setophaga_townsendi.pdf}
+    \caption{Sortie du SDM pour la Paruline de Townsend}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - Matrice Y (non triée)}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{fig/sdm-Y-unsorted.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - Matrice Y (triée par richesse, puis fréquence)}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{fig/sdm-Y-rowcolsorted.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM- Richesse spécifique (nombre d'espèces)}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-richness.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - Diversité spécifique}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-diversity-pielou2.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - Diversité spécifique}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-diversity-pielou.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - LCBD}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-lcbd-transf.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - LCBD significatives}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-lcbd-signif.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SDM - Relation LCBD-richesse}
+  \begin{figure}
+    \centering
+    \hspace*{-2cm}\includegraphics[scale=0.5]{fig/sdm-relation-lcbd-richness-transf.png}
   \end{figure}
 \end{frame}
 
@@ -226,96 +403,6 @@
     \item Formation comité-conseil
     \item Travail BIO6077
   \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - Méthode BIOCLIM}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - 1 espèce, beaucoup d'observations}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - 1 espèce, beaucoup d'observations}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - 1 espèce, moins d'observations}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - Matrice Y (non triée)}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - Matrice Y (triée par richesse, puis fréquence)}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes- Richesse spécifique (nombre d'espèces)}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - Diversité spécifique}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - Diversité spécifique}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes- LCBD}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - LCBD significatives}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Données brutes - Relation LCBD-richesse}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}
-  \frametitle{SDM - 1 espèce, beaucoup d'observations}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - 1 espèce, moins d'observations}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - Matrice Y (non triée)}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - Matrice Y (triée par richesse, puis fréquence)}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM- Richesse spécifique (nombre d'espèces)}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - Diversité spécifique}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - Diversité spécifique}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - LCBD}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - LCBD significatives}
-\end{frame}
-
-\begin{frame}
-  \frametitle{SDM - Relation LCBD-richesse}
 \end{frame}
 
 \end{document}
