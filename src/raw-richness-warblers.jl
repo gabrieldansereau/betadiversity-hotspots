@@ -6,12 +6,7 @@ using JLD2
 @load "../data/pres-abs-ebd.jld2" pres_abs
 
 ## Load matrix Y
-@load "../data/raw-Y-matrices.jld2" Y
-
-## Get index of sites with observations
-sites_pred = map(x -> any(x .> 0), eachrow(Y))
-inds_pred = findall(sites_pred)
-inds_notpred = findall(.!sites_pred)
+@load "../data/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 #### Species richness
 ## Get number of species per site
