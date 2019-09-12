@@ -12,7 +12,7 @@ using Random
 # Load functions
 include("lib/beta-div.jl")
 # Compute BD statistics on predictions
-resBDpred = BD(Y)
+resBDpred = BD(Ypred)
 # Compute BD statistics on transformed predictions
 resBDtransf = BD(Ytransf)
 #=
