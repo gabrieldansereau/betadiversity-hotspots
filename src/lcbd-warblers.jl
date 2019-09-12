@@ -1,40 +1,63 @@
 using Distributed
 using JLD2
+using Random
 @time include("required.jl")
 
 ## Load predictions for all species
 @load "../data/predictions-am-larger2.jld2" predictions
-
 ## Load matrix Y
 @load "../data/sdm-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 ## Compute beta diversity statistics
 # Load functions
 include("lib/beta-div.jl")
-## Option 2: Calculate LCBD only for sites with predictions
-# Get index of sites with predictions
-sites_pred = map(x -> any(x .> 0), eachrow(Y))
-inds_pred = findall(sites_pred)
-# Select sites with predictions only
-Ypred = Y[inds_pred,:]
-# Compute BD statistics
-resBDpred = BD(Ypred)
+# Compute BD statistics on predictions
+resBDpred = BD(Y)
+# Compute BD statistics on transformed predictions
+resBDtransf = BD(Ytransf)
+#=
+# Run permutation tests on transformed predictions
+@time resBDperm = BDperm(Ytransf, nperm = 999, distributed = false) # 300 sec/5 min for 999 permutations on Ada
+# Export permutation results
+@save "../data/sdm-resBDperm-transf.jld2" resBDperm
+=#
+# Load permutation results
+@load "../data/sdm-resBDperm-transf.jld2" resBDperm
+
 # Extract LCBD values
-LCBDi = resBDpred.LCBDi
+resBD = [resBDpred, resBDtransf, resBDperm]
+LCBDsets = [res.LCBDi for res in resBD]
 # Scale LCBDi values to maximum value
-LCBDi = LCBDi./maximum(LCBDi)
+LCBDsets = [LCBDi./maximum(LCBDi) for LCBDi in LCBDsets]
 
 ## Arrange LCBD values as grid
-# Create empty grid
-t_lcbd = fill(NaN, size(predictions[1]))
-# Fill in grid
-t_lcbd[inds_pred] = LCBDi
+# Create empty grids
+t_lcbd = [fill(NaN, size(predictions[1])) for LCBDi in LCBDsets]
+# Fill in grid for resBDpred & resBDperm
+t_lcbd[1][inds_pred] = LCBDsets[1]
+t_lcbd[2][inds_pred] = LCBDsets[2]
+# Get indices of sites with significant LCBDs
+inds_signif = falses(size(Y,1))
+inds_signif[inds_pred] = Array{Bool}(resBD[3].pLCBD .<= 0.05)
+# Get indices of sites with significant LCBDs & predictions
+inds_signifpred = intersect(findall(inds_signif), inds_pred)
+# Fill in grid for resBDpred
+t_lcbd[3][inds_pred] .= 0.0
+t_lcbd[3][inds_signifpred] .= 1.0
 # Create SDMLayer with LCBD values
-LCBD = SDMLayer(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
+LCBD = SDMLayer.(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 ## Plot results
-lcbd_plot = plotSDM(LCBD, type="lcbd")
-title!(lcbd_plot, "LCBD values per site (relative to maximum)")
+lcbd_plot1 = plotSDM(LCBD[1], type="lcbd")
+title!(lcbd_plot1, "SDM LCBD values per site (relative to maximum)")
+lcbd_plot2 = plotSDM(LCBD[2], type="lcbd")
+title!(lcbd_plot2, "SDM LCBD values per site (relative to maximum, hellinger transformed)")
+lcbd_plot3 = plotSDM(LCBD[3], type="lcbd")
+title!(lcbd_plot3, "SDM significant LCBDs (hellinger transformed)")
 
 ## Save result
-# savefig(lcbd_plot, "fig/sdm-lcbd.pdf")
+#=
+savefig(lcbd_plot1, "fig/sdm-lcbd.pdf")
+savefig(lcbd_plot2, "fig/sdm-lcbd-transf.pdf")
+savefig(lcbd_plot3, "fig/sdm-lcbd-signif.pdf")
+=#
