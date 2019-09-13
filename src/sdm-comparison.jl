@@ -6,9 +6,9 @@ using JLD2
 @time plot()
 
 # Load results to compare
-@time include("community-warblers.jl")
-@time include("lcbd-warblers.jl")
-@time include("richness-warblers.jl")
+@time include("sdm-community-warblers.jl")
+@time include("sdm-lcbd-warblers.jl")
+@time include("sdm-richness-warblers.jl")
 
 # Combine plots
 comparison_plot = plot(diversity_plot, lcbd_plot,
