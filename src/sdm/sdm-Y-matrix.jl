@@ -69,9 +69,9 @@ heat_sortrowcol = heatmap(Ypred[sortedrows, sortedcols], title = "SDM prediction
                    ylabel = "Site number", xlabel = "Species number")
 # Export results
 #=
-savefig(heat_sdm, "fig/sdm-Y-unsorted.png")
-savefig(heat_sortrow, "fig/sdm-Y-rowsorted.png")
-savefig(heat_sortrowcol, "fig/sdm-Y-rowcolsorted.png")
+savefig(heat_sdm, "fig/sdm/sdm-Y-unsorted.png")
+savefig(heat_sortrow, "fig/sdm/sdm-Y-rowsorted.png")
+savefig(heat_sortrowcol, "fig/sdm/sdm-Y-rowcolsorted.png")
 =#
 #= # Funny looking smudge 😛
 heatmap(sort(Ypred, dims=1, by=sum))

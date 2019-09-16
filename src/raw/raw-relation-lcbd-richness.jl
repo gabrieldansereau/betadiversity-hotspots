@@ -29,6 +29,6 @@ relationtr_plot = scatter(vec(rel_richness), vec(LCBD[2].grid),
 
 ## Save result
 #=
-savefig(relation_plot, "fig/raw-relation-lcbd-richness.png")
-savefig(relationtr_plot, "fig/raw-relation-lcbd-richness-transf.png")
+savefig(relation_plot, "fig/raw/raw-relation-lcbd-richness.png")
+savefig(relationtr_plot, "fig/raw/raw-relation-lcbd-richness-transf.png")
 =#
