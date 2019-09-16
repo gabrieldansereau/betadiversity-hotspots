@@ -6,7 +6,7 @@ using JLD2
 ## EBD data preparation
 
 # Load data from CSV files (from file cut with terminal)
-@time df = CSV.read("../data/ebd/processed/ebd_warblers_cut.csv", header=true, delim="\t")
+@time df = CSV.read("data/raw/ebd_warblers_cut.csv", header=true, delim="\t")
 
 # Prepare data (arrange values & columns)
 df = prepare_ebd_data(df)
@@ -21,4 +21,4 @@ newdf = vcat(df_nogroups, df_groups_unique)
 select!(newdf, [:species, :year, :latitude, :longitude, :groupIdentifier])
 
 # Export prepared data
-CSV.write("../data/ebd/ebd_warblers_prep.csv", newdf, delim="\t")
+CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")

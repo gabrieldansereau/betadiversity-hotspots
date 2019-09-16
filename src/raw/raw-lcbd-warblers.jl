@@ -4,9 +4,9 @@ using Random
 @time include("required.jl")
 
 ## Load presence-absence data for all species
-@load "../data/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/pres-abs-ebd.jld2" pres_abs
 ## Load matrix Y
-@load "../data/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
+@load "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 ## Compute beta diversity statistics
 # Load functions
@@ -19,10 +19,10 @@ resBDtransf = BD(Ytransf)
 # Run permutation tests on transformed data
 @time resBDperm = BDperm(Ytransf, nperm = 999, distributed = false) # 300 sec/5 min for 999 permutations on Ada
 # Export permutation results
-@save "../data/raw-resBDperm-transf.jld2" resBDperm
+@save "data/jld2/raw-resBDperm-transf.jld2" resBDperm
 =#
 # Load permutation results
-@load "../data/raw-resBDperm-transf.jld2" resBDperm
+@load "data/jld2/raw-resBDperm-transf.jld2" resBDperm
 
 # Extract LCBD values
 resBD = [resBDpres, resBDtransf, resBDperm]

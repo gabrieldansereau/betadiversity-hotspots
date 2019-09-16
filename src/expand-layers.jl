@@ -6,7 +6,7 @@ include("required.jl")
 ## Get & prepare data
 @time begin
     # Load data from CSV files
-    df = CSV.read("../data/ebd/ebd_warblers_cut.csv", header=true, delim="\t")
+    df = CSV.read("data/raw/ebd_warblers_cut.csv", header=true, delim="\t")
     # Prepare data (select columns, arrange values)
     df = prepare_ebd_data(df)
     # Separate species
@@ -22,7 +22,7 @@ end
 temp = wc_vars[1]
 
 ## Load predictions
-@load "../data/predictions-ebd.jld2" predictions
+@load "data/jld2/predictions-ebd.jld2" predictions
 pred = predictions[1]
 @load "../data/predictions-can.jld2" predictions
 pred2 = predictions[1]

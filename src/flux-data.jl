@@ -4,8 +4,8 @@ using JLD2
 @time @everywhere include("src/required.jl")
 
 # Load required results
-@load "../data/pres-abs-ebd.jld2" pres_abs
-@load "../data/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
+@load "data/jld2/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 # Define coordinates range
 lon_range = (-145.0, -50.0)
@@ -38,7 +38,7 @@ test1 .== test2
 test1 == test2
 
 # Export dataframe
-CSV.write("../data/ebd_flux.csv", fluxdf, delim="\t")
+CSV.write("data/proc/ebd_flux.csv", fluxdf, delim="\t")
 
 # Test load
-testdf = CSV.read("../data/ebd_flux.csv", header=true, delim="\t")
+testdf = CSV.read("data/proc/ebd_flux.csv", header=true, delim="\t")

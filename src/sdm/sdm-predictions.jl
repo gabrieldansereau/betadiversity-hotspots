@@ -7,7 +7,7 @@ addprocs(9)
 ## Get & prepare data
 @time begin
     # Load data from CSV files
-    df = CSV.read("../data/ebd/ebd_warblers_prep.csv", header=true, delim="\t")
+    df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
     # Separate species
     warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 
@@ -23,7 +23,7 @@ end
 @time predictions = pmap(x -> species_bclim(x, wc_vars), warblers_occ);
 
 ## Export predictions
-@save "../data/predictions-ebd.jld2" predictions
+@save "data/jld2/predictions-ebd.jld2" predictions
 
 # Test import
-@load "../data/predictions-ebd.jld2" predictions
+@load "data/jld2/predictions-ebd.jld2" predictions

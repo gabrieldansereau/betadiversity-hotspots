@@ -3,7 +3,7 @@ using JLD2
 @time include("required.jl")
 
 ## Load presence-absence data for all species
-@load "../data/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/pres-abs-ebd.jld2" pres_abs
 
 ## Create matrix Y (site-by-species community data table)
 begin
@@ -42,9 +42,9 @@ end
 
 ## Export results
 # Export matrices & inds_pred (useful to link Y & Ypred-Ytransf)
-@save "../data/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
+@save "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 # Test import
-@load "../data/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
+@load "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 ## Visualize patterns in Y
 # Heatmap of Y

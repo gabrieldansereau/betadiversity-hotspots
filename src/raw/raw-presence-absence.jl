@@ -7,7 +7,7 @@ addprocs(4)
 ## Get & prepare data
 @time begin
     # Load data from CSV files
-    df = CSV.read("../data/ebd/ebd_warblers_prep.csv", header=true, delim="\t")
+    df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
     # Separate species
     warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 
@@ -50,8 +50,8 @@ end
 @time pres_abs = pmap(x -> presence_absence(x, wc_vars[1]), warblers_occ)
 # @time pres_abs1 = pmap(x -> presence_absence(x, wc_vars[1], binary=false), warblers_occ)
 # Export result
-@save "../data/pres-abs-ebd.jld2" pres_abs
-@load "../data/pres-abs-ebd.jld2" pres_abs
+@save "data/jld2/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/pres-abs-ebd.jld2" pres_abs
 
 # Count sites with presence per species
 pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in pres_abs]

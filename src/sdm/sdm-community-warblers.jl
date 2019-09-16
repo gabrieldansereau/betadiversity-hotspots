@@ -3,7 +3,7 @@ using JLD2
 @time include("required.jl")
 
 ## Load predictions for all species
-@load "../data/predictions-ebd.jld2" predictions
+@load "data/jld2/predictions-ebd.jld2" predictions
 
 ## Create custom functions
 # Function for Pielou's evenness index
