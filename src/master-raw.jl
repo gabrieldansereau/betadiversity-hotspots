@@ -12,23 +12,23 @@ using JLD2
 @time include("data-preparation.jl")
 
 ## 1. Generate presence-absence data & single species map
-@time include("raw-presence-absence.jl")
+@time include("raw/raw-presence-absence.jl")
 
 ## 1b. Sample checklists within pixels for alternative presence-absence data
 # NOT READY
-# @time include("raw-pixel-sampling.jl")
+# @time include("raw/raw-pixel-sampling.jl")
 
 ## 2. Generate Y matrices data & heatmap visualization
-@time include("raw-Y-matrix.jl")
+@time include("raw/raw-Y-matrix.jl")
 
 ## 3. Run species richness analysis
-@time include("raw-richness-warblers.jl")
+@time include("raw/raw-richness-warblers.jl")
 
 ## 4. Run diversity analysis
-@time include("raw-community-warblers.jl")
+@time include("raw/raw-community-warblers.jl")
 
 ## 5. Run LCBD analysis
-@time include("raw-lcbd-warblers.jl")
+@time include("raw/raw-lcbd-warblers.jl")
 
 ## 6. Run LCBD-richness relationship analysis
-@time include("raw-relation-lcbd-richness.jl")
+@time include("raw/raw-relation-lcbd-richness.jl")
