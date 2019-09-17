@@ -5,9 +5,9 @@ using JLD2
 ## Load LCBD & richness scripts (if not already loaded)
 #=
 # Load richness script
-@time include("raw-richness-warblers.jl")
+@time include("raw-richness.jl")
 # Load LCBD script
-@time include("raw-lcbd-warblers.jl")
+@time include("raw-lcbd.jl")
 =#
 
 ## Richness-LCBD relationship

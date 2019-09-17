@@ -22,13 +22,13 @@ using JLD2
 @time include("raw/raw-Y-matrix.jl")
 
 ## 3. Run species richness analysis
-@time include("raw/raw-richness-warblers.jl")
+@time include("raw/raw-richness.jl")
 
 ## 4. Run diversity analysis
-@time include("raw/raw-community-warblers.jl")
+@time include("raw/raw-community.jl")
 
 ## 5. Run LCBD analysis
-@time include("raw/raw-lcbd-warblers.jl")
+@time include("raw/raw-lcbd.jl")
 
 ## 6. Run LCBD-richness relationship analysis
 @time include("raw/raw-relation-lcbd-richness.jl")
