@@ -1,3 +1,5 @@
+import SimpleSDMLayers: bioclim
+
 function bioclim(p::SimpleSDMLayer, r::Union{GBIFRecords,DataFrame})
     observed_values = p[r]
     qfinder = ecdf(observed_values)

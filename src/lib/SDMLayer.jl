@@ -1,3 +1,6 @@
+import SimpleSDMLayers: longitudes
+import SimpleSDMLayers: latitudes
+
 #=
 struct SimpleSDMLayer{T<:Number}
     grid::Matrix{T}
