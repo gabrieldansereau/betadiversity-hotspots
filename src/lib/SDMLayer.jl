@@ -1,3 +1,4 @@
+#=
 struct SDMLayer{T<:Number}
     grid::Matrix{T}
     left::Float64
@@ -80,6 +81,7 @@ function Base.getindex(p::SDMLayer, longitude::NTuple{2,Float64}, latitude::NTup
     n_grid = p[m_lat:M_lat, m_lon:M_lon]
     return SDMLayer(n_grid, n_left, n_right, n_bottom, n_top)
 end
+=#
 
 function Base.getindex(p::SDMLayer, r::GBIFRecord)
     return p[r.longitude, r.latitude]
