@@ -12,7 +12,7 @@ lon_range = (-145.0, -50.0)
 lat_range = (20.0, 75.0)
 
 # Get worldclim variables
-@time wc_vars = pmap(x -> worldclim(x)[lon_range, lat_range], 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
 
 # Get sites pres-abs data
 vars_spe = map(x -> vec(x.grid[inds_pred]), pres_abs[1:3])

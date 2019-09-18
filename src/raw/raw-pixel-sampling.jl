@@ -17,7 +17,7 @@ addprocs(4)
 end
 
 ## Get the worldclim data
-@time wc_vars = pmap(x -> worldclim(x)[lon_range, lat_range], 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
 
 ## Create function to find site position in layer grid
 function siteinlayer(site, layer)

@@ -16,7 +16,7 @@ end
 # without : 14.836300 seconds (35.36 M allocations: 1.716 GiB, 6.52% gc time)
 
 ## Get the worldclim data
-@time wc_vars_full = pmap(worldclim, 1:19)
+@time wc_vars_full = pmap(worldclim, resolution = "5", 1:19)
 
 ## Create function - SDM & map for 1 species
 @everywhere function map_species_distribution(occ; distributed=true, scatter=false)

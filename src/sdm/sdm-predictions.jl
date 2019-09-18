@@ -17,7 +17,7 @@ addprocs(9)
 end
 
 ## Get the worldclim data
-@time wc_vars = pmap(x -> worldclim(x)[lon_range, lat_range], 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
 
 ## Make predictions for all species
 @time predictions = pmap(x -> species_bclim(x, wc_vars), warblers_occ);

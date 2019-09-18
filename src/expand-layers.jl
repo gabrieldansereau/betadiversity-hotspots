@@ -18,7 +18,7 @@ include("required.jl")
 end
 
 ## Get the worldclim data
-@time wc_vars = pmap(x -> worldclim(x), 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "5"), 1:19);
 temp = wc_vars[1]
 
 ## Load predictions
