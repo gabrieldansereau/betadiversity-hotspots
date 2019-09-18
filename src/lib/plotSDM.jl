@@ -1,11 +1,11 @@
-function plotSDM(layer::SDMLayer; type::String="sdm", scatter::Bool=false, occ=nothing)
+function plotSDM(layer::SimpleSDMLayer; type::String="sdm", scatter::Bool=false, occ=nothing)
     ## Arguments
-    # layer: SDMLayer to plot
+    # layer: SimpleSDMLayer to plot
     # type: type of layer to represent, either "sdm" (default) or "lcbd"
     # scatter: add observations as points in scatter plot, requires to define occ
     # occ: observations to represent if scatter=true
 
-    # Load & clip worldmap background to SDMLayer (from shp in /assets folder)
+    # Load & clip worldmap background to SimpleSDMLayer (from shp in /assets folder)
     worldmap = clip(worldshape(50), layer)
 
     # Create empty plot

@@ -1,4 +1,4 @@
-function bioclim(p::SDMLayer, r::Union{GBIFRecords,DataFrame})
+function bioclim(p::SimpleSDMLayer, r::Union{GBIFRecords,DataFrame})
     observed_values = p[r]
     qfinder = ecdf(observed_values)
     lq = zeros(Float64, size(p))
@@ -14,14 +14,14 @@ function bioclim(p::SDMLayer, r::Union{GBIFRecords,DataFrame})
         end
         lq[i] = local_quantile
     end
-    prediction = SDMLayer(lq, p.left, p.right, p.bottom, p.top)
+    prediction = SimpleSDMResponse(lq, p.left, p.right, p.bottom, p.top)
 end
-function bioclim_training(t::SDMLayer, r::Union{GBIFRecords,DataFrame})
+function bioclim_training(t::SimpleSDMLayer, r::Union{GBIFRecords,DataFrame})
     observed_values = t[r]
     qfinder = ecdf(observed_values)
     return qfinder
 end
-function bioclim_prediction(p::SDMLayer, r::Union{GBIFRecords,DataFrame}, qfinder::ECDF{Array{Float64,1}})
+function bioclim_prediction(p::SimpleSDMLayer, r::Union{GBIFRecords,DataFrame}, qfinder::ECDF{Array{Float64,1}})
     lq = zeros(Float64, size(p))
     for i in eachindex(p.grid)
         if isnan(p.grid[i])
@@ -35,7 +35,7 @@ function bioclim_prediction(p::SDMLayer, r::Union{GBIFRecords,DataFrame}, qfinde
         end
         lq[i] = local_quantile
     end
-    prediction = SDMLayer(lq, p.left, p.right, p.bottom, p.top)
+    prediction = SimpleSDMResponse(lq, p.left, p.right, p.bottom, p.top)
 end
 function species_bclim(occ, vars)
     predictions = [bioclim(vars[i], occ) for i in 1:length(vars)];

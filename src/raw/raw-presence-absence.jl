@@ -19,8 +19,8 @@ end
 ## Get the worldclim data
 @time wc_vars = pmap(x -> worldclim(x)[lon_range, lat_range], 1:19);
 
-## Create function to convert occurrence to presence-absence based on a SDMLayer
-@everywhere function presence_absence(species::DataFrame, copy_layer::SDMLayer; binary::Bool=true)
+## Create function to convert occurrence to presence-absence based on a SimpleSDMLayer
+@everywhere function presence_absence(species::DataFrame, copy_layer::SimpleSDMLayer; binary::Bool=true)
     # Create empty grid for presence-absence data (with NaN)
     pres_abs_grid = copy(copy_layer.grid)
     replace!(x -> !isnan(x) ? 0.0 : x, pres_abs_grid)
@@ -40,8 +40,8 @@ end
     if binary == true
         replace!(x -> x > 1.0 ? 1.0 : x, pres_abs_grid)
     end
-    # Create SDMLayer
-    pres_abs_layer = SDMLayer(pres_abs_grid,
+    # Create SimpleSDMLayer
+    pres_abs_layer = SimpleSDMResponse(pres_abs_grid,
                               copy_layer.left, copy_layer.right,
                               copy_layer.bottom, copy_layer.top)
     return pres_abs_layer

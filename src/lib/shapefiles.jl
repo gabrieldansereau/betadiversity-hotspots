@@ -14,11 +14,11 @@ function worldshape(res)
     return handle
 end
 
-function clip(s::Shapefile.Handle, l::SDMLayer)
+function clip(s::Shapefile.Handle, l::SimpleSDMLayer)
     return filter(x -> isin(x, l), s.shapes)
 end
 
-function isin(p::Shapefile.Polygon, l::SDMLayer)
+function isin(p::Shapefile.Polygon, l::SimpleSDMLayer)
     out = false
     for xy in p.points
         xy.x < l.right  && (out = true)

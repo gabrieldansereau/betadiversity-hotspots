@@ -43,9 +43,9 @@ output2 = zeros(Float64, size(pres_abs[1]))
     output[i,j] = pielou(x)
     output2[i,j] = pielou_allspecies(x)
 end
-# Create SDMLayer with diversity/evenness scores
-diversity = SDMLayer(output, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
-diversity2 = SDMLayer(output2, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
+# Create SimpleSDMLayer with diversity/evenness scores
+diversity = SimpleSDMResponse(output, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
+diversity2 = SimpleSDMResponse(output2, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
 
 ## Plot result
 diversity_plot = plotSDM(diversity, type="sdm")

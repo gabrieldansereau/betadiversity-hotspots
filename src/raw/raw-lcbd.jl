@@ -44,8 +44,8 @@ inds_signifpred = intersect(findall(inds_signif), inds_pred)
 # Fill in grid for resBDpred
 t_lcbd[3][inds_pred] .= 0.0
 t_lcbd[3][inds_signifpred] .= 1.0
-# Create SDMLayer with LCBD values
-LCBD = SDMLayer.(t_lcbd, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
+# Create SimpleSDMLayer with LCBD values
+LCBD = SimpleSDMResponse.(t_lcbd, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
 
 ## Plot results
 lcbd_plot1 = plotSDM(LCBD[1], type="lcbd")

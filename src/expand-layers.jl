@@ -38,7 +38,7 @@ p2 = pred
 layers = [temp, pred, pred2]
 
 # Create function
-function expand_layers(layers::Array{SDMLayer{Float64},1})
+function expand_layers(layers::Array{SimpleSDMLayer{Float64},1})
     # Get minimum coordinates
     min_lon = min(map(x -> x.left, layers)...)
     max_lon = max(map(x -> x.right, layers)...)
@@ -65,8 +65,8 @@ function expand_layers(layers::Array{SDMLayer{Float64},1})
         newgrid = fill(NaN, length(lats_newlayers), length(lons_newlayers))
         # Fill in original values
         newgrid[(m_lat:M_lat), (m_lon:M_lon)] .= layers[i].grid
-        # Convert to SDMLayer
-        newlayer = SDMLayer(newgrid, min_lon, max_lon, min_lat, max_lat)
+        # Convert to SimpleSDMLayer
+        newlayer = SimpleSDMResponse(newgrid, min_lon, max_lon, min_lat, max_lat)
         # Export result
         push!(newlayers, newlayer)
     end

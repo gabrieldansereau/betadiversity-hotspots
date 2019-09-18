@@ -16,8 +16,8 @@ sums[inds_notpred] .= NaN
 # Reshape to grid format
 sums = reshape(sums, size(predictions[1]))
 
-## Create SDMLayer
-richness = SDMLayer(sums, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
+## Create SimpleSDMLayer
+richness = SimpleSDMResponse(sums, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 ## Plot results
 richness_plot = plotSDM(richness, type="lcbd")
