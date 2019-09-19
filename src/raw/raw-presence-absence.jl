@@ -62,4 +62,4 @@ map_sp1 = plotSDM(pres_abs[1])
 title!(map_sp1, "$(warblers_occ[1].species[1]) distribution (presence-absence)")
 
 # Export figure
-savefig(map_sp1, "fig/raw/raw-sp-$(warblers_occ[1].species[1]).pdf")
+#savefig(map_sp1, "fig/raw/raw-sp-$(warblers_occ[1].species[1]).pdf")
