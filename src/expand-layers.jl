@@ -3,20 +3,6 @@ using JLD2
 
 include("required.jl")
 
-## Get & prepare data
-@time begin
-    # Load data from CSV files
-    df = CSV.read("data/raw/ebd_warblers_cut.csv", header=true, delim="\t")
-    # Prepare data (select columns, arrange values)
-    df = prepare_ebd_data(df)
-    # Separate species
-    warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
-
-    # Define coordinates range
-    lon_range = (-145.0, -50.0)
-    lat_range = (20.0, 75.0)
-end
-
 ## Get the worldclim data
 @time wc_vars = pmap(x -> worldclim(x, resolution = "5"), 1:19);
 temp = wc_vars[1]
@@ -24,8 +10,8 @@ temp = wc_vars[1]
 ## Load predictions
 @load "data/jld2/predictions-ebd.jld2" predictions
 pred = predictions[1]
-@load "../data/predictions-can.jld2" predictions
-pred2 = predictions[1]
+@load "data/jld2/pres-abs-ebd.jld2" pres_abs
+pres = pres_abs[1]
 
 ## Create expand_layers function
 
@@ -35,10 +21,10 @@ p2 = pred
 =#
 
 # Combine layers
-layers = [temp, pred, pred2]
+layers = [temp, pred, pres]
 
 # Create function
-function expand_layers(layers::Array{SimpleSDMLayer{Float64},1})
+function expand_layers(layers::Array{SimpleSDMLayer,1})
     # Get minimum coordinates
     min_lon = min(map(x -> x.left, layers)...)
     max_lon = max(map(x -> x.right, layers)...)
@@ -46,8 +32,8 @@ function expand_layers(layers::Array{SimpleSDMLayer{Float64},1})
     max_lat = max(map(x -> x.top, layers)...)
 
     # Get grid size (rounding should prevent problems with last decimal)
-    grid_size_lons = 1/round(1/stride(layers[1],1))
-    grid_size_lats = 1/round(1/stride(layers[1],2))
+    grid_size_lons = 1/round(1/stride(layers[1], dims=1))
+    grid_size_lats = 1/round(1/stride(layers[1], dims=2))
 
     # Get coordinate range of newlayer -> original layers must have same stride
     lons_newlayers = min_lon+grid_size_lons:2*grid_size_lons:max_lon-grid_size_lons
@@ -78,6 +64,7 @@ end
 # Plot result
 plotp1 = plotSDM(temp)
 plotp2 = plotSDM(pred)
+plotp3 = plotSDM(pres)
 plotn1 = plotSDM(newlayers[1])
 plotn2 = plotSDM(newlayers[2])
 plotn3 = plotSDM(newlayers[3])
