@@ -38,7 +38,7 @@ output2 = zeros(Float64, size(predictions[1]))
 # Loop for each pixel/grid element
 @time for i in 1:size(output, 1), j in 1:size(output, 2)
     # Group predictions for all species in pixel [i,j]
-    x = getindex.(predictions, i, j)
+    x = map(x -> x.grid[i,j], predictions)
     # Calculate Pielou's evenness index for pixel [i,j]
     output[i,j] = pielou(x)
     output2[i,j] = pielou_allspecies(x)

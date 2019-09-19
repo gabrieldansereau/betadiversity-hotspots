@@ -146,5 +146,5 @@ function Base.minimum(p1::SimpleSDMLayer, p2::SimpleSDMLayer)
     for i in eachindex(p1.grid)
         n1[i] = min(p1.grid[i], p2.grid[i])
     end
-    return SimpleSDMLayer(n1, p1.left, p1.right, p1.bottom, p1.top)
+    return SimpleSDMResponse(n1, p1.left, p1.right, p1.bottom, p1.top)
 end
