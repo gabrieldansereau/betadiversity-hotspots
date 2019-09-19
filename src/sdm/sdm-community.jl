@@ -1,6 +1,6 @@
 using Distributed
 using JLD2
-@time include("required.jl")
+@time include("../required.jl")
 
 ## Load predictions for all species
 @load "data/jld2/predictions-ebd.jld2" predictions

@@ -1,7 +1,7 @@
 using Distributed
 using JLD2
 using Random
-@time include("required.jl")
+@time include("../required.jl")
 
 ## Load presence-absence data for all species
 @load "data/jld2/pres-abs-ebd.jld2" pres_abs
@@ -10,7 +10,7 @@ using Random
 
 ## Compute beta diversity statistics
 # Load functions
-include("lib/beta-div.jl")
+include("../lib/beta-div.jl")
 # Compute BD statistics on raw data
 resBDpres = BD(Ypred)
 # Compute BD statistics on transformed data

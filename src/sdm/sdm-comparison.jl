@@ -1,6 +1,6 @@
 using Distributed
 using JLD2
-@time include("required.jl")
+@time include("../required.jl")
 
 # Precompile plot function
 @time plot()
