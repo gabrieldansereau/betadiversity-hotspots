@@ -1,4 +1,5 @@
 #### Beta diversity calculation functions
+@everywhere using ProgressMeter
 
 ## Function to calculate beta diversity statistics
 @everywhere function BD(Y)
@@ -43,7 +44,7 @@ end
     if nperm > 0
         nGE_L = ones(Int64, n)
         # Permutation test, clumsy parallelization
-        ge = pmap(x -> permtest(Y, res), 1:nperm, distributed=distributed)
+        ge = @showprogress pmap(x -> permtest(Y, res), 1:nperm, distributed=distributed)
         # Compile number of permuted LCBDs greater than original LCBD
         for bitarray in ge
             nGE_L[findall(bitarray)] .+= 1
