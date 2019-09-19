@@ -69,9 +69,9 @@ heat_sortrowcol = heatmap(Ypred[sortedrows, sortedcols], title = "Presence-absen
                    ylabel = "Site number", xlabel = "Species number")
 # Export results
 #=
-savefig(heat_raw, "fig/raw-Y-unsorted.png")
-savefig(heat_sortrow, "fig/raw-Y-rowsorted.png")
-savefig(heat_sortrowcol, "fig/raw-Y-rowcolsorted.png")
+savefig(heat_raw, "fig/raw/raw-Y-unsorted.png")
+savefig(heat_sortrow, "fig/raw/raw-Y-rowsorted.png")
+savefig(heat_sortrowcol, "fig/raw/raw-Y-rowcolsorted.png")
 =#
 #= # Funny looking smudge 😛
 heatmap(sort(Ypred, dims=1, by=sum))

@@ -24,4 +24,6 @@ richness_plot = plotSDM(richness, type="lcbd")
 title!(richness_plot, "Number of species per site (SDM predictions)")
 
 ## Save result
-#savefig(richness_plot, "fig/sdm/sdm-richness.pdf")
+#=
+savefig(richness_plot, "fig/sdm/sdm-richness.pdf")
+=#

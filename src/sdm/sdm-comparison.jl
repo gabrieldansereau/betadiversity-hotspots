@@ -16,4 +16,6 @@ comparison_plot = plot(diversity_plot, lcbd_plot,
                        size=(1000,700))
 
 # Save results
-# savefig(comparison_plot, "fig/sdm/sdm-comparison.pdf")
+#=
+savefig(comparison_plot, "fig/sdm/sdm-comparison.pdf")
+=#
