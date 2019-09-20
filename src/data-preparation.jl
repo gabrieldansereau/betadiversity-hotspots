@@ -19,6 +19,8 @@ newdf = vcat(df_nogroups, df_groups_unique)
 
 # Select subset with specific columns
 select!(newdf, [:species, :year, :latitude, :longitude, :groupIdentifier])
+# Remove 1 Aleutian Islands observation with positive longitude
+filter!(x -> x.longitude < 0, newdf)
 
 # Export prepared data
 CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")
