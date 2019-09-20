@@ -4,7 +4,7 @@ using JLD2
 @time @everywhere include("src/required.jl")
 
 # Load required results
-@load "data/jld2/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/raw-pres-abs.jld2" pres_abs
 @load "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 # Define coordinates range

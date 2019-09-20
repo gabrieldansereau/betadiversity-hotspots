@@ -8,9 +8,9 @@ include("required.jl")
 temp = wc_vars[1]
 
 ## Load predictions
-@load "data/jld2/predictions-ebd.jld2" predictions
+@load "data/jld2/sdm-predictions.jld2" predictions
 pred = predictions[1]
-@load "data/jld2/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/raw-pres-abs.jld2" pres_abs
 pres = pres_abs[1]
 
 ## Create expand_layers function

@@ -3,7 +3,7 @@ using JLD2
 @time include("../required.jl")
 
 ## Load presence-absence data for all species
-@load "data/jld2/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/raw-pres-abs.jld2" pres_abs
 
 ## Create custom functions
 # Function for Pielou's evenness index

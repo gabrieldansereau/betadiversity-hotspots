@@ -3,7 +3,7 @@ using JLD2
 @time include("../required.jl")
 
 ## Load presence-absence data for all species
-@load "data/jld2/predictions-ebd.jld2" predictions
+@load "data/jld2/sdm-predictions.jld2" predictions
 
 ## Create matrix Y (site-by-species community data table)
 begin

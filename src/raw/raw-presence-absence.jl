@@ -55,8 +55,8 @@ using ProgressMeter
 @time pres_abs = @showprogress pmap(x -> presence_absence(x, wc_vars[1]), warblers_occ)
 # @time pres_abs1 = pmap(x -> presence_absence(x, wc_vars[1], binary=false), warblers_occ)
 # Export result
-@save "data/jld2/pres-abs-ebd.jld2" pres_abs
-@load "data/jld2/pres-abs-ebd.jld2" pres_abs
+@save "data/jld2/raw-pres-abs.jld2" pres_abs
+@load "data/jld2/raw-pres-abs.jld2" pres_abs
 
 # Count sites with presence per species
 pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in pres_abs]

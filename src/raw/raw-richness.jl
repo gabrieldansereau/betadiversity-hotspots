@@ -3,7 +3,7 @@ using JLD2
 @time include("../required.jl")
 
 ## Load presence-absence data for all species
-@load "data/jld2/pres-abs-ebd.jld2" pres_abs
+@load "data/jld2/raw-pres-abs.jld2" pres_abs
 
 ## Load matrix Y
 @load "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred

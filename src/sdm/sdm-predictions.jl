@@ -28,7 +28,7 @@ end
 @time predictions = @showprogress pmap(x -> species_bclim(x, wc_vars_pred, train = wc_vars_train), warblers_occ);
 
 ## Export predictions
-@save "data/jld2/predictions-ebd.jld2" predictions
+@save "data/jld2/sdm-predictions.jld2" predictions
 
 # Test import
-@load "data/jld2/predictions-ebd.jld2" predictions
+@load "data/jld2/sdm-predictions.jld2" predictions

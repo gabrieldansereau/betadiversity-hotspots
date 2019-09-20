@@ -3,7 +3,7 @@ using JLD2
 @time include("../required.jl")
 
 ## Load predictions for all species
-@load "data/jld2/predictions-ebd.jld2" predictions
+@load "data/jld2/sdm-predictions.jld2" predictions
 
 ## Load matrix Y
 @load "data/jld2/sdm-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
