@@ -62,8 +62,8 @@ title!(lcbd_plot4, "SDM significant LCBDs (hellinger transformed)")
 
 ## Save result
 #=
-savefig(lcbd_plot1, "fig/sdm/sdm-lcbd.pdf")
-savefig(lcbd_plot2, "fig/sdm/sdm-lcbd-transf.pdf")
-savefig(lcbd_plot3, "fig/sdm/sdm-lcbd-prob.pdf")
-savefig(lcbd_plot4, "fig/sdm/sdm-lcbd-signif.pdf")
+savefig(lcbd_plot1, "fig/sdm/05_sdm_lcbd.pdf")
+savefig(lcbd_plot2, "fig/sdm/05_sdm_lcbd-transf.pdf")
+savefig(lcbd_plot3, "fig/sdm/05_sdm_lcbd-prob.pdf")
+savefig(lcbd_plot4, "fig/sdm/05_sdm_lcbd-signif.pdf")
 =#

@@ -70,6 +70,6 @@ title!(map_sp2, "$(warblers_occ[13].species[1]) distribution (presence-absence)"
 
 # Export figure
 #=
-savefig(map_sp1, "fig/raw/raw-sp-$(warblers_occ[1].species[1]).pdf")
-savefig(map_sp2, "fig/raw/raw-sp-$(warblers_occ[13].species[1]).pdf")
+savefig(map_sp1, "fig/raw/01_raw_sp-$(warblers_occ[1].species[1]).pdf")
+savefig(map_sp2, "fig/raw/01_raw_sp-$(warblers_occ[13].species[1]).pdf")
 =#

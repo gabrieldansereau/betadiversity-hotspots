@@ -69,9 +69,9 @@ heat_prob = heatmap(Yprob[sortedrows, sortedcols], title = "SDM predictions matr
 
 # Export results
 #=
-savefig(heat_sdm, "fig/sdm/sdm-Y-unsorted.png")
-savefig(heat_sortrow, "fig/sdm/sdm-Y-rowsorted.png")
-savefig(heat_sortrowcol, "fig/sdm/sdm-Y-rowcolsorted.png")
+savefig(heat_sdm, "fig/sdm/02_sdm_Y-unsorted.png")
+savefig(heat_sortrow, "fig/sdm/02_sdm_Y-rowsorted.png")
+savefig(heat_sortrowcol, "fig/sdm/02_sdm_Y-rowcolsorted.png")
 =#
 #= # Funny looking smudge 😛
 heatmap(sort(Ypred, dims=1, by=sum))

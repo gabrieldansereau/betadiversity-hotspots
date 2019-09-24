@@ -54,8 +54,8 @@ end
 
 ## Save result
 #=
-savefig(maps[1], "fig/sdm/sdm-sp-$(first(unique(taxa_occ[1].species))).pdf")
-savefig(maps[2], "fig/sdm/sdm-sp-$(first(unique(taxa_occ[13].species))).pdf")
+savefig(maps[1], "fig/sdm/01_sdm_sp-$(first(unique(taxa_occ[1].species))).pdf")
+savefig(maps[2], "fig/sdm/01_sdm_sp-$(first(unique(taxa_occ[13].species))).pdf")
 =#
 
 ## Map all species

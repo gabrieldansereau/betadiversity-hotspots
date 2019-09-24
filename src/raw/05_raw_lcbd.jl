@@ -57,7 +57,7 @@ title!(lcbd_plot3, "Significant LCBDs (hellinger transformed)")
 
 ## Save result
 #=
-savefig(lcbd_plot1, "fig/raw/raw-lcbd.pdf")
-savefig(lcbd_plot2, "fig/raw/raw-lcbd-transf.pdf")
-savefig(lcbd_plot3, "fig/raw/raw-lcbd-signif.pdf")
+savefig(lcbd_plot1, "fig/raw/05_raw_lcbd.pdf")
+savefig(lcbd_plot2, "fig/raw/05_raw_lcbd-transf.pdf")
+savefig(lcbd_plot3, "fig/raw/05_raw_lcbd-signif.pdf")
 =#

@@ -55,6 +55,6 @@ title!(diversity_plot2, "SDM species diversity (Pielou's evenness index - Total 
 
 ## Save result
 #=
-savefig(diversity_plot, "fig/sdm/sdm-diversity-pielou.pdf")
-savefig(diversity_plot2, "fig/sdm/sdm-diversity-pielou2.pdf")
+savefig(diversity_plot, "fig/sdm/04_sdm_diversity-pielou.pdf")
+savefig(diversity_plot2, "fig/sdm/04_sdm_diversity-pielou2.pdf")
 =#

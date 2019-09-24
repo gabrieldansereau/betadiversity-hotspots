@@ -55,6 +55,6 @@ title!(diversity_plot2, "Species diversity (Pielou's evenness index - Total rich
 
 ## Save result
 #=
-savefig(diversity_plot, "fig/raw/raw-diversity-pielou.pdf")
-savefig(diversity_plot2, "fig/raw/raw-diversity-pielou2.pdf")
+savefig(diversity_plot, "fig/raw/04_raw_diversity-pielou.pdf")
+savefig(diversity_plot2, "fig/raw/04_raw_diversity-pielou2.pdf")
 =#

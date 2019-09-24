@@ -85,6 +85,6 @@ gif(anim, "fig/sdm/sdm-richness-mask.gif", fps = 1)
 
 ## Save result
 #=
-savefig(richness_plot, "fig/sdm/sdm-richness.pdf")
+savefig(richness_plot, "fig/sdm/03_sdm_richness.pdf")
 savefig(richness_plot_mask, "fig/sdm/sdm-richness-mask.pdf")
 =#
