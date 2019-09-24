@@ -9,25 +9,25 @@ using JLD2
 @time plot() # speeds thing up
 
 ## 0. EBD data preparation (if needed)
-@time include("data-preparation.jl")
+@time include("01_data-preparation.jl")
 
 ## 1. Make SDM predictions for all species
-@time include("sdm/sdm-predictions.jl")
+@time include("sdm/01_sdm_predictions.jl")
 
 ## 1b. Make SDM predictions 1 species at the time across its whole range
-# @time include("sdm/sdm-single-species.jl")
+# @time include("sdm/sdm_single-species.jl")
 
 ## 2. Generate Y matrices data & heatmap visualization
-@time include("sdm/sdm-Y-matrix.jl")
+@time include("sdm/02_sdm_Y-matrix.jl")
 
 ## 3. Run species richness analysis
-@time include("sdm/sdm-richness.jl")
+@time include("sdm/03_sdm_richness.jl")
 
 ## 4. Run diversity analysis
-@time include("sdm/sdm-community.jl")
+@time include("sdm/04_sdm_community.jl")
 
 ## 5. Run LCBD analysis
-@time include("sdm/sdm-lcbd.jl")
+@time include("sdm/05_sdm_lcbd.jl")
 
 ## 6. Run LCBD-richness relationship analysis
-@time include("sdm/sdm-relation-lcbd-richness.jl")
+@time include("sdm/06_sdm_relation-lcbd-richness.jl")
