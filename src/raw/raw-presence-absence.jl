@@ -6,14 +6,18 @@ addprocs(4)
 
 ## Get & prepare data
 @time begin
-    # Load data from CSV files
-    df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
-    # Separate species
-    warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
-
     # Define coordinates range
     lon_range = (-145.0, -50.0)
     lat_range = (20.0, 75.0)
+
+    # Load data from CSV files
+    df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
+    df = filter(x -> lon_range[1] < x[:longitude] < lon_range[2], df)
+    filter!(x -> lat_range[1] < x[:latitude] < lat_range[2], df)
+
+    # Separate species
+    warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
+
 end
 
 ## Get the worldclim data
@@ -47,7 +51,8 @@ end
     return pres_abs_layer
 end
 # Loop function for each species
-@time pres_abs = pmap(x -> presence_absence(x, wc_vars[1]), warblers_occ)
+using ProgressMeter
+@time pres_abs = @showprogress pmap(x -> presence_absence(x, wc_vars[1]), warblers_occ)
 # @time pres_abs1 = pmap(x -> presence_absence(x, wc_vars[1], binary=false), warblers_occ)
 # Export result
 @save "data/jld2/pres-abs-ebd.jld2" pres_abs
@@ -55,7 +60,7 @@ end
 
 # Count sites with presence per species
 pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in pres_abs]
-sort(pres_counts) # one with 0 sites
+sort(pres_counts)
 
 ## Plot result
 map_sp1 = plotSDM(pres_abs[1])
