@@ -25,7 +25,7 @@ end
     @time wc_vars = pmap(x -> clip(wc_vars_full[x], occ), 1:19, distributed=distributed);
     # Make the prediction for each layer
     @info "Predictions for each layer"
-    @time predictions = pmap(x -> bioclim(wc_vars[x], occ), 1:19, distributed=distributed);
+    @time predictions = pmap(x -> bioclim(occ, wc_vars[x]), 1:19, distributed=distributed);
     # Make the final prediction by taking the minimum
     @info "Minimum-consensus aggregation"
     @time prediction = reduce(minimum, predictions);

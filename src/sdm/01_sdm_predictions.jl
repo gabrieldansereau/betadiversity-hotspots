@@ -25,7 +25,7 @@ end
 @time wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:19);
 
 ## Make predictions for all species
-@time predictions = @showprogress pmap(x -> species_bclim(x, wc_vars_pred, train = wc_vars_train), warblers_occ);
+@time predictions = @showprogress pmap(x -> species_bclim(x, wc_vars_pred, train_vars = wc_vars_train), warblers_occ);
 
 ## Export predictions
 @save "data/jld2/sdm-predictions.jld2" predictions
