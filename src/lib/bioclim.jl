@@ -21,10 +21,9 @@ end
 function species_bclim(occ, pred_vars; train_vars=pred_vars)
     predictions = [bioclim(occ, pred_vars[i], train_vars = train_vars[i]) for i in 1:length(pred_vars)];
     prediction = reduce(minimum, predictions);
+    threshold = first(quantile(prediction[occ], [0.05]))
     for i in eachindex(prediction.grid)
-        if prediction.grid[i] == 0.0
-            prediction.grid[i] = NaN
-        end
+        prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
     end
     return prediction
 end
