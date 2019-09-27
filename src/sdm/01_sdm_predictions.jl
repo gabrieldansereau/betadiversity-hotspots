@@ -9,11 +9,6 @@ addprocs(9)
 @time begin
     # Load data from CSV files
     df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
-    # Sort species by occurrence
-    sorted_species = sort(by(df, :species, n = :species => length), :n, rev=true)
-    spdict = sorted_species.species
-    orderdict = Dict(x => y for (y,x) in enumerate(spdict))
-    df = sort(df; order(:species, by = x -> orderdict[x]))
     # Separate species
     warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
 
