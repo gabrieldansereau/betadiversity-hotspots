@@ -21,13 +21,66 @@ end
 function species_bclim(occ, pred_vars; train_vars=pred_vars)
     predictions = [bioclim(occ, pred_vars[i], train_vars = train_vars[i]) for i in 1:length(pred_vars)];
     prediction = reduce(minimum, predictions);
-    threshold = first(quantile(filter(!isnan, prediction[occ]), [0.05]))
-    for i in eachindex(prediction.grid)
-        prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
+    no_nan = filter(!isnan, prediction[occ])
+    if length(no_nan) != 0
+        threshold = first(quantile(no_nan, [0.05]))
+        if threshold > 0.0
+            for i in eachindex(prediction.grid)
+                prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
+            end
+        elseif threshold == 0.0
+            for i in eachindex(prediction.grid)
+                prediction.grid[i] == 0.0 && (prediction.grid[i] = NaN)
+            end
+        end
     end
     return prediction
 end
 
+
+#=
+test = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0005, 0.1]
+threshold = 0.0
+for i in 1:length(test)
+    (test[i] < threshold || test[i] == 0.0)&& (test[i] = NaN)
+end
+test
+
+testpred = []
+@progress for j in 1:length(predictions)
+    prediction = predictions[j]
+    occ = warblers_occ[j]
+    replace!(prediction.grid, NaN => 0.0)
+    no_nan = filter(!isnan, prediction[occ])
+    if length(no_nan) != 0
+        threshold = first(quantile(no_nan, [0.05]))
+        if threshold > 0.0
+            for i in eachindex(prediction.grid)
+                prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
+            end
+        elseif threshold == 0.0
+            for i in eachindex(prediction.grid)
+                prediction.grid[i] == 0.0 && (prediction.grid[i] = NaN)
+            end
+        end
+    end
+    push!(testpred, prediction)
+end
+
+j = length(predictions) - 1
+prediction = copy(predictions[j])
+occ = copy(warblers_occ[j])
+replace!(prediction.grid, NaN => 0.0)
+prediction
+filter(!iszero, prediction.grid)
+threshold = first(quantile(filter(!isnan, prediction[occ]), [0.05]))
+for i in eachindex(prediction.grid)
+    prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
+end
+prediction.grid
+filter(!isnan, prediction.grid)
+
+=#
 #=
 function part2(prediction,occ)
     threshold = first(quantile(prediction[occ], [0.05]))
