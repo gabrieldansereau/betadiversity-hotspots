@@ -29,5 +29,10 @@ using JLD2
 ## 5. Run LCBD analysis
 @time include("sdm/05_sdm_lcbd.jl")
 
+## 5. Run LCBD permutations
+#=
+@time include("sdm/05_sdm_lcbd-permutations.jl")
+=#
+
 ## 6. Run LCBD-richness relationship analysis
 @time include("sdm/06_sdm_relation-lcbd-richness.jl")
