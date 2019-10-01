@@ -24,16 +24,13 @@ function species_bclim(occ, pred_vars; train_vars=pred_vars)
     no_nan = filter(!isnan, prediction[occ])
     if length(no_nan) != 0
         threshold = first(quantile(no_nan, [0.05]))
-        if threshold > 0.0
-            for i in eachindex(prediction.grid)
-                prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
-            end
-        elseif threshold == 0.0
-            for i in eachindex(prediction.grid)
-                prediction.grid[i] == 0.0 && (prediction.grid[i] = NaN)
-            end
+        for i in eachindex(prediction.grid)
+            prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
         end
     end
+    for i in eachindex(prediction.grid)
+        prediction.grid[i] == 0.0 && (prediction.grid[i] = NaN)
+    end    
     return prediction
 end
 
