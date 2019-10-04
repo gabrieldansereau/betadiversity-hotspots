@@ -21,7 +21,7 @@ addprocs(4)
 end
 
 ## Get the worldclim data
-@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 
 ## Create function to convert occurrence to presence-absence based on a SimpleSDMLayer
 @everywhere function presence_absence(species::DataFrame, copy_layer::SimpleSDMLayer; binary::Bool=true)
