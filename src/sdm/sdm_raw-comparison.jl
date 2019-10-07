@@ -1,8 +1,8 @@
-richnessusing Distributed
+using Distributed
 using JLD2
 @time include("../required.jl")
 
-## Load LCBD results on presence-absence datga
+## Load LCBD results on presence-absence data
 @time include("../raw/03_raw_richness.jl")
 @time include("../raw/05_raw_lcbd.jl")
 
