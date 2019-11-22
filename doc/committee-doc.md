@@ -1,3 +1,5 @@
+<div style="text-align: justify">
+
 # Advisory Committee Document
 
 ## Abstract
@@ -381,3 +383,4 @@ Our preliminary results mainly compare raw data statistics to prediction statist
   Biol. Conserv.
   142, 2282–2292.
   <https://doi.org/10.1016/j.biocon.2009.05.006>
+</div>
