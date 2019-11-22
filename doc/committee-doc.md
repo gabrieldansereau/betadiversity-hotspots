@@ -1,3 +1,19 @@
+---
+title: "Spatially continuous identification of beta diversity hotspots using species distribution models"
+author: Gabriel Dansereau
+date: \today{}
+geometry: "left=3cm,right=3cm,top=2cm,bottom=2cm"
+output: pdf_document
+bibliography: references.json
+header-includes:
+    - \usepackage{setspace}
+    - \doublespacing
+    - \usepackage{lineno}
+    - \linenumbers
+---
+
+[//]: # (pandoc -s --filter pandoc-citeproc committee-doc.md -o committee.pdf) 
+
 <div style="text-align: justify">
 
 # Advisory Committee Document
