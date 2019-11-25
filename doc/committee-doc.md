@@ -1,8 +1,11 @@
 ---
 title: "Spatially continuous identification of beta diversity hotspots using species distribution models"
+subtitle: "Advisory Committee Document"
 author: Gabriel Dansereau
 date: \today{}
 geometry: "left=3cm,right=3cm,top=2cm,bottom=2cm"
+fontfamily: kpfonts
+fontsize: 11pt
 output: pdf_document
 bibliography: references.json
 header-includes:
@@ -12,7 +15,7 @@ header-includes:
     - \linenumbers
 ---
 
-[//]: # (pandoc -s --filter pandoc-citeproc committee-doc.md -o committee.pdf)
+[//]: # (cd doc; pandoc -s --filter pandoc-citeproc committee-doc.md -o committee-doc.pdf)
 
 <div style="text-align: justify">
 
@@ -33,10 +36,12 @@ distribution models (SDM). These models, such as the BIOCLIM method, use the env
 conditions at sampled sites to predict the presence or absence of each species at
 unsampled locations.
 Second, LCBD statistics can then be computed on the SDM predictions.
-We therefore show that it is possible to identify beta-diversity hotspots on spatially
+We therefore show that it is possible to identify beta diversity hotspots on spatially
 continuous and extended scales.
 Our results confirm that LCBD values are related to species richness, and that
 species-poor sites contribute most to beta diversity.
+
+\newpage
 
 ## Introduction
 
@@ -49,7 +54,7 @@ of sites with exceptional species composition, hence exceptional biodiversity.
 Such a method is useful for both community ecology and conservation biology, as it
 highlights sites that are most important for their research or conservation values.
 However, LCBD calculation methods require complete information on community composition,
-such as a community composition matrix Y, thus they are inappropriate for partially
+such as a community composition matrix $Y$, thus they are inappropriate for partially
 sampled or unsampled sites.
 To our knowledge, theses methods have mostly been applied on community data from sampled
 sites, thus on discontinuous spatial scales, e.g. at intervals along a river stream
@@ -88,8 +93,7 @@ While it doesn’t replace a full sampling within the community, it does provide
 ecological insights.
 For instance, the method could help identify unsampled sites with potential conservation
 value which should be targeted as soon as possible in future studies.
-
-We believe that our method could also be combined with IPCC climate change scenarios,
+We also believe that our method could also be combined with IPCC climate change scenarios,
 which provide projections for climate variables, in a way that would allow us to model
 beta diversity changes with climate change and to identify the sites where the changes in
 the community will be most important.
@@ -107,7 +111,7 @@ feasibility is not as clearly stated.
 
 ## Methods
 
-#### 1. Data Collection
+### 1. Data Collection
 
 We decided to focus our analyses on bird species and collected the data available on eBird
 for the Warblers family.
@@ -116,8 +120,8 @@ advantages over other large scale datasets [@JohnHoch19]: 1) data is structured
 as checklist and users can explicitly specify their observations as “complete checklists”
 when all detected species were reported, which allows to infer information on species
 absences, 2) the dataset is semi-structured and checklists are associated with metadata
-describe sampling effort, such as duration of search, distance travelled, number of
-observers, etc.
+describing sampling effort, such as duration of search, distance travelled and number of
+observers, which can be used as controls in the analyses.
 We chose to focus specifically on the Warblers family, as it is a diverse group, popular
 among birders, with over 30 million observations.
 
@@ -129,10 +133,12 @@ We also expect such extent of the spatial scale to cover for imprecision in esti
 species ranges.
 The WorldClim data consists of spatially interpolated monthly climate data for global
 areas, available for resolutions from 10 arc-minutes to 30 arc-seconds.
-The variables used are provided in Table 1, and consists of different measures of
+The variables used are provided in Table \ref{table1}, and consists of different measures of
 temperature and precipitation.
 We chose to use the coarser 10 arc-minutes resolution in our analyses, again to cover for
 imprecision, and because we believe it is sufficient for proof of concept.
+
+: WorldClim 2 climate variables used in the analyses \label{table1}
 
 | Variable | Description                                                |
 | ------   | ------                                                     |
@@ -156,7 +162,7 @@ imprecision, and because we believe it is sufficient for proof of concept.
 | 18       | Precipitation of Warmest Quarter                           |
 | 19       | Precipitation of Coldest Quarter                           |
 
-#### 2. Data Manipulation
+### 2. Data Manipulation
 
 WorldClim variables and eBird occurrence data are provided in different formats, so they
 require some manipulation to be combined together.
@@ -169,7 +175,7 @@ These entries can easily be matched to the 2-D grid format of the WorldClim vari
 through their spatial coordinates, which we found more useful for large scale analyses and
 visualization.
 Hence, for each species, we matched all occurrences in eBird to the grid format of the
-WorldClim variables, and later created a presence-absence community matrix Y, with the
+WorldClim variables, and later created a presence-absence community matrix $Y$, with the
 sites being the grid cells.
 We also applied the Hellinger transformation on the raw presence-absence data, although
 the most appropriate method remains to be determined, especially since the data has to be
@@ -177,14 +183,14 @@ compared with the SDM predictions.
 All data manipulations and further analyses were realized in *Julia v1.2.0* [@BezaEdel17]
 with the basic structure built around the soon-to-be-released `SimpleSDMLayers.jl` package.
 
-#### 3. SDM – The BIOCLIM method
+### 3. SDM – The BIOCLIM method
 
 We used the BIOCLIM method to predict species distributions.
 BIOCLIM, first introduced by [@Nix86], is considered as the classic
 “climate-envelope-model”, and is now available to users through the `dismo` package in R
 [@HijmPhil17]. It has long been outperformed by other methods [@ElitGrah06],
 but it is still commonly used for its simplistic approach and ease of
-understanding, as well as its simple relation to niche theory [@BootNix14, @HijmPhil17].
+understanding, as well as its simple relation to niche theory [@BootNix14; @HijmPhil17].
 It is also a method designed for presence-only data, which does not require
 information on absences, nor take them into account if provided (as in our case).
 Despite that, we chose this method for our preliminary analyses as it was easier to
@@ -212,26 +218,26 @@ presence. This might tend to overestimate species ranges and create some sort of
 effect, but we believe the effects will be mitigated given the spatial extent and coarse
 scale of our study.
 
-#### 4. LCBD calculation
+### 4. LCBD calculation
 
-We calculated the LCBD statistics through the total variance of the matrix Y for both the
+We calculated the LCBD statistics through the total variance of the matrix $Y$ for both the
 raw data and SDM predictions.
-@LegeDeC13] showed that LCBD coefficients can be calculated directly
-through the total variance of matrix Y, or through a matrix of dissimilarities among
+@LegeDeC13 showed that LCBD coefficients can be calculated directly
+through the total variance of matrix $Y$, or through a matrix of dissimilarities among
 sampling units.
 We chose the first approach, as it also allows to compute species contributions to beta
 diversity (SCBD), although we did not investigate it for now.
-First, the presence-absence matrix Y had to be transformed in an appropriate way, as
+First, the presence-absence matrix $Y$ had to be transformed in an appropriate way, as
 mentioned earlier.
 We chose to apply the Hellinger transformation to the raw data and no transformation on
 the SDM predictions for now, as the most appropriate one still needs to be determined.
-We then computed a matrix S of squared deviations from column means and summed all the
-values of S to obtain the total sum of squares (SS) of the species composition data
-[@LegeDeC13]. LCBD are then computed as $$ LCBD_i = SS_i/SS_Total $$,
-where SS_i is the sum of squares of a sampling unit i. Finally, since our matrix Y is very
-large, the LCBD coefficients are very small, so we scaled them to the maximum value.
+We then computed a matrix $S$ of squared deviations from column means and summed all the
+values of $S$ to obtain the total sum of squares ($SS$) of the species composition data
+[@LegeDeC13]. LCBD are then computed as $LCBD_i = SS_i/SS_{Total}$,
+where $SS_i$ is the sum of squares of a sampling unit $i$. Finally, since our matrix $Y$ is
+very large, the LCBD coefficients are very small, so we scaled them to the maximum value.
 
-#### 5. Prediction validity
+### 5. Prediction validity
 
 The exact way of testing the validity of the predictions remains to be determined, and
 will also depend on the exact methods used to make the SDM predictions.
@@ -253,7 +259,7 @@ This validation might not cover the entire extent of the predictions, but it mig
 interesting perspectives if combined with other validation methods, mostly because it
 would bring a closer comparison to the way LCBD metrics are used at the moment.
 
-#### 6. Alternative methods
+### 6. Alternative methods
 
 Other methods could possibly outperform BIOCLIM for the predictions, as have already
 proven by @ElitGrah06. Better predictions will come by two different means:
@@ -280,7 +286,7 @@ used, though having a method that can be applied to any taxonomic group would be
 interesting. Yet, such an approach might prove to be beyond the scope of the present
 research.
 
-#### 7. Climate change scenarios & temporal beta diversity
+### 7. Climate change scenarios & temporal beta diversity
 
 We aim to apply our method to environmental conditions from climate change scenarios,
 first to model community compositions after climate change on continuous scales through
