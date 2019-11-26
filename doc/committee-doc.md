@@ -1,15 +1,8 @@
 ---
-title: "Spatially continuous identification of beta diversity hotspots using species distribution models"
-subtitle: "Advisory Committee Document"
-author: Gabriel Dansereau
-date: \today{}
 geometry: "left=3cm,right=3cm,top=2cm,bottom=2cm"
 fontfamily: kpfonts
 fontsize: 11pt
 output: pdf_document
-toc: true
-lot: true
-lof: true
 bibliography: references.json
 header-includes:
     - \usepackage{setspace}
@@ -21,6 +14,37 @@ header-includes:
 [//]: # (cd doc; pandoc -s --filter pandoc-citeproc committee-doc.md -o committee-doc.pdf)
 
 <div style="text-align: justify">
+
+\newpage
+
+\begin{titlepage}
+  \centering
+  \Large Université de Montréal \par
+  \vfill
+  \LARGE \textbf{Spatially continuous identification of beta diversity hotspots using species distribution models} \par
+  \vfill
+
+  \normalsize By \par
+  \Large \textbf{Gabriel Dansereau} \par
+  \normalsize 20147609 \par
+  \vfill
+
+  Département de sciences biologiques \par
+  Faculté des arts et des sciences \par
+  \vfill
+
+  \large Advisory Committee Meeting \par
+  \vfill
+
+  % Bottom of the page
+  \normalsize \today \par
+\end{titlepage}
+
+\newpage
+
+\tableofcontents
+\listoftables
+\listoffigures
 
 \newpage
 
