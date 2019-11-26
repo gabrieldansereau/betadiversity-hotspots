@@ -7,6 +7,9 @@ geometry: "left=3cm,right=3cm,top=2cm,bottom=2cm"
 fontfamily: kpfonts
 fontsize: 11pt
 output: pdf_document
+toc: true
+lot: true
+lof: true
 bibliography: references.json
 header-includes:
     - \usepackage{setspace}
@@ -19,7 +22,7 @@ header-includes:
 
 <div style="text-align: justify">
 
-# Advisory Committee Document
+\newpage
 
 ## Abstract
 
@@ -323,13 +326,19 @@ Our preliminary results mainly compare raw data statistics to prediction statist
 (Raw & SDM figures will be presented side-by-side)
 
 ![Single Species Distributions - Raw](../fig/raw/10_resolution/01_raw_sp-Setophaga_petechia.pdf){#fig:fig1a}
+
 ![Single Species Distributions - SDM](../fig/sdm/10_resolution/01_sdm_sp-Setophaga_petechia.pdf){#fig:fig1b}
 
-![Species Richness - Raw](../fig/raw/10_resolution/03_raw_richness.pdf){#fig:fig2a} ![Species Richness - SDM](../fig/sdm/10_resolution/03_sdm_richness.pdf){#fig:fig2b}
+![Species Richness - Raw](../fig/raw/10_resolution/03_raw_richness.pdf){#fig:fig2a}
 
-![LCBD values - Raw (transformed)](../fig/raw/10_resolution/05_raw_lcbd-transf.pdf){#fig:fig3a} ![LCBD values - SDM](../fig/sdm/10_resolution/05_sdm_lcbd.pdf){#fig:fig3b}
+![Species Richness - SDM](../fig/sdm/10_resolution/03_sdm_richness.pdf){#fig:fig2b}
+
+![LCBD values - Raw (transformed)](../fig/raw/10_resolution/05_raw_lcbd-transf.pdf){#fig:fig3a}
+
+![LCBD values - SDM](../fig/sdm/10_resolution/05_sdm_lcbd.pdf){#fig:fig3b}
 
 ![LCBD-richness relationship - Raw](../fig/raw/10_resolution/06_raw_relation-lcbd-richness-transf.png){#fig:fig4a}
+
 ![LCBD-richness relationship - SDM](../fig/sdm/10_resolution/06_sdm_relation-lcbd-richness-transf.png){#fig:fig4b}
 
 \newpage
