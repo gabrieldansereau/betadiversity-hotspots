@@ -254,49 +254,51 @@ raw data and SDM predictions.
 @LegeDeC13 showed that LCBD coefficients can be calculated directly
 through the total variance of matrix $Y$, or through a matrix of dissimilarities among
 sampling units.
-We chose the first approach, as it also allows to compute species contributions to beta
-diversity (SCBD), although we did not investigate it for now.
-First, the presence-absence matrix $Y$ had to be transformed in an appropriate way, as
-mentioned earlier.
+We chose the first approach as it also allows to compute species contributions to beta
+diversity (SCBD), which could also prove useful for conservation purposes, but we did not
+investigate these for now.
+Before computing the LCBD statistics, the presence-absence matrix $Y$ had to be
+transformed in an appropriate way, as mentioned earlier.
 We chose to apply the Hellinger transformation to the raw data and no transformation on
 the SDM predictions for now, as the most appropriate one still needs to be determined.
 We then computed a matrix $S$ of squared deviations from column means and summed all the
 values of $S$ to obtain the total sum of squares ($SS$) of the species composition data
-[@LegeDeC13]. LCBD are then computed as $LCBD_i = SS_i/SS_{Total}$,
+[@LegeDeC13]. LCBD coefficients are then computed as $LCBD_i = SS_i/SS_{Total}$,
 where $SS_i$ is the sum of squares of a sampling unit $i$. Finally, since our matrix $Y$ is
-very large, the LCBD coefficients are very small, so we scaled them to the maximum value.
+very large, the LCBD coefficients are very small, so we scaled them to the maximum value observed.
 
 ### 5. Prediction validity
 
 The exact way of testing the validity of the predictions remains to be determined, and
 will also depend on the exact methods used to make the SDM predictions.
 A key element to note is that both SDM predictions and LCBD values will have to be
-validated, so will likely require different methods.
+validated, so they will likely require different methods.
 Many metrics are well documented in the literature to test SDM predictions, such as the
 Kappa index [@Fran10a], and could be used for the BIOCLIM predictions.
-Another possible way would to separate the data into a training and testing dataset, with
+Another possible way would be to separate the data into a training and testing dataset, with
 70% and 30% of the data for instance, which is a common approach in machine learning
 techniques. However, this approach reduces the amount of data that can be used in the
 model, and raises the issue of making sure that the datasets are both random and
-representative of the data, as well as the community dynamics.
+representative of the data, as well as of the community dynamics.
 Also, in this framework, the testing data cannot be considered as independent, which
 prevents using it in certain tests of significance.
 One interesting approach, suggested by [@ElitGrah06] for SDMs, would be to find
 independent, well-structured presence-absence datasets for validation, on which beta
-diversity metrics has or could be calculated.
+diversity metrics has been or could be calculated.
 This validation might not cover the entire extent of the predictions, but it might bring
 interesting perspectives if combined with other validation methods, mostly because it
 would bring a closer comparison to the way LCBD metrics are used at the moment.
 
 ### 6. Alternative methods
 
-Other methods could possibly outperform BIOCLIM for the predictions, as have already
-proven by @ElitGrah06. Better predictions will come by two different means:
+Other methods could possibly outperform BIOCLIM for the predictions, as shown by
+@ElitGrah06. Better predictions will come by two different means:
 1\) approaches that are better than BIOCLIM to model the relationship between species
 presence-absence (or even abundance) and environmental variables, and 2\) approaches that
-account for other drivers of species distributions, such as ecological interactions for
-instance. The most obvious alternative to BIOCLIM is MAXENT [@PhilAnde06],
-another presence-only method that has come to be one of the most widely used methods.
+account for other drivers of species distributions, such as ecological interactions and
+species migration.
+The most obvious alternative to BIOCLIM is MAXENT [@PhilAnde06], another presence-only
+method that has come to be one of the most widely used methods.
 Machine learning methods would be also be interesting alternatives that have been proven
 to outperform BIOCLIM [@Fran10a]. Random Forests, especially are simple methods to
 put in place, allow for quantification of the variables importance in explaining
@@ -306,10 +308,10 @@ However, while those methods might return more accurate predictions, they do not
 implicitly model other drivers of species distribution, among which species interactions
 and functional niche.
 Integrating those factors might prove more difficult given our dataset and our focus
-Warblers species, as no appropriate information on their interaction is available to our
+Warblers species, as no appropriate information on their interaction is available, to our
 knowledge. Joint species distribution models (JSDMs) might be an interesting way to
-encompass those, as they attempt to model species cooccurence, rather than the
-distribution of single species distributions [@PollTing14]. A different taxonomic
+encompass those, as they attempt to model species co-occurrence, rather than the
+distribution of single species [@PollTing14]. A different taxonomic
 group and data datasets could also be used with more details on interactions could also be
 used, though having a method that can be applied to any taxonomic group would be more
 interesting. Yet, such an approach might prove to be beyond the scope of the present
@@ -328,7 +330,7 @@ Whereas LCBD values essentially measure the contribution to beta diversity of ea
 compared to all other ones, TBI measure changes in community composition for a single site
 between two surveys, and can also be decomposed into species losses and gains.
 Moreover, TBI can be tested for significance using a permutation test.
-An approach similar to that of [@LegeCond19] would be most interesting to
+An approach similar to that of @LegeCond19 would be most interesting to
 follow: they first computed LCBD indices and compared the sites that were significant for
 two surveys 30 years apart, highlighting a swamp region where important changes seemed to
 have occurred, and then used TBI indices to confirm the sites with significant changes,
@@ -343,7 +345,7 @@ interpolated variables are sometimes different than those used in Worldclim 2.0.
 models and predictions might therefore be slightly different than those used for the LCBD
 calculations, and potentially less reliable.
 Nonetheless, we believe it will be possible to do some kind of time analysis linking beta
-diversity, climate change, and species distribution modelling, which could return highly
+diversity, climate change and species distribution modelling, and that it could return highly
 informative results for conservation purposes.
 
 ## Preliminary Results
