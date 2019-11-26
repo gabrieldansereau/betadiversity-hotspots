@@ -84,7 +84,7 @@ However, LCBD calculation methods require complete information on community comp
 such as a community composition matrix $Y$, thus they are inappropriate for partially
 sampled or unsampled sites.
 To our knowledge, theses methods have mostly been applied on community data from sampled
-sites, thus on discontinuous spatial scales, e.g. at intervals along a river stream
+sites, hence on discontinuous spatial scales, e.g. at intervals along a river stream
 [@LegeDeC13]. This raises the following questions:
 1\) could LCBD indices be extended to continuous spatial scales, and 2\) could this provide
 novel ecological insights in poorly sampled regions?
@@ -197,13 +197,15 @@ WorldClim variables are provided in a 2-dimensional grid format, useful for larg
 analyses and visualization, where each cell or pixel corresponds to the resolution of 10
 arc-minutes. Each of the 19 variables forms a different grid.
 On the other hand, eBird records are occurrence-based, so each entry in the dataset
-corresponds to an observation of a single species at a given location.
-These entries can easily be matched to the 2-D grid format of the WorldClim variables
+corresponds to an observation of a single species at a given time and location.
+These entries can easily be matched to the 2D grid format of the WorldClim variables
 through their spatial coordinates, which we found more useful for large scale analyses and
 visualization.
 Hence, for each species, we matched all occurrences in eBird to the grid format of the
-WorldClim variables, and later created a presence-absence community matrix $Y$, with the
-sites being the grid cells.
+WorldClim variables, and then created a presence-absence community matrix $Y$, taking all
+the grid cells as sites.
+At the 10 arc-minutes resolution, we obtained 39 024 sites with occurrences and 62
+species.
 We also applied the Hellinger transformation on the raw presence-absence data, although
 the most appropriate method remains to be determined, especially since the data has to be
 compared with the SDM predictions.
@@ -213,7 +215,7 @@ with the basic structure built around the soon-to-be-released `SimpleSDMLayers.j
 ### 3. SDM – The BIOCLIM method
 
 We used the BIOCLIM method to predict species distributions.
-BIOCLIM, first introduced by [@Nix86], is considered as the classic
+BIOCLIM, first introduced by @Nix86, is considered as the classic
 “climate-envelope-model”, and is now available to users through the `dismo` package in R
 [@HijmPhil17]. It has long been outperformed by other methods [@ElitGrah06],
 but it is still commonly used for its simplistic approach and ease of
@@ -230,7 +232,7 @@ environmental hypervolume bounded by the minimum and maximum values of all prese
 of the values of each environmental variables at the known locations of occurrences
 [@HijmPhil17]. The environmental variables of all sites are then compared to
 those percentile distributions and given scores between 0 (1st percentile) and 1 (100th
-percentile). The median or 50th percentile is considered as the most suitable location and
+percentile). The median or 50th percentile is considered as the most suitable location, and
 both tails (e.g. 10th and 90th percentile) are not distinguished, the values larger than
 0.5 being subtracted from 1. The minimum percentile score across all environmental
 variables is selected as the prediction value for each site and multiplied by 2 so values
