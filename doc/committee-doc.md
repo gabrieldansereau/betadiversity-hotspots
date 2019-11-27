@@ -248,7 +248,7 @@ This might tend to overestimate species ranges and create some sort of border ef
 we believe the effects will be mitigated given the spatial extent and coarse scale of our
 study.
 
-### 4. LCBD calculation
+### 4. LCBD Calculation
 
 We calculated the LCBD statistics through the total variance of the matrix $Y$ for both the
 raw data and SDM predictions.
@@ -266,7 +266,8 @@ We then computed a matrix $S$ of squared deviations from column means and summed
 values of $S$ to obtain the total sum of squares ($SS$) of the species composition data
 [@LegeDeC13]. LCBD coefficients are then computed as $LCBD_i = SS_i/SS_{Total}$,
 where $SS_i$ is the sum of squares of a sampling unit $i$. Finally, since our matrix $Y$ is
-very large, the LCBD coefficients are very small, so we scaled them to the maximum value observed.
+very large, the LCBD coefficients are very small, so we scaled them to the maximum value
+observed.
 
 ### 5. Prediction validity
 
