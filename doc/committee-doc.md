@@ -160,12 +160,12 @@ We also expect such extent of the spatial scale to cover for imprecision in esti
 species ranges.
 The WorldClim data consists of spatially interpolated monthly climate data for global
 areas, available for resolutions from 10 arc-minutes to 30 arc-seconds.
-The variables used are provided in Table \ref{table1}, and consists of different measures of
+The variables used are provided in Table -@tbl:wc_vars, and consists of different measures of
 temperature and precipitation.
 We chose to use the coarser 10 arc-minutes resolution in our analyses, again to cover for
 imprecision, and because we believe it is sufficient for proof of concept.
 
-: WorldClim 2 climate variables used in the analyses \label{table1}
+: WorldClim 2 climate variables used in the analyses {#tbl:wc_vars}
 
 | Variable | Description                                                |
 | ------   | ------                                                     |
