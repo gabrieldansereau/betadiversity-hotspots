@@ -269,27 +269,35 @@ where $SS_i$ is the sum of squares of a sampling unit $i$. Finally, since our ma
 very large, the LCBD coefficients are very small, so we scaled them to the maximum value
 observed.
 
-### 5. Prediction validity
+### 5. Prediction Validity
 
 The exact way of testing the validity of the predictions remains to be determined, and
 will also depend on the exact methods used to make the SDM predictions.
 A key element to note is that both SDM predictions and LCBD values will have to be
-validated, so they will likely require different methods.
-Many metrics are well documented in the literature to test SDM predictions, such as the
-Kappa index [@Fran10a], and could be used for the BIOCLIM predictions.
-Another possible way would be to separate the data into a training and testing dataset, with
-70% and 30% of the data for instance, which is a common approach in machine learning
-techniques. However, this approach reduces the amount of data that can be used in the
-model, and raises the issue of making sure that the datasets are both random and
-representative of the data, as well as of the community dynamics.
-Also, in this framework, the testing data cannot be considered as independent, which
-prevents using it in certain tests of significance.
-One interesting approach, suggested by @ElitGrah06 for SDMs, would be to find
-independent, well-structured presence-absence datasets for validation, on which beta
-diversity metrics has been or could be calculated.
-This validation might not cover the entire extent of the predictions, but it might bring
-interesting perspectives if combined with other validation methods, mostly because it
-would bring a closer comparison to the way LCBD metrics are used at the moment.
+validated, hence they might require different methods.
+Metrics that measure the accuracy of categorical or probabilistic predictions in SDMs are
+well documented, in various forms.
+Some require absence data to test against, and can be used on probabilistic predictions
+directly (area-under-curve, AUC) or after a conversion of the predictions to binary
+presence-absence using a certain threshold (Kappa index, measuring the difference between
+observed and chance agreement in a confusion matrix) [@Fran10a]. Other methods are
+appropriate for presence-only data, such as the Boyce Index.
+In any case, measuring
+prediction error is only one part of validation, and finding appropriate data for
+evaluation is almost as essential [@Fran10a], especially since we also aim to describe
+community structure.
+Separating the data into a training and testing dataset, with 70% and 30% of the
+observations for instance, is a possible approach common in machine learning methods,
+although all of the available observations might be needed in some cases [@Fran10a].
+An interesting approach, suggested by @ElitGrah06 for SDMs, would be to find independent,
+well-structured presence-absence datasets for validation, on which both SDM predictions
+and beta diversity metrics could be tested.
+This approach has the advantage that the testing data is truly independent of the training
+one, hence it could be used with certain tests of significance.
+Although it might not cover the entire extent of the predictions in a single test, this
+method brings a closer comparison to the way LCBD metrics are used in most studies, and it
+would provide interesting perspectives if combined with other, full-extent validation
+methods.
 
 ### 6. Alternative methods
 
