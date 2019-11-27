@@ -282,7 +282,7 @@ model, and raises the issue of making sure that the datasets are both random and
 representative of the data, as well as of the community dynamics.
 Also, in this framework, the testing data cannot be considered as independent, which
 prevents using it in certain tests of significance.
-One interesting approach, suggested by [@ElitGrah06] for SDMs, would be to find
+One interesting approach, suggested by @ElitGrah06 for SDMs, would be to find
 independent, well-structured presence-absence datasets for validation, on which beta
 diversity metrics has been or could be calculated.
 This validation might not cover the entire extent of the predictions, but it might bring
@@ -350,32 +350,96 @@ informative results for conservation purposes.
 
 ## Preliminary Results
 
-Our preliminary results mainly compare raw data statistics to prediction statistics.
-(Raw & SDM figures will be presented side-by-side)
+Our preliminary results mainly consisted of comparisons between the raw occurrence data and
+the SDM predictions for the four following elements:
+single-species distribution ([@fig:sp_raw; @fig:sp_sdm]), species richness
+([@fig:richness_raw; @fig:richness_sdm]), LCBD coefficients ([@fig:lcbd_raw;
+@fig:lcbd_sdm]), and the relationship between the species richness and LCBD
+coefficients ([@fig:relation_raw; @fig:relation_sdm]).
+Two main results emerged from them:
+1) the models provided seemingly valid and relevant results for poorly sampled regions,
+both expected species-poor and species-rich ones, and 2) there was a strong association
+between species richness and LCBD coefficients confirming the relationship shown in other
+studies.
+
+First, the example of the Yellow Warbler (*Setophaga petechia*), one of the most observed
+species, showed that the single-species models predicted a broad distribution covering
+poorly sampled areas, with notable patches of absence across the continent ([@Fig:sp_raw,
+@Fig:sp_sdm]). Likewise, species richness, defined as the number of species present per
+site, showed a clear latitude gradient, with the poorest sites to the North and the
+richest to the South ([@fig:richness_raw;
+@fig:richness_sdm]). A form of altitude gradient could also be observed, with the Rockies
+and other mountains well delimited by their lower values.
+In both cases, the results make intuitive sense and highlight the models ability to
+predict species presence despite poor or no sampling.
+Mexico, for example, has much sparser sampling and fewer observations, but the models
+predict Yellow Warblers presence in most areas nonetheless, as well as higher species
+richness than on the highly sampled Atlantic Coast, which make sense for a more southern
+location. We believe these to be valid insights on poorly sampled locations, although
+we reckon that intuitive reasoning is not a proof of anything, and that the model might be
+wrong in important ways.
+In any case, it highlights the need for an appropriate method of
+validation, as well as a thoughtful consideration of other factors such as species
+migration.
+
+Second, our preliminary LCBD results seemed to confirm the association between species
+richness and LCBD coefficients, while also being valid and insightful.
+They were however harder to interpret given the use of the Hellinger transformation for
+the raw occurrence data only.
+Raw occurrence data showed a negative relationship between species richness and LCBD
+coefficients (@fig:relation_raw), as observed previously by @HeinGron17, with no clear
+geographic pattern (@fig:lcbd_raw).
+If anything, the highest values seemed to be at the borders of the most sampled regions,
+which are about where the sites with the less species observed are located
+(@fig:richness_raw).
+On the other hand, SDM predictions showed a quadratic form, with the LCBD coefficients
+re-increasing after some threshold (@fig:relation_sdm).
+The geographic pattern is also clearer, with the highest values to the northern and
+southern extremes (@fig:lcbd_sdm).
+We suggest that this result makes sense, as LCBD indices should highlight the most
+exceptional species composition, and these are both well and continuously represented in a
+SDM.
+Although raw occurrence data results concorded with those of @HeinGron17, the "border
+effect" and the difference with SDM projections might show the importance of going beyond
+occurrence data when using large databases but spatially biased databases such as eBird.
+Once again, our results highlight the need for well-thought method and an investigation of
+the appropriate transformation to use on the data.
+
+Finally, one disappointing aspect of our method is that the result failed to identify
+patterns on finer scales.
+The trends shown by the SDMs for both the species richness and LCBD coefficients were
+large-scale, latitude-related patterns.
+Except for mountains, few exceptional sites are actually shown in the middle of the
+landscape. While it might have been unrealistic to expect such results from a coarse
+analysis like ours, it would be useful for conservation purposes to be able the identify
+precise sites within smaller regions.
+An interesting option would be to train the models and predict species distributions on a
+large scale, but to compute and scale the LCBD values of finer ones, as it might highlight
+regional differences in a new way.
 
 \newpage
 
-![Single Species Distributions - Raw](../fig/raw/10_resolution/01_raw_sp-Setophaga_petechia.pdf){#fig:fig1a}
+![Single Species Distributions - Raw](../fig/raw/10_resolution/01_raw_sp-Setophaga_petechia.pdf){#fig:sp_raw}
 
-![Single Species Distributions - SDM](../fig/sdm/10_resolution/01_sdm_sp-Setophaga_petechia.pdf){#fig:fig1b}
-
-\newpage
-
-![Species Richness - Raw](../fig/raw/10_resolution/03_raw_richness.pdf){#fig:fig2a}
-
-![Species Richness - SDM](../fig/sdm/10_resolution/03_sdm_richness.pdf){#fig:fig2b}
+![Single Species Distributions - SDM](../fig/sdm/10_resolution/01_sdm_sp-Setophaga_petechia.pdf){#fig:sp_sdm}
 
 \newpage
 
-![LCBD values - Raw (transformed)](../fig/raw/10_resolution/05_raw_lcbd-transf.pdf){#fig:fig3a}
+![Species Richness - Raw](../fig/raw/10_resolution/03_raw_richness.pdf){#fig:richness_raw}
 
-![LCBD values - SDM](../fig/sdm/10_resolution/05_sdm_lcbd.pdf){#fig:fig3b}
+![Species Richness - SDM](../fig/sdm/10_resolution/03_sdm_richness.pdf){#fig:richness_sdm}
 
 \newpage
 
-![LCBD-richness relationship - Raw](../fig/raw/10_resolution/06_raw_relation-lcbd-richness-transf.png){#fig:fig4a}
+![LCBD values - Raw (transformed)](../fig/raw/10_resolution/05_raw_lcbd-transf.pdf){#fig:lcbd_raw}
 
-![LCBD-richness relationship - SDM](../fig/sdm/10_resolution/06_sdm_relation-lcbd-richness-transf.png){#fig:fig4b}
+![LCBD values - SDM](../fig/sdm/10_resolution/05_sdm_lcbd.pdf){#fig:lcbd_sdm}
+
+\newpage
+
+![LCBD-richness relationship - Raw](../fig/raw/10_resolution/06_raw_relation-lcbd-richness-transf.png){#fig:relation_raw}
+
+![LCBD-richness relationship - SDM](../fig/sdm/10_resolution/06_sdm_relation-lcbd-richness.png){#fig:relation_sdm}
 
 \newpage
 
