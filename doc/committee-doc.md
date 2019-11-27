@@ -327,7 +327,7 @@ used, though having a method that can be applied to any taxonomic group would be
 interesting. Yet, such an approach might prove to be beyond the scope of the present
 research.
 
-### 7. Climate change scenarios & temporal beta diversity
+### 7. Climate Change Scenarios and Temporal Beta Diversity
 
 We aim to apply our method to environmental conditions from climate change scenarios,
 first to model community compositions after climate change on continuous scales through
@@ -374,8 +374,8 @@ studies.
 
 First, the example of the Yellow Warbler (*Setophaga petechia*), one of the most observed
 species, showed that the single-species models predicted a broad distribution covering
-poorly sampled areas, with notable patches of absence across the continent ([@Fig:sp_raw,
-@Fig:sp_sdm]). Likewise, species richness, defined as the number of species present per
+poorly sampled areas, with notable patches of absence across the continent ([@fig:sp_raw;
+@fig:sp_sdm]). Likewise, species richness, defined as the number of species present per
 site, showed a clear latitude gradient, with the poorest sites to the North and the
 richest to the South ([@fig:richness_raw;
 @fig:richness_sdm]). A form of altitude gradient could also be observed, with the Rockies
@@ -423,9 +423,10 @@ Except for mountains, few exceptional sites are actually shown in the middle of 
 landscape. While it might have been unrealistic to expect such results from a coarse
 analysis like ours, it would be useful for conservation purposes to be able the identify
 precise sites within smaller regions.
-An interesting option would be to train the models and predict species distributions on a
-large scale, but to compute and scale the LCBD values of finer ones, as it might highlight
-regional differences in a new way.
+This might be achieved by using a finer resolution, which we should probably reconsider,
+or by using a different technique, such as training the models and predicting species
+distributions on large scales, but computing and scaling LCBD values on finer local ones,
+which might highlight regional differences in a new way.
 
 \newpage
 
