@@ -89,47 +89,51 @@ sites, hence on discontinuous spatial scales, e.g. at intervals along a river st
 1\) could LCBD indices be extended to continuous spatial scales, and 2\) could this provide
 novel ecological insights in poorly sampled regions?
 We aim to answer these questions by combining the LCBD calculation methods with predictive
-biogeography approaches, and suggest that this would allow for the identification of sites
-with high conservation value in poorly sampled regions.
+biogeography approaches, and suggest that this would allow for the identification of
+hotspots with high conservation value in poorly sampled regions.
 
 Species distribution models (SDMs) already allow to make predictions on continuous spatial
-scales which could be used to calculate LCBD indices.
-Theses methods, also known as bioclimatic envelope models [@ArauPete12], aim
-to predict species presence or absence based on observation of occurrences at known
-locations [@PoisLaBr19]. This way, they generate novel ecological insights, and
-represent an approach yet to be applied to LCBD. We believe that such an approach of
-generating novel ecological insights for unsampled or lesser-known locations could be an
-interesting new perspective in the study.
-Through them, we would be able to expand community information already available, and thus
-work on a much larger community matrix than in typical LCBD studies.
+scales, and these predictions could therefore be used to calculate LCBD indices.
+SDMs, also known as bioclimatic envelope models [@ArauPete12], aim to predict species
+presence or absence based on previous observations of occurrence, and the environmental
+conditions at which these were made [@PoisLaBr19]. Examples of uses include climate change
+impact and invasion risk assessment, reserve selection and design, and discovery of new
+populations [@ArauPete12]. This way, they generate novel ecological insights for unsampled
+or lesser-known locations [@PoisLaBr19], an approach yet to be applied to the LCBD
+framework. We believe that a predictive approach such as this one would bring a new
+perspective to biodiversity study and community ecology.
+By using SDMs, we would be able to expand community information already available, and
+thus work on a much larger community matrices than in typical LCBD studies, which might
+highlight new diversity hotspots.
 
-Appropriate data to expand measures of exceptional biodiversity through space is
-increasingly available online.
-For instance, the Worldclim 2.0 database [@FickHijm17] provides interpolated
+Climate and biodiversity data on extended spatial scales are increasingly available
+online. For instance, the Worldclim 2.0 database [@FickHijm17] provides interpolated
 climate data for global land areas at very high spatial resolution, and the eBird platform
-[@SullWood09] provides a growing citizen-contributed database of worldwide bird
+[@SullWood09] provides a rapidly growing, citizen-contributed database of worldwide bird
 observations. Both of these are commonly used in SDMs, and offer relevant information on
 extended spatial scales.
-Hence, we believe that we could use them to predict community composition and calculate
-LCBD indices on continuous spatial scales, and that the result would be representative of
-the true community structure.
+Therefore, we believe that these datasets could be used to predict community composition
+and calculate LCBD indices on continuous spatial scales, and that the result would be
+representative of the true community structure.
 
-The predictive approach we suggest would be especially useful in poorly sampled regions,
-or in regions with only sparse sampling.
-While it doesn’t replace a full sampling within the community, it does provide relevant
-ecological insights.
-For instance, the method could help identify unsampled sites with potential conservation
+The predictive approach we suggest would be especially useful in poorly sampled regions, or
+in regions with only sparse sampling.
+While it does not replace a full sampling within the community, predictions and
+exploratory analyses do provide relevant ecological insights that could be used in
+different ways.
+For instance, our method could help identify unsampled sites with potential conservation
 value which should be targeted as soon as possible in future studies.
-We also believe that our method could also be combined with IPCC climate change scenarios,
+We also believe that it method could also be combined with IPCC climate change scenarios,
 which provide projections for climate variables, in a way that would allow us to model
 beta diversity changes with climate change and to identify the sites where the changes in
 the community will be most important.
-Again, this method would be more relevant as an informative approach to suggest sites to
-prioritize for future conservation and more structured research.
+Once again, the method would therefore prove very relevant in an informative approach to
+suggest sites to prioritize for future conservation and more structured research.
 
-In this document, we cover in more details the methods that we suggest for this research
-project. The preparation part of the project, including data collection and manipulation,
-has already been done, and a workflow for the analyses, including code implementation, has
+In this document, we cover in more details the methods that we suggest for this M.Sc.
+research project.
+The preparation part of the project, including data collection and manipulation, has
+already been done, and a workflow for the analyses, including code implementation, has
 been defined as well.
 We also detail preliminary analyses and results intended as proof-of-concept for the
 approach, which of course needs to be refined.
