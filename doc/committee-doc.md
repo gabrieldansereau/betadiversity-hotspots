@@ -151,6 +151,8 @@ describing sampling effort, such as duration of search, distance travelled and n
 observers, which can be used as controls in the analyses.
 We chose to focus specifically on the Warblers family, as it is a diverse group, popular
 among birders, with over 30 million observations.
+However, the eBird dataset is spatially biased, showing far more observations and sampling
+events in the United States (@tbl:ebird).
 
 We decided to restrict our analyses to North America and collected climate data available
 in the WorldClim 2 database [@FickHijm17]. We believe North America represents
@@ -165,37 +167,14 @@ temperature and precipitation.
 We chose to use the coarser 10 arc-minutes resolution in our analyses, again to cover for
 imprecision, and because we believe it is sufficient for proof of concept.
 
-: WorldClim 2 climate variables used in the analyses {#tbl:wc_vars}
-
-| Variable | Description                                                |
-| ------   | ------                                                     |
-| 1        | Annual Mean Temperature                                    |
-| 2        | Mean Diurnal Range (Mean of monthly (max temp - min temp)) |
-| 3        | Isothermality (BIO2/BIO7) (* 100)                          |
-| 4        | Temperature Seasonality (standard deviation *100)          |
-| 5        | Max Temperature of Warmest Month                           |
-| 6        | Min Temperature of Coldest Month                           |
-| 7        | Temperature Annual Range (BIO5-BIO6)                       |
-| 8        | Mean Temperature of Wettest Quarter                        |
-| 9        | Mean Temperature of Driest Quarter                         |
-| 10       | Mean Temperature of Warmest Quarter                        |
-| 11       | Mean Temperature of Coldest Quarter                        |
-| 12       | Annual Precipitation                                       |
-| 13       | Precipitation of Wettest Month                             |
-| 14       | Precipitation of Driest Month                              |
-| 15       | Precipitation Seasonality (Coefficient of Variation)       |
-| 16       | Precipitation of Wettest Quarter                           |
-| 17       | Precipitation of Driest Quarter                            |
-| 18       | Precipitation of Warmest Quarter                           |
-| 19       | Precipitation of Coldest Quarter                           |
-
 ### 2. Data Manipulation
 
 WorldClim variables and eBird occurrence data are provided in different formats, so they
 require some manipulation to be combined together.
 WorldClim variables are provided in a 2-dimensional grid format, useful for large scale
-analyses and visualization, where each cell or pixel corresponds to the resolution of 10
-arc-minutes. Each of the 19 variables forms a different grid.
+analyses and visualization, where each cell or pixel has a size corresponding to the
+resolution of 10 arc-minutes.
+Each of the 19 variables forms a different grid.
 On the other hand, eBird records are occurrence-based, so each entry in the dataset
 corresponds to an observation of a single species at a given time and location.
 These entries can easily be matched to the 2D grid format of the WorldClim variables
@@ -427,6 +406,40 @@ This might be achieved by using a finer resolution, which we should probably rec
 or by using a different technique, such as training the models and predicting species
 distributions on large scales, but computing and scaling LCBD values on finer local ones,
 which might highlight regional differences in a new way.
+
+\newpage
+
+: Distribution of the data in the eBird checklists for the countries used in the analyses {#tbl:ebird}
+
+| Country | Observations | Checklists | Species | Species per checklist (mean) | Species per checklist (median) | Species per checklist (maximum) |
+|---|---|---|---|---|---|---|
+| US | 19 206 453 | 7 840 526 | 56 | 2.450 | 2.0 | 34 |
+| CA | 3 360 650  | 1 115 625 | 45 | 3.012 | 2.0 | 31 |
+| MX | 407 227    | 147 599   | 61 | 2.759 | 2.0 | 21 |
+
+: WorldClim 2 climate variables used in the analyses {#tbl:wc_vars}
+
+| Variable | Description                                                |
+| ------   | ------                                                     |
+| 1        | Annual Mean Temperature                                    |
+| 2        | Mean Diurnal Range (Mean of monthly (max temp - min temp)) |
+| 3        | Isothermality (BIO2/BIO7) (* 100)                          |
+| 4        | Temperature Seasonality (standard deviation *100)          |
+| 5        | Max Temperature of Warmest Month                           |
+| 6        | Min Temperature of Coldest Month                           |
+| 7        | Temperature Annual Range (BIO5-BIO6)                       |
+| 8        | Mean Temperature of Wettest Quarter                        |
+| 9        | Mean Temperature of Driest Quarter                         |
+| 10       | Mean Temperature of Warmest Quarter                        |
+| 11       | Mean Temperature of Coldest Quarter                        |
+| 12       | Annual Precipitation                                       |
+| 13       | Precipitation of Wettest Month                             |
+| 14       | Precipitation of Driest Month                              |
+| 15       | Precipitation Seasonality (Coefficient of Variation)       |
+| 16       | Precipitation of Wettest Quarter                           |
+| 17       | Precipitation of Driest Quarter                            |
+| 18       | Precipitation of Warmest Quarter                           |
+| 19       | Precipitation of Coldest Quarter                           |
 
 \newpage
 
