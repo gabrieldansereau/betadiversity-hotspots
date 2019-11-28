@@ -242,24 +242,24 @@ study.
 
 ### 4. LCBD Calculation
 
-We calculated the LCBD statistics through the total variance of the matrix $Y$ for both the
-raw data and SDM predictions.
-@LegeDeC13 showed that LCBD coefficients can be calculated directly
-through the total variance of matrix $Y$, or through a matrix of dissimilarities among
-sampling units.
+We calculated the LCBD statistics through the total variance of the matrix $Y$ for both
+the raw data and SDM predictions.
+@LegeDeC13 showed that LCBD coefficients can be calculated directly through the total
+variance of matrix $Y$, or through a matrix of dissimilarities among sampling units.
 We chose the first approach as it also allows to compute species contributions to beta
 diversity (SCBD), which could also prove useful for conservation purposes, but we did not
 investigate these for now.
 Before computing the LCBD statistics, the presence-absence matrix $Y$ had to be
-transformed in an appropriate way, as mentioned earlier.
-We chose to apply the Hellinger transformation to the raw data and no transformation on
-the SDM predictions for now, as the most appropriate one still needs to be determined.
-We then computed a matrix $S$ of squared deviations from column means and summed all the
-values of $S$ to obtain the total sum of squares ($SS$) of the species composition data
-[@LegeDeC13]. LCBD coefficients are then computed as $LCBD_i = SS_i/SS_{Total}$,
-where $SS_i$ is the sum of squares of a sampling unit $i$. Finally, since our matrix $Y$ is
-very large, the LCBD coefficients are very small, so we scaled them to the maximum value
-observed.
+transformed in an appropriate way [@LegeDeC13]. We chose to apply the Hellinger
+transformation to the raw data and no transformation on the SDM predictions for now,
+although we did not investigate these in detail.
+The most appropriate transformation still needs to be determined, especially for the SDM
+predictions. We then computed a matrix $S$ of squared deviations from column means and
+summed all the values of $S$ to obtain the total sum of squares ($SS$) of the species
+composition data [@LegeDeC13]. LCBD coefficients are then computed as $LCBD*i = SS_i/SS*{Total}$,
+where $SS_i$ is the sum of squares of a sampling unit $i$. Finally, since our matrix $Y$
+is very large, the LCBD coefficients are very small, so we scaled them to the maximum
+value observed.
 
 ### 5. Prediction Validity
 
