@@ -63,7 +63,7 @@ distribution models (SDM). These models, such as the BIOCLIM method, use the env
 conditions at sampled sites to predict the presence or absence of each species at
 unsampled locations.
 Second, LCBD statistics can then be computed on the SDM predictions.
-We therefore show that it is possible to identify beta diversity hotspots on spatially
+We show that it is therefore possible to identify beta diversity hotspots on spatially
 continuous and extended scales.
 Our results confirm that LCBD values are related to species richness, and that
 species-poor sites contribute most to beta diversity.
@@ -123,20 +123,20 @@ exploratory analyses do provide relevant ecological insights that could be used 
 different ways.
 For instance, our method could help identify unsampled sites with potential conservation
 value which should be targeted as soon as possible in future studies.
-We also believe that it method could also be combined with IPCC climate change scenarios,
+We believe that the method could also be combined with IPCC climate change scenarios,
 which provide projections for climate variables, in a way that would allow us to model
 beta diversity changes with climate change and to identify the sites where the changes in
 the community will be most important.
-Once again, the method would therefore prove very relevant in an informative approach to
-suggest sites to prioritize for future conservation and more structured research.
+Once again,this would prove very relevant in an informative approach, suggesting
+sites to prioritize for future conservation and more structured research.
 
 In this document, we cover in more details the methods that we suggest for this M.Sc.
 research project.
 The preparation part of the project, including data collection and manipulation, has
-already been done, and a workflow for the analyses, including code implementation, has
-been defined as well.
+already been done.
+A workflow for the analyses, including code implementation, has been defined as well.
 We also detail preliminary analyses and results intended as proof-of-concept for the
-approach, which of course needs to be refined.
+approach, which, of course, needs to be refined.
 Finally, we discuss methods that we intend to use in future analyses, and whose
 feasibility is not as clearly stated.
 
@@ -152,17 +152,17 @@ among birders, with over 30 million observations.
 Global citizen-contributed databases often present additional challenges compared to
 conventional datasets due to their lack of structure, as well as spatial and taxonomic
 biases [@JohnHoch19]. For instance, there was a clear bias in our data towards the United
-States, where there were much more observations and sampling events (@tbl:ebird).
+States, where there were many more observations and sampling events (@tbl:ebird).
 However, eBird offers two advantages over other large scale datasets
-[@JohnHoch19]\: 1) the data is structured as checklist and users can explicitly specify
+[@JohnHoch19]\: 1) the data is structured as checklists and users can explicitly specify
 their observations as “complete checklists” when all detected species were reported, which
 allows to infer information on species absences, and 2) the dataset is semi-structured and
 checklists are associated with metadata describing sampling effort, such as duration of
 search, distance travelled and number of observers, which can be used as controls in the
 analyses. Hence, model performance can be improved by inferring absences and subsampling
 checklists, while spatial bias can be compensated by including effort covariates in the
-model. Therefore, we believe the dataset can be appropriately used to achieve our
-objective of expanding measures of exceptional biodiversity through space.
+model [@JohnHoch19]. Therefore, we believe the dataset can be appropriately used to
+achieve our objective of expanding measures of exceptional biodiversity through space.
 
 We collected the data available in the WorldClim 2 database [@FickHijm17] for North
 America, to which we decided to restrict our analyses.
@@ -171,8 +171,8 @@ areas, available for resolutions from 10 arc-minutes to 30 arc-seconds (around 1
 1 km² at the equator).
 Since the release of the first version of the database in 2005 [@HijmCame05], it became
 the most common source of climate data for SDM studies [@BootNix14]. The variables we used
-were different measures of temperature and precipitation(@tbl:wc_vars), and they have been
-show to have very high global cross-validation coefficients (> 0.99 and 0.86 respectively)
+were different measures of temperature and precipitation (@tbl:wc_vars), which very high
+global cross-validation coefficients (> 0.99 and 0.86 respectively)
 [@FickHijm17]. We chose to use the coarser 10 arc-minutes resolution in our preliminary
 analyses, as we believed it was sufficient for proof of concept of our method.
 However, @HijmCame05 showed high within-grid cell variation in the 10 arc-minutes data,
@@ -205,14 +205,16 @@ WorldClim variables, and then created a presence-absence community matrix $Y$, t
 the grid cells as sites.
 At the 10 arc-minutes resolution, we obtained 39 024 sites with occurrences and 62
 species in total.
-All data manipulations and further analyses were realized in *Julia v1.2.0* [@BezaEdel17]
-with the basic structure built around the soon-to-be-released `SimpleSDMLayers.jl` package.
+All data manipulations and further analyses were realized in *Julia v1.2.0*
+[@BezaEdel17], with the basic structure built around the soon-to-be-released `SimpleSDMLayers.jl` package [^1].
+
+[^1]: https://github.com/EcoJulia/SimpleSDMLayers.jl
 
 ### 3. SDM – The BIOCLIM Method
 
 We predicted species distributions using the BIOCLIM method [@Nix86], a climate-envelope
 model, considered a classic in the field.
-The method simply relates a species' distribution to the ranges of bioclimatic variables
+This method simply relates a species' distribution to the ranges of bioclimatic variables
 at known locations [@BootNix14]. It has long been outperformed by other methods
 [@ElitGrah06], but it is still commonly used for its simplistic approach and ease of
 understanding, as well as its simple relation to niche theory
@@ -228,7 +230,7 @@ environmental variable at the known locations of occurrence [@HijmPhil17]. All s
 then compared to those percentile distributions and given a score per variable according
 to their ranking between 0.0 (1st percentile) and 1.0 (100th percentile).
 The median or 50th percentile was considered the most suitable value of the variable, and
-values larger than 0.5 were subtracted from 1. Therefore, both tails are considered the
+values larger than 0.5 were subtracted from 1. Therefore, both tails were considered the
 same. The minimum percentile score across all environmental variables was then selected as
 the predicted value for each site.
 Values were multiplied by 2 and could therefore be interpreted as probabilities of species
@@ -239,11 +241,11 @@ occur whenever an environmental value is outside the range of the observed ones
 
 The final step was to convert the probabilities into presence-absence data, so they could
 be compared with the raw occurrence data.
-We transformed the probabilities into 0s and 1s by converting all values greater than zero
-to one. Although it might tend to overestimate species ranges, such a transformation is
-common is SDMs and can be accounted for during result validation with specific methods
-[@Fran10a]. We also considered applying a threshold, which would be determined by
-sensitivity analysis.
+We transformed the probabilities into zeros and ones by converting all values greater than
+zero to one. Although it might tend to overestimate species ranges, such a transformation
+is common in SDMs and can be accounted for during result validation with specific methods
+[@Fran10a]. We also considered applying a threshold determined by sensitivity analysis, but
+we haven't done it yet.
 In any case, converting into presence-absence data allowed easier calculation of the
 richness and beta diversity metric.
 
@@ -263,7 +265,7 @@ although we did not investigate these in detail.
 The most appropriate transformation still needs to be determined, especially for the SDM
 predictions. We then computed a matrix $S$ of squared deviations from column means and
 summed all the values of $S$ to obtain the total sum of squares ($SS$) of the species
-composition data [@LegeDeC13]. LCBD coefficients are then computed as $LCBD*i = SS_i/SS*{Total}$,
+composition data [@LegeDeC13]. LCBD coefficients are then computed as $LCBD_i = SS_i/SS_{Total}$,
 where $SS_i$ is the sum of squares of a sampling unit $i$. Finally, since our matrix $Y$
 is very large, the LCBD coefficients are very small, so we scaled them to the maximum
 value observed.
@@ -275,28 +277,27 @@ will also depend on the exact methods used to make the SDM predictions.
 A key element to note is that both SDM predictions and LCBD values will have to be
 validated, hence they might require different methods.
 Metrics that measure the accuracy of categorical or probabilistic predictions in SDMs are
-well documented, in various forms.
+well documented, and take various forms.
 Some require absence data to test against, and can be used on probabilistic predictions
 directly (area-under-curve, AUC) or after a conversion of the predictions to binary
-presence-absence using a certain threshold (Kappa index, measuring the difference between
+presence-absence using a given threshold (Kappa index, measuring the difference between
 observed and chance agreement in a confusion matrix) [@Fran10a]. Other methods are
 appropriate for presence-only data, such as the Boyce Index.
-In any case, measuring
-prediction error is only one part of validation, and finding appropriate data for
-evaluation is almost as essential [@Fran10a], especially since we also aim to describe
-community structure.
-Separating the data into a training and testing dataset, with 70% and 30% of the
-observations for instance, is a possible approach common in machine learning methods,
-although all of the available observations might be needed in some cases [@Fran10a].
-An interesting approach, suggested by @ElitGrah06 for SDMs, would be to find independent,
+In any case, measuring prediction error is only one part of the validation.
+Finding appropriate data for evaluation is also critical [@Fran10a], especially since we
+aim to describe community structure.
+Separating the data into training and testing datasets, with 70% and 30% of the
+observations for instance, is an approach common in machine learning methods.
+However, all of the available observations might be needed in some cases [@Fran10a]. An
+interesting approach, suggested by @ElitGrah06 for SDMs, would be to find independent,
 well-structured presence-absence datasets for validation, on which both SDM predictions
 and beta diversity metrics could be tested.
 This approach has the advantage that the testing data is truly independent of the training
 one, hence it could be used with certain tests of significance.
 Although it might not cover the entire extent of the predictions in a single test, this
-method brings a closer comparison to the way LCBD metrics are used in most studies, and it
-would provide interesting perspectives if combined with other, full-extent validation
-methods.
+method would bring a closer comparison to the way LCBD metrics are used in most studies.
+Therefore, it would provide interesting perspectives if combined with other, full-extent
+validation methods.
 
 ### 6. Alternative methods
 
@@ -306,7 +307,7 @@ our case, better predictions will come by two different means:
 presence-absence (or even abundance) and environmental variables, and 2) approaches that
 account for other drivers of species distributions, such as ecological interactions and
 species migration.
-Machine learning methods, especially, would be also be interesting alternatives to
+Machine learning methods, especially, would be interesting alternatives to
 consider. MAXENT [@PhilAnde06], another presence-only method, has come to be one of the
 most widely used methods in SDM studies, often with WorldClim variables
 [@BootNix14]. Similarly, Random Forests are simple to put in place, take into account both
@@ -314,53 +315,54 @@ presence and absence data, allow for quantification of the variables importance 
 explaining variation, and offer intrinsic testing metrics [@Fran10a]. However, while those
 methods might return more accurate predictions, they do not implicitly model other drivers
 of species distribution, among which species interactions and functional niche.
-Integrating those factors might prove more difficult given our dataset and our focus
-Warblers species, as no appropriate information on their interaction is available, to our
-knowledge. Joint species distribution models (JSDMs) might be an interesting way to
-encompass those, as they attempt to model species co-occurrence, rather than the
-distribution of single species [@PollTing14]. A different taxonomic group and dataset with
-more details on interactions could also be used.
-On the other hand, finding a method that could be applied to any taxonomic group,
-especially those well represented in large citizen-contributed datasets, would be most
-useful for research and conservation purposes.
+Integrating those factors might prove more difficult given our dataset and our focus on
+Warblers species, as no appropriate information on their interaction is available.
+Joint species distribution models (JSDMs) might be an interesting way to encompass those,
+as they attempt to model species co-occurrence, rather than the distribution of single
+species [@PollTing14]. Also, a different taxonomic group and dataset with more details on
+interactions could simply be used.
+On the other hand, a method that could be applied to any taxonomic group, especially those
+well represented in large citizen-contributed datasets, would be most useful for research
+and conservation purposes.
 
 ### 7. Climate Change Scenarios and Temporal Beta Diversity
 
-We aim to apply our method to environmental conditions from IPCC climate change scenarios,
-first to model community compositions after climate change on continuous scales through
-SDMs, and then to identify the sites where the community has changed in the most
-exceptional ways.
-This can be seen from the variation in LCBD values, but also through temporal beta
-diversity indices (TBI) [@Lege19]. TBI indices allow to study changes in community
-composition through time from repeated surveys at given sites.
-Whereas LCBD values essentially measure the contribution to beta diversity of each site
-compared to all others, TBI measure changes in community composition for a single site
-between two surveys, and can also be decomposed into species losses and gains [@Lege19].
-Moreover, TBI can be tested for significance using a permutation test.
-An approach similar to that of @LegeCond19 would be most interesting to follow.
-First, they computed LCBD indices and compared the sites that were significant for two
-surveys 30 years apart, highlighting a swamp region where important changes seemed to have
-occurred. Then, they used TBI indices to confirm the sites with significant changes,
+We aim to apply our method to environmental conditions from IPCC climate change scenarios.
+First, community compositions after climate change could be modelled on continuous scales
+through SDMs. Second, we could identify the sites where the community has changed in the
+most exceptional ways.
+This identification can be done by looking at the variation in LCBD values, but also
+through the use of temporal beta diversity indices (TBI) [@Lege19]. TBI indices allow to
+study changes in community composition through time from repeated surveys at given sites.
+Whereas LCBD values essentially measure the contribution to beta diversity of one site
+compared to all others, TBI measure changes in community composition site-wise between two
+surveys. Moreover, TBI indices can be decomposed into species losses and gains, and can be
+tested for significance using a permutation test [@Lege19]. An approach similar to that of
+@LegeCond19 would be interesting to follow in our case.
+First, they computed LCBD indices and compared the location of the sites with exceptional
+compositions between two surveys 30 years apart.
+The comparison showed that important changes seemed to have occurred in a specific swamp
+region. Then, they used TBI indices to confirm the sites with significant changes,
 decompose these changes into losses and gains, and identify the species that had changed
-the most. Such an approach could be highly informative with our data, although the
-permutation tests and corrections to apply might cause problems given the number of sites
-implied in our study.
+the most. An approach such as this one could be highly informative with our data, although
+the permutation tests and corrections required might cause some problems given the number
+of sites in our study.
 
 The possibility of using climate change scenarios in the SDMs also needs to be assessed.
 We did not try to download nor find the appropriate data for now.
-Interpolated variables are sometimes different than those used in Worldclim 2.0.
-Therefore, the SDM models and predictions might have to be different too, and
-potentially less reliable.
+However, interpolated climate change variables are sometimes different than the ones in
+WorldClim. Therefore, the SDM models to use and the resulting predictions might have to be
+different too, and potentially less reliable.
 Nonetheless, we believe it will be possible to do some kind of time analysis linking beta
 diversity, climate change and species distribution modelling, and that it could return
 highly informative results for conservation purposes.
 
 ## Preliminary Results
 
-Our preliminary results mainly consisted of comparisons between the raw occurrence data
+Our preliminary results consisted of comparisons between the raw occurrence data
 and the SDM predictions for the four following elements:
 single-species distribution ([@fig:sp_raw; @fig:sp_sdm]), species richness ([@fig:richness_raw; @fig:richness_sdm]), LCBD coefficients ([@fig:lcbd_raw;
-@fig:lcbd_sdm]), and the relationship between the species richness and LCBD coefficients ([@fig:relation_raw; @fig:relation_sdm]). Two main results emerged from them:
+@fig:lcbd_sdm]), as well as the relationship between the species richness and LCBD coefficients ([@fig:relation_raw; @fig:relation_sdm]). Two main results emerged from them:
 1) the models provided seemingly valid and relevant results for poorly sampled regions,
 both expected species-poor and species-rich ones, and 2) there was an association between
 species richness and LCBD coefficients partially confirming the relationship shown in
@@ -424,7 +426,7 @@ finer local ones, which might highlight regional differences in a new way.
 
 \newpage
 
-: Distribution of the data in the eBird checklists for the countries used in the analyses {#tbl:ebird}
+: Structure of the Warblers data in the eBird checklists for the countries used in the analyses {#tbl:ebird}
 
 | Country | Observations | Checklists | Species | Species per checklist (mean) | Species per checklist (median) | Species per checklist (maximum) |
 |---|---|---|---|---|---|---|
@@ -433,7 +435,7 @@ finer local ones, which might highlight regional differences in a new way.
 | MX    | 407 227    | 147 599   | 61 | 2.759 | 2.0 | 21 |
 | Total | 22 974 330 | 9 103 750 | 63 | 2.523 | 2.0 | 34 |
 
-: WorldClim 2 climate variables used in the analyses {#tbl:wc_vars}
+: Descripion of the WorldClim 2 climate variables used in the analyses {#tbl:wc_vars}
 
 | Variable | Description                                                |
 | ------   | ------                                                     |
