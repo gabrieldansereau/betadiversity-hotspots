@@ -426,9 +426,10 @@ which might highlight regional differences in a new way.
 
 | Country | Observations | Checklists | Species | Species per checklist (mean) | Species per checklist (median) | Species per checklist (maximum) |
 |---|---|---|---|---|---|---|
-| US | 19 206 453 | 7 840 526 | 56 | 2.450 | 2.0 | 34 |
-| CA | 3 360 650  | 1 115 625 | 45 | 3.012 | 2.0 | 31 |
-| MX | 407 227    | 147 599   | 61 | 2.759 | 2.0 | 21 |
+| US    | 19 206 453 | 7 840 526 | 56 | 2.450 | 2.0 | 34 |
+| CA    | 3 360 650  | 1 115 625 | 45 | 3.012 | 2.0 | 31 |
+| MX    | 407 227    | 147 599   | 61 | 2.759 | 2.0 | 21 |
+| Total | 22 974 330 | 9 103 750 | 63 | 2.523 | 2.0 | 34 |
 
 : WorldClim 2 climate variables used in the analyses {#tbl:wc_vars}
 

@@ -42,5 +42,17 @@ table2 = by(tmp, :countryCode, [:x1] => x -> (n_sp_moy = mean(x.x1),
                                               ))
 tables = join(table1, table2, on = :countryCode)
 
+n_obs_tot = nrow(df)
+n_checklist_tot = length(unique(df.samplingEventIdentifier))
+n_sp_tot = length(unique(df.species))
+tmp2 = by(df, :samplingEventIdentifier, nrow)
+n_sp_moy_tot = mean(tmp[:x1])
+n_sp_med_tot = median(tmp[:x1])
+n_sp_max_tot = maximum(tmp[:x1])
+table_tot = DataFrame(countryCode = "Total", n_obs = n_obs_tot, n_checklist = n_checklist_tot, n_sp = n_sp_tot,
+                        n_sp_moy = n_sp_moy_tot, n_sp_med = n_sp_med_tot, n_sp_max = n_sp_max_tot)
+
+tables = vcat(tables, table_tot)
+
 show(md(tables))
 latexify(tables) |> print
