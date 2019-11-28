@@ -321,34 +321,34 @@ research.
 
 ### 7. Climate Change Scenarios and Temporal Beta Diversity
 
-We aim to apply our method to environmental conditions from climate change scenarios,
+We aim to apply our method to environmental conditions from IPCC climate change scenarios,
 first to model community compositions after climate change on continuous scales through
 SDMs, and then to identify the sites where the community has changed in the most
 exceptional ways.
-This can be done through LCBD values, but also through temporal beta diversity indices
-(TBI) [@Lege19], which allow to study changes in community composition through time
-from repeated surveys at given sites.
+This can be seen from the variation in LCBD values, but also through temporal beta
+diversity indices (TBI) [@Lege19]. TBI indices allow to study changes in community
+composition through time from repeated surveys at given sites.
 Whereas LCBD values essentially measure the contribution to beta diversity of each site
-compared to all other ones, TBI measure changes in community composition for a single site
-between two surveys, and can also be decomposed into species losses and gains.
+compared to all others, TBI measure changes in community composition for a single site
+between two surveys, and can also be decomposed into species losses and gains [@Lege19].
 Moreover, TBI can be tested for significance using a permutation test.
-An approach similar to that of @LegeCond19 would be most interesting to
-follow: they first computed LCBD indices and compared the sites that were significant for
-two surveys 30 years apart, highlighting a swamp region where important changes seemed to
-have occurred, and then used TBI indices to confirm the sites with significant changes,
-decompose those into losses and gains and identify the species that had changed the most.
-Such an approach could be highly informative with our data, although the permutation tests
-and corrections to apply might cause problems given the number of sites that would be
+An approach similar to that of @LegeCond19 would be most interesting to follow.
+First, they computed LCBD indices and compared the sites that were significant for two
+surveys 30 years apart, highlighting a swamp region where important changes seemed to have
+occurred. Then, they used TBI indices to confirm the sites with significant changes,
+decompose these changes into losses and gains, and identify the species that had changed
+the most. Such an approach could be highly informative with our data, although the
+permutation tests and corrections to apply might cause problems given the number of sites
 implied in our study.
-The possibility of using climate change scenarios in the SDMs also needs to be
-investigated in more details.
-We did not try to download nor find the appropriate data for now, but we found that the
-interpolated variables are sometimes different than those used in Worldclim 2.0. The SDM
-models and predictions might therefore be slightly different than those used for the LCBD
-calculations, and potentially less reliable.
+
+The possibility of using climate change scenarios in the SDMs also needs to be assessed.
+We did not try to download nor find the appropriate data for now.
+Interpolated variables are sometimes different than those used in Worldclim 2.0.
+Therefore, the SDM models and predictions might have to be different too, and
+potentially less reliable.
 Nonetheless, we believe it will be possible to do some kind of time analysis linking beta
-diversity, climate change and species distribution modelling, and that it could return highly
-informative results for conservation purposes.
+diversity, climate change and species distribution modelling, and that it could return
+highly informative results for conservation purposes.
 
 ## Preliminary Results
 
