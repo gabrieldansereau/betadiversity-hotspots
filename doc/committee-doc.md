@@ -357,17 +357,14 @@ highly informative results for conservation purposes.
 
 ## Preliminary Results
 
-Our preliminary results mainly consisted of comparisons between the raw occurrence data and
-the SDM predictions for the four following elements:
-single-species distribution ([@fig:sp_raw; @fig:sp_sdm]), species richness
-([@fig:richness_raw; @fig:richness_sdm]), LCBD coefficients ([@fig:lcbd_raw;
-@fig:lcbd_sdm]), and the relationship between the species richness and LCBD
-coefficients ([@fig:relation_raw; @fig:relation_sdm]).
-Two main results emerged from them:
+Our preliminary results mainly consisted of comparisons between the raw occurrence data
+and the SDM predictions for the four following elements:
+single-species distribution ([@fig:sp_raw; @fig:sp_sdm]), species richness ([@fig:richness_raw; @fig:richness_sdm]), LCBD coefficients ([@fig:lcbd_raw;
+@fig:lcbd_sdm]), and the relationship between the species richness and LCBD coefficients ([@fig:relation_raw; @fig:relation_sdm]). Two main results emerged from them:
 1) the models provided seemingly valid and relevant results for poorly sampled regions,
-both expected species-poor and species-rich ones, and 2) there was a strong association
-between species richness and LCBD coefficients confirming the relationship shown in other
-studies.
+both expected species-poor and species-rich ones, and 2) there was an association between
+species richness and LCBD coefficients partially confirming the relationship shown in
+other studies.
 
 First, the example of the Yellow Warbler (*Setophaga petechia*), one of the most observed
 species, showed that the single-species models predicted a broad distribution covering
@@ -397,18 +394,18 @@ Raw occurrence data showed a negative relationship between species richness and 
 coefficients (@fig:relation_raw), as observed previously by @HeinGron17, with no clear
 geographic pattern (@fig:lcbd_raw).
 If anything, the highest values seemed to be at the borders of the most sampled regions,
-which are about where the sites with the less species observed are located
-(@fig:richness_raw).
+where are located the sites in which fewer species were observed (@fig:richness_raw).
 On the other hand, SDM predictions showed a quadratic form, with the LCBD coefficients
 re-increasing after some threshold (@fig:relation_sdm).
 The geographic pattern is also clearer, with the highest values to the northern and
 southern extremes (@fig:lcbd_sdm).
-We suggest that this result makes sense, as LCBD indices should highlight the most
-exceptional species composition, and these are both well and continuously represented in a
-SDM.
-Although raw occurrence data results concorded with those of @HeinGron17, the "border
-effect" and the difference with SDM projections might show the importance of going beyond
-occurrence data when using large databases but spatially biased databases such as eBird.
+Since LCBD indices should highlight the most exceptional species composition, both species
+poor or species rich, this result is no necessarily surprising.
+In a way, extremes and intermediate values might be represented more evenly on the
+continuous scale of a SDM than in the raw data.
+Although raw occurrence data results concorded with those of @HeinGron17, the different
+result with the SDM projections might show the importance of going beyond occurrence data
+when using large but spatially biased databases such as eBird.
 Once again, our results highlight the need for well-thought method and an investigation of
 the appropriate transformation to use on the data.
 
@@ -420,10 +417,10 @@ Except for mountains, few exceptional sites are actually shown in the middle of 
 landscape. While it might have been unrealistic to expect such results from a coarse
 analysis like ours, it would be useful for conservation purposes to be able the identify
 precise sites within smaller regions.
-This might be achieved by using a finer resolution, which we should probably reconsider,
-or by using a different technique, such as training the models and predicting species
-distributions on large scales, but computing and scaling LCBD values on finer local ones,
-which might highlight regional differences in a new way.
+This might be achieved by using a finer resolution, which we should probably reconsider in
+light of these results, or by using a different technique, such as training the models and
+predicting species distributions on large scales, but computing and scaling LCBD values on
+finer local ones, which might highlight regional differences in a new way.
 
 \newpage
 
