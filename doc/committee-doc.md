@@ -186,7 +186,7 @@ species ranges.
 ### 2. Data Manipulation
 
 WorldClim variables and eBird occurrence data are provided in different formats, so they
-require some manipulation to be combined together.
+required some manipulations to be combined together.
 WorldClim variables are provided in a 2-dimensional grid format, useful for large scale
 analyses and visualization, where each cell or pixel has a size corresponding to the
 resolution of 10 arc-minutes.
@@ -200,10 +200,7 @@ Hence, for each species, we matched all occurrences in eBird to the grid format 
 WorldClim variables, and then created a presence-absence community matrix $Y$, taking all
 the grid cells as sites.
 At the 10 arc-minutes resolution, we obtained 39 024 sites with occurrences and 62
-species.
-We also applied the Hellinger transformation on the raw presence-absence data, although
-the most appropriate method remains to be determined, especially since the data has to be
-compared with the SDM predictions.
+species in total.
 All data manipulations and further analyses were realized in *Julia v1.2.0* [@BezaEdel17]
 with the basic structure built around the soon-to-be-released `SimpleSDMLayers.jl` package.
 
