@@ -206,39 +206,42 @@ with the basic structure built around the soon-to-be-released `SimpleSDMLayers.j
 
 ### 3. SDM – The BIOCLIM Method
 
-We used the BIOCLIM method [@Nix86] to predict species distributions, which is a
-climate-envelope model, considered a classic in the field, that simply relates a species
-distribution to the ranges of bioclimatic variables at observed locations
-[@BootNix14]. It has long been outperformed by other methods [@ElitGrah06], but it is still
-commonly used for its simplistic approach and ease of understanding, as well as its simple
-relation to niche theory [@BootNix14; @HijmPhil17]. It is also a method designed for
-presence-only data, which does not require information on absences, nor take them into
-account if provided (as in our case).
+We predicted species distributions using the BIOCLIM method [@Nix86], a climate-envelope
+model, considered a classic in the field.
+The method simply relates a species' distribution to the ranges of bioclimatic variables
+at known locations [@BootNix14]. It has long been outperformed by other methods
+[@ElitGrah06], but it is still commonly used for its simplistic approach and ease of
+understanding, as well as its simple relation to niche theory
+[@BootNix14; @HijmPhil17]. It is also primarily designed for presence-only data.
 Despite that, we chose this method for our preliminary analyses as it was easier to
 implement and because we believe it to be sufficient for proof-of-concept.
 We discuss possible alternatives in the “Alternative Methods” section below.
 
-Briefly, the BIOCLIM method defines species potential range as a multidimensional
-environmental hypervolume bounded by the minimum and maximum values of all presences
-[@Fran10a]. For each species, the algorithm establishes the percentile distribution of the
-values of each environmental variables at the known locations of occurrences
-[@HijmPhil17]. All sites are then compared to those percentile distributions and given a
-score for each variable according to their ranking between 0.0 (1st percentile) and 1.0
-(100th percentile).
-The median or 50th percentile is considered as the most suitable location, and both tails
-(e.g. 10th and 90th percentile) are not distinguished, the values larger than 0.5 being
-subtracted from 1. The minimum percentile score across all environmental variables is
-selected as the prediction value for each site and multiplied by 2 so values are between 0
-and 1 [@HijmPhil17]. It should be noted that the limiting variable is thus not necessarily
-the same for all sites.
-Values of 1 are rare, as it would mean a perfectly median site on all variables, and
-values of 0 are frequent, since they are assigned whenever an environmental value is
-outside the range of the observed ones [@HijmPhil17]. Finally, before calculating richness
-or beta diversity metrics, we transformed the predictions back to a presence-absence
-format, where all predictions greater than one are considered as presence.
-This might tend to overestimate species ranges and create some sort of border effect, but
-we believe the effects will be mitigated given the spatial extent and coarse scale of our
-study.
+The BIOCLIM method defines species potential ranges as a multidimensional environmental
+hypervolume bounded by the minimum and maximum values for all occurrences
+[@Fran10a]. For each species, we established the percentile distribution of each
+environmental variable at the known locations of occurrence [@HijmPhil17]. All sites were
+then compared to those percentile distributions and given a score per variable according
+to their ranking between 0.0 (1st percentile) and 1.0 (100th percentile).
+The median or 50th percentile was considered the most suitable value of the variable, and
+values larger than 0.5 were subtracted from 1. Therefore, both tails are considered the
+same. The minimum percentile score across all environmental variables was then selected as
+the predicted value for each site.
+Values were multiplied by 2 and could therefore be interpreted as probabilities of species
+occurrence [@HijmPhil17]. Predictions of 1 should be rare by definition, as they require a
+perfectly median site on all variables, and values of 0 should be frequent, since they
+occur whenever an environmental value is outside the range of the observed ones
+[@HijmPhil17].
+
+The final step was to convert the probabilities into presence-absence data, so they could
+be compared with the raw occurrence data.
+We transformed the probabilities into 0s and 1s by converting all values greater than zero
+to one. Although it might tend to overestimate species ranges, such a transformation is
+common is SDMs and can be accounted for during result validation with specific methods
+[@Fran10a]. We also considered applying a threshold, which would be determined by
+sensitivity analysis.
+In any case, converting into presence-absence data allowed easier calculation of the
+richness and beta diversity metric.
 
 ### 4. LCBD Calculation
 
