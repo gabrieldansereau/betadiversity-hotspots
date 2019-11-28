@@ -296,31 +296,29 @@ methods.
 
 ### 6. Alternative methods
 
-Other methods could possibly outperform BIOCLIM for the predictions, as shown by
-@ElitGrah06. Better predictions will come by two different means:
-1\) approaches that are better than BIOCLIM to model the relationship between species
-presence-absence (or even abundance) and environmental variables, and 2\) approaches that
+Many methods generally outperform BIOCLIM for the predictions, as shown by @ElitGrah06. In
+our case, better predictions will come by two different means:
+1) approaches that are better than BIOCLIM to model the relationship between species
+presence-absence (or even abundance) and environmental variables, and 2) approaches that
 account for other drivers of species distributions, such as ecological interactions and
 species migration.
-The most obvious alternative to BIOCLIM is MAXENT [@PhilAnde06], another presence-only
-method that has come to be one of the most widely used methods.
-Machine learning methods would be also be interesting alternatives that have been proven
-to outperform BIOCLIM [@Fran10a]. Random Forests, especially are simple methods to
-put in place, allow for quantification of the variables importance in explaining
-variation, and offer intrinsic testing metrics.
-Neural networks could also be an interesting alternative.
-However, while those methods might return more accurate predictions, they do not
-implicitly model other drivers of species distribution, among which species interactions
-and functional niche.
+Machine learning methods, especially, would be also be interesting alternatives to
+consider. MAXENT [@PhilAnde06], another presence-only method, has come to be one of the
+most widely used methods in SDM studies, often with WorldClim variables
+[@BootNix14]. Similarly, Random Forests are simple to put in place, take into account both
+presence and absence data, allow for quantification of the variables importance in
+explaining variation, and offer intrinsic testing metrics [@Fran10a]. However, while those
+methods might return more accurate predictions, they do not implicitly model other drivers
+of species distribution, among which species interactions and functional niche.
 Integrating those factors might prove more difficult given our dataset and our focus
 Warblers species, as no appropriate information on their interaction is available, to our
 knowledge. Joint species distribution models (JSDMs) might be an interesting way to
 encompass those, as they attempt to model species co-occurrence, rather than the
-distribution of single species [@PollTing14]. A different taxonomic
-group and data datasets could also be used with more details on interactions could also be
-used, though having a method that can be applied to any taxonomic group would be more
-interesting. Yet, such an approach might prove to be beyond the scope of the present
-research.
+distribution of single species [@PollTing14]. A different taxonomic group and dataset with
+more details on interactions could also be used.
+On the other hand, finding a method that could be applied to any taxonomic group,
+especially those well represented in large citizen-contributed datasets, would be most
+useful for research and conservation purposes.
 
 ### 7. Climate Change Scenarios and Temporal Beta Diversity
 
