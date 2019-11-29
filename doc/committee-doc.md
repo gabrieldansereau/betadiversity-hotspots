@@ -363,10 +363,10 @@ highly informative results for conservation purposes.
 Our preliminary results consisted of comparisons between the raw occurrence data
 and the SDM predictions for the four following elements:
 single-species distribution (@fig:singlesp), species richness (@fig:richness), LCBD coefficients (@fig:lcbd), as well as the relationship between the species richness and LCBD coefficients (@fig:relationship_oneplot). Two main results emerged from them:
-1) the models provided seemingly valid and relevant results for poorly sampled regions,
-both expected species-poor and species-rich ones, and 2) there was an association between
-species richness and LCBD coefficients partially confirming the relationship shown in
-other studies.
+1) the models provided community composition results for poorly sampled regions, both
+expected species-poor and species-rich, and 2) the relationship between species richness
+and species distribution models was in line with previous studies for species poor sites,
+but the SDM models captured a new association for very rich sites.
 
 First, the example of the Yellow Warbler (*Setophaga petechia*), one of the most observed
 species, showed that the single-species models predicted a broad distribution covering
@@ -379,35 +379,40 @@ predict species presence despite poor or no sampling.
 Mexico, for example, has much sparser sampling and fewer observations, but the models
 predict Yellow Warblers presence in most areas nonetheless, as well as higher species
 richness than on the highly sampled Atlantic Coast, which make sense for a more southern
-location. We believe these to be valid insights on poorly sampled locations, although
-we reckon that intuitive reasoning is not a proof of anything, and that the model might be
-wrong in important ways.
-In any case, it highlights the need for an appropriate method of
-validation, as well as a thoughtful consideration of other factors such as species
-migration.
+location. We believe these to be valid insights on poorly sampled locations, but there is still a need for an appropriate method of validation to confirm our intuition, as well as a
+thoughtful consideration of factors such as species migration.
 
-Second, our preliminary LCBD results seemed to confirm the association between species
-richness and LCBD coefficients, while also being valid and insightful.
-They were however harder to interpret given the use of the Hellinger transformation for
-the raw occurrence data only.
-Raw occurrence data showed a negative relationship between species richness and LCBD
-coefficients (@fig:relationship_oneplot), as observed previously by @HeinGron17, with no clear
-geographic pattern (@fig:lcbd_raw).
-If anything, the highest values seemed to be at the borders of the most sampled regions,
-where are located the sites in which fewer species were observed (@fig:richness_raw).
-On the other hand, SDM predictions showed a quadratic form, with the LCBD coefficients
-re-increasing after some threshold (@fig:relationship_oneplot).
-The geographic pattern is also clearer, with the highest values to the northern and
-southern extremes (@fig:lcbd_sdm).
-Since LCBD indices should highlight the most exceptional species composition, both species
-poor or species rich, this result is no necessarily surprising.
-In a way, extremes and intermediate values might be represented more evenly on the
-continuous scale of a SDM than in the raw data.
-Although raw occurrence data results concurred with those of @HeinGron17, the different
-result with the SDM projections might show the importance of going beyond occurrence data
-when using large but spatially biased databases such as eBird.
-Once again, our results highlight the need for well-thought method and an investigation of
-the appropriate transformation to use on the data.
+Second, our preliminary LCBD results seemed to confirmed the association between species
+richness and LCBD coefficients from previous studies, but the SDM predictions captured a
+new association for extremely rich sites.
+Indeed, raw occurrence data showed a negative relationship between species richness and
+LCBD coefficients (@fig:relationship_oneplot), as observed previously by @HeinGron17, with
+no clear geographic pattern (@fig:lcbd_raw).
+On the other hand, SDM predictions showed a clear geographic pattern, with the highest
+values to the northern and southern extremes (@fig:lcbd_sdm).
+Moreover, the richness-LCBD relationship showed a quadratic form, with the LCBD
+coefficients re-increasing beyond a richness of 0.6 (@fig:relationship_oneplot), which
+approximately corresponds to the maximum richness observed in the raw occurrence data.
+Therefore, the SDM predictions captured a new association that could not be seen in the
+occurrence data, possibly because there were no rich enough sites to display it.
+By definition, LCBD indices should highlight the most exceptional species compositions,
+both species poor or species rich.
+Thus, the quadratic relationship we observed makes sense, on the condition that extremely
+rich sites can realistically exist.
+These richest sites should likely have been in the southernmost locations such as Mexico,
+which is heavily undersampled.
+For instance, all but two species were seen there at least once, but the maximum number of
+species recorded in a single checklist was lower than in the US and in Canada @tbl:ebird,
+which was a little surprising.
+Hence, there might have been extremely rich communities that were not sampled sufficiently
+to reveal their true community structure.
+On the other hand, our models might have been too optimistic in predicting the existence
+of such rich sites.
+In any case, our method did provide relevant and novel ecological insights, as we
+expected. The concurrence of our SDM predictions for intermediate and species-poor sites
+with the raw occurrence data, as well as the results of @HeinGron17, is promising.
+The possibility of finding new associations should therefore only encourage to push its
+use even further.
 
 Finally, one disappointing aspect of our method is that the result failed to identify
 patterns on finer scales.
