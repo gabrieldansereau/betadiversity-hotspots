@@ -461,27 +461,25 @@ finer local ones, which might highlight regional differences in a new way.
 
 \newpage
 
-![Single Species Distributions - Raw](../fig/raw/10_resolution/01_raw_sp-Setophaga_petechia.pdf){#fig:sp_raw}
+![Single Species Distributions - Raw](fig/01_raw_singlesp.pdf){#fig:sp_raw}
 
-![Single Species Distributions - SDM](../fig/sdm/10_resolution/01_sdm_sp-Setophaga_petechia.pdf){#fig:sp_sdm}
-
-\newpage
-
-![Species Richness - Raw](../fig/raw/10_resolution/03_raw_richness.pdf){#fig:richness_raw}
-
-![Species Richness - SDM](../fig/sdm/10_resolution/03_sdm_richness.pdf){#fig:richness_sdm}
+![Single Species Distributions - SDM](fig/01_sdm_singlesp.pdf){#fig:sp_sdm}
 
 \newpage
 
-![LCBD values - Raw (transformed)](../fig/raw/10_resolution/05_raw_lcbd-transf.pdf){#fig:lcbd_raw}
+![Species Richness - Raw](fig/03_raw_richness.pdf){#fig:richness_raw}
 
-![LCBD values - SDM](../fig/sdm/10_resolution/05_sdm_lcbd.pdf){#fig:lcbd_sdm}
+![Species Richness - SDM](fig/03_sdm_richness.pdf){#fig:richness_sdm}
 
 \newpage
 
-![LCBD-richness relationship - Raw](../fig/raw/10_resolution/06_raw_relation-lcbd-richness-transf.png){#fig:relation_raw}
+![LCBD values - Raw (transformed)](fig/05_raw_lcbd-transf.pdf){#fig:lcbd_raw}
 
-![LCBD-richness relationship - SDM](../fig/sdm/10_resolution/06_sdm_relation-lcbd-richness.png){#fig:relation_sdm}
+![LCBD values - SDM](fig/05_sdm_lcbd.pdf){#fig:lcbd_sdm}
+
+\newpage
+
+![LCBD-richness relationship](fig/06_cmb_relation-oneplot.png){#fig:relationship_oneplot}
 
 \newpage
 
