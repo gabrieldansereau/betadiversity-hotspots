@@ -88,14 +88,14 @@ relation_plots = plot(relation_raw, relation_sdm)
 relation_oneplot = scatter(rel_richness_raw, rel_lcbd_raw,
         markersize = 1,
         c = :skyblue,
-        label = "Raw",
+        label = "Raw occurrence data",
         legend = :bottomright,
         xlims = (0.0, 1.0), ylims = (0.0, 1.0),
         yticks = 0.0:0.20:1.0,
         xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
         grid=:none)
 scatter!(relation_oneplot, rel_richness_sdm, rel_lcbd_sdm,
-         markersize = 1, color=:orange, label = "SDM")
+         markersize = 1, color=:orange, label = "SDM predictions")
 # plot!(relation_oneplot, aspectratio=1)
 
 # Mean LCBD / richness

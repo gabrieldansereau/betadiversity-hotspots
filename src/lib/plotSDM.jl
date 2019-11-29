@@ -9,7 +9,7 @@ function plotSDM(layer::SimpleSDMLayer; type::String="sdm", scatter::Bool=false,
     worldmap = clip(worldshape(50), layer)
 
     # Create empty plot
-    sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, size=(900,450), frame=:box)
+    sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, frame=:box)
     # Adjust axes
     xaxis!(sdm_plot, (layer.left,layer.right), "Longitude")
     yaxis!(sdm_plot, (layer.bottom,layer.top), "Latitude")
