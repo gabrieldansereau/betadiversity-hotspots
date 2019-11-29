@@ -44,6 +44,9 @@ header-includes:
 \newpage
 
 \tableofcontents
+
+\newpage
+
 \listoftables
 \listoffigures
 
@@ -360,29 +363,31 @@ highly informative results for conservation purposes.
 
 ## Preliminary Results
 
-Our preliminary results consisted of comparisons between the raw occurrence data
-and the SDM predictions for the four following elements:
-single-species distribution (@fig:singlesp), species richness (@fig:richness), LCBD coefficients (@fig:lcbd), as well as the relationship between the species richness and LCBD coefficients (@fig:relationship_oneplot). Two main results emerged from them:
-1) the models provided community composition results for poorly sampled regions, both
-expected species-poor and species-rich, and 2) the relationship between species richness
-and species distribution models was in line with previous studies for species poor sites,
-but the SDM models captured a new association for very rich sites.
+Our preliminary results consisted of comparisons between the raw occurrence data and the
+SDM predictions for the following elements: species richness (@fig:richness), LCBD
+coefficients (@fig:lcbd), as well as the relationship between the species richness and
+LCBD coefficients (@fig:relationship_oneplot).
+Two main results emerged from them:
+1) the models provided seemingly valid community composition predictions for poorly
+sampled regions, both expected species-poor and species-rich, and 2) the relationship
+between species richness and species distribution models was in line with previous studies
+for species poor sites, but the SDM models captured a new association for very rich sites.
 
-First, the example of the Yellow Warbler (*Setophaga petechia*), one of the most observed
-species, showed that the single-species models predicted a broad distribution covering
-poorly sampled areas, with notable patches of absence across the continent (@fig:singlesp). Likewise, species richness, defined as the number of species present per
-site, showed a clear latitude gradient, with the poorest sites to the North and the
-richest to the South (@fig:richness). A form of altitude gradient could also be observed, with the Rockies
-and other mountains well delimited by their lower values.
+First, species richness, defined as the number of species present per site, showed a clear
+latitude gradient, with the poorest sites to the North and the richest to the South
+(@fig:richness).
+A form of altitude gradient could also be observed, with the Rockies and other mountains
+well delimited by their lower values.
 In both cases, the results make intuitive sense and highlight the models ability to
 predict species presence despite poor or no sampling.
 Mexico, for example, has much sparser sampling and fewer observations, but the models
-predict Yellow Warblers presence in most areas nonetheless, as well as higher species
-richness than on the highly sampled Atlantic Coast, which make sense for a more southern
-location. We believe these to be valid insights on poorly sampled locations, but there is still a need for an appropriate method of validation to confirm our intuition, as well as a
+predict higher species richness than on the highly sampled Atlantic Coast nonetheless,
+which make sense for a more southern location.
+We believe these to be valid insights on poorly sampled locations, but there is still a
+need for an appropriate method of validation to confirm our intuition, as well as a
 thoughtful consideration of factors such as species migration.
 
-Second, our preliminary LCBD results seemed to confirmed the association between species
+Second, our preliminary LCBD results seemed to confirm the association between species
 richness and LCBD coefficients from previous studies, but the SDM predictions captured a
 new association for extremely rich sites.
 Indeed, raw occurrence data showed a negative relationship between species richness and
@@ -402,15 +407,13 @@ rich sites can realistically exist.
 These richest sites should likely have been in the southernmost locations such as Mexico,
 which is heavily undersampled.
 For instance, all but two species were seen there at least once, but the maximum number of
-species recorded in a single checklist was lower than in the US and in Canada @tbl:ebird,
+species recorded in a single checklist was lower than in the US and in Canada (@tbl:ebird),
 which was a little surprising.
-Hence, there might have been extremely rich communities that were not sampled sufficiently
+Hence, some extremely rich communities might not have been sampled sufficiently
 to reveal their true community structure.
 On the other hand, our models might have been too optimistic in predicting the existence
-of such rich sites.
-In any case, our method did provide relevant and novel ecological insights, as we
-expected. The concurrence of our SDM predictions for intermediate and species-poor sites
-with the raw occurrence data, as well as the results of @HeinGron17, is promising.
+of such rich sites, but, in any case, our method did provide interesting ecological insights.
+The concurrence of our results, both occurrence and SDM based, with those of @HeinGron17 for intermediate and species poor sites is promising.
 The possibility of finding new associations should therefore only encourage to push its
 use even further.
 
@@ -472,18 +475,6 @@ finer local ones, which might highlight regional differences in a new way.
 | 17       | Precipitation of Driest Quarter                            |
 | 18       | Precipitation of Warmest Quarter                           |
 | 19       | Precipitation of Coldest Quarter                           |
-
-\newpage
-
-<div id="fig:singlesp" class="subfigures">
-
-  ![Raw occurrence data](fig/01_raw_singlesp.pdf){#fig:singlesp_raw width=100% .center}
-
-  ![SDM predictions](fig/01_sdm_singlesp.pdf){#fig:singlesp_sdm width=100% .center}
-
-Distribution of a single species, the Yellow Warbler (*Setophaga petechia*), based on the raw occurrence data (@fig:singlesp_raw) and on the probabilistic SDM predictions from the BIOCLIM model (@fig:singlesp_sdm). Purple spots in @fig:singlesp_raw represent sites where the species was observed. @fig:singlesp_sdm present the probabilities of occurrence as a gradient ranging from 0.0 (species absent) to 1.0 (species present).
-
-</div>
 
 \newpage
 
