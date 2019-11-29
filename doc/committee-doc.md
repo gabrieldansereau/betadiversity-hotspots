@@ -4,6 +4,7 @@ fontfamily: kpfonts
 fontsize: 11pt
 output: pdf_document
 bibliography: references.json
+link-citations: true
 header-includes:
     - \usepackage{setspace}
     - \doublespacing
@@ -361,8 +362,7 @@ highly informative results for conservation purposes.
 
 Our preliminary results consisted of comparisons between the raw occurrence data
 and the SDM predictions for the four following elements:
-single-species distribution ([@fig:sp_raw; @fig:sp_sdm]), species richness ([@fig:richness_raw; @fig:richness_sdm]), LCBD coefficients ([@fig:lcbd_raw;
-@fig:lcbd_sdm]), as well as the relationship between the species richness and LCBD coefficients ([@fig:relation_raw; @fig:relation_sdm]). Two main results emerged from them:
+single-species distribution (@fig:singlesp), species richness (@fig:richness), LCBD coefficients (@fig:lcbd), as well as the relationship between the species richness and LCBD coefficients (@fig:relationship_oneplot). Two main results emerged from them:
 1) the models provided seemingly valid and relevant results for poorly sampled regions,
 both expected species-poor and species-rich ones, and 2) there was an association between
 species richness and LCBD coefficients partially confirming the relationship shown in
@@ -370,11 +370,9 @@ other studies.
 
 First, the example of the Yellow Warbler (*Setophaga petechia*), one of the most observed
 species, showed that the single-species models predicted a broad distribution covering
-poorly sampled areas, with notable patches of absence across the continent ([@fig:sp_raw;
-@fig:sp_sdm]). Likewise, species richness, defined as the number of species present per
+poorly sampled areas, with notable patches of absence across the continent (@fig:singlesp). Likewise, species richness, defined as the number of species present per
 site, showed a clear latitude gradient, with the poorest sites to the North and the
-richest to the South ([@fig:richness_raw;
-@fig:richness_sdm]). A form of altitude gradient could also be observed, with the Rockies
+richest to the South (@fig:richness). A form of altitude gradient could also be observed, with the Rockies
 and other mountains well delimited by their lower values.
 In both cases, the results make intuitive sense and highlight the models ability to
 predict species presence despite poor or no sampling.
@@ -393,19 +391,19 @@ richness and LCBD coefficients, while also being valid and insightful.
 They were however harder to interpret given the use of the Hellinger transformation for
 the raw occurrence data only.
 Raw occurrence data showed a negative relationship between species richness and LCBD
-coefficients (@fig:relation_raw), as observed previously by @HeinGron17, with no clear
+coefficients (@fig:relationship_oneplot), as observed previously by @HeinGron17, with no clear
 geographic pattern (@fig:lcbd_raw).
 If anything, the highest values seemed to be at the borders of the most sampled regions,
 where are located the sites in which fewer species were observed (@fig:richness_raw).
 On the other hand, SDM predictions showed a quadratic form, with the LCBD coefficients
-re-increasing after some threshold (@fig:relation_sdm).
+re-increasing after some threshold (@fig:relationship_oneplot).
 The geographic pattern is also clearer, with the highest values to the northern and
 southern extremes (@fig:lcbd_sdm).
 Since LCBD indices should highlight the most exceptional species composition, both species
 poor or species rich, this result is no necessarily surprising.
 In a way, extremes and intermediate values might be represented more evenly on the
 continuous scale of a SDM than in the raw data.
-Although raw occurrence data results concorded with those of @HeinGron17, the different
+Although raw occurrence data results concurred with those of @HeinGron17, the different
 result with the SDM projections might show the importance of going beyond occurrence data
 when using large but spatially biased databases such as eBird.
 Once again, our results highlight the need for well-thought method and an investigation of
@@ -426,6 +424,15 @@ finer local ones, which might highlight regional differences in a new way.
 
 \newpage
 
+## References
+
+::: {#refs}
+:::
+
+\newpage
+
+## Appendix
+
 : Structure of the Warblers data in the eBird checklists for the countries used in the analyses {#tbl:ebird}
 
 | Country | Observations | Checklists | Species | Species per checklist (mean) | Species per checklist (median) | Species per checklist (maximum) |
@@ -434,6 +441,8 @@ finer local ones, which might highlight regional differences in a new way.
 | CA    | 3 360 650  | 1 115 625 | 45 | 3.012 | 2.0 | 31 |
 | MX    | 407 227    | 147 599   | 61 | 2.759 | 2.0 | 21 |
 | Total | 22 974 330 | 9 103 750 | 63 | 2.523 | 2.0 | 34 |
+
+\newpage
 
 : Descripion of the WorldClim 2 climate variables used in the analyses {#tbl:wc_vars}
 
@@ -461,28 +470,42 @@ finer local ones, which might highlight regional differences in a new way.
 
 \newpage
 
-![Single Species Distributions - Raw](fig/01_raw_singlesp.pdf){#fig:sp_raw}
+<div id="fig:singlesp" class="subfigures">
 
-![Single Species Distributions - SDM](fig/01_sdm_singlesp.pdf){#fig:sp_sdm}
+  ![Raw occurrence data](fig/01_raw_singlesp.pdf){#fig:singlesp_raw width=100% .center}
 
-\newpage
+  ![SDM predictions](fig/01_sdm_singlesp.pdf){#fig:singlesp_sdm width=100% .center}
 
-![Species Richness - Raw](fig/03_raw_richness.pdf){#fig:richness_raw}
+Distribution of a single species, the Yellow Warbler (*Setophaga petechia*), based on the raw occurrence data (@fig:singlesp_raw) and on the probabilistic SDM predictions from the BIOCLIM model (@fig:singlesp_sdm). Purple spots in @fig:singlesp_raw represent sites where the species was observed. @fig:singlesp_sdm present the probabilities of occurrence as a gradient ranging from 0.0 (species absent) to 1.0 (species present).
 
-![Species Richness - SDM](fig/03_sdm_richness.pdf){#fig:richness_sdm}
-
-\newpage
-
-![LCBD values - Raw (transformed)](fig/05_raw_lcbd-transf.pdf){#fig:lcbd_raw}
-
-![LCBD values - SDM](fig/05_sdm_lcbd.pdf){#fig:lcbd_sdm}
+</div>
 
 \newpage
 
-![LCBD-richness relationship](fig/06_cmb_relation-oneplot.png){#fig:relationship_oneplot}
+<div id="fig:richness" class="subfigures">
+
+  ![Raw occurrence data](fig/03_raw_richness.pdf){#fig:richness_raw}
+
+  ![SDM predictions](fig/03_sdm_richness.pdf){#fig:richness_sdm}
+
+Distribution of species richness in North America, defined as the number of Warblers species per site. The raw occurrence observations from eBird (@fig:richness_raw) and the SDM predictions from the BIOCLIM model (@fig:richness_sdm) were both transformed into presence-absence data per species before calculating richness.
+
+</div>
 
 \newpage
 
-## References
+<div id="fig:lcbd" class="subfigures">
+
+  ![Raw occurrence data (Hellinger transformed)](fig/05_raw_lcbd-transf.pdf){#fig:lcbd_raw}
+
+  ![SDM predictions](fig/05_sdm_lcbd.pdf){#fig:lcbd_sdm}
+
+Distribution of the LCBD values in North America, calculated from the variance of the community matrix Y and scaled to the maximum value observed. The Hellinger transformation was applied on the raw occurrence data (@fig:lcbd_raw) before calculating the LCBD indices. SDM predictions (@fig:lcbd_sdm) were converted into presence-absence data, but no transformation was applied before calculating the LCBD indices.
+
+</div>
+
+\newpage
+
+![Relationship between the species richness and the LCBD value of the each site for raw occurrence data (blue) and SDM predictions (orange). Species richness was calculated as the number of species in a site ($\alpha$), divided by the total number of species ($\gamma$). LCBD values were scaled to the maximum value observed. Hellinger transformation was applied on the raw occurrence data before calculating LCBD indices.](fig/06_cmb_relation-oneplot.png){#fig:relationship_oneplot}
 
 </div>
