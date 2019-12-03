@@ -13,6 +13,10 @@ end
 ## Get the worldclim data
 @time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 
+# Plot wcvars1
+wc_plot = plotSDM(wc_vars[1])
+heatmap!(wc_plot, clim=(-10.0, 30.0), colorbar_title="Annual Mean Temperature (°C)", dpi=300)
+
 ## Load data
 @load "data/jld2/raw-pres-abs.jld2" pres_abs
 @load "data/jld2/sdm-predictions.jld2" predictions
@@ -130,6 +134,10 @@ density_lcbd_sdm = density(filter(!isnan, rel_lcbd_sdm))
 =#
 
 ## Export figures
+
+# wc_vars
+savefig(wc_plot, "doc/fig/wc_temp.png")
+
 # Raw
 savefig(singlesp_raw, "doc/fig/01_raw_singlesp.png")
 savefig(richness_raw, "doc/fig/03_raw_richness.png")
