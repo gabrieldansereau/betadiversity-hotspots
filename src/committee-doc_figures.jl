@@ -147,3 +147,41 @@ savefig(richness_plots, "doc/fig/03_cmb_richness.png")
 savefig(lcbd_plots, "doc/fig/05_cmb_lcbd.png")
 savefig(relation_plots, "doc/fig/06_cmb_relation.png")
 savefig(relation_oneplot, "doc/fig/06_cmb_relation-oneplot.png")
+
+## Single species SDM with threshold (run if needed, needs to load whole dataset, takes a while to run)
+#=
+# Option 1: sdm_single-species script, fast but not exactly the same
+@time include("sdm/sdm_single-species.jl")
+singlesp_sdm_threshold = maps[2]
+title!(singlesp_sdm_threshold, "")
+heatmap!(singlesp_sdm_threshold, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
+savefig(singlesp_sdm_threshold, "doc/fig/01_sdm_singlesp-threshold.png")
+
+# Option 2: sdm_predictions script, exact same but soooo long since not parallelized
+## Exact same prediction, but soooooo long since not parallelized
+## Get & prepare data
+@time begin
+    # Load data from CSV files
+    df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
+    # Separate species
+    warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
+
+    # Define coordinates range
+    lon_range = (-145.0, -50.0)
+    lat_range = (20.0, 75.0)
+    # Observed coordinates range
+    lon_range_obs = extrema(df.longitude)
+    lat_range_obs = extrema(df.latitude)
+end
+
+## Get the worldclim data
+@time wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
+@time wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:19);
+
+## Make prediction for Yellow Warbler
+@time singlesp_pred = species_bclim(warblers_occ[13], wc_vars_pred, train_vars = wc_vars_train, with_threshold=true)
+singlesp_sdm_threshold = plotSDM(singlesp_pred)
+title!(singlesp_sdm_threshold, "")
+heatmap!(singlesp_sdm_threshold, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
+savefig(singlesp_sdm_threshold, "doc/fig/01_sdm_singlesp-threshold.png")
+=#
