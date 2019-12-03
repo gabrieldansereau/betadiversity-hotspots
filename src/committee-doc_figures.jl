@@ -21,10 +21,13 @@ end
 replace!(pres_abs[13].grid, 0.0 => NaN)
 singlesp_raw = plotSDM(pres_abs[13])
 title!(singlesp_raw, "")
-heatmap!(singlesp_raw, clim=(0.0, 1.0), colorbar_title="Probability of occurrence")
+heatmap!(singlesp_raw, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
+heatmap!(colorbar=:none)
+scatter!(singlesp_raw, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
+                        legend=:bottomright, legendfontsize=4)
 singlesp_sdm = plotSDM(predictions[13])
-heatmap!(singlesp_sdm, clim=(0.0, 1.0), colorbar_title="Probability of occurrence")
 title!(singlesp_sdm, "")
+heatmap!(singlesp_sdm, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
 
 # Combine figures
 singlesp_plots = plot(singlesp_raw, singlesp_sdm)
@@ -33,14 +36,14 @@ singlesp_plots = plot(singlesp_raw, singlesp_sdm)
 # Richness
 @time include("raw/03_raw_richness.jl")
 richness_raw = richness_plot
-heatmap!(richness_raw, clim=(0.0, 60.0), colorbar_title = "Number of species per site")
 title!(richness_raw, "")
+heatmap!(richness_raw, clim=(0.0, 60.0), colorbar_title = "Number of species per site", dpi=300)
 
 # LCBD
 @time include("raw/05_raw_lcbd.jl")
 lcbd_raw = lcbd_plot2
 title!(lcbd_raw, "")
-heatmap!(lcbd_raw, colorbar_title = "LCBD value (relative to maximum)")
+heatmap!(lcbd_raw, colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 
 # Relationship
 @time include("raw/06_raw_relation-lcbd-richness.jl")
@@ -58,14 +61,14 @@ rel_lcbd_raw = vec(LCBD[2].grid)
 # Richness
 @time include("sdm/03_sdm_richness.jl")
 richness_sdm = richness_plot
-heatmap!(richness_sdm, clim=(0.0, 60.0), colorbar_title = "Number of species per site")
 title!(richness_sdm, "")
+heatmap!(richness_sdm, clim=(0.0, 60.0), colorbar_title = "Number of species per site", dpi=300)
 
 # LCBD
 @time include("sdm/05_sdm_lcbd.jl")
 lcbd_sdm = lcbd_plot1
 title!(lcbd_sdm, "")
-heatmap!(lcbd_sdm, colorbar_title = "LCBD value (relative to maximum)")
+heatmap!(lcbd_sdm, colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 
 # Relationship
 @time include("sdm/06_sdm_relation-lcbd-richness.jl")
@@ -128,19 +131,19 @@ density_lcbd_sdm = density(filter(!isnan, rel_lcbd_sdm))
 
 ## Export figures
 # Raw
-savefig(singlesp_raw, "doc/fig/01_raw_singlesp.pdf")
-savefig(richness_raw, "doc/fig/03_raw_richness.pdf")
-savefig(lcbd_raw, "doc/fig/05_raw_lcbd-transf.pdf")
+savefig(singlesp_raw, "doc/fig/01_raw_singlesp.png")
+savefig(richness_raw, "doc/fig/03_raw_richness.png")
+savefig(lcbd_raw, "doc/fig/05_raw_lcbd-transf.png")
 savefig(relation_raw, "doc/fig/06_raw_relation.png")
 
-# Richness
-savefig(singlesp_sdm, "doc/fig/01_sdm_singlesp.pdf")
-savefig(richness_sdm, "doc/fig/03_sdm_richness.pdf")
-savefig(lcbd_sdm, "doc/fig/05_sdm_lcbd.pdf")
+# SDM
+savefig(singlesp_sdm, "doc/fig/01_sdm_singlesp.png")
+savefig(richness_sdm, "doc/fig/03_sdm_richness.png")
+savefig(lcbd_sdm, "doc/fig/05_sdm_lcbd.png")
 savefig(relation_sdm, "doc/fig/06_sdm_relation.png")
 
 # Combined
-savefig(richness_plots, "doc/fig/03_cmb_richness.pdf")
-savefig(lcbd_plots, "doc/fig/05_cmb_lcbd.pdf")
+savefig(richness_plots, "doc/fig/03_cmb_richness.png")
+savefig(lcbd_plots, "doc/fig/05_cmb_lcbd.png")
 savefig(relation_plots, "doc/fig/06_cmb_relation.png")
 savefig(relation_oneplot, "doc/fig/06_cmb_relation-oneplot.png")
