@@ -16,7 +16,7 @@ end
 # without : 14.836300 seconds (35.36 M allocations: 1.716 GiB, 6.52% gc time)
 
 ## Get the worldclim data
-@time wc_vars_full = pmap(x -> worldclim(x, resolution = "5"), 1:19)
+@time wc_vars_full = pmap(x -> worldclim(x, resolution = "10"), 1:19)
 
 ## Create function - SDM & map for 1 species
 @everywhere function map_species_distribution(occ; distributed=true, scatter=false)
@@ -59,13 +59,14 @@ savefig(maps[2], "fig/sdm/01_sdm_sp-$(first(unique(taxa_occ[13].species))).pdf")
 =#
 
 ## Map all species
-@time maps = pmap(x -> map_species_distribution(x, distributed=false), taxa_occ)
+# @time maps = pmap(x -> map_species_distribution(x, distributed=false), taxa_occ)
 
 
 
 ######
 
 ## Benchmarks
+#=
 # Option 1: Loop parallelized function
 @time maps = [map_species_distribution(occ) for occ in taxa_occ[1:10]]
 # [1:2] 1st call: 36.082691 seconds (65.09 M allocations: 4.166 GiB, 6.21% gc time)
@@ -96,3 +97,4 @@ savefig(maps[2], "fig/sdm/01_sdm_sp-$(first(unique(taxa_occ[13].species))).pdf")
 @time maps = pmap(x -> map_species_distribution(x, distributed=false), taxa_occ)
 # 1st call: 78.952961 seconds (20.49 M allocations: 1.359 GiB, 3.56% gc time)
 # 2nd call: 39.652166 seconds (18.07 M allocations: 1.237 GiB, 6.43% gc time)
+=#
