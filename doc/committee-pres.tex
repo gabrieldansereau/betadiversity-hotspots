@@ -5,6 +5,7 @@
 % paquets pour le français
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+% For figure manipulations
 \usepackage{graphicx}
 % Use quotes
 \usepackage{csquotes}
@@ -29,45 +30,48 @@
 
 \begin{frame}
   \frametitle{Objective}
-  \begin{displayquote}
-    "Spatially Continuous Identification of Beta Diversity Hotspots Using Species Distribution Models"
-  \end{displayquote}
+  Bring together 2 elements:
+  \vfill
+  \begin{enumerate}
+    \item Identification of beta diversity hotspots $\rightarrow$ LCBD calculation
+    \item Species distribution modelling on continuous scales $\rightarrow$ SDMs
+  \end{enumerate}
+  \vfill
   \begin{figure}
     \centering
-    \hspace*{0.0cm}\includegraphics[scale=0.08]{fig/01_raw_singlesp.png}
-    \hspace*{0.0cm}\includegraphics[scale=0.08]{fig/05_sdm_lcbd.png}
-    \hspace{4.0cm}\begin{itemize}
-      \item Beta diversity hotspots (LCBD)
-      \item Species distribution models (SDM)
-      \item Spatially continuous identification
-    \end{itemize}
+    \hspace*{0.0cm}\includegraphics[scale=0.12]{fig/05_sdm_lcbd.png}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex 1. Discontinuous Identification of Beta Diversity Hotspots}
+  \frametitle{Why continuous scales?}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.5]{fig/lcbd_LegeDeCa2013.png}
-    \caption{Example of LCBD calculation on a river stream (Legendre \& De Caceres, 2013)}
+    \caption{Example of discontinuous LCBD calculation along a river stream (Legendre \& De Caceres, 2013)}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex 2. Discontinuous Identification of Beta Diversity Hotspots}
+  \frametitle{Why continuous scales?}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.35]{fig/lcbd_Pois2017.png}
-    \caption{Example of LCBD calculation on an extended scale (Poisot et al., 2017)}
+    \caption{Example of discontinuous LCBD calculation on an extended scale (Poisot et al., 2017)}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Available Data}
+  \frametitle{Why continuous scales?}
+  \begin{itemize}
+    \item Online data increasingly accessible
+    \item Potential for novel ecological insights
+  \end{itemize}
   \begin{figure}
     \centering
-    \hspace*{-0.5cm}\includegraphics[scale=0.08]{fig/01_raw_singlesp.png}
-    \hspace*{0.5cm}\includegraphics[scale=0.08]{fig/wc_temp.png}
+    \hspace*{-1cm}\includegraphics[scale=0.10]{fig/01_raw_singlesp.png}%
+    \includegraphics[scale=0.10]{fig/wc_temp.png}
+    \caption{Example of Yellow Warbler occurrence data from eBird (left) and  annual mean temperature data from WorldClim 2 (right)}
   \end{figure}
 \end{frame}
 
@@ -75,11 +79,35 @@
   \frametitle{Objective}
   \begin{figure}
     \centering
-    \hspace*{-0cm}\includegraphics[scale=0.05]{fig/01_raw_singlesp.png}
-    \hspace*{0cm}\includegraphics[scale=0.05]{fig/wc_temp.png}
+    \hspace*{-0cm}\includegraphics[scale=0.06]{fig/01_raw_singlesp.png}%
+    \hspace*{0cm}\includegraphics[scale=0.06]{fig/wc_temp.png}
+    \vfill
+    $\Downarrow$
     \vfill
     \includegraphics[scale=0.10]{fig/05_sdm_lcbd.png}
   \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Relevance}
+  \begin{columns}
+    \hspace*{-0cm}\column{0.6\textwidth}
+      Novel ecological insights
+      \begin{itemize}
+        \item Tool for poorly sampled regions, or with sparse sampling
+        \item Identification of conservation targets
+      \end{itemize}
+      \vspace{0.5cm}
+      Combination with IPCC climate change scenarios
+      \begin{itemize}
+        \item Model beta diversity changes
+        \item Identify sites with significant changes
+      \end{itemize}
+      \vspace{0.5cm}
+    \hspace*{-1cm}\column{0.5\textwidth}
+      \includegraphics[scale=0.10]{fig/05_sdm_lcbd.png}
+  \end{columns}
+  $\Rightarrow$ Reminder: Exploratory analyses for now, insight-oriented approach
 \end{frame}
 
 \begin{frame}
@@ -97,45 +125,58 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Data - WorldClim 2 (Fik \& Hijmans, 2017)}
-  \centering
-  \resizebox{0.55\textwidth}{!}{%
-    \begin{table}
-      \small
-      \begin{tabular}{c l}
-        \hline
-        Variable & Description                            \\
-        \hline
-        1        & Annual Mean Temperature                \\
-        2        & Mean Diurnal Range                     \\
-        3        & Isothermality                          \\
-        4        & Temperature Seasonality                \\
-        5        & Max Temperature of Warmest Month       \\
-        6        & Min Temperature of Coldest Month       \\
-        7        & Temperature Annual Range               \\
-        8        & Mean Temperature of Wettest Quarter    \\
-        9        & Mean Temperature of Driest Quarter     \\
-        10       & Mean Temperature of Warmest Quarter    \\
-        11       & Mean Temperature of Coldest Quarter    \\
-        12       & Annual Precipitation                   \\
-        13       & Precipitation of Wettest Month         \\
-        14       & Precipitation of Driest Month          \\
-        15       & Precipitation Seasonality              \\
-        16       & Precipitation of Wettest Quarter       \\
-        17       & Precipitation of Driest Quarter        \\
-        18       & Precipitation of Warmest Quarter       \\
-        19       & Precipitation of Coldest Quarter       \\
-        \hline
-      \end{tabular}
-    \end{table}
-  }
+  \frametitle{Data - Why WorldClim 2 }
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Interpolated climate data
+        \item Global range
+        \item Resolutions from 10 arc-minutes to 30 arc-seconds
+        \item High cross-validation coefficients
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \resizebox{1.0\textwidth}{!}{%
+      \begin{table}
+        \small
+        \begin{tabular}{c l}
+          \hline
+          Variable & Description                            \\
+          \hline
+          1        & Annual Mean Temperature                \\
+          2        & Mean Diurnal Range                     \\
+          3        & Isothermality                          \\
+          4        & Temperature Seasonality                \\
+          5        & Max Temperature of Warmest Month       \\
+          6        & Min Temperature of Coldest Month       \\
+          7        & Temperature Annual Range               \\
+          8        & Mean Temperature of Wettest Quarter    \\
+          9        & Mean Temperature of Driest Quarter     \\
+          10       & Mean Temperature of Warmest Quarter    \\
+          11       & Mean Temperature of Coldest Quarter    \\
+          12       & Annual Precipitation                   \\
+          13       & Precipitation of Wettest Month         \\
+          14       & Precipitation of Driest Month          \\
+          15       & Precipitation Seasonality              \\
+          16       & Precipitation of Wettest Quarter       \\
+          17       & Precipitation of Driest Quarter        \\
+          18       & Precipitation of Warmest Quarter       \\
+          19       & Precipitation of Coldest Quarter       \\
+          \hline
+        \end{tabular}
+      \end{table}
+    }
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}
-  \frametitle{BIOCLIM - A Climate Envelope Model}
+  \frametitle{Methods - BIOCLIM}
   \begin{figure}
     \centering
-    \hspace*{-0cm}\includegraphics[scale=0.25]{fig/bioclim_bccvl.png}\footnote{\tiny https://support.bccvl.org.au/support/solutions/articles/6000083201-bioclim}
+    \hspace*{-0cm}\includegraphics[scale=0.25]{fig/bioclim_bccvl.png}
+    \caption{Representation of the climate envelope in the BIOCLIM method\footnote{\tiny https://support.bccvl.org.au/support/solutions/articles/6000083201-bioclim}}
   \end{figure}
 \end{frame}
 
@@ -147,16 +188,16 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex. Yellow Warbler - Raw Data}
+  \frametitle{Single species SDM example}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_raw_singlesp.png}
-    \caption{Yellow Warbler Distibution (presence-absence per site)}
+    \caption{Yellow Warbler Distibution based on the raw data (presence-absence per site)}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex: Yellow Warbler - SDM with threshold}
+  \frametitle{Single species example - Raw data}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_sdm_singlesp-threshold.png}
@@ -165,7 +206,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex: Yellow Warbler - SDM without threshold}
+  \frametitle{Single species example - SDM with threshold}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_sdm_singlesp.png}
@@ -219,6 +260,16 @@
     \centering
     \includegraphics[scale=0.4]{fig/06_cmb_relation-oneplot.png}
   \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Elements to discuss}
+  \begin{itemize}
+    \item Relevance of the approach
+    \item Improving SDM predictions: MAXENT, Random Forests, Neural Networks, Joint SDMs
+    \item Data transformation for LCBD calculation
+    \item Scales to focus on
+  \end{itemize}
 \end{frame}
 
 \end{document}
