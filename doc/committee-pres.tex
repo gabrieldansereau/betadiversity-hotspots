@@ -10,7 +10,7 @@
 % use serif font with rm
 % \renewcommand{\familydefault}{\rmdefault}
 
-\title{Identification spatiale continue des points chauds de diversité beta à l'aide de modèles de distribution d'espèces}
+\title{Spatially continuous identification of beta diversity hotspots using species distribution models}
 \author{Gabriel Dansereau}
 
 \begin{document}
@@ -20,39 +20,39 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Objectif}
+  \frametitle{Objective}
   \begin{figure}
     \centering
     \hspace*{0.0cm}\includegraphics[scale=0.08]{fig/01_raw_singlesp.png}
     \hspace*{0.0cm}\includegraphics[scale=0.08]{fig/05_sdm_lcbd.png}
     \hspace{4.0cm}\begin{itemize}
-      \item Points chauds de diversité bêta (LCBD)
-      \item Modèles de distribution d'espèces (SDM)
-      \item Identification spatiale continue
+      \item Beta diversity hotspots (LCBD)
+      \item Species distribution models (SDM)
+      \item Spatially continuous identification
     \end{itemize}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex 1: Identification discontinue des points chauds de diversité bêta}
+  \frametitle{Ex 1. Discontinuous Identification of Beta Diversity Hotspots}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.5]{fig/lcbd_LegeDeCa2013.png}
-    \caption{Exemple d'analyse des LCBD sur un cours d'eau (Legendre \& De Caceres, 2013)}
+    \caption{Example of LCBD calculation on a river stream (Legendre \& De Caceres, 2013)}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex 2: Identification discontinue des points chauds de diversité bêta}
+  \frametitle{Ex 2: Discontinuous Identification of Beta Diversity Hotspots}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.35]{fig/lcbd_Pois2017.png}
-    \caption{Exemple d'analyse des LCBD à échelle spatiale étendue (Poisot et al., 2017)}
+    \caption{Example of LCBD calculation on an extended scale (Poisot et al., 2017)}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Données disponibles}
+  \frametitle{Available Data}
   \begin{figure}
     \centering
     \hspace*{-0.5cm}\includegraphics[scale=0.08]{fig/01_raw_singlesp.png}
@@ -61,7 +61,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Objectif}
+  \frametitle{Objective}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.05]{fig/01_raw_singlesp.png}
@@ -72,9 +72,9 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Données - eBird}
+  \frametitle{Data - eBird}
   \begin{itemize}
-    \item Variables base : espèce, latitude, longitude, date, checklist complète, compte
+    \item Basis variables : species, latitude, longitude, date, complete checklist, abundance
   \end{itemize}
   \resizebox{\textwidth}{!}{%
   \begin{table}[ht]
@@ -95,7 +95,7 @@
   \end{table}
   }
   \begin{itemize}
-    \item Données échantillonnage: type échantillonnage, durée, distance, nombre d'observateurs
+    \item Sampling: sampling type, duration, distance travelled, number of observers
   \end{itemize}
   \resizebox{\textwidth}{!}{%
     \begin{table}[ht]
@@ -118,7 +118,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Données - eBird}
+  \frametitle{Data - eBird}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.4]{fig/ebird_table.png}
@@ -126,7 +126,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Données - WorldClim}
+  \frametitle{Data - WorldClim}
   \resizebox{\textwidth}{!}{%
     \begin{table}
       \begin{tabular}{l|l}
@@ -168,34 +168,34 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex: Paruline jaune - Données brutes}
+  \frametitle{Ex. Yellow Warbler - Raw Data}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_raw_singlesp.png}
-    \caption{Distribution des observations de la Paruline jaune (présence-absence par site)}
+    \caption{Yellow Warbler Distibution (presence-absence per site)}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex: Paruline jaune - SDM avec seuil}
+  \frametitle{Ex: Yellow Warbler - SDM with threshold}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_sdm_singlesp-threshold.png}
-    \caption{Sortie du SDM avec seuil pour la Paruline jaune}
+    \caption{SDM predictions with threshold (5\%) for the distribution of Yellow Warblers}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Ex: Paruline jaune - SDM sans seuil}
+  \frametitle{Ex: Yellow Warbler - SDM without threshold}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_sdm_singlesp.png}
-    \caption{Sortie du SDM pour la Paruline jaune}
+    \caption{SDM predictions without threshold for the Yellow Warbler}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Richesse spécifique - Données brutes}
+  \frametitle{Species richness - Raw data}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/03_raw_richness.png}
@@ -203,7 +203,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Richesse spécifique - SDM}
+  \frametitle{Species richness - SDM}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/03_sdm_richness.png}
@@ -211,7 +211,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{LCBD - Données brutes (transformation de Hellinger)}
+  \frametitle{LCBD - Raw data (with Hellinger transformation)}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/05_raw_lcbd-transf.png}
@@ -219,7 +219,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{LCBD - SDM (aucune transformation)}
+  \frametitle{LCBD - SDM (no transformation)}
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/05_sdm_lcbd.png}
@@ -227,7 +227,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Relation LCBD-richesse spécifique}
+  \frametitle{LCBD-richness relationship}
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/06_cmb_relation-oneplot.png}
