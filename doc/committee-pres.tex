@@ -89,7 +89,7 @@
 \begin{frame}
   \frametitle{Why continuous scales?}
   \begin{itemize}
-    \item Online data increasingly accessible
+    \item Online data on extended scales is increasingly accessible
     \item Potential for novel ecological insights
   \end{itemize}
   \begin{figure}
@@ -132,7 +132,7 @@
     \hspace*{-1cm}\column{0.5\textwidth}
       \includegraphics[scale=0.10]{fig/05_sdm_lcbd.png}
   \end{columns}
-  $\Rightarrow$ Reminder: Exploratory analyses for now, insight-oriented approach
+  $\Rightarrow$ Insight-oriented approach, exploratory analyses for now
 \end{frame}
 
 \begin{frame}
@@ -195,6 +195,7 @@
           9        & Mean Temperature of Driest Quarter     \\
           10       & Mean Temperature of Warmest Quarter    \\
           11       & Mean Temperature of Coldest Quarter    \\
+          \hline
           12       & Annual Precipitation                   \\
           13       & Precipitation of Wettest Month         \\
           14       & Precipitation of Driest Month          \\
@@ -310,21 +311,36 @@
 
 \begin{frame}
   \frametitle{Elements to discuss}
+  \vfill
+  Validating results
   \begin{itemize}
-    \item Relevance of the approach
-    \item Improving SDM predictions: MAXENT, Random Forests, Neural Networks, Joint SDMs
-    \item Data transformation for LCBD calculation
-    \item Scales to focus on
+    \item Method for prediction error
+    \item Data for evaluation
   \end{itemize}
+  \vfill
+  Improving SDM predictions
+  \begin{itemize}
+    \item Better modelling of presence-absence through environmental conditions
+    \item Integrating other drivers of species distributions
+  \end{itemize}
+  \vfill
+  Improving LCBD calculation & understanding values
+  \begin{itemize}
+    \item Data transformation
+    \item Relationship interpretation
+  \end{itemize}
+  \vfill
+  Determining scale \& resolution to focus on
+  \vfill
 \end{frame}
 
 \begin{frame}
   \frametitle{References}
   Johnston, A., W. M. Hochachka, M. E. Strimas-Mackey, V. Ruiz Gutierrez, O. J. Robinson, E. T. Miller, T. Auer, S. T. Kelling, and D. Fink. 2019. “Best Practices for Making Reliable Inferences from Citizen Science Data: Case Study Using eBird to Estimate Species Distributions.” bioRxiv, March, 574392. https://doi.org/10.1101/574392.
   \vfill
-  Legendre, Pierre. 2019. “A Temporal Beta-Diversity Index to Identify Sites That Have Changed in Exceptional Ways in Space–Time Surveys.” Ecology and Evolution 9 (6): 3500–3514. https://doi.org/10.1002/ece3.4984.
+  Legendre, Pierre, and Miquel De Cáceres. 2013. “Beta Diversity as the Variance of Community Data: Dissimilarity Coefficients and Partitioning.” Ecology Letters 16 (8): 951–63. https://doi.org/10.1111/ele.12141.
   \vfill
-  Poisot, Timothée, Richard LaBrie, Erin Larson, Anastasia Rahlin, and Benno I. Simmons. 2019. “Data-Based, Synthesis-Driven: Setting the Agenda for Computational Ecology.” Ideas in Ecology and Evolution 12 (July). https://doi.org/10.24908/iee.2019.12.2.e.
+  Poisot, Timothée, Cynthia Guéveneux‐Julien, Marie-Josée Fortin, Dominique Gravel, and Pierre Legendre. 2017. “Hosts, Parasites and Their Interactions Respond to Different Climatic Variables.” Global Ecology and Biogeography 26 (8): 942–51. https://doi.org/10.1111/geb.12602.
 \end{frame}
 
 \end{document}
