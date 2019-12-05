@@ -228,20 +228,11 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Single species SDM example}
-  \begin{figure}
-    \centering
-    \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_raw_singlesp.png}
-    \caption{Yellow Warbler Distibution based on the raw data (presence-absence per site)}
-  \end{figure}
-\end{frame}
-
-\begin{frame}
   \frametitle{Single species example - Raw data}
   \begin{figure}
     \centering
-    \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_sdm_singlesp-threshold.png}
-    \caption{SDM predictions with threshold (5\%) for the distribution of Yellow Warblers}
+    \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_raw_singlesp.png}
+    \caption{Distribution of the Yellow Warbler based on the raw occurrence data after transformation into presence-absence per site}
   \end{figure}
 \end{frame}
 
@@ -249,8 +240,17 @@
   \frametitle{Single species example - SDM with threshold}
   \begin{figure}
     \centering
+    \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_sdm_singlesp-threshold.png}
+    \caption{Distribution of the Yellow Warbler based on the SDM predictions with a threshold of 5\%}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Single species example - SDM without threshold}
+  \begin{figure}
+    \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/01_sdm_singlesp.png}
-    \caption{SDM predictions without threshold for the Yellow Warbler}
+    \caption{Distribution of the Yellow Warbler based on the SDM predictions without a threshold}
   \end{figure}
 \end{frame}
 
@@ -259,6 +259,7 @@
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/03_raw_richness.png}
+    \caption{Species richness based on the raw occurrence data, defined as the number of species present per site}
   \end{figure}
 \end{frame}
 
@@ -267,6 +268,7 @@
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/03_sdm_richness.png}
+    \caption{Species richness based on the SDM predictions without threshold, and defined as the number of species present per site}
   \end{figure}
 \end{frame}
 
@@ -275,6 +277,7 @@
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/05_raw_lcbd-transf.png}
+    \caption{LCBD values relative to maximum value based on the raw data after Hellinger transformation}
   \end{figure}
 \end{frame}
 
@@ -283,6 +286,7 @@
   \begin{figure}
     \centering
     \hspace*{-0cm}\includegraphics[scale=0.17]{fig/05_sdm_lcbd.png}
+    \caption{LCBD values relation to maximum value based on the SDM predictions without threshold or transformation}
   \end{figure}
 \end{frame}
 
@@ -291,6 +295,7 @@
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/06_raw_relation.png}
+    \caption{Relationship between the relative LCBD values and species richness, defined as the number of species ($\alpha$) divided by the total number of species ($\gamma$)}
   \end{figure}
 \end{frame}
 
@@ -299,6 +304,7 @@
   \begin{figure}
     \centering
     \includegraphics[scale=0.4]{fig/06_cmb_relation-oneplot.png}
+    \caption{Relationship between the relative LCBD values and species richness, defined as the number of species ($\alpha$) divided by the total number of species ($\gamma$)}
   \end{figure}
 \end{frame}
 
