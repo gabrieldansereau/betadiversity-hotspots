@@ -9,9 +9,16 @@
 \usepackage{graphicx}
 % Use quotes
 \usepackage{csquotes}
+% Equalize table columns widths
+\usepackage{tabularx}
+% Use tables larger than textwidth
+\usepackage{adjustbox}
 
 % Set height of table rows relative to maximum
 \renewcommand{\arraystretch}{1.25}
+
+% Bottom align tabularx headers
+\renewcommand{\tabularxcolumn}[1]{b{#1}}
 
 % Number figures
 \setbeamertemplate{caption}[numbered]
@@ -26,7 +33,7 @@
   \and
   \inst{2} BIOS\textsuperscript{2}
   \and
-  \inst{3} Centre de la Science de la Biodiversité du Québec
+  \inst{3} Quebec Center for Biodiversity Science
 }
 \date{
   Advisory Committee Meeting\\
@@ -135,11 +142,25 @@
     \item Complete checklists to infer absences
     \item Sampling effort metadata to reduce biases
   \end{enumerate}
-  \begin{figure}
-    \centering
-    \caption{Structure of the Warblers (\textit{Parulidae}) occurrence data for North America as checklists in the eBird Dataset}
-    \hspace*{-0cm}\includegraphics[scale=0.4]{fig/ebird_table.png}
-  \end{figure}
+  % Use adjustbox to display despite large width
+  % Caption as to be in adjust box, not table
+  \begin{adjustbox}{center, caption={Structure of the Warblers (\textit{Parulidae}) occurrence data for North America as checklists in the eBird Dataset}, float=table}
+    \begin{table}
+      \scriptsize
+      % Reset table row width, doesn't follow default for some reason
+      \def\arraystretch{1.5}
+      \hspace{}\begin{tabularx}{1.1\textwidth}{X X X X X X X}
+      \hline
+      Country & Observations & Checklists & Species & Species per checklist (mean) & Species per checklist (median) & Species per checklist (max) \\
+      \hline
+      US    & 19 206 453 & 7 840 526 & 56 & 2.450 & 2.0 & 34 \\
+      CA    & 3 360 650  & 1 115 625 & 45 & 3.012 & 2.0 & 31 \\
+      MX    & 407 227    & 147 599   & 61 & 2.759 & 2.0 & 21 \\
+      Total & 22 974 330 & 9 103 750 & 63 & 2.523 & 2.0 & 34 \\
+      \hline
+    \end{tabularx}
+  \end{table}
+ \end{adjustbox}
 \end{frame}
 
 \begin{frame}
@@ -158,6 +179,7 @@
       \resizebox{1.0\textwidth}{!}{%
       \begin{table}
         \small
+        %\caption{test}
         \begin{tabular}{c l}
           \hline
           Variable & Description                            \\
