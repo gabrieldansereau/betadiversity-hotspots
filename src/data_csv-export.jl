@@ -15,7 +15,7 @@ lat_range = (20.0, 75.0)
 
 ## Extract data
 # Get worldclim variables
-@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 
 # Get presence-absence data for sampled sites, spe matrix
 spe = Ypred
