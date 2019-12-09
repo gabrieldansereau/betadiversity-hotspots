@@ -13,6 +13,10 @@ end
 ## Get the worldclim data
 @time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 
+# Plot wcvars1
+wc_plot = plotSDM(wc_vars[1])
+heatmap!(wc_plot, clim=(-10.0, 30.0), colorbar_title="Annual Mean Temperature (°C)", dpi=300)
+
 ## Load data
 @load "data/jld2/raw-pres-abs.jld2" pres_abs
 @load "data/jld2/sdm-predictions.jld2" predictions
@@ -21,10 +25,13 @@ end
 replace!(pres_abs[13].grid, 0.0 => NaN)
 singlesp_raw = plotSDM(pres_abs[13])
 title!(singlesp_raw, "")
-heatmap!(singlesp_raw, clim=(0.0, 1.0), colorbar_title="Probability of occurrence")
+heatmap!(singlesp_raw, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
+heatmap!(colorbar=:none)
+scatter!(singlesp_raw, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
+                        legend=:bottomright, legendfontsize=4)
 singlesp_sdm = plotSDM(predictions[13])
-heatmap!(singlesp_sdm, clim=(0.0, 1.0), colorbar_title="Probability of occurrence")
 title!(singlesp_sdm, "")
+heatmap!(singlesp_sdm, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
 
 # Combine figures
 singlesp_plots = plot(singlesp_raw, singlesp_sdm)
@@ -33,14 +40,14 @@ singlesp_plots = plot(singlesp_raw, singlesp_sdm)
 # Richness
 @time include("raw/03_raw_richness.jl")
 richness_raw = richness_plot
-heatmap!(richness_raw, clim=(0.0, 60.0), colorbar_title = "Number of species per site")
 title!(richness_raw, "")
+heatmap!(richness_raw, clim=(0.0, 60.0), colorbar_title = "Number of species per site", dpi=300)
 
 # LCBD
 @time include("raw/05_raw_lcbd.jl")
 lcbd_raw = lcbd_plot2
 title!(lcbd_raw, "")
-heatmap!(lcbd_raw, colorbar_title = "LCBD value (relative to maximum)")
+heatmap!(lcbd_raw, colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 
 # Relationship
 @time include("raw/06_raw_relation-lcbd-richness.jl")
@@ -58,14 +65,14 @@ rel_lcbd_raw = vec(LCBD[2].grid)
 # Richness
 @time include("sdm/03_sdm_richness.jl")
 richness_sdm = richness_plot
-heatmap!(richness_sdm, clim=(0.0, 60.0), colorbar_title = "Number of species per site")
 title!(richness_sdm, "")
+heatmap!(richness_sdm, clim=(0.0, 60.0), colorbar_title = "Number of species per site", dpi=300)
 
 # LCBD
 @time include("sdm/05_sdm_lcbd.jl")
 lcbd_sdm = lcbd_plot1
 title!(lcbd_sdm, "")
-heatmap!(lcbd_sdm, colorbar_title = "LCBD value (relative to maximum)")
+heatmap!(lcbd_sdm, colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 
 # Relationship
 @time include("sdm/06_sdm_relation-lcbd-richness.jl")
@@ -127,20 +134,62 @@ density_lcbd_sdm = density(filter(!isnan, rel_lcbd_sdm))
 =#
 
 ## Export figures
+
+# wc_vars
+savefig(wc_plot, "doc/fig/wc_temp.png")
+
 # Raw
-savefig(singlesp_raw, "doc/fig/01_raw_singlesp.pdf")
-savefig(richness_raw, "doc/fig/03_raw_richness.pdf")
-savefig(lcbd_raw, "doc/fig/05_raw_lcbd-transf.pdf")
+savefig(singlesp_raw, "doc/fig/01_raw_singlesp.png")
+savefig(richness_raw, "doc/fig/03_raw_richness.png")
+savefig(lcbd_raw, "doc/fig/05_raw_lcbd-transf.png")
 savefig(relation_raw, "doc/fig/06_raw_relation.png")
 
-# Richness
-savefig(singlesp_sdm, "doc/fig/01_sdm_singlesp.pdf")
-savefig(richness_sdm, "doc/fig/03_sdm_richness.pdf")
-savefig(lcbd_sdm, "doc/fig/05_sdm_lcbd.pdf")
+# SDM
+savefig(singlesp_sdm, "doc/fig/01_sdm_singlesp.png")
+savefig(richness_sdm, "doc/fig/03_sdm_richness.png")
+savefig(lcbd_sdm, "doc/fig/05_sdm_lcbd.png")
 savefig(relation_sdm, "doc/fig/06_sdm_relation.png")
 
 # Combined
-savefig(richness_plots, "doc/fig/03_cmb_richness.pdf")
-savefig(lcbd_plots, "doc/fig/05_cmb_lcbd.pdf")
+savefig(richness_plots, "doc/fig/03_cmb_richness.png")
+savefig(lcbd_plots, "doc/fig/05_cmb_lcbd.png")
 savefig(relation_plots, "doc/fig/06_cmb_relation.png")
 savefig(relation_oneplot, "doc/fig/06_cmb_relation-oneplot.png")
+
+## Single species SDM with threshold (run if needed, needs to load whole dataset, takes a while to run)
+#=
+# Option 1: sdm_single-species script, fast but not exactly the same
+@time include("sdm/sdm_single-species.jl")
+singlesp_sdm_threshold = maps[2]
+title!(singlesp_sdm_threshold, "")
+heatmap!(singlesp_sdm_threshold, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
+savefig(singlesp_sdm_threshold, "doc/fig/01_sdm_singlesp-threshold.png")
+
+# Option 2: sdm_predictions script, exact same but soooo long since not parallelized
+## Exact same prediction, but soooooo long since not parallelized
+## Get & prepare data
+@time begin
+    # Load data from CSV files
+    df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
+    # Separate species
+    warblers_occ = [df[df.species .== u,:] for u in unique(df.species)]
+
+    # Define coordinates range
+    lon_range = (-145.0, -50.0)
+    lat_range = (20.0, 75.0)
+    # Observed coordinates range
+    lon_range_obs = extrema(df.longitude)
+    lat_range_obs = extrema(df.latitude)
+end
+
+## Get the worldclim data
+@time wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
+@time wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:19);
+
+## Make prediction for Yellow Warbler
+@time singlesp_pred = species_bclim(warblers_occ[13], wc_vars_pred, train_vars = wc_vars_train, with_threshold=true)
+singlesp_sdm_threshold = plotSDM(singlesp_pred)
+title!(singlesp_sdm_threshold, "")
+heatmap!(singlesp_sdm_threshold, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
+savefig(singlesp_sdm_threshold, "doc/fig/01_sdm_singlesp-threshold.png")
+=#
