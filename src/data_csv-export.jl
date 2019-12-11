@@ -13,22 +13,26 @@ using JLD2
 lon_range = (-145.0, -50.0)
 lat_range = (20.0, 75.0)
 
-## Extract data
-# Get worldclim variables
+## Get environmental data data
+# WorldClim data
 @time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
+# Landcover data
+@time lc_vars = load_landcover(lon_range, lat_range)
+# Combine environmental data
+env_vars = vcat(wc_vars, lc_vars)
 
 # Get presence-absence data for sampled sites, spe matrix
 spe = Ypred
 
 # Get environment data for sampled sites
-vars_env = map(x -> vec(x.grid[inds_pred]), wc_vars)
+vars_env = map(x -> vec(x.grid[inds_pred]), env_vars)
 # Create env matrix
 env = hcat(vars_env...)
 
 # Get sites latitudes
-lats = repeat(collect(latitudes(wc_vars[1])), outer=size(wc_vars[1].grid, 2))[inds_pred]
+lats = repeat(collect(latitudes(env_vars[1])), outer=size(env_vars[1].grid, 2))[inds_pred]
 # Get sites longitudes
-lons = repeat(collect(longitudes(wc_vars[1])), inner=size(wc_vars[1].grid, 1))[inds_pred]
+lons = repeat(collect(longitudes(env_vars[1])), inner=size(env_vars[1].grid, 1))[inds_pred]
 # Create spa matrix
 spa = hcat(lats, lons)
 
@@ -38,7 +42,7 @@ spedf = DataFrame(spe)
 names!(spedf, Symbol.("sp", collect(1:size(spe,2))))
 # Create environmental dataframe
 envdf = DataFrame(env)
-names!(envdf, Symbol.("wc", collect(1:size(env,2))))
+names!(envdf, vcat(Symbol.("wc", collect(1:size(wc_vars,1 ))), Symbol.("lc", collect(1:size(lc_vars, 1)))))
 # Create species dataframe
 spadf = DataFrame(lat = lats, lon = lons)
 
