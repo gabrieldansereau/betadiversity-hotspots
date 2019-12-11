@@ -22,16 +22,16 @@ end
 
 ## Get environmental data
 # WorldClim data
-@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
+@time @everywhere wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
 # WorldClim data with different training resolutions
 #=
 @time wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 @time wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:19);
 =#
 # Landcover data
-@time lc_vars = load_landcover(lon_range, lat_range)
+@time @everywhere lc_vars = load_landcover(lon_range, lat_range)
 # Combine environmental data
-env_vars = vcat(wc_vars, lc_vars)
+@everywhere env_vars = vcat(wc_vars, lc_vars)
 
 ## Make predictions for all species
 # With environmental data
