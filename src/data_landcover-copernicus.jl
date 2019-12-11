@@ -50,10 +50,10 @@ for i in $(ls coverfraction)
 do
     # Copy landcover data in 1 folder per variable
     for j in landcover*; do cp "$j"/*"$i"-coverfraction-layer* coverfraction/"$i"/; done
-    # Merge all layers per variable in one, set resolution to 10 arc-minutes, keep 255 as no data value
-    gdal_merge.py -of GTiff -ps 0.166666666666666650 0.1666666666666666570 -a_nodata 255 -o coverfraction/"$i"/"$i".tif coverfraction/"$i"/*.tif
+    # Set resolution to 10 arc-minutes, keep 255 as no data value, merge all layers in one
+    gdalwarp -tr 0.166666666666666650 0.1666666666666666570 -r average coverfraction/"$i"/W*.tif coverfraction/"$i"/"$i"-warp.tif
     # Transform layer to .asc format, which can be opened in text editor
-    gdal_translate -of AAIGrid coverfraction/"$i"/"$i".tif coverfraction/"$i"/"$i".asc
+    gdal_translate -of AAIGrid coverfraction/"$i"/"$i"-warp.tif coverfraction/"$i"/"$i".asc
     # Remove first 6 lines of .asc file, creates grid that can be loaded easily
     tail -n +7 coverfraction/"$i"/"$i".asc > ../BioClim/assets/landcover/lc_"$i"_10m.csv
 done
@@ -74,3 +74,14 @@ lc_layers = load_landcover(lon_range, lat_range)
 # Plot layers
 plotSDM(lc_layers[1])
 plotSDM(wc_vars[1])
+
+# Test for sites with landcover over 100
+nul_layer = zeros(Float64, size(lc_layers[1].grid))
+for l in lc_layers
+    global nul_layer += l.grid
+end
+nul_layer
+nul_layer_nonan = filter(!isnan, nul_layer)
+describe(nul_layer_nonan)
+filter(x -> x > 110, nul_layer_nonan)
+filter(x -> x > 120, nul_layer_nonan)
