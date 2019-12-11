@@ -59,6 +59,15 @@ do
 done
 =#
 
+##  Test landcover variables
+
+# Define coordinates range
+lon_range = (-145.0, -50.0)
+lat_range = (20.0, 75.0)
+
+# Get worldclim variables
+@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
+
 # Test loading variables
 lc_layers = load_landcover(lon_range, lat_range)
 
