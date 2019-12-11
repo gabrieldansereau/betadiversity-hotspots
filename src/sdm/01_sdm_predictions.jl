@@ -42,7 +42,7 @@ env_vars = vcat(wc_vars, lc_vars)
 =#
 
 ## Export predictions
-@save "data/jld2/sdm-predictions.jld2" predictions
+@save "data/jld2/sdm-predictions-landcover.jld2" predictions
 
 # Test import
-@load "data/jld2/sdm-predictions.jld2" predictions
+@load "data/jld2/sdm-predictions-landcover.jld2" predictions

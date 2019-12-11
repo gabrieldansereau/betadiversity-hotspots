@@ -24,7 +24,7 @@ heatmap!(wc_plot, clim=(-10.0, 30.0), colorbar_title="Annual Mean Temperature (Â
 
 ## Load data
 @load "data/jld2/raw-pres-abs.jld2" pres_abs
-@load "data/jld2/sdm-predictions.jld2" predictions
+@load "data/jld2/sdm-predictions-landcover.jld2" predictions
 
 ## Plot Single species
 replace!(pres_abs[13].grid, 0.0 => NaN)

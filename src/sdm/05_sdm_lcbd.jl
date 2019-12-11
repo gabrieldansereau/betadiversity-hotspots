@@ -4,9 +4,9 @@ using Random
 @time include("../required.jl")
 
 ## Load predictions for all species
-@load "data/jld2/sdm-predictions.jld2" predictions
+@load "data/jld2/sdm-predictions-landcover.jld2" predictions
 ## Load matrix Y
-@load "data/jld2/sdm-Y-matrices.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
+@load "data/jld2/sdm-Y-matrices-landcover.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
 
 ## Compute beta diversity statistics
 # Load functions

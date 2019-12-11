@@ -3,7 +3,7 @@ using JLD2
 @time include("../required.jl")
 
 ## Load presence-absence data for all species
-@load "data/jld2/sdm-predictions.jld2" predictions
+@load "data/jld2/sdm-predictions-landcover.jld2" predictions
 
 ## Create matrix Y (site-by-species community data table)
 begin
@@ -47,9 +47,9 @@ end
 
 ## Export results
 # Export matrices & inds_pred (useful to link Y & Ypred-Ytransf)
-@save "data/jld2/sdm-Y-matrices.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
+@save "data/jld2/sdm-Y-matrices-landcover.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
 # Test import
-@load "data/jld2/sdm-Y-matrices.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
+@load "data/jld2/sdm-Y-matrices-landcover.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
 
 ## Visualize patterns in Y
 # Heatmap of Y
