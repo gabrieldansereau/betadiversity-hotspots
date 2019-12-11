@@ -20,8 +20,13 @@ addprocs(4)
 
 end
 
-## Get the worldclim data
-@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
+## Get environmental data data
+# WorldClim data
+@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
+# Landcover data
+@time lc_vars = load_landcover(lon_range, lat_range)
+# Combine environmental data
+env_vars = vcat(wc_vars, lc_vars)
 
 ## Create function to convert occurrence to presence-absence based on a SimpleSDMLayer
 @everywhere function presence_absence(species::DataFrame, copy_layer::SimpleSDMLayer; binary::Bool=true)
@@ -52,8 +57,8 @@ end
 end
 # Loop function for each species
 using ProgressMeter
-@time pres_abs = @showprogress pmap(x -> presence_absence(x, wc_vars[1]), warblers_occ)
-# @time pres_abs1 = pmap(x -> presence_absence(x, wc_vars[1], binary=false), warblers_occ)
+@time pres_abs = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers_occ)
+# @time pres_abs1 = pmap(x -> presence_absence(x, env_vars[1], binary=false), warblers_occ)
 # Export result
 @save "data/jld2/raw-pres-abs.jld2" pres_abs
 @load "data/jld2/raw-pres-abs.jld2" pres_abs
