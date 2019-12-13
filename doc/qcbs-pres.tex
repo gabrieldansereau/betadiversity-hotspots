@@ -27,17 +27,25 @@
 % \renewcommand{\familydefault}{\rmdefault}
 
 \title{Spatially continuous identification of beta diversity hotspots using species distribution models}
-\author{Gabriel Dansereau\inst{1,2,3}}
+\author{
+  Gabriel Dansereau\inst{1,2,3}
+  \and
+  Timothée Poisot\inst{1,2,3,4}
+  \and
+  Pierre Legendre\inst{1,3}
+}
 \institute{
-  \inst{1} Université de Montréal
+  \inst{1} Département de sciences biologiques, Université de Montréal
   \and
   \inst{2} BIOS\textsuperscript{2}
   \and
   \inst{3} Quebec Center for Biodiversity Science
+  \and
+  \inst{4} Groupe de recherche interuniversitaire en limnologie et environnement aquatique
 }
 \date{
-  Advisory Committee Meeting\\
-  \today
+  10th Annual QCBS Symposium\\
+  December 19, 2019
 }
 % Affiliation logos
 \titlegraphic{
@@ -54,7 +62,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Objective}
+  \frametitle{Suggestion}
   Bring together 2 elements:
   \vfill
   \begin{enumerate}
@@ -66,6 +74,28 @@
     \centering
     \hspace*{0.0cm}\includegraphics[scale=0.12]{fig/05_sdm_lcbd.png}
   \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Definitions, 'cause why not?}
+  Beta diversity
+  \begin{itemize}
+    \item Community composition, not turnover
+  \end{itemize}
+  \medskip
+  \begin{quotation}
+    "Variation in species composition among sites within a geographical region of interest" (Legendre et al. 2005)
+  \end{quotation}
+  \vfill
+  Local contribution to beta diversity (LCBD) coefficients
+  \begin{itemize}
+    \item Highlights exceptional species compositions
+  \end{itemize}
+  \medskip
+  \begin{quotation}
+    "Comparative indicators of the ecological uniqueness of sites in terms of community composition" (Legendre \& De Caceres, 2013)
+  \end{quotation}
+  \vfill
 \end{frame}
 
 \begin{frame}
@@ -311,28 +341,30 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Elements to discuss}
+  \frametitle{Obvious things to improve}
   \vfill
-  Validating results
-  \begin{itemize}
-    \item Method for prediction error
-    \item Data for evaluation
-  \end{itemize}
+  Result validation
   \vfill
-  Improving SDM predictions
-  \begin{itemize}
-    \item Better modelling of presence-absence through environmental conditions
-    \item Integrating other drivers of species distributions
-  \end{itemize}
+  SDM underfitting
   \vfill
-  Improving LCBD calculation \& understanding values
-  \begin{itemize}
-    \item Data transformation
-    \item Relationship interpretation
-  \end{itemize}
+  Land cover variables
   \vfill
-  Determining scale \& resolution to focus on
+  Other drivers of species distribution
   \vfill
+  eBird sampling biases
+  \vfill
+\end{frame}
+
+\begin{frame}
+  \frametitle{Yet... Promising potential!}
+  \begin{figure}
+    \centering
+    \hspace*{-1cm}\includegraphics[scale=0.09]{fig/05_sdm_lcbd.png}
+    \hspace*{-0cm}\includegraphics[scale=0.24]{fig/06_cmb_relation-oneplot.png}
+  \end{figure}
+  \medskip
+  \centering
+  \Large Questions?
 \end{frame}
 
 \begin{frame}
