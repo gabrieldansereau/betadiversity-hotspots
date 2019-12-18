@@ -19,8 +19,11 @@ end
 env_vars = vcat(wc_vars, lc_vars)
 
 # Plot wcvars1
-wc_plot = plotSDM(wc_vars[1])
+wc_plot = plotSDM(wc_vars[1], c=:auto)
 heatmap!(wc_plot, clim=(-10.0, 30.0), colorbar_title="Annual Mean Temperature (°C)", dpi=300)
+# Plot lcvars8 (urban)
+lc_plot = plotSDM(lc_vars[2], c=:auto)
+heatmap!(lc_plot, colorbar_title="Crops land cover (%)", dpi=300)
 
 ## Load data
 @load "data/jld2/raw-pres-abs.jld2" pres_abs
@@ -101,7 +104,7 @@ relation_oneplot = scatter(rel_richness_raw, rel_lcbd_raw,
         markersize = 1,
         c = :skyblue,
         label = "Raw occurrence data",
-        legend = :bottomright,
+        legend = :topright,
         xlims = (0.0, 1.0), ylims = (0.0, 1.0),
         yticks = 0.0:0.20:1.0,
         xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
@@ -109,6 +112,16 @@ relation_oneplot = scatter(rel_richness_raw, rel_lcbd_raw,
 scatter!(relation_oneplot, rel_richness_sdm, rel_lcbd_sdm,
          markersize = 1, color=:orange, label = "SDM predictions")
 # plot!(relation_oneplot, aspectratio=1)
+
+relation_oneplot_empty = scatter(
+        markersize = 1,
+        c = :skyblue,
+        label = "Raw occurrence data",
+        legend = :bottomright,
+        xlims = (0.0, 1.0), ylims = (0.0, 1.0),
+        yticks = 0.0:0.20:1.0,
+        xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
+        grid=:none)
 
 # Mean LCBD / richness
 rel_df_raw = DataFrame(richness = rel_richness_raw, lcbd = rel_lcbd_raw)
@@ -140,8 +153,9 @@ density_lcbd_sdm = density(filter(!isnan, rel_lcbd_sdm))
 
 ## Export figures
 
-# wc_vars
+# env vars
 savefig(wc_plot, "doc/fig/wc_temp.png")
+savefig(lc_plot, "doc/fig/lc_temp.png")
 
 # Raw
 savefig(singlesp_raw, "doc/fig/01_raw_singlesp.png")
@@ -160,6 +174,7 @@ savefig(richness_plots, "doc/fig/03_cmb_richness.png")
 savefig(lcbd_plots, "doc/fig/05_cmb_lcbd.png")
 savefig(relation_plots, "doc/fig/06_cmb_relation.png")
 savefig(relation_oneplot, "doc/fig/06_cmb_relation-oneplot.png")
+savefig(relation_oneplot_empty, "doc/fig/06_cmb_relation-oneplot-empty.png")
 
 ## Single species SDM with threshold (run if needed, needs to load whole dataset, takes a while to run)
 #=
