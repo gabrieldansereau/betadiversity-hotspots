@@ -35,11 +35,11 @@ t_lcbd[3][inds_pred] = LCBDsets[3]
 LCBD = SimpleSDMResponse.(t_lcbd, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 ## Plot results
-lcbd_plot1 = plotSDM(LCBD[1], type="lcbd")
+lcbd_plot1 = plotSDM(LCBD[1], c=:viridis)
 title!(lcbd_plot1, "SDM LCBD values per site (relative to maximum)")
-lcbd_plot2 = plotSDM(LCBD[2], type="lcbd")
+lcbd_plot2 = plotSDM(LCBD[2], c=:viridis)
 title!(lcbd_plot2, "SDM LCBD values per site (relative to maximum, hellinger transformed)")
-lcbd_plot3 = plotSDM(LCBD[3], type="lcbd")
+lcbd_plot3 = plotSDM(LCBD[3], c=:viridis)
 title!(lcbd_plot3, "SDM LCBD values per site (relative to maximum, probability data)")
 
 ## Save result

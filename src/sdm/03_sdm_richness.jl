@@ -20,7 +20,9 @@ sums = reshape(sums, size(predictions[1]))
 richness = SimpleSDMResponse(sums, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
 
 ## Plot results
-richness_plot = plotSDM(richness, type="lcbd")
+richness_plot = plotSDM(richness, c=:viridis)
+richness_viridis = plotSDM(richness, c=:viridis)
+richness_reds = plotSDM(richness, c=:reds)
 title!(richness_plot, "Number of species per site (SDM predictions)")
 
 ## Save result
