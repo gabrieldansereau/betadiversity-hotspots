@@ -1,4 +1,4 @@
-import SimpleSDMLayers: bioclim
+# import SimpleSDMLayers: bioclim
 
 function bioclim(occ::Union{GBIFRecords,DataFrame}, pred_vars::SimpleSDMLayer; train_vars::SimpleSDMLayer=pred_vars)
     observed_values = train_vars[occ]
