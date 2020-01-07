@@ -35,14 +35,15 @@ function prepare_ebd_data(df::DataFrame)
 end
 
 function load_landcover(lon_range, lat_range;path::AbstractString="assets/landcover/")
-    # Load variable names
+    # Load variable names & paths
     landcover_files = readdir(path)
     landcover_vars = [split(lc, r"_")[2] for lc in landcover_files]
+    landcover_paths = string.(path, landcover_files)
 
     # Load data
-    landcover_raw = [CSV.read(string(path, lc), delim=" ", header=false) for lc in landcover_files]
-    # Transform into matrices, remove empty first column, reverse rows
-    landcover_mat = [Matrix{Float64}(lc[end:-1:1,2:end]) for lc in landcover_raw]
+    landcover_raw = readdlm.(landcover_paths)
+    # Reverse rows
+    landcover_mat = [lc[end:-1:1, :] for lc in landcover_raw]
 
     # Replace 255 (default no data values) by NaN
     [replace!(lc, 255 => NaN) for lc in landcover_mat]
