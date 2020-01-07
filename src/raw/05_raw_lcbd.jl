@@ -32,9 +32,9 @@ t_lcbd[2][inds_pred] = LCBDsets[2]
 LCBD = SimpleSDMResponse.(t_lcbd, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
 
 ## Plot results
-lcbd_plot1 = plotSDM(LCBD[1], type="lcbd")
+lcbd_plot1 = plotSDM(LCBD[1], c=:viridis)
 title!(lcbd_plot1, "LCBD values per site (relative to maximum, raw data)")
-lcbd_plot2 = plotSDM(LCBD[2], type="lcbd")
+lcbd_plot2 = plotSDM(LCBD[2], c=:viridis)
 title!(lcbd_plot2, "LCBD values per site (relative to maximum, hellinger transformed)")
 
 ## Save result

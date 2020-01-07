@@ -20,15 +20,29 @@ addprocs(9)
     lat_range_obs = extrema(df.latitude)
 end
 
-## Get the worldclim data
+## Get environmental data
+# WorldClim data
+@time @everywhere wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
+# WorldClim data with different training resolutions
+#=
 @time wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 @time wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:19);
+=#
+# Landcover data
+@time @everywhere lc_vars = load_landcover(lon_range, lat_range)
+# Combine environmental data
+@everywhere env_vars = vcat(wc_vars, lc_vars)
 
 ## Make predictions for all species
+# With environmental data
+@time predictions = @showprogress pmap(x -> species_bclim(x, env_vars), warblers_occ);
+# With different training resolutions
+#=
 @time predictions = @showprogress pmap(x -> species_bclim(x, wc_vars_pred, train_vars = wc_vars_train), warblers_occ);
+=#
 
 ## Export predictions
-@save "data/jld2/sdm-predictions.jld2" predictions
+@save "data/jld2/sdm-predictions-landcover.jld2" predictions
 
 # Test import
-@load "data/jld2/sdm-predictions.jld2" predictions
+@load "data/jld2/sdm-predictions-landcover.jld2" predictions

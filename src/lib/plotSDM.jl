@@ -1,7 +1,7 @@
-function plotSDM(layer::SimpleSDMLayer; type::String="sdm", scatter::Bool=false, occ=nothing)
+function plotSDM(layer::SimpleSDMLayer; c=:BuPu, scatter::Bool=false, occ=nothing)
     ## Arguments
     # layer: SimpleSDMLayer to plot
-    # type: type of layer to represent, either "sdm" (default) or "lcbd"
+    # c: colorpalette to use
     # scatter: add observations as points in scatter plot, requires to define occ
     # occ: observations to represent if scatter=true
 
@@ -22,20 +22,13 @@ function plotSDM(layer::SimpleSDMLayer; type::String="sdm", scatter::Bool=false,
         plot!(sdm_plot, sh, c=:lightgrey, lab="")
     end
 
-    # Define plot aspect according to type
-    if type == "sdm"
-        colorpalette = :BuPu
-    elseif type == "lcbd"
-        colorpalette = :viridis
-    end
-
     # Add SDM output as heatmap
     heatmap!(
         sdm_plot,
         longitudes(layer), latitudes(layer), # layer range
         layer.grid, # evenness values
         aspectratio=92.60/60.75, # aspect ratio
-        c=colorpalette, # ~color palette
+        c=c, # ~color palette
         clim=(0.0, maximum(filter(!isnan, layer.grid))) # colorbar limits
     )
 

@@ -20,7 +20,7 @@ sums = reshape(sums, size(pres_abs[1]))
 richness = SimpleSDMResponse(sums, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
 
 ## Plot results
-richness_plot = plotSDM(richness, type="lcbd")
+richness_plot = plotSDM(richness, c=:viridis)
 title!(richness_plot, "Number of species observed per site")
 
 ## Save result
