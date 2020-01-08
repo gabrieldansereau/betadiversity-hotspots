@@ -1,5 +1,5 @@
+using JLD2
 using Plots
-using GDAL
 using Shapefile
 using GBIF
 using StatsBase
@@ -9,10 +9,10 @@ using CSV
 using DelimitedFiles
 using Dates
 using SimpleSDMLayers
+using Random
+using ProgressMeter
 
 include("lib/SDMLayer.jl")
-# include("lib/gdal.jl")
-# include("lib/worldclim.jl")
 include("lib/bioclim.jl")
 include("lib/shapefiles.jl")
 include("lib/csvdata.jl")
