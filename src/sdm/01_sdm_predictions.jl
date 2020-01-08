@@ -1,8 +1,6 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-using ProgressMeter
 addprocs(9)
-
 @time @everywhere include("src/required.jl")
 
 ## Get & prepare data

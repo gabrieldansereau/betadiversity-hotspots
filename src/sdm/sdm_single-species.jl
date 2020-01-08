@@ -1,6 +1,6 @@
+Pkg.activate(".")
 using Distributed
 addprocs(9)
-
 @time @everywhere include("src/required.jl")
 
 ## Get data from CSV files

@@ -1,7 +1,6 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
 addprocs(4)
-
 @time @everywhere include("src/required.jl")
 
 ## Get & prepare data
@@ -56,7 +55,6 @@ env_vars = vcat(wc_vars, lc_vars)
     return pres_abs_layer
 end
 # Loop function for each species
-using ProgressMeter
 @time pres_abs = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers_occ)
 # @time pres_abs1 = pmap(x -> presence_absence(x, env_vars[1], binary=false), warblers_occ)
 # Export result

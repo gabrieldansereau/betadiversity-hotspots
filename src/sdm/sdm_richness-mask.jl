@@ -1,6 +1,6 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-@time include("../required.jl")
+@time @everywhere include("src/required.jl")
 
 #### Richness on raw data (for the mask)
 

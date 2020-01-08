@@ -1,6 +1,5 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-
 @time @everywhere include("src/required.jl")
 
 ## Export data to csv files with names consistent with NEwR

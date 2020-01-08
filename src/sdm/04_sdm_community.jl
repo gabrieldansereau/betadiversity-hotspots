@@ -1,6 +1,6 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-@time include("../required.jl")
+@time @everywhere include("src/required.jl")
 
 ## Load predictions for all species
 @load "data/jld2/sdm-predictions-landcover.jld2" predictions

@@ -1,8 +1,8 @@
 #### Master file - Raw observations
 ## NOT TESTED
 
+Pkg.activate(".")
 using Distributed
-using JLD2
 @time @everywhere include("src/required.jl")
 
 # Precompile plot function

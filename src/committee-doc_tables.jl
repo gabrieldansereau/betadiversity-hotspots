@@ -1,8 +1,8 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-using Latexify
-
 @time @everywhere include("src/required.jl")
+
+using Latexify
 
 ## EBD data preparation
 

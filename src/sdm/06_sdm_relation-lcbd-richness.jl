@@ -1,6 +1,6 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-@time include("../required.jl")
+@time @everywhere include("src/required.jl")
 
 ## Load LCBD & richness scripts (if not already loaded)
 #=

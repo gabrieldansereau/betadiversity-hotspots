@@ -1,7 +1,6 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-
-include("required.jl")
+@time @everywhere include("src/required.jl")
 
 ## Get the worldclim data
 @time wc_vars = pmap(x -> worldclim(x, resolution = "5"), 1:19);

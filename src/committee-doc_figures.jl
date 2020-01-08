@@ -1,6 +1,5 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-
 @time @everywhere include("src/required.jl")
 
 ## Get & prepare data

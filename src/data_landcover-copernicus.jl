@@ -1,6 +1,5 @@
+Pkg.activate(".")
 using Distributed
-using JLD2
-
 @time @everywhere include("src/required.jl")
 
 ## Bash commands to download & prepare data, to run in terminal in ../landcover/
