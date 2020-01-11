@@ -1,7 +1,7 @@
 #### Master file - Raw observations
 ## NOT TESTED
 
-Pkg.activate(".")
+import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 

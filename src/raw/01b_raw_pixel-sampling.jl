@@ -1,4 +1,4 @@
-Pkg.activate(".")
+import Pkg; Pkg.activate(".")
 using Distributed
 addprocs(4)
 @time @everywhere include("src/required.jl")

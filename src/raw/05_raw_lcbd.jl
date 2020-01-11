@@ -1,4 +1,4 @@
-Pkg.activate(".")
+import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 ## Load presence-absence data for all species
