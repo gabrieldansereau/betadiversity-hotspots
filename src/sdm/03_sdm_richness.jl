@@ -2,11 +2,13 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
-## Load predictions for all species
-@load "data/jld2/sdm-predictions-landcover.jld2" predictions
+outcome = "sdm"
+
+## Load distribution data for all species
+@load "data/jld2/$(outcome)-distributions.jld2" distributions
 
 ## Load matrix Y
-@load "data/jld2/sdm-Y-matrices-landcover.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
+@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_pred inds_notpred
 
 #### Species richness
 ## Get number of species per site
@@ -14,18 +16,20 @@ sums = map(x -> Float64(sum(x)), eachrow(Y))
 # Add NaN for non predicted sites
 sums[inds_notpred] .= NaN
 # Reshape to grid format
-sums = reshape(sums, size(predictions[1]))
+sums = reshape(sums, size(distributions[1]))
 
 ## Create SimpleSDMLayer
-richness = SimpleSDMResponse(sums, predictions[1].left, predictions[1].right, predictions[1].bottom, predictions[1].top)
+richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 
 ## Plot results
 richness_plot = plotSDM(richness, c=:viridis)
-richness_viridis = plotSDM(richness, c=:viridis)
-richness_reds = plotSDM(richness, c=:reds)
-title!(richness_plot, "Number of species per site (SDM predictions)")
+heatmap!(richness_plot,
+          title = "Richness ($outcome distributions)",
+          clim=(0.0, 60.0),
+          colorbar_title = "Number of species per site",
+          dpi=300)
 
 ## Save result
 #=
-savefig(richness_plot, "fig/sdm/03_sdm_richness.pdf")
+savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
 =#

@@ -3,6 +3,8 @@ using Distributed
 addprocs(9)
 @time @everywhere include("src/required.jl")
 
+outcome = "sdm"
+
 ## Get & prepare data
 @time begin
     # Load data from CSV files
@@ -29,12 +31,12 @@ end
 @everywhere env_vars_pred = vcat(wc_vars_pred, lc_vars_pred)
 @everywhere env_vars_train = vcat(wc_vars_train, lc_vars_train)
 
-## Make predictions for all species
+## Make distributions for all species
 # With different training resolutions
-@time predictions = @showprogress pmap(x -> species_bclim(x, pred_vars = env_vars_pred, train_vars = env_vars_train), warblers_occ);
+@time distributions = @showprogress pmap(x -> species_bclim(x, pred_vars = env_vars_pred, train_vars = env_vars_train), warblers_occ);
 
-## Export predictions
-@save "data/jld2/sdm-predictions-landcover.jld2" predictions
+## Export distributions
+@save "data/jld2/$(outcome)-distributions-landcover.jld2" distributions
 
 # Test import
-@load "data/jld2/sdm-predictions-landcover.jld2" predictions
+@load "data/jld2/$(outcome)-distributions-landcover.jld2" distributions

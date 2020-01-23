@@ -2,20 +2,22 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
+outcome = "raw"
+
 ## Load presence-absence data for all species
-@load "data/jld2/raw-pres-abs.jld2" pres_abs
+@load "data/jld2/$(outcome)-pres-abs.jld2" distributions
 
 ## Create matrix Y (site-by-species community data table)
 begin
     # Get dimensions
-    nsites = prod(size(pres_abs[1]))
-    nspecies = length(pres_abs)
+    nsites = prod(size(distributions[1]))
+    nspecies = length(distributions)
     # Create Y
     Y = zeros(Int64, (nsites, nspecies))
     # Fill Y with community predictions
     @progress for gc in 1:nsites # loop for all sites
         # Group predictions for all species in site
-        R = map(x -> x.grid[gc], pres_abs)
+        R = map(x -> x.grid[gc], distributions)
         # Fill Y with binary values
         global Y[gc,:] = isone.(R)
     end
@@ -42,13 +44,13 @@ end
 
 ## Export results
 # Export matrices & inds_pred (useful to link Y & Ypred-Ytransf)
-@save "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
+@save "data/jld2/$(outcome)-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 # Test import
-@load "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
+@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 ## Visualize patterns in Y
 # Heatmap of Y
-heat_raw = heatmap(Ypred, title = "Presence-absence matrix Y (unsorted)",
+heat_$(outcome) = heatmap(Ypred, title = "Presence-absence matrix Y (unsorted)",
                    ylabel = "Site number", xlabel = "Species number")
 # Sort Y by rowsum (I think?)
 Ysort = sortslices(Ypred, dims = 1)
@@ -69,9 +71,9 @@ heat_sortrowcol = heatmap(Ypred[sortedrows, sortedcols], title = "Presence-absen
                    ylabel = "Site number", xlabel = "Species number")
 # Export results
 #=
-savefig(heat_raw, "fig/raw/02_raw_Y-unsorted.png")
-savefig(heat_sortrow, "fig/raw/02_raw_Y-rowsorted.png")
-savefig(heat_sortrowcol, "fig/raw/02_raw_Y-rowcolsorted.png")
+savefig(heat_$(outcome), "fig/$(outcome)/02_$(outcome)_Y-unsorted.png")
+savefig(heat_sortrow, "fig/$(outcome)/02_$(outcome)_Y-rowsorted.png")
+savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
 =#
 #= # Funny looking smudge 😛
 heatmap(sort(Ypred, dims=1, by=sum))
