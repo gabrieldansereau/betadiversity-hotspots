@@ -19,25 +19,19 @@ addprocs(9)
 end
 
 ## Get environmental data
-# WorldClim data
-@time @everywhere wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
 # WorldClim data with different training resolutions
-#=
-@time wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
-@time wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:19);
-=#
+@time @everywhere wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
+@time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
 # Landcover data
-@time @everywhere lc_vars = landcover(1:10, resolution = "10")[lon_range, lat_range]
+@time @everywhere lc_vars_pred = landcover(1:10, resolution = "10")[lon_range, lat_range]
+@time @everywhere lc_vars_train = landcover(1:10, resolution = "5")[lon_range_obs, lat_range_obs]
 # Combine environmental data
-@everywhere env_vars = vcat(wc_vars, lc_vars)
+@everywhere env_vars_pred = vcat(wc_vars_pred, lc_vars_pred)
+@everywhere env_vars_train = vcat(wc_vars_train, lc_vars_train)
 
 ## Make predictions for all species
-# With environmental data
-@time predictions = @showprogress pmap(x -> species_bclim(x, env_vars), warblers_occ);
 # With different training resolutions
-#=
-@time predictions = @showprogress pmap(x -> species_bclim(x, wc_vars_pred, train_vars = wc_vars_train), warblers_occ);
-=#
+@time predictions = @showprogress pmap(x -> species_bclim(x, pred_vars = env_vars_pred, train_vars = env_vars_train), warblers_occ);
 
 ## Export predictions
 @save "data/jld2/sdm-predictions-landcover.jld2" predictions
