@@ -32,29 +32,17 @@ rm *.zip
 
 # Create repositories if needed
 mkdir coverfraction
-mkdir coverfraction-csv
-mkdir coverfraction/bare
-mkdir coverfraction/crops
-mkdir coverfraction/grass
-mkdir coverfraction/moss
-mkdir coverfraction/shrub
-mkdir coverfraction/snow
-mkdir coverfraction/tree
-mkdir coverfraction/urban
-mkdir coverfraction/water-permanent
-mkdir coverfraction/water-seasonal
+(cd coverfraction; mkdir bare crops grass moss shrub snow tree urban water-permanent water-seasonal)
 
 # Batch commands for each land cover variable
-for i in $(ls coverfraction)
+for i in $(ls coverfraction/)
 do
     # Copy landcover data in 1 folder per variable
     for j in landcover*; do cp "$j"/*"$i"-coverfraction-layer* coverfraction/"$i"/; done
-    # Set resolution to 10 arc-minutes, keep 255 as no data value, merge all layers in one
-    gdalwarp -tr 0.166666666666666650 0.1666666666666666570 -r average coverfraction/"$i"/W*.tif coverfraction/"$i"/"$i"-warp.tif
-    # Transform layer to .asc format, which can be opened in text editor
-    gdal_translate -of AAIGrid coverfraction/"$i"/"$i"-warp.tif coverfraction/"$i"/"$i".asc
-    # Remove first 6 lines of .asc file, creates grid that can be loaded easily
-    tail -n +7 coverfraction/"$i"/"$i".asc > ../BioClim/assets/landcover/lc_"$i"_10m.csv
+    # Set resolution to 10 arc-minutes & merge all layers in one
+    gdalwarp -tr 0.166667 0.166667 -r average coverfraction/"$i"/W*.tif ../BioClim/assets/landcover/lc_"$i"_10m.tif
+    # Set resolution to 5 arc-minutes & merge all layers in one
+    gdalwarp -tr 0.0833333 0.0833333 -r average coverfraction/"$i"/W*.tif ../BioClim/assets/landcover/lc_"$i"-5m.tif
 done
 =#
 
@@ -64,19 +52,21 @@ done
 lon_range = (-145.0, -50.0)
 lat_range = (20.0, 75.0)
 
-# Get worldclim variables
-@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
-
 # Test loading variables
-lc_layers = load_landcover(lon_range, lat_range)
+lc_vars = landcover(1:10, resolution = "10")
+lc_vars = landcover(1:10, resolution = "5")
+lc_vars = map(x -> landcover(x, resolution = "5")[lon_range, lat_range], 1:10)
+fig1 = plotSDM(lc_vars[2])
 
-# Plot layers
-plotSDM(lc_layers[1])
-plotSDM(wc_vars[1])
+# Plot worldclim to compare
+@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
+fig2 = plotSDM(wc_vars[1])
+fig1
+fig2
 
 # Test for sites with landcover over 100
-nul_layer = zeros(Float64, size(lc_layers[1].grid))
-for l in lc_layers
+nul_layer = zeros(Float64, size(lc_vars[1].grid))
+for l in lc_vars
     global nul_layer += l.grid
 end
 nul_layer
