@@ -27,7 +27,7 @@ end
 @time wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:19);
 =#
 # Landcover data
-@time @everywhere lc_vars = load_landcover(lon_range, lat_range)
+@time @everywhere lc_vars = landcover(1:10, resolution = "10")[lon_range, lat_range]
 # Combine environmental data
 @everywhere env_vars = vcat(wc_vars, lc_vars)
 

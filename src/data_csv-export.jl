@@ -16,7 +16,7 @@ lat_range = (20.0, 75.0)
 # WorldClim data
 @time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 # Landcover data
-@time lc_vars = load_landcover(lon_range, lat_range)
+@time lc_vars = landcover(1:10, resolution = "10")[lon_range, lat_range]
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
 
