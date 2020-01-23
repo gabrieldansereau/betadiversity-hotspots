@@ -48,9 +48,9 @@ diversity = SimpleSDMResponse(output, pres_abs[1].left, pres_abs[1].right, pres_
 diversity2 = SimpleSDMResponse(output2, pres_abs[1].left, pres_abs[1].right, pres_abs[1].bottom, pres_abs[1].top)
 
 ## Plot result
-diversity_plot = plotSDM(diversity, type="sdm")
+diversity_plot = plotSDM(diversity, c=:BuPu)
 title!(diversity_plot, "Species diversity (Pielou's evenness index - Site richness)")
-diversity_plot2 = plotSDM(diversity2, type="sdm")
+diversity_plot2 = plotSDM(diversity2, c=:BuPu)
 title!(diversity_plot2, "Species diversity (Pielou's evenness index - Total richness)")
 
 ## Save result

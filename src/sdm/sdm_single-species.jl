@@ -40,7 +40,7 @@ end
     end
 
     # Plot SDM
-    sdm_plot = plotSDM(prediction, type="sdm", scatter=scatter, occ=occ)
+    sdm_plot = plotSDM(prediction, c=:BuPu, scatter=scatter, occ=occ)
     # Add species name
     plot!(sdm_plot, title=first(unique(occ.species)))
 

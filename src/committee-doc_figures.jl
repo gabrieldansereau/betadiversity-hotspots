@@ -30,13 +30,13 @@ heatmap!(lc_plot, colorbar_title="Crops land cover (%)", dpi=300)
 
 ## Plot Single species
 replace!(pres_abs[13].grid, 0.0 => NaN)
-singlesp_raw = plotSDM(pres_abs[13])
+singlesp_raw = plotSDM(pres_abs[13], c=:BuPu)
 title!(singlesp_raw, "")
 heatmap!(singlesp_raw, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
 heatmap!(colorbar=:none)
 scatter!(singlesp_raw, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
                         legend=:bottomright, legendfontsize=4)
-singlesp_sdm = plotSDM(predictions[13])
+singlesp_sdm = plotSDM(predictions[13], c=:BuPu)
 title!(singlesp_sdm, "")
 heatmap!(singlesp_sdm, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
 
@@ -216,7 +216,7 @@ env_vars = vcat(wc_vars, lc_vars)
 
 ## Make prediction for Yellow Warbler
 @time singlesp_pred = species_bclim(warblers_occ[13], env_vars, with_threshold=true)
-singlesp_sdm_threshold = plotSDM(singlesp_pred)
+singlesp_sdm_threshold = plotSDM(singlesp_pred, c=:BuPu)
 title!(singlesp_sdm_threshold, "")
 heatmap!(singlesp_sdm_threshold, clim=(0.0, 1.0), colorbar_title="Probability of occurrence", dpi=300)
 savefig(singlesp_sdm_threshold, "doc/fig/01_sdm_singlesp-threshold.png")

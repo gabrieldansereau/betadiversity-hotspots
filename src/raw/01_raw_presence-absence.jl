@@ -66,9 +66,9 @@ pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in pres_ab
 sort(pres_counts)
 
 ## Plot result
-map_sp1 = plotSDM(pres_abs[1])
+map_sp1 = plotSDM(pres_abs[1], c=:BuPu)
 title!(map_sp1, "$(warblers_occ[1].species[1]) distribution (presence-absence)")
-map_sp2 = plotSDM(pres_abs[13])
+map_sp2 = plotSDM(pres_abs[13], c=:BuPu)
 title!(map_sp2, "$(warblers_occ[13].species[1]) distribution (presence-absence)")
 
 # Export figure

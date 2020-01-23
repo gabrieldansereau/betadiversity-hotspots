@@ -71,7 +71,7 @@ ranges = [1:10...,15,20,25,30]
     richness_mask = SimpleSDMResponse(sums_mask, predictions[1].left, predictions[1].right,
                                                 predictions[1].bottom, predictions[1].top)
     # Plot result
-    richness_plot_mask = plotSDM(richness_mask, type="lcbd")
+    richness_plot_mask = plotSDM(richness_mask, c=:viridis)
     title!(richness_plot_mask, "ncells = $(ncells)")
     # Export plot
     push!(mask_plots, richness_plot_mask)
