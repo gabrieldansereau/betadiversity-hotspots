@@ -11,9 +11,11 @@ using Dates
 using SimpleSDMLayers
 using Random
 using ProgressMeter
+using ArchGDAL
 
-include("lib/SDMLayer.jl")
 include("lib/bioclim.jl")
-include("lib/shapefiles.jl")
 include("lib/csvdata.jl")
+include("lib/landcover.jl")
 include("lib/plotSDM.jl")
+include("lib/SDMLayer.jl")
+include("lib/shapefiles.jl")
