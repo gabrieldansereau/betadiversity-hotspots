@@ -5,7 +5,7 @@ using Distributed
 outcome = "sdm"
 
 ## Load distributions for all species
-@load "data/jld2/$(outcome)-distributions-landcover.jld2" distributions
+@load "data/jld2/$(outcome)-distributions.jld2" distributions
 
 ## Create custom functions
 # Function for Pielou's evenness index
@@ -14,14 +14,14 @@ function pielou(a::Vector{T}) where {T <: Number}
     length(A) == 0 && return NaN
     sum(A) == zero(T) && return NaN
     p = A ./ sum(A)
-    return abs(sum(p.*log.(p))/length(p))
+    return abs(sum(filter(!isnan, p.*log.(p)))/length(p))
 end
 function pielou_allspecies(a::Vector{T}) where {T <: Number}
     A = filter(!isnan, a)
     length(A) == 0 && return NaN
     sum(A) == zero(T) && return NaN
     p = A ./ length(A)
-    return abs(sum(p.*log.(p))/length(p))
+    return abs(sum(filter(!isnan, p.*log.(p)))/length(p))
 end
 
 # Function for Shannon's diversity index
@@ -51,9 +51,9 @@ diversity2 = SimpleSDMResponse(output2, distributions[1].left, distributions[1].
 
 ## Plot result
 diversity_plot = plotSDM(diversity, c=:BuPu)
-title!(diversity_plot, "SDM species diversity (Pielou's evenness index - Site richness)")
+title!(diversity_plot, "$(titlecase(outcome)) species diversity (Pielou's evenness index - Site richness)")
 diversity_plot2 = plotSDM(diversity2, c=:BuPu)
-title!(diversity_plot2, "SDM species diversity (Pielou's evenness index - Total richness)")
+title!(diversity_plot2, "$(titlecase(outcome)) species diversity (Pielou's evenness index - Total richness)")
 
 ## Save result
 #=

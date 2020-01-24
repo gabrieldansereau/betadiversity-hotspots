@@ -4,8 +4,8 @@ using Distributed
 
 outcome = "raw"
 
-## Load presence-absence data for all species
-@load "data/jld2/$(outcome)-pres-abs.jld2" distributions
+## Load distributions for all species
+@load "data/jld2/$(outcome)-distributions.jld2" distributions
 
 ## Create custom functions
 # Function for Pielou's evenness index
@@ -39,8 +39,8 @@ output = zeros(Float64, size(distributions[1]))
 output2 = zeros(Float64, size(distributions[1]))
 # Loop for each pixel/grid element
 @time for i in 1:size(output, 1), j in 1:size(output, 2)
-    # Group presence-absence data for all species in pixel [i,j]
-    x = map(x -> x.grid[i, j], distributions)
+    # Group distributions for all species in pixel [i,j]
+    x = map(x -> x.grid[i,j], distributions)
     # Calculate Pielou's evenness index for pixel [i,j]
     output[i,j] = pielou(x)
     output2[i,j] = pielou_allspecies(x)
@@ -51,9 +51,9 @@ diversity2 = SimpleSDMResponse(output2, distributions[1].left, distributions[1].
 
 ## Plot result
 diversity_plot = plotSDM(diversity, c=:BuPu)
-title!(diversity_plot, "Species diversity (Pielou's evenness index - Site richness)")
+title!(diversity_plot, "$(titlecase(outcome)) species diversity (Pielou's evenness index - Site richness)")
 diversity_plot2 = plotSDM(diversity2, c=:BuPu)
-title!(diversity_plot2, "Species diversity (Pielou's evenness index - Total richness)")
+title!(diversity_plot2, "$(titlecase(outcome)) species diversity (Pielou's evenness index - Total richness)")
 
 ## Save result
 #=
