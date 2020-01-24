@@ -18,8 +18,8 @@ function presence_absence(species::DataFrame, copy_layer::SimpleSDMLayer; full_r
         # Add 1 per species presence
         distribution_grid[j_lat, i_lon] += 1.0
     end
-    # Check sites with presence
-    filter(x -> x > 0.0, distribution_grid)
+    # Replace zeros (absences) by NaN
+    replace!(distribution_grid, 0.0 => NaN)
     # Reduce sites with more than 1 presence to binary value (default)
     if binary == true
         replace!(x -> x > 1.0 ? 1.0 : x, distribution_grid)
