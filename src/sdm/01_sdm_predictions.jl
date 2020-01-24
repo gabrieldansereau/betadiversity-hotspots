@@ -23,20 +23,55 @@ end
 ## Get environmental data
 # WorldClim data with different training resolutions
 @time @everywhere wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
-@time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
+if outcome == "raw"
+    # Set resolution to 10
+    @time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "10")[lon_range_obs, lat_range_obs], [1,12]);
+elseif outcome == "sdm"
+    # Set resolution to 5
+    @time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
+end
+
 # Landcover data
-@time @everywhere lc_vars_pred = landcover(1:10, resolution = "10")[lon_range, lat_range]
-@time @everywhere lc_vars_train = landcover(1:10, resolution = "5")[lon_range_obs, lat_range_obs]
+@time @everywhere lc_vars_pred = pmap(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10)
+if outcome == "raw"
+    # Set resolution to 10
+    @time @everywhere lc_vars_train = pmap(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10)
+elseif outcome == "sdm"
+    # Set resolution to 5
+    @time @everywhere lc_vars_train = pmap(x -> landcover(x, resolution = "5")[lon_range, lat_range], 1:10)
+end
+
 # Combine environmental data
 @everywhere env_vars_pred = vcat(wc_vars_pred, lc_vars_pred)
 @everywhere env_vars_train = vcat(wc_vars_train, lc_vars_train)
 
-## Make distributions for all species
-# With different training resolutions
-@time distributions = @showprogress pmap(x -> species_bclim(x, pred_vars = env_vars_pred, train_vars = env_vars_train), warblers_occ);
+## Get distribution for all species
+if outcome == "raw"
+    # Get raw distributions
+    @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_pred[1]), warblers_occ)
+    # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers_occ)
+elseif outcome == "sdm"
+    # Get sdm distributions (with different training resolutions)
+    @time distributions = @showprogress pmap(x -> species_bclim(x, env_vars_pred, train_vars = env_vars_train), warblers_occ);
+end
+
+## Count sites with presence per species
+pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distributions]
+sort(pres_counts)
 
 ## Export distributions
-@save "data/jld2/$(outcome)-distributions-landcover.jld2" distributions
-
+@save "data/jld2/$(outcome)-distributions.jld2" distributions
 # Test import
 @load "data/jld2/$(outcome)-distributions-landcover.jld2" distributions
+
+## Plot result
+map_sp1 = plotSDM(distributions[1], c=:BuPu)
+title!(map_sp1, "$(warblers_occ[1].species[1]) distribution ($(outcome))")
+map_sp2 = plotSDM(distributions[13], c=:BuPu)
+title!(map_sp2, "$(warblers_occ[13].species[1]) distribution ($(outcome))")
+
+# Export figure
+#=
+savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(warblers_occ[1].species[1]).pdf")
+savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(warblers_occ[13].species[1]).pdf")
+=#
