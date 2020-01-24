@@ -20,39 +20,34 @@ outcome = "raw"
     lat_range_obs = extrema(df.latitude)
 end
 
-## Get environmental data
-# WorldClim data with different training resolutions
-@time @everywhere wc_vars_pred = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
-if outcome == "raw"
-    # Set resolution to 10
-    @time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "10")[lon_range_obs, lat_range_obs], [1,12]);
-elseif outcome == "sdm"
-    # Set resolution to 5
-    @time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
-end
-
+## Get environmental data (with different training resolutions)
+# WorldClim data
+@time @everywhere wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
 # Landcover data
-@time @everywhere lc_vars_pred = pmap(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10)
+@time @everywhere lc_vars = pmap(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10)
+# Training data with finer resolution
 if outcome == "raw"
-    # Set resolution to 10
+    # Set resolution to 10 # CAN'T BE FINER FOR RAW ANALYSES FOR NOW
+    @time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "10")[lon_range_obs, lat_range_obs], [1,12]);
     @time @everywhere lc_vars_train = pmap(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10)
 elseif outcome == "sdm"
     # Set resolution to 5
+    @time @everywhere wc_vars_train = pmap(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
     @time @everywhere lc_vars_train = pmap(x -> landcover(x, resolution = "5")[lon_range, lat_range], 1:10)
 end
 
 # Combine environmental data
-@everywhere env_vars_pred = vcat(wc_vars_pred, lc_vars_pred)
+@everywhere env_vars = vcat(wc_vars, lc_vars)
 @everywhere env_vars_train = vcat(wc_vars_train, lc_vars_train)
 
 ## Get distribution for all species
 if outcome == "raw"
     # Get raw distributions
-    @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_pred[1]), warblers_occ)
+    @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers_occ)
     # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers_occ)
 elseif outcome == "sdm"
     # Get sdm distributions (with different training resolutions)
-    @time distributions = @showprogress pmap(x -> species_bclim(x, env_vars_pred, train_vars = env_vars_train), warblers_occ);
+    @time distributions = @showprogress pmap(x -> species_bclim(x, env_vars, train_vars = env_vars_train), warblers_occ);
 end
 
 ## Count sites with presence per species
