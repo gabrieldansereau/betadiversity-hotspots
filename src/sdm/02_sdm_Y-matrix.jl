@@ -5,76 +5,61 @@ using Distributed
 outcome = "sdm"
 
 ## Load presence-absence data for all species
-@load "data/jld2/$(outcome)-distributions-landcover.jld2" distributions
+@load "data/jld2/$(outcome)-distributions.jld2" distributions
 
 ## Create matrix Y (site-by-species community data table)
-begin
-    # Get dimensions
-    nsites = prod(size(distributions[1]))
-    nspecies = length(distributions)
-    # Create Y
-    Y = zeros(Int64, (nsites, nspecies))
-    Yprob = zeros(Float64, (nsites, nspecies))
-    # Fill Y with community distributions
-    @progress for gc in 1:nsites # loop for all sites
-        # Group distributions for all species in site
-        R = map(x -> x.grid[gc], distributions)
-        # Fill Y with binary values -> 1 if species prediction for site != NaN, 0 if == NaN
-        global Y[gc,:] = .!isnan.(R)
-        # Fill Yprob with predicted probabilities
-        replace!(R, NaN => 0.0)
-        global Yprob[gc,:] = R
-    end
-end
+# Get distributions as vectors
+distributions_vec = [vec(d.grid) for d in distributions];
+# Create matrix Y by combining distribution vectors
+Y = hcat(distributions_vec...);
 
-## Create matrix Ypred (only sites with observations)
-# Get index of sites with distributions
-sites_pred = map(x -> any(x .> 0), eachrow(Y))
-inds_pred = findall(sites_pred)
-inds_notpred = findall(.!sites_pred)
-# Select sites with distributions only
-Ypred = Y[inds_pred,:]
-Yprob = Yprob[inds_pred,:]
+# Verify if sites have observations
+sites_obs = [any(y .> 0.0) for y in eachrow(Y)];
+# Get indices of sites with observations
+inds_obs = findall(sites_obs);
+# Get indices of sites without observations
+inds_notobs = findall(.!sites_obs);
+
+# Create matrix Yobs with observed sites only
+Yobs = Y[inds_obs,:];
+# Replace NaNs by zeros for observed sites (~true absences)
+replace!(Yobs, NaN => 0.0);
+# Replace NaNs in original matrix Y too
+Y[inds_obs,:] = Yobs;
 
 ## Apply Hellinger transformation (using vegan in R)
 using RCall
-@rput Ypred
+@rput Yobs
 begin
     R"""
         library(vegan)
-        Ytransf <- decostand(Ypred, "hel")
+        Ytransf <- decostand(Yobs, "hel")
     """
 end
 @rget Ytransf
 
 ## Export results
-# Export matrices & inds_pred (useful to link Y & Ypred-Ytransf)
-@save "data/jld2/$(outcome)-Y-matrices-landcover.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
+# Export matrices & inds_obs (useful to link Y & Yobs)
+@save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 # Test import
-@load "data/jld2/$(outcome)-Y-matrices-landcover.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
+@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 
 ## Visualize patterns in Y
 # Heatmap of Y
-heat_$(outcome) = heatmap(Ypred, title = "SDM distributions matrix Y (unsorted)",
+heat_y = heatmap(Yobs, title = "$(titlecase(outcome)) matrix Y (unsorted)",
                    ylabel = "Site number", xlabel = "Species number")
-# Custom sorting
-rowsum = sum.(eachrow(Ypred))
-colsum = sum.(eachcol(Ypred))
+# Sort Y by rows & columns sums
+rowsum = sum.(eachrow(Yobs))
+colsum = sum.(eachcol(Yobs))
 sortedrows = sortperm(rowsum)
 sortedcols = sortperm(colsum, rev=true)
-heat_sortrow = heatmap(Ypred[sortedrows, :], title = "SDM distributions matrix Y (sorted by row sums)",
-                   ylabel = "Site number", xlabel = "Species number")
-heat_sortrowcol = heatmap(Ypred[sortedrows, sortedcols], title = "SDM distributions matrix Y (sorted by row and column sums)",
-                   ylabel = "Site number", xlabel = "Species number")
-heat_prob = heatmap(Yprob[sortedrows, sortedcols], title = "SDM distributions matrix Y (probabilities, sorted by row and column sums)",
+heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols], title = "$(titlecase(outcome)) matrix Y (sorted by row and column sums)",
                    ylabel = "Site number", xlabel = "Species number")
 
 # Export results
 #=
-savefig(heat_$(outcome), "fig/$(outcome)/02_$(outcome)_Y-unsorted.png")
-savefig(heat_sortrow, "fig/$(outcome)/02_$(outcome)_Y-rowsorted.png")
 savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
 =#
 #= # Funny looking smudge 😛
-heatmap(sort(Ypred, dims=1, by=sum))
+heatmap(sort(Yobs, dims=1, by=sum))
 =#
