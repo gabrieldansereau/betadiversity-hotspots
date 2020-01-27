@@ -5,22 +5,20 @@ using Distributed
 outcome = "sdm"
 
 ## Load distributions for all species
-@load "data/jld2/$(outcome)-distributions-landcover.jld2" distributions
+@load "data/jld2/$(outcome)-distributions.jld2" distributions
 ## Load matrix Y
-@load "data/jld2/$(outcome)-Y-matrices-landcover.jld2" Y Ypred Yprob Ytransf inds_pred inds_notpred
+@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 
 ## Compute beta diversity statistics
 # Load functions
 include("../lib/beta-div.jl")
-# Compute BD statistics on binary distributions
-resBDpred = BD(Ypred)
-# Compute BD statistics on transformed binary distributions
+# Compute BD statistics on $(outcome) data
+resBDobs = BD(Yobs)
+# Compute BD statistics on transformed data
 resBDtransf = BD(Ytransf)
-# Compute BD statistics on probability distributions
-resBDprob = BD(Yprob)
 
 # Extract LCBD values
-resBD = [resBDpred, resBDtransf, resBDprob]
+resBD = [resBDobs, resBDtransf]
 LCBDsets = [res.LCBDi for res in resBD]
 # Scale LCBDi values to maximum value
 LCBDsets_raw = copy(LCBDsets)
@@ -30,24 +28,21 @@ LCBDsets = [LCBDsets..., LCBDsets_raw...]
 ## Arrange LCBD values as grid
 # Create empty grids
 t_lcbd = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
-# Fill in grid for resBDpred & resBDperm
-[t_lcbd[i][inds_pred] = LCBDsets[i] for i in 1:length(t_lcbd)]
+# Fill in grids
+[t_lcbd[i][inds_obs] = LCBDsets[i] for i in 1:length(t_lcbd)]
 # Create SimpleSDMLayer with LCBD values
 LCBD = SimpleSDMResponse.(t_lcbd, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 
 ## Plot results
 lcbd_plot1 = plotSDM(LCBD[1], c=:viridis)
-title!(lcbd_plot1, "SDM LCBD values per site (relative to maximum)")
+title!(lcbd_plot1, "$(titlecase(outcome)) LCBD values per site (relative to maximum)")
 lcbd_plot2 = plotSDM(LCBD[2], c=:viridis)
-title!(lcbd_plot2, "SDM LCBD values per site (relative to maximum, hellinger transformed)")
-lcbd_plot3 = plotSDM(LCBD[3], c=:viridis)
-title!(lcbd_plot3, "SDM LCBD values per site (relative to maximum, probability data)")
+title!(lcbd_plot2, "$(titlecase(outcome)) LCBD values per site (relative to maximum, hellinger transformed)")
 
 ## Save result
 #=
 savefig(lcbd_plot1, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
 savefig(lcbd_plot2, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
-savefig(lcbd_plot3, "fig/$(outcome)/05_$(outcome)_lcbd-prob.pdf")
 =#
 
 
@@ -81,12 +76,12 @@ lcbd_raw_z = copy(LCBD[4])
 lcbd_raw_nonan = filter(!isnan, lcbd_std.grid)
 # LCBD zscores
 raw_zscores = zscore(lcbd_raw_nonan)
-lcbd_raw_z.grid[inds_pred] = raw_zscores
+lcbd_raw_z.grid[inds_obs] = raw_zscores
 lcbd_raw_z_plot = plotSDM(lcbd_raw_z, c=:viridis)
 heatmap!(lcbd_raw_z_plot, clim=(0-maximum(raw_zscores), maximum(raw_zscores)))
 # SSi instead of LCBD
 lcbd_ssi = copy(LCBD[4])
-lcbd_ssi.grid[inds_pred] = resBDpred.SSi
+lcbd_ssi.grid[inds_obs] = resBDpred.SSi
 plotSDM(lcbd_ssi, c=:viridis)
 
 # Plot few results
