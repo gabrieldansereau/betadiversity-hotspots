@@ -8,13 +8,13 @@ outcome = "raw"
 @load "data/jld2/$(outcome)-distributions.jld2" distributions
 
 ## Load matrix Y
-@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_pred inds_notpred
+@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 
 #### Species richness
 ## Get number of species per site
 sums = map(x -> Float64(sum(x)), eachrow(Y))
 # Add NaN for non predicted sites
-sums[inds_notpred] .= NaN
+sums[inds_notobs] .= NaN
 # Reshape to grid format
 sums = reshape(sums, size(distributions[1]))
 
