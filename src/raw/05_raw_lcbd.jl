@@ -12,7 +12,7 @@ outcome = "raw"
 ## Compute beta diversity statistics
 # Load functions
 include("../lib/beta-div.jl")
-# Compute BD statistics on $(outcome) data
+# Compute BD statistics on distribution data
 resBDobs = BD(Yobs)
 # Compute BD statistics on transformed data
 resBDtransf = BD(Ytransf)
@@ -27,11 +27,11 @@ LCBDsets = [LCBDsets..., LCBDsets_raw...]
 
 ## Arrange LCBD values as grid
 # Create empty grids
-t_lcbd = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
+LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
 # Fill in grids
-[t_lcbd[i][inds_obs] = LCBDsets[i] for i in 1:length(t_lcbd)]
+[LCBDgrids[i][inds_obs] = LCBDsets[i] for i in 1:length(LCBDgrids)]
 # Create SimpleSDMLayer with LCBD values
-LCBD = SimpleSDMResponse.(t_lcbd, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
+LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 
 ## Plot results
 lcbd_plot1 = plotSDM(LCBD[1], c=:viridis)
