@@ -3,7 +3,7 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Load raw LCBD & richness results
-outcome = "raw"
+outcome = "sdm"
 # Load richness script
 @time include("../$(outcome)/03_$(outcome)_richness.jl")
 # Load LCBD script
