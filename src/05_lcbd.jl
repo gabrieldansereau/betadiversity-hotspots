@@ -2,7 +2,9 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
+#=
 outcome = "sdm"
+=#
 
 ## Load distributions for all species
 @load "data/jld2/$(outcome)-distributions.jld2" distributions
@@ -11,7 +13,7 @@ outcome = "sdm"
 
 ## Compute beta diversity statistics
 # Load functions
-include("../lib/beta-div.jl")
+include("lib/beta-div.jl")
 # Compute BD statistics on distribution data
 resBDobs = BD(Yobs)
 # Compute BD statistics on transformed data

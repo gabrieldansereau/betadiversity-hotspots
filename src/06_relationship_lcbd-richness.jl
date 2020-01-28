@@ -3,11 +3,11 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Load raw LCBD & richness results
-outcome = "sdm"
+outcome = "raw"
 # Load richness script
-@time include("../$(outcome)/03_$(outcome)_richness.jl")
+@time include("03_richness.jl")
 # Load LCBD script
-@time include("../$(outcome)/05_$(outcome)_lcbd.jl")
+@time include("05_lcbd.jl")
 
 # Stash results
 raw = (distributions = distributions,
@@ -22,9 +22,9 @@ raw = (distributions = distributions,
 ## Load SDM LCBD & richness results
 outcome = "sdm"
 # Load richness script
-@time include("../$(outcome)/03_$(outcome)_richness.jl")
+@time include("03_richness.jl")
 # Load LCBD script
-@time include("../$(outcome)/05_$(outcome)_lcbd.jl")
+@time include("05_lcbd.jl")
 
 # Stash results
 sdm = (distributions = distributions,

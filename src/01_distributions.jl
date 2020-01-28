@@ -3,7 +3,9 @@ using Distributed
 addprocs(9)
 @time @everywhere include("src/required.jl")
 
+#=
 outcome = "sdm"
+=#
 
 ## Get & prepare data
 @time begin
