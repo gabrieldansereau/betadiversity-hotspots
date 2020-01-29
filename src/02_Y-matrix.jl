@@ -2,9 +2,7 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
-#=
-outcome = "sdm"
-=#
+# outcome = "sdm"
 
 ## Load presence-absence data for all species
 @load "data/jld2/$(outcome)-distributions.jld2" distributions
