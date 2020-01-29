@@ -18,20 +18,19 @@ function bioclim(occ::Union{GBIFRecords,DataFrame}, pred_vars::SimpleSDMLayer; t
     end
     prediction = SimpleSDMResponse(lq, pred_vars.left, pred_vars.right, pred_vars.bottom, pred_vars.top)
 end
-function species_bclim(occ, pred_vars; train_vars=pred_vars, with_threshold=false)
+function species_bclim(occ, pred_vars; train_vars=pred_vars, binary=true, with_threshold=false)
     predictions = [bioclim(occ, pred_vars[i], train_vars = train_vars[i]) for i in 1:length(pred_vars)];
     prediction = reduce(minimum, predictions);
     if with_threshold == true
-        no_nan = filter(!isnan, prediction[occ])
+        no_nan = filter(!isnan, prediction[occ]);
         if length(no_nan) != 0
-            threshold = first(quantile(no_nan, [0.05]))
-            for i in eachindex(prediction.grid)
-                prediction.grid[i] < threshold && (prediction.grid[i] = NaN)
-            end
+            threshold = first(quantile(no_nan, [0.05]));
+            replace!(x -> x < threshold ? NaN : x, prediction.grid);
         end
     end
-    for i in eachindex(prediction.grid)
-        prediction.grid[i] == 0.0 && (prediction.grid[i] = NaN)
+    replace!(x -> x == 0.0 ? NaN : x, prediction.grid);
+    if binary == true
+        replace!(x -> x > 0.0 ? 1.0 : x, prediction.grid)
     end
     return prediction
 end
