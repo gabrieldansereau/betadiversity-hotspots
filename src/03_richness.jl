@@ -44,7 +44,7 @@ heatmap!(richness_plot,
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
-    @info "Figures saved"
+    @info "Figures saved ($(outcome) richness)"
 else
-    @info "Figures not saved"
+    @info "Figures not saved ($(outcome) richness)"
 end

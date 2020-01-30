@@ -54,10 +54,10 @@ end
 # save_data = true
 if (@isdefined save_data) && save_data == true
     @save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
-    @info "Data exported to file"
+    @info "Data exported to file ($(outcome) Y matrix)"
 else
     @load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
-    @info "Data imported from file"
+    @info "Data imported from file ($(outcome) Y matrix)"
 end
 
 ## Visualize patterns in Y
@@ -76,9 +76,9 @@ heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols], title = "$(titlecase(out
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
-    @info "Figures saved"
+    @info "Figures saved ($(outcome) Y matrix)"
 else
-    @info "Figures not saved"
+    @info "Figures not saved ($(outcome) Y matrix)"
 end
 
 #= # Funny looking smudge 😛

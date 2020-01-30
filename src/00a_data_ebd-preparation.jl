@@ -28,7 +28,7 @@ filter!(x -> x.longitude < 0, newdf)
 # save_data = true
 if (@isdefined save_prepdata) && save_prepdata == true
     CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")
-    @info "Data exported to file"
+    @info "Data exported to file (data preparation)"
 else
-    @info "Data not exported"
+    @info "Data not exported (data preparation)"
 end

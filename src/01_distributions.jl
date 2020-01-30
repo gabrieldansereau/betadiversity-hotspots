@@ -75,10 +75,10 @@ end
 # save_data = true
 if (@isdefined save_data) && save_data == true
     @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
-    @info "Data exported to file"
+    @info "Data exported to file ($(outcome) distributions data)"
 else
     @load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
-    @info "Data imported from file"
+    @info "Data imported from file ($(outcome) distributions data)"
 end
 
 ## Count sites with presence per species
@@ -104,7 +104,7 @@ scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, m
 if (@isdefined save_figures) && save_figures == true
     savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
     savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")
-    @info "Figures saved"
+    @info "Figures saved ($(outcome) distributions)"
 else
-    @info "Figures not saved"
+    @info "Figures not saved ($(outcome) distributions)"
 end

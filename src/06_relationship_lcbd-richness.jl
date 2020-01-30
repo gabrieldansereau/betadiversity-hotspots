@@ -85,7 +85,7 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[3].grid),
 if (@isdefined save_relfigures) && save_relfigures == true
     savefig(relation_plot, "fig/06_relationship_lcbd-richness.png")
     savefig(relationtr_plot, "fig/06_relationship_lcbd-richness-transf.png")
-    @info "Figures saved"
+    @info "Figures saved (relationship)"
 else
-    @info "Figures not saved"
+    @info "Figures not saved (relationship)"
 end

@@ -92,7 +92,7 @@ heatmap!(lc_plot, colorbar_title="Crops land cover (%)", dpi=300)
 if (@isdefined save_figures) && save_figures == true
     savefig(wc_plot, "fig/00b_wc1-temperature.pdf")
     savefig(lc_plot, "fig/00b_lc2-crops.pdf")
-    @info "Figures saved"
+    @info "Figures saved (environmental variables)"
 else
-    @info "Figures not saved"
+    @info "Figures not saved (environmental variables)"
 end
