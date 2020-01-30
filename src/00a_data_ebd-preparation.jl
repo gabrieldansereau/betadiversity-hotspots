@@ -21,5 +21,11 @@ select!(newdf, [:species, :year, :latitude, :longitude, :groupIdentifier])
 # Remove 1 Aleutian Islands observation with positive longitude
 filter!(x -> x.longitude < 0, newdf)
 
-# Export prepared data
-CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")
+## Export prepared data
+# save_data = true
+if (@defined save_data) && save_data == true
+    CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")
+    @info "Data exported to file"
+else
+    @info "Data not exported"
+end

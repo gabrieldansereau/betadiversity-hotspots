@@ -39,10 +39,14 @@ end
 @rget Ytransf
 
 ## Export results
-# Export matrices & inds_obs (useful to link Y & Yobs)
-# @save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
-# Test import
-@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+# save_data = true
+if (@defined save_data) && save_data == true
+    @save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+    @info "Data exported to file"
+else
+    @load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+    @info "Data imported from file"
+end
 
 ## Visualize patterns in Y
 # Heatmap of Y

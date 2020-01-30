@@ -59,9 +59,14 @@ pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distrib
 sort(pres_counts)
 
 ## Export distributions
-# @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
-# Test import
-@load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+# save_data = true
+if (@defined save_data) && save_data == true
+    @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+    @info "Data exported to file"
+else
+    @load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+    @info "Data imported from file"
+end
 
 ## Plot result
 sp1 = "Setophaga_townsendi"
