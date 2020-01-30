@@ -23,6 +23,7 @@ using Distributed
 outcome = "raw"
 # create_distributions = true
 # save_figures = true
+# save_relfigures = true
 # save_data = true
 
 ## 1. Generate presence-absence data & single species map
@@ -41,4 +42,5 @@ outcome = "raw"
 @time include("05_lcbd.jl")
 
 ## 6. Run LCBD-richness relationship analysis
+# save_relfigures = true
 @time include("06_relationship_lcbd-richness.jl")

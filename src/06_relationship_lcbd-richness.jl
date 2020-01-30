@@ -3,10 +3,11 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Conditional arguments
-# save_figures = true # optional
+# save_relfigures = true
 
 ## Load raw LCBD & richness results
 outcome = "raw"
+save_figures = false
 # Load richness script
 @time include("03_richness.jl")
 # Load LCBD script
@@ -24,6 +25,7 @@ raw = (distributions = distributions,
 
 ## Load SDM LCBD & richness results
 outcome = "sdm"
+save_figures = false
 # Load richness script
 @time include("03_richness.jl")
 # Load LCBD script
@@ -79,8 +81,8 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[3].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 
 ## Save result
-# save_figures = true
-if (@isdefined save_figures) && save_figures == true
+# save_relfigures = true
+if (@isdefined save_relfigures) && save_relfigures == true
     savefig(relation_plot, "fig/06_relationship_lcbd-richness.png")
     savefig(relationtr_plot, "fig/06_relationship_lcbd-richness-transf.png")
     @info "Figures saved"
