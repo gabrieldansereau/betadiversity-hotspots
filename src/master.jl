@@ -21,6 +21,7 @@ using Distributed
 #### Analyses
 
 outcome = "raw"
+# create_distributions = true
 # save_figures = true
 # save_data = true
 

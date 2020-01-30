@@ -5,6 +5,7 @@ addprocs(9)
 
 ## Conditional arguments
 # outcome = "sdm" # desired outcome, "raw" or "sdm" (mandatory)
+# create_distributions = true # optional
 # save_figures = true # optional
 # save_data = true # optional
 
@@ -57,28 +58,32 @@ env_vars = vcat(wc_vars, lc_vars)
 env_vars_train = vcat(wc_vars_train, lc_vars_train)
 
 ## Get distribution for all species
-if outcome == "raw"
-    # Get raw distributions
-    @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers)
-    # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers)
-elseif outcome == "sdm"
-    # Get sdm distributions (with different training resolutions)
-    @time distributions = @showprogress pmap(x -> species_bclim(x, env_vars, train_vars = env_vars_train), warblers);
+# create_distributions = true
+if (@isdefined create_distributions) && create_distributions == true
+    @info "$(outcome) distributions to be created"
+    if outcome == "raw"
+        # Get raw distributions
+        @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers)
+        # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers)
+    elseif outcome == "sdm"
+        # Get sdm distributions (with different training resolutions)
+        @time distributions = @showprogress pmap(x -> species_bclim(x, env_vars, train_vars = env_vars_train), warblers);
+    end
 end
-
-## Count sites with presence per species
-pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distributions]
-sort(pres_counts)
 
 ## Export distributions
 # save_data = true
-if (@defined save_data) && save_data == true
+if (@isdefined save_data) && save_data == true
     @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
     @info "Data exported to file"
 else
     @load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
     @info "Data imported from file"
 end
+
+## Count sites with presence per species
+pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distributions]
+sort(pres_counts)
 
 ## Plot result
 sp1 = "Setophaga_townsendi"
@@ -96,7 +101,7 @@ scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, m
 
 ## Export figures
 # save_figures = true
-if (@isdefined save_figures) && save_figure == true
+if (@isdefined save_figures) && save_figures == true
     savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
     savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")
     @info "Figures saved"
