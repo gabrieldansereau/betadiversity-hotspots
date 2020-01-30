@@ -74,3 +74,16 @@ nul_layer_nonan = filter(!isnan, nul_layer)
 describe(nul_layer_nonan)
 filter(x -> x > 110, nul_layer_nonan)
 filter(x -> x > 120, nul_layer_nonan)
+
+## Plot environmental variables examples
+# Plot wcvars1 (temperature)
+wc_plot = plotSDM(wc_vars[1], c=:auto)
+heatmap!(wc_plot, clim=extrema(filter(!isnan,wc_vars[1].grid)),
+         colorbar_title="Annual Mean Temperature (°C)", dpi=300)
+# Plot lcvars2 (urban)
+lc_plot = plotSDM(lc_vars[2], c=:auto)
+heatmap!(lc_plot, colorbar_title="Crops land cover (%)", dpi=300)
+
+## Export figures
+savefig(wc_plot, "fig/00b_wc1-temperature.pdf")
+savefig(lc_plot, "fig/00b_lc2-crops.pdf")
