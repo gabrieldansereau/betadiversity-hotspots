@@ -54,7 +54,7 @@ heatmap!(lcbd_plot2, title = "LCBD values per site ($(outcome) distributions, he
 
 ## Save result
 # save_figures = true
-if (@isdefined save_figures) && save_figure == true
+if (@isdefined save_figures) && save_figures == true
     savefig(lcbd_plot1, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
     savefig(lcbd_plot2, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
     @info "Figures saved"

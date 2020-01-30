@@ -52,7 +52,7 @@ end
 
 ## Export results
 # save_data = true
-if (@defined save_data) && save_data == true
+if (@isdefined save_data) && save_data == true
     @save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
     @info "Data exported to file"
 else
@@ -74,7 +74,7 @@ heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols], title = "$(titlecase(out
 
 ## Export results
 # save_figures = true
-if (@isdefined save_figures) && save_figure == true
+if (@isdefined save_figures) && save_figures == true
     savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
     @info "Figures saved"
 else

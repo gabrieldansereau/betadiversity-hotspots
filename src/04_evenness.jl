@@ -70,7 +70,7 @@ heatmap!(diversity_plot2, title = "Community evenness ($(outcome) distributions)
 
 ## Save result
 # save_figures = true
-if (@isdefined save_figures) && save_figure == true
+if (@isdefined save_figures) && save_figures == true
     savefig(diversity_plot, "fig/$(outcome)/04_$(outcome)_diversity-pielou.pdf")
     savefig(diversity_plot2, "fig/$(outcome)/04_$(outcome)_diversity-pielou2.pdf")
     @info "Figures saved"

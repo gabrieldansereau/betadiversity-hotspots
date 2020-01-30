@@ -46,5 +46,5 @@ if (@isdefined save_figures) && save_figures == true
     savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
     @info "Figures saved"
 else
-    @indo "Figures not saved"
+    @info "Figures not saved"
 end
