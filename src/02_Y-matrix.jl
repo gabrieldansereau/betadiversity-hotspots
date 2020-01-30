@@ -40,7 +40,7 @@ end
 
 ## Export results
 # Export matrices & inds_obs (useful to link Y & Yobs)
-@save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+# @save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 # Test import
 @load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 

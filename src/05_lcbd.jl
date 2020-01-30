@@ -35,12 +35,12 @@ LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].rig
 
 ## Plot results
 lcbd_plot1 = plotSDM(LCBD[1], c=:viridis)
-title!(lcbd_plot1, "$(titlecase(outcome)) LCBD values per site (relative to maximum)")
+heatmap!(lcbd_plot1, title = "LCBD values per site ($(outcome) distributions)",
+         colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 lcbd_plot2 = plotSDM(LCBD[2], c=:viridis)
-title!(lcbd_plot2, "$(titlecase(outcome)) LCBD values per site (relative to maximum, hellinger transformed)")
+heatmap!(lcbd_plot2, title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
+         colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 
 ## Save result
-#=
-savefig(lcbd_plot1, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
-savefig(lcbd_plot2, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
-=#
+# savefig(lcbd_plot1, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
+# savefig(lcbd_plot2, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")

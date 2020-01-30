@@ -59,20 +59,24 @@ pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distrib
 sort(pres_counts)
 
 ## Export distributions
-@save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+# @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
 # Test import
 @load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
 
 ## Plot result
 sp1 = "Setophaga_townsendi"
 map_sp1 = plotSDM(distributions[speindex[sp1]], c=:BuPu)
-title!(map_sp1, "$(sp1) townsendi distribution ($(outcome))")
+heatmap!(map_sp1, title = "$(sp1) distribution ($(outcome))",
+         colorbar=:none, dpi=300)
+scatter!(map_sp1, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
+                        legend=:bottomright, legendfontsize=5)
 sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM(distributions[speindex[sp2]], c=:BuPu)
-title!(map_sp2, "$(sp2) distribution ($(outcome))")
+heatmap!(map_sp2, title = "$(sp2) distribution ($(outcome))",
+         colorbar=:none, dpi=300)
+scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
+                        legend=:bottomright, legendfontsize=5)
 
-# Export figure
-#=
-savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
-savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")
-=#
+## Export figures
+# savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
+# savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")

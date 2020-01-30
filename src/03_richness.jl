@@ -30,6 +30,4 @@ heatmap!(richness_plot,
           dpi=300)
 
 ## Save result
-#=
-savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
-=#
+# savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
