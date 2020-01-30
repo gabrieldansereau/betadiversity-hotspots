@@ -85,5 +85,11 @@ lc_plot = plotSDM(lc_vars[2], c=:auto)
 heatmap!(lc_plot, colorbar_title="Crops land cover (%)", dpi=300)
 
 ## Export figures
-savefig(wc_plot, "fig/00b_wc1-temperature.pdf")
-savefig(lc_plot, "fig/00b_lc2-crops.pdf")
+# save_figures = true
+if (@isdefined save_figures) && save_figure == true
+    savefig(wc_plot, "fig/00b_wc1-temperature.pdf")
+    savefig(lc_plot, "fig/00b_lc2-crops.pdf")
+    @info "Figures saved"
+else
+    @info "Figures not saved"
+end

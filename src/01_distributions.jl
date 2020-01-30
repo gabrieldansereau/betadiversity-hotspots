@@ -78,5 +78,11 @@ scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, m
                         legend=:bottomright, legendfontsize=5)
 
 ## Export figures
-# savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
-# savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")
+# save_figures = true
+if (@isdefined save_figures) && save_figure == true
+    savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
+    savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")
+    @info "Figures saved"
+else
+    @info "Figures not saved"
+end

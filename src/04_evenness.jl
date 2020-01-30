@@ -58,5 +58,11 @@ heatmap!(diversity_plot2, title = "Community evenness ($(outcome) distributions)
          colorbar_title = "Pielou's evenness index (total richness)")
 
 ## Save result
-# savefig(diversity_plot, "fig/$(outcome)/04_$(outcome)_diversity-pielou.pdf")
-# savefig(diversity_plot2, "fig/$(outcome)/04_$(outcome)_diversity-pielou2.pdf")
+# save_figures = true
+if (@isdefined save_figures) && save_figure == true
+    savefig(diversity_plot, "fig/$(outcome)/04_$(outcome)_diversity-pielou.pdf")
+    savefig(diversity_plot2, "fig/$(outcome)/04_$(outcome)_diversity-pielou2.pdf")
+    @info "Figures saved"
+else
+    @info "Figures not saved"
+end

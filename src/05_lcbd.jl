@@ -3,6 +3,13 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 # outcome = "sdm"
+if !(@isdefined outcome)
+  @warn "'outcome' not defined"
+elseif (outcome != "raw" && outcome != "sdm")
+  @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
+else
+  @info "'outcome' currently set to '$(outcome)'"
+end
 
 ## Load distributions for all species
 @load "data/jld2/$(outcome)-distributions.jld2" distributions
@@ -42,5 +49,11 @@ heatmap!(lcbd_plot2, title = "LCBD values per site ($(outcome) distributions, he
          colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 
 ## Save result
-# savefig(lcbd_plot1, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
-# savefig(lcbd_plot2, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
+# save_figures = true
+if (@isdefined save_figures) && save_figure == true
+    savefig(lcbd_plot1, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
+    savefig(lcbd_plot2, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
+    @info "Figures saved"
+else
+    @info "Figures not saved"
+end

@@ -76,5 +76,11 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[3].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 
 ## Save result
-# savefig(relation_plot, "fig/06_relationship_lcbd-richness.png")
-# savefig(relationtr_plot, "fig/06_relationship_lcbd-richness-transf.png")
+# save_figures = true
+if (@isdefined save_figures) && save_figures == true
+    savefig(relation_plot, "fig/06_relationship_lcbd-richness.png")
+    savefig(relationtr_plot, "fig/06_relationship_lcbd-richness-transf.png")
+    @info "Figures saved"
+else
+    @info "Figures not saved"
+end

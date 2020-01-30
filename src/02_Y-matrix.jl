@@ -56,10 +56,15 @@ sortedcols = sortperm(colsum, rev=true)
 heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols], title = "$(titlecase(outcome)) matrix Y (sorted by row and column sums)",
                    ylabel = "Site number", xlabel = "Species number")
 
-# Export results
-#=
-savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
-=#
+## Export results
+# save_figures = true
+if (@isdefined save_figures) && save_figure == true
+    savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
+    @info "Figures saved"
+else
+    @info "Figures not saved"
+end
+
 #= # Funny looking smudge 😛
 heatmap(sort(Yobs, dims=1, by=sum))
 =#
