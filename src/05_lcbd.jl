@@ -2,7 +2,11 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
-# outcome = "sdm"
+## Conditional arguments
+# outcome = "sdm" # desired outcome, "raw" or "sdm" (mandatory)
+# save_figures = true # optional
+
+# Make sure "outcome" is defined
 if !(@isdefined outcome)
   @warn "'outcome' not defined"
 elseif (outcome != "raw" && outcome != "sdm")

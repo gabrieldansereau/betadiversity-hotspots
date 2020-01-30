@@ -3,7 +3,19 @@ using Distributed
 addprocs(9)
 @time @everywhere include("src/required.jl")
 
-# outcome = "sdm"
+## Conditional arguments
+# outcome = "sdm" # desired outcome, "raw" or "sdm" (mandatory)
+# save_figures = true # optional
+# save_data = true # optional
+
+# Make sure "outcome" is defined
+if !(@isdefined outcome)
+  @warn "'outcome' not defined"
+elseif (outcome != "raw" && outcome != "sdm")
+  @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
+else
+  @info "'outcome' currently set to '$(outcome)'"
+end
 
 ## Get & prepare data
 # Load data from CSV files

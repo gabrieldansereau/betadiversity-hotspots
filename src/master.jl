@@ -8,15 +8,21 @@ using Distributed
 # Precompile plot function
 @time plot() # speeds thing up
 
+#### Data preparation
+
 ## 0a. EBD data preparation (if needed)
+# save_prepdata = true
 @time include("00a_data_ebd-preparation.jl")
 
 ## 0b. Landcover data preparation (if needed)
+# save_figures = true
 @time include("00a_data_ebd-preparation.jl")
 
-####
+#### Analyses
 
 outcome = "raw"
+# save_figures = true
+# save_data = true
 
 ## 1. Generate presence-absence data & single species map
 @time include("01_distributions.jl")

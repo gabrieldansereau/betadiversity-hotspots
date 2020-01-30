@@ -2,7 +2,18 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
-# outcome = "sdm"
+## Conditional arguments
+# outcome = "sdm" # desired outcome, "raw" or "sdm" (mandatory)
+# save_figures = true # optional
+
+# Make sure "outcome" is defined
+if !(@isdefined outcome)
+  @warn "'outcome' not defined"
+elseif (outcome != "raw" && outcome != "sdm")
+  @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
+else
+  @info "'outcome' currently set to '$(outcome)'"
+end
 
 ## Load distributions for all species
 @load "data/jld2/$(outcome)-distributions.jld2" distributions

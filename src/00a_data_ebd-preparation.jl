@@ -2,6 +2,9 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
+## Conditional arguments
+# save_prepdata = true # optional
+
 ## EBD data preparation
 
 # Load data from CSV files (from file cut with terminal)
@@ -23,7 +26,7 @@ filter!(x -> x.longitude < 0, newdf)
 
 ## Export prepared data
 # save_data = true
-if (@defined save_data) && save_data == true
+if (@defined save_prepdata) && save_prepdata == true
     CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")
     @info "Data exported to file"
 else

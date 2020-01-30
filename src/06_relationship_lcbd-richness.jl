@@ -2,6 +2,9 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
+## Conditional arguments
+# save_figures = true # optional
+
 ## Load raw LCBD & richness results
 outcome = "raw"
 # Load richness script

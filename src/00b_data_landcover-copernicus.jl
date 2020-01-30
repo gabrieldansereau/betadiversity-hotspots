@@ -2,6 +2,9 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
+## Conditional arguments
+# save_figures = true # optional
+
 ## Bash commands to download & prepare data, to run in terminal in ../landcover/
 #=
 cd ~/github/landcover/
