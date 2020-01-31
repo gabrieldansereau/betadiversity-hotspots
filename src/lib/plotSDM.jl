@@ -1,4 +1,4 @@
-function plotSDM(layer::SimpleSDMLayer; c=:BuPu, scatter::Bool=false, occ=nothing)
+function plotSDM(layer::SimpleSDMLayer; c=:auto, scatter::Bool=false, occ=nothing)
     ## Arguments
     # layer: SimpleSDMLayer to plot
     # c: colorpalette to use
