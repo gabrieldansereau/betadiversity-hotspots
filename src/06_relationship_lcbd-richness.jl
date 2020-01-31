@@ -3,7 +3,7 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Conditional arguments
-# save_relfigures = true
+# save_relfigures = true # should relationship figures be overwritten (optional)
 
 ## Load raw LCBD & richness results
 outcome = "raw"
@@ -81,11 +81,11 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[3].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 
 ## Save result
-# save_relfigures = true
+# save_relfigures = true # should relationship figures be overwritten (optional)
 if (@isdefined save_relfigures) && save_relfigures == true
+    @info "Figures saved (relationship)"
     savefig(relation_plot, "fig/06_relationship_lcbd-richness.png")
     savefig(relationtr_plot, "fig/06_relationship_lcbd-richness-transf.png")
-    @info "Figures saved (relationship)"
 else
     @info "Figures not saved (relationship)"
 end

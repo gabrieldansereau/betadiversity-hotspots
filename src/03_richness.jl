@@ -3,12 +3,13 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Conditional arguments
-# outcome = "sdm" # desired outcome, "raw" or "sdm" (mandatory)
-# save_figures = true # optional
+# outcome = "raw" # desired outcome (required)
+# outcome = "sdm" # desired outcome (required)
+# save_figures = true # should figures be overwritten (optional)
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-  @warn "'outcome' not defined"
+  @warn "'outcome' not defined, must be either 'raw' or 'sdm'"
 elseif (outcome != "raw" && outcome != "sdm")
   @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
 else
@@ -41,10 +42,10 @@ heatmap!(richness_plot,
           dpi=300)
 
 ## Save result
-# save_figures = true
+# save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
-    savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
     @info "Figures saved ($(outcome) richness)"
+    savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
 else
     @info "Figures not saved ($(outcome) richness)"
 end

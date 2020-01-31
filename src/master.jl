@@ -11,20 +11,21 @@ using Distributed
 #### Data preparation
 
 ## 0a. EBD data preparation (if needed)
-# save_prepdata = true
+# save_prepdata = true # should prepared data be overwritten (optional)
 @time include("00a_data_ebd-preparation.jl")
 
 ## 0b. Landcover data preparation (if needed)
-# save_figures = true
+# save_figures = true # should figures be overwritten (optional)
 @time include("00a_data_ebd-preparation.jl")
 
 #### Analyses
 
-outcome = "raw"
-# create_distributions = true
-# save_figures = true
-# save_relfigures = true
-# save_data = true
+outcome = "raw" # desired outcome (required)
+# outcome = "sdm" # desired outcome (required)
+# create_distributions = true # should distributions be computed (optional, loaded otherwise)
+# save_data = true # should data files be overwritten (optional)
+# save_figures = true # should figures be overwritten (optional)
+# save_relfigures = true # should relationship figures be overwritten (optional)
 
 ## 1. Generate presence-absence data & single species map
 @time include("01_distributions.jl")
@@ -42,5 +43,4 @@ outcome = "raw"
 @time include("05_lcbd.jl")
 
 ## 6. Run LCBD-richness relationship analysis
-# save_relfigures = true
 @time include("06_relationship_lcbd-richness.jl")

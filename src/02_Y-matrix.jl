@@ -3,13 +3,14 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Conditional arguments
-# outcome = "sdm" # desired outcome, "raw" or "sdm" (mandatory)
-# save_figures = true # optional
-# save_data = true # optional
+# outcome = "raw" # desired outcome (required)
+# outcome = "sdm" # desired outcome (required)
+# save_data = true # should data files be overwritten (optional)
+# save_figures = true # should figures be overwritten (optional)
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-  @warn "'outcome' not defined"
+  @warn "'outcome' not defined, must be either 'raw' or 'sdm'"
 elseif (outcome != "raw" && outcome != "sdm")
   @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
 else
@@ -51,13 +52,15 @@ end
 @rget Ytransf
 
 ## Export results
-# save_data = true
+# save_data = true # should data files be overwritten (optional)
 if (@isdefined save_data) && save_data == true
-    @save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+    # Export data
     @info "Data exported to file ($(outcome) Y matrix)"
+    @save "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 else
-    @load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+    # Load data
     @info "Data imported from file ($(outcome) Y matrix)"
+    @load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 end
 
 ## Visualize patterns in Y
@@ -73,10 +76,10 @@ heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols], title = "$(titlecase(out
                    ylabel = "Site number", xlabel = "Species number")
 
 ## Export results
-# save_figures = true
+# save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
-    savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
     @info "Figures saved ($(outcome) Y matrix)"
+    savefig(heat_sortrowcol, "fig/$(outcome)/02_$(outcome)_Y-rowcolsorted.png")
 else
     @info "Figures not saved ($(outcome) Y matrix)"
 end

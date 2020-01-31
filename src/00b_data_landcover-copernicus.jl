@@ -3,7 +3,7 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Conditional arguments
-# save_figures = true # optional
+# save_figures = true # should figures be overwritten (optional)
 
 ## Bash commands to download & prepare data, to run in terminal in ../landcover/
 #=
@@ -88,11 +88,11 @@ lc_plot = plotSDM(lc_vars[2], c=:auto)
 heatmap!(lc_plot, colorbar_title="Crops land cover (%)", dpi=300)
 
 ## Export figures
-# save_figures = true
+# save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
+    @info "Figures saved (environmental variables)"
     savefig(wc_plot, "fig/00b_wc1-temperature.pdf")
     savefig(lc_plot, "fig/00b_lc2-crops.pdf")
-    @info "Figures saved (environmental variables)"
 else
     @info "Figures not saved (environmental variables)"
 end

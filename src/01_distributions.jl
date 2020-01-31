@@ -4,14 +4,15 @@ addprocs(9)
 @time @everywhere include("src/required.jl")
 
 ## Conditional arguments
-# outcome = "sdm" # desired outcome, "raw" or "sdm" (mandatory)
-# create_distributions = true # optional
-# save_figures = true # optional
-# save_data = true # optional
+# outcome = "raw" # desired outcome (required)
+# outcome = "sdm" # desired outcome (required)
+# create_distributions = true # should distributions be computed (optional, loaded otherwise)
+# save_data = true # should data files be overwritten (optional)
+# save_figures = true # should figures be overwritten (optional)
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-  @warn "'outcome' not defined"
+  @warn "'outcome' not defined, must be either 'raw' or 'sdm'"
 elseif (outcome != "raw" && outcome != "sdm")
   @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
 else
@@ -58,9 +59,11 @@ env_vars = vcat(wc_vars, lc_vars)
 env_vars_train = vcat(wc_vars_train, lc_vars_train)
 
 ## Get distribution for all species
-# create_distributions = true
+# Runs only if create_distributions = true, as it can take a while. Loaded from file otherwise
+# create_distributions = true # should distributions be computed (optional, loaded otherwise)
 if (@isdefined create_distributions) && create_distributions == true
     @info "$(outcome) distributions to be created"
+    # Select function to run given desired outcome
     if outcome == "raw"
         # Get raw distributions
         @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers)
@@ -72,13 +75,15 @@ if (@isdefined create_distributions) && create_distributions == true
 end
 
 ## Export distributions
-# save_data = true
+# save_data = true # should data files be overwritten (optional)
 if (@isdefined save_data) && save_data == true
-    @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+    # Export data
     @info "Data exported to file ($(outcome) distributions data)"
+    @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
 else
-    @load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+    # Load data
     @info "Data imported from file ($(outcome) distributions data)"
+    @load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
 end
 
 ## Count sites with presence per species
@@ -86,12 +91,14 @@ pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distrib
 sort(pres_counts)
 
 ## Plot result
+# Species 1
 sp1 = "Setophaga_townsendi"
 map_sp1 = plotSDM(distributions[speindex[sp1]], c=:BuPu)
 heatmap!(map_sp1, title = "$(sp1) distribution ($(outcome))",
          colorbar=:none, dpi=300)
 scatter!(map_sp1, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
                         legend=:bottomright, legendfontsize=5)
+# Species 2
 sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM(distributions[speindex[sp2]], c=:BuPu)
 heatmap!(map_sp2, title = "$(sp2) distribution ($(outcome))",
@@ -100,11 +107,11 @@ scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, m
                         legend=:bottomright, legendfontsize=5)
 
 ## Export figures
-# save_figures = true
+# save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
+    @info "Figures saved ($(outcome) distributions)"
     savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
     savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")
-    @info "Figures saved ($(outcome) distributions)"
 else
     @info "Figures not saved ($(outcome) distributions)"
 end

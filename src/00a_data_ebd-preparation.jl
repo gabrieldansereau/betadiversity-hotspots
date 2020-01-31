@@ -3,7 +3,7 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Conditional arguments
-# save_prepdata = true # optional
+# save_prepdata = true # should prepared data be overwritten (optional)
 
 ## EBD data preparation
 
@@ -25,10 +25,10 @@ select!(newdf, [:species, :year, :latitude, :longitude, :groupIdentifier])
 filter!(x -> x.longitude < 0, newdf)
 
 ## Export prepared data
-# save_data = true
+# save_prepdata = true # should prepared data be overwritten (optional)
 if (@isdefined save_prepdata) && save_prepdata == true
-    CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")
     @info "Data exported to file (data preparation)"
+    CSV.write("data/proc/ebd_warblers_prep.csv", newdf, delim="\t")
 else
     @info "Data not exported (data preparation)"
 end
