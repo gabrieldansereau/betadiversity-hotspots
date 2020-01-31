@@ -16,7 +16,7 @@ using ArchGDAL
 include("lib/bioclim.jl")
 include("lib/csvdata.jl")
 include("lib/landcover.jl")
+include("lib/overloads.jl")
 include("lib/plotSDM.jl")
 include("lib/presence-absence.jl")
-include("lib/SDMLayer.jl")
 include("lib/shapefiles.jl")
