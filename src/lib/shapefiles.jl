@@ -1,4 +1,7 @@
-function donwload_shapefile(res)
+## Shapefiles functions useful for mapping
+
+# Download worldmap shapefile
+function download_shapefile(res)
     @assert res ∈ [50, 100]
     dir = "https://github.com/nvkelso/natural-earth-vector/" *
         "raw/master/$(res)m_physical/"
@@ -7,6 +10,7 @@ function donwload_shapefile(res)
     run(`wget $dir/$fn -P ./assets/`)
 end
 
+# Read worlmap shapefile
 function worldshape(res)
     handle = open("./assets/ne_$(res)m_land.shp", "r") do io
         read(io, Shapefile.Handle)
@@ -14,10 +18,12 @@ function worldshape(res)
     return handle
 end
 
+# Clip worldmap shapefile
 function clip(s::Shapefile.Handle, l::SimpleSDMLayer)
     return filter(x -> isin(x, l), s.shapes)
 end
 
+# Check layer bounds are outside polygon
 function isin(p::Shapefile.Polygon, l::SimpleSDMLayer)
     out = false
     for xy in p.points

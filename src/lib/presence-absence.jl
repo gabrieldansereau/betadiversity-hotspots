@@ -1,5 +1,12 @@
-## Create function to convert occurrence to presence-absence based on a SimpleSDMLayer
+## Presence absence distribution functions
+
+## Convert occurrences to presence-absence layer based on an existing SimpleSDMLayer
 function presence_absence(species::DataFrame, copy_layer::SimpleSDMLayer; full_range::Bool=false, binary::Bool=true)
+    # species: species occurrences in a DataFrame with longitude and latitude columns
+    # copy_layer: layer with range of interest and dimensions to copy (not used otherwise)
+    # full_range: return species full range, even outside range of interest
+    # binary: convert to binary presence-absence values per site
+
     # Filter observations to range of interest (default)
     if full_range == false
         filter!(x -> lon_range[1] < x[:longitude] < lon_range[2], species)

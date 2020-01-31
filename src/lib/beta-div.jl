@@ -1,8 +1,7 @@
 #### Beta diversity calculation functions
-@everywhere using ProgressMeter
 
 ## Function to calculate beta diversity statistics
-@everywhere function BD(Y)
+function BD(Y)
     # S -> squared deviations from column mean
     S = (Y .- mean(Y; dims=1)).^2.0
     # SStotal -> total sum of squares
@@ -24,7 +23,7 @@
 end
 
 ## Function for permutation tests
-@everywhere function permtest(Y, res)
+function permtest(Y, res)
     # Permutation of matrix Y
     Y_perm = hcat(shuffle.(eachcol(Y))...)
     # Recalculate BD statistics
@@ -35,7 +34,7 @@ end
 end
 
 ## Function combining BD calculation & permutation tests
-@everywhere function BDperm(Y; nperm=999, distributed=true)
+function BDperm(Y; nperm=999, distributed=true)
     n = size(Y, 1)
     p = size(Y, 2)
     # Initial BD results
@@ -58,34 +57,3 @@ end
     res_perm = (res..., pLCBD = p_LCBD)
     return res_perm
 end
-
-########
-
-## Test functions
-
-#=
-using Distributed
-addprocs(9)
-@everywhere begin
-    using CSV
-    using Random
-    using DataFrames
-    using Statistics
-end
-
-# Input Y matrix
-Y = CSV.read("../data/Y-can.csv", delim="\t")
-Y = Matrix(Y)
-
-@time res = BD(Y)
-@time permtest(Y, res)
-@time res_perm = BDperm(Y, nperm=0);
-@time res_perm = BDperm(Y, nperm=49);
-# 5 sec distributed vs 15 sec not distributed
-@time res_perm = BDperm(Y, nperm=999, distributed=false);
-# 90 sec distributed vs 300 sec
-# Parallelized function seems ~3x faster
-
-# Find sites with significant LCBD contributions
-findall(res_perm.pLCBD .<= 0.05)
-=#

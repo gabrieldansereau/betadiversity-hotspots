@@ -1,3 +1,6 @@
+## Data preparation functions
+
+# GBIF data preparation (from DataFrame)
 function prepare_gbif_data(df::DataFrame)
     # Rename coordinate columns names
     rename!(df, :decimalLatitude => :latitude)
@@ -12,6 +15,7 @@ function prepare_gbif_data(df::DataFrame)
     return df
 end
 
+# eBird data preparation (from DataFrame)
 function prepare_ebd_data(df::DataFrame)
     # Fix names case & spacing
     newnames = names(df) .|>

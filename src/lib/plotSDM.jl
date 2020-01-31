@@ -1,3 +1,6 @@
+## Functions to plot SimpleSDMLayer elements more easily
+
+# Plot layer as a heatmap with worldmap background
 function plotSDM(layer::SimpleSDMLayer; c=:auto, scatter::Bool=false, occ=nothing)
     ## Arguments
     # layer: SimpleSDMLayer to plot
@@ -10,7 +13,7 @@ function plotSDM(layer::SimpleSDMLayer; c=:auto, scatter::Bool=false, occ=nothin
 
     # Create empty plot
     sdm_plot = plot([0.0], lab="", msw=0.0, ms=0.0, frame=:box)
-    # Adjust axes
+    # Adjust axes to layer coordinates
     xaxis!(sdm_plot, (layer.left,layer.right), "Longitude")
     yaxis!(sdm_plot, (layer.bottom,layer.top), "Latitude")
 

@@ -1,3 +1,6 @@
+## Landcover variables loading functions
+
+# Landcover variables loading
 function landcover(layers::Vector{Int64}; resolution::AbstractString="10", path::AbstractString="assets/landcover/")
     ## Get file paths
     # List files in path
