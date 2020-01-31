@@ -1,10 +1,16 @@
+## Overloads to existing functions (support for additional types & arguments)
+
 import SimpleSDMLayers: longitudes
 import SimpleSDMLayers: latitudes
 
+## Extract layer values
+
+# Extract layer value from single GBIFRecord
 function Base.getindex(p::SimpleSDMLayer, r::GBIFRecord)
     return p[r.longitude, r.latitude]
 end
 
+# Extract layer value from multiple GBIFRecords
 function Base.getindex(p::SimpleSDMLayer, r::GBIFRecords)
     observations = eltype(p.grid)[]
     for record in r
@@ -12,20 +18,19 @@ function Base.getindex(p::SimpleSDMLayer, r::GBIFRecords)
     end
     return observations
 end
+
+# Extract layer value from DataFrame (with longitude & latitude columns)
 function Base.getindex(p::SimpleSDMLayer, d::DataFrame)
     observations = eltype(p.grid)[]
-    for i in 1:length(d.species)
+    for i in 1:nrow(d)
         push!(observations, p[d.longitude[i], d.latitude[i]])
     end
     return observations
 end
-function clip(p::SimpleSDMLayer, r::Union{GBIFRecords,DataFrame})
-    lats = latitudes(r)
-    lons = longitudes(r)
-    return p[(minimum(lons)-1.0, maximum(lons)+1.0), (minimum(lats)-1.0, maximum(lats)+1.0)]
-end
 
+## Extract all latitudes & longitudes
 
+# Extract longitudes from GBIFRecords
 function longitudes(r::GBIFRecords)
     l = Float64[]
     for record in r
@@ -33,6 +38,8 @@ function longitudes(r::GBIFRecords)
     end
     return l
 end
+
+# Extract longitudes from DataFrame
 function longitudes(d::DataFrame)
     l = Float64[]
     for lon in d.longitude
@@ -41,6 +48,7 @@ function longitudes(d::DataFrame)
     return l
 end
 
+# Extract latitudes from GBIFRecords
 function latitudes(r::GBIFRecords)
     l = Float64[]
     for record in r
@@ -48,6 +56,8 @@ function latitudes(r::GBIFRecords)
     end
     return l
 end
+
+# Extract latitudes from DataFrame
 function latitudes(d::DataFrame)
     l = Float64[]
     for lat in d.latitude
@@ -56,6 +66,16 @@ function latitudes(d::DataFrame)
     return l
 end
 
+## Other layer manipulations
+
+# Clip layer to DataFrame/GBIFRecords occurrences extent
+function clip(p::SimpleSDMLayer, r::Union{GBIFRecords,DataFrame})
+    lats = latitudes(r)
+    lons = longitudes(r)
+    return p[(minimum(lons)-1.0, maximum(lons)+1.0), (minimum(lats)-1.0, maximum(lats)+1.0)]
+end
+
+# Get minimum value between layers of same dimension
 function Base.minimum(p1::SimpleSDMLayer, p2::SimpleSDMLayer)
     n1 = copy(p1.grid)
     for i in eachindex(p1.grid)
