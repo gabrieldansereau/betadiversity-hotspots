@@ -2,11 +2,11 @@
 
 # import SimpleSDMLayers: bioclim
 
-# Function to apply 1st part of BIOCLIM on single environmental variables
-function bioclim(occ::Union{GBIFRecords,DataFrame}, pred_vars::SimpleSDMLayer; train_vars::SimpleSDMLayer=pred_vars)
+# 1st part of BIOCLIM model for single environmental variables
+function bioclim_singlevar(occ::Union{GBIFRecords,DataFrame}, pred_vars::SimpleSDMLayer; train_vars::SimpleSDMLayer=pred_vars)
     # occ: occurences of a single species as a DataFrame with latitude and longitude columns
-    # pred_vars: environmental variable used for prediction
-    # train_vars: optional, training environmental variable, can use a different resolution
+    # pred_vars: environmental variables used for prediction
+    # train_vars: optional, training environmental variables, can use a different resolution
 
     # Get observed environmental values (training values)
     observed_values = train_vars[occ]
@@ -36,10 +36,17 @@ function bioclim(occ::Union{GBIFRecords,DataFrame}, pred_vars::SimpleSDMLayer; t
     prediction = SimpleSDMResponse(lq, pred_vars.left, pred_vars.right, pred_vars.bottom, pred_vars.top)
 end
 
-# Function to apply 1st & 2nd part of BIOCLIM on all environmental variables
-function species_bclim(occ, pred_vars; train_vars=pred_vars, binary=true, with_threshold=false)
+# Complete BIOCLIM model on all environmental variables, including 1st part function
+function bioclim(occ, pred_vars; train_vars=pred_vars, binary=true, with_threshold=false, threshold::Float64=0.05)
+    # occ: occurences of a single species as a DataFrame with latitude and longitude columns
+    # pred_vars: environmental variables used for prediction
+    # train_vars: optional, training environmental variables, can use a different resolution
+    # binary: optional, convert result to binary presence-absence values
+    # with_threshold: optional, apply threshold to remove lower predictions
+    # threshold: optional, set threshold to use (default = 0.05)
+
     # Apply 1st part of BIOCLIM on each environmental variable
-    predictions = [bioclim(occ, pred_vars[i], train_vars = train_vars[i]) for i in 1:length(pred_vars)];
+    predictions = [bioclim_singlevar(occ, pred_vars[i], train_vars = train_vars[i]) for i in 1:length(pred_vars)];
     # Reduce to single layer with minimum values
     prediction = reduce(minimum, predictions);
     # Apply threshold (if requested, default is false)
@@ -48,10 +55,10 @@ function species_bclim(occ, pred_vars; train_vars=pred_vars, binary=true, with_t
         no_nan = filter(!isnan, prediction[occ]);
         # Apply threshold only if there are non-NaN values
         if length(no_nan) != 0
-            # Get prediction value equivalent to 5% threshold
-            threshold = first(quantile(no_nan, [0.05]));
+            # Get prediction value equivalent to threshold
+            threshold_value = first(quantile(no_nan, [threshold]));
             # Replace values smaller than threshold by NaN
-            replace!(x -> x < threshold ? NaN : x, prediction.grid);
+            replace!(x -> x < threshold_value ? NaN : x, prediction.grid);
         end
     end
     # Replace zeros by NaN
