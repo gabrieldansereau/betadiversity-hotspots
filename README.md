@@ -65,35 +65,35 @@ Else, the general workflow of the analyses is as follows:
 
 ### Single species
 
-Raw: ![Single species - raw][raw_single-sp]
+![Single species - Raw][raw_single-sp]
 
-SDM: ![Single species - sdm][sdm_single-sp]
+![Single species - SDM][sdm_single-sp]
 
 [raw_single-sp]: fig/raw/01_raw_sp-Setophaga_petechia.pdf
 [sdm_single-sp]: fig/sdm/01_sdm_sp-Setophaga_petechia.pdf
 
 ### Species richness
 
-Raw: ![Species richness - raw][raw_richness]
+![Species richness - Raw][raw_richness]
 
-SDM:![Species richness - sdm][sdm_richness]
+![Species richness - SDM][sdm_richness]
 
 [raw_richness]: fig/raw/03_raw_richness.pdf
 [sdm_richness]: fig/sdm/03_sdm_richness.pdf
 
 ### LCBD
 
-Raw: ![LCBD - raw][raw_lcbd]
-SDM: ![LCBD - sdm][sdm_lcbd]
+![LCBD - Raw][raw_lcbd]
+![LCBD - SDM][sdm_lcbd]
 
 [raw_lcbd]: fig/raw/05_raw_lcbd-transf.pdf
 [sdm_lcbd]: fig/sdm/05_sdm_lcbd.pdf
 
 ### Richness-LCBD relationship
 
-![relationship][relationship]
+![Relationship][relationship]
 
-[relationship]: fig/06_relationship_lcbd-richness
+[relationship]: fig/06_relationship_lcbd-richness-transf.png
 
 ## Details on library scripts
 
