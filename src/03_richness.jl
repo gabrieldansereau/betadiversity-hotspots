@@ -40,6 +40,12 @@ heatmap!(richness_plot,
           clim=(0.0, 60.0),
           colorbar_title = "Number of species per site",
           dpi=300)
+richness_quantilesplot = plotSDM(quantiles(richness), c=:viridis)
+heatmap!(richness_quantilesplot,
+          title = "Richness quantiles ($outcome distributions)",
+          colorbar_title = "Number of species per site (quantiles)",
+          dpi=300)
+
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
