@@ -46,12 +46,20 @@ LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
 LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 
 ## Plot results
+# Relative values
 lcbd_plot1 = plotSDM(LCBD[1], c=:viridis)
 heatmap!(lcbd_plot1, title = "LCBD values per site ($(outcome) distributions)",
          colorbar_title = "LCBD value (relative to maximum)", dpi=300)
-lcbd_plot2 = plotSDM(LCBD[2], c=:viridis)
+lcbd_plot2 = plotSDM(LCBD[2], c=:viridis) # hellinger transformed
 heatmap!(lcbd_plot2, title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
          colorbar_title = "LCBD value (relative to maximum)", dpi=300)
+# Quantile scores
+lcbd_plot3 = plotSDM(quantiles(LCBD[1]), c=:viridis)
+heatmap!(lcbd_plot3, title = "LCBD quantiles ($(outcome) distributions)",
+         colorbar_title = "LCBD quantile score", dpi=300)
+lcbd_plot4 = plotSDM(quantiles(LCBD[2]), c=:viridis) # hellinger transformed
+heatmap!(lcbd_plot4, title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
+         colorbar_title = "LCBD quantile score", dpi=300)
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
