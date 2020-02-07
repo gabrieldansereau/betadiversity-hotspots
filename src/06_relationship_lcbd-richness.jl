@@ -89,3 +89,40 @@ if (@isdefined save_relfigures) && save_relfigures == true
 else
     @info "Figures not saved (relationship)"
 end
+
+## Quantile relationship plots
+qfinder = ecdf(filter(!isnan, vec(rel_richness[2])))
+relation_qplot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LCBD[1].grid)),
+         markersize = 2,
+         c = :skyblue,
+         msw = 0,
+         label = "Raw occurrence data",
+         legend = :topright,
+         xlims = (0.0, 1.0), ylims = (0.0, 1.0),
+         yticks = 0.0:0.20:1.0,
+         xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
+         grid=:none)
+scatter!(relation_qplot, quantiles(vec(rel_richness[2])), quantiles(vec(sdm.LCBD[1].grid)),
+         markersize = 2, color=:orange, msw = 0, label = "SDM predictions")
+relationtr_qplot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LCBD[2].grid)),
+         markersize = 2,
+         c = :skyblue,
+         msw = 0,
+         label = "Raw occurrence data",
+         legend = :topright,
+         xlims = (0.0, 1.0), ylims = (0.0, 1.0),
+         yticks = 0.0:0.20:1.0,
+         xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
+         grid=:none)
+scatter!(relationtr_qplot, qfinder(vec(rel_richness[2])), quantiles(vec(sdm.LCBD[1].grid)),
+         markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
+relationdbtr_plot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LCBD[2].grid)),
+         markersize = 2,
+         c = :skyblue,
+         msw = 0,
+         label = "Raw occurrence data",
+         legend = :topright,
+         xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
+         grid=:none)
+scatter!(relationdbtr_plot, qfinder(vec(rel_richness[2])), vec(sdm.LCBD[2].grid),
+         markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
