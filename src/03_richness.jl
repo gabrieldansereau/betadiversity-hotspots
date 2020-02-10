@@ -40,8 +40,8 @@ heatmap!(richness_plot,
           clim=(0.0, 60.0),
           colorbar_title = "Number of species per site",
           dpi=300)
-richness_quantilesplot = plotSDM(quantiles(richness), c=:viridis)
-heatmap!(richness_quantilesplot,
+richness_qplot = plotSDM(quantiles(richness), c=:viridis)
+heatmap!(richness_qplot,
           title = "Richness quantiles ($outcome distributions)",
           colorbar_title = "Number of species per site (quantiles)",
           dpi=300)
@@ -52,6 +52,12 @@ heatmap!(richness_quantilesplot,
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) richness)"
     savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
+else
+    @info "Figures not saved ($(outcome) richness)"
+end
+if (@isdefined save_figures) && save_figures == true
+    @info "Figures saved ($(outcome) richness)"
+    savefig(richness_qplot, "fig/quantiles/03_$(outcome)_richness_quantiles.pdf")
 else
     @info "Figures not saved ($(outcome) richness)"
 end

@@ -47,26 +47,34 @@ LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].rig
 
 ## Plot results
 # Relative values
-lcbd_plot1 = plotSDM(LCBD[1], c=:viridis)
-heatmap!(lcbd_plot1, title = "LCBD values per site ($(outcome) distributions)",
+lcbd_plot = plotSDM(LCBD[1], c=:viridis)
+heatmap!(lcbd_plot, title = "LCBD values per site ($(outcome) distributions)",
          colorbar_title = "LCBD value (relative to maximum)", dpi=300)
-lcbd_plot2 = plotSDM(LCBD[2], c=:viridis) # hellinger transformed
-heatmap!(lcbd_plot2, title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
+lcbdtr_plot = plotSDM(LCBD[2], c=:viridis) # hellinger transformed
+heatmap!(lcbdtr_plot, title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
          colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 # Quantile scores
-lcbd_plot3 = plotSDM(quantiles(LCBD[1]), c=:viridis)
-heatmap!(lcbd_plot3, title = "LCBD quantiles ($(outcome) distributions)",
+lcbd_qplot = plotSDM(quantiles(LCBD[1]), c=:viridis)
+heatmap!(lcbd_qplot, title = "LCBD quantiles ($(outcome) distributions)",
          colorbar_title = "LCBD quantile score", dpi=300)
-lcbd_plot4 = plotSDM(quantiles(LCBD[2]), c=:viridis) # hellinger transformed
-heatmap!(lcbd_plot4, title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
+lcbdtr_qplot = plotSDM(quantiles(LCBD[2]), c=:viridis) # hellinger transformed
+heatmap!(lcbdtr_qplot, title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
          colorbar_title = "LCBD quantile score", dpi=300)
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(lcbd_plot1, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
-    savefig(lcbd_plot2, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
+    savefig(lcbd_plot, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
+    savefig(lcbdtr_plot, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
+else
+    @info "Figures not saved ($(outcome) lcbd)"
+end
+# Quantile figures
+if (@isdefined save_figures) && save_figures == true
+    @info "Figures saved ($(outcome) lcbd)"
+    savefig(lcbd_qplot, "fig/quantiles/05_$(outcome)_lcbd_quantiles.pdf")
+    savefig(lcbdtr_qplot, "fig/quantiles/05_$(outcome)_lcbd-transf_quantiles.pdf")
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end
