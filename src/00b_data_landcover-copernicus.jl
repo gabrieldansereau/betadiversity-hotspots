@@ -5,42 +5,20 @@ using Distributed
 ## Conditional arguments
 # save_figures = true # should figures be overwritten (optional)
 
-## Bash commands to download & prepare data, to run in terminal in ../landcover/
-#=
-cd ../landcover/
-## Download Copernicus global land cover data from Zenodo
-# BEWARE, can be very long, 25 GB of data in total
-# Launching downloads in parallel, 1 core/variable = 10 cores at most, not much RAM needed
-landcover_variables=(bare crops grass moss shrub snow tree urban water-permanent water-seasonal)
-for i in "${landcover_variables[@]}"
-do
-    wget https://zenodo.org/record/3243509/files/ProbaV_LC100_epoch2015_global_v2.0.2_"$i"-coverfraction-layer_EPSG-4326.tif -O landcover_copernicus_global_100m_v2.0.2_"$i".tif &
-done
-wait
-echo "Downloads - All done"
-rm wget-log*
-
-## Coarsen resolution
-# BEWARE, can be very long and will take 10 cores, took 30 min and ~ 16GB of RAM in my case
-for i in "${landcover_variables[@]}"
-do
-    # Set resolution to 10 arc-minutes
-    gdalwarp -tr 0.166667 0.166667 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi landcover_copernicus_global_100m_v2.0.2_"$i".tif lc_"$i"_10m.tif &
-done
-wait
-echo "10 arc-minutes - All done"
-
-for i in "${landcover_variables[@]}"
-do
-    # Set resolution to 5 arc-minutes
-    gdalwarp -tr 0.0833333 0.0833333 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi landcover_copernicus_global_100m_v2.0.2_"$i".tif lc_"$i"_5m.tif &
-done
-wait
-echo "5 arc-minutes - All done"
-=#
+## Run bash scripts to download & coarsen landcover data from Zenodo (if files missing)
+lc_files = readdir("assets/landcover/")
+# Check if landcover files are missing
+if any(startswith.(lc_files, r"^lc_"))
+    # Check if full resolution files are missing
+    if any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
+        # Download full resolution files
+        run(`bash src/bin/landcover_download.sh`)
+    end
+    # Coarsen resolution
+    run(`bash src/bin/landcover_coarsen.sh`)
+end
 
 ## Test landcover variables
-
 # Define coordinates range
 lon_range = (-145.0, -50.0)
 lat_range = (20.0, 75.0)
