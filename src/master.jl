@@ -1,6 +1,4 @@
 #### Master file - Raw observations
-## NOT TESTED
-
 import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
@@ -16,7 +14,7 @@ using Distributed
 
 ## 0b. Landcover data preparation (if needed)
 # save_figures = true # should figures be overwritten (optional)
-@time include("00a_data_ebd-preparation.jl")
+@time include("00b_data_landcover-copernicus.jl")
 
 #### Analyses
 
@@ -44,3 +42,6 @@ outcome = "raw" # desired outcome (required)
 
 ## 6. Run LCBD-richness relationship analysis
 @time include("06_relationship_lcbd-richness.jl")
+
+## 7. Run endemism analysis
+@time incluce("07_endemism.jl")
