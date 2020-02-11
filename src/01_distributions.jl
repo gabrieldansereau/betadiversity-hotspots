@@ -40,19 +40,12 @@ lat_range_obs = extrema(df.latitude)
 
 ## Get environmental data (with different training resolutions)
 # WorldClim data
-@time wc_vars = map(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
+wc_vars = map(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
 # Landcover data
-@time lc_vars = pmap(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10);
+lc_vars = map(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10);
 # Training data with finer resolution
-if outcome == "raw"
-    # Set resolution to 10 # CAN'T BE FINER FOR RAW ANALYSES FOR NOW
-    @time wc_vars_train = map(x -> worldclim(x, resolution = "10")[lon_range_obs, lat_range_obs], [1,12]);
-    @time lc_vars_train = map(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10)
-elseif outcome == "sdm"
-    # Set resolution to 5
-    @time wc_vars_train = map(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
-    @time lc_vars_train = map(x -> landcover(x, resolution = "5")[lon_range, lat_range], 1:10)
-end
+wc_vars_train = map(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
+lc_vars_train = map(x -> landcover(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:10);
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
