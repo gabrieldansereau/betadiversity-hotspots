@@ -7,6 +7,9 @@ function presence_absence(species::DataFrame, copy_layer::SimpleSDMLayer; full_r
     # full_range: return species full range, even outside range of interest
     # binary: convert to binary presence-absence values per site
 
+    # Extract coordinates
+    lon_range = (copy_layer.left, copy_layer.right)
+    lat_range = (copy_layer.bottom, copy_layer.top)
     # Filter observations to range of interest (default)
     if full_range == false
         filter!(x -> lon_range[1] < x[:longitude] < lon_range[2], species)
