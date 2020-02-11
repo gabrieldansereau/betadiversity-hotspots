@@ -7,49 +7,39 @@ using Distributed
 
 ## Bash commands to download & prepare data, to run in terminal in ../landcover/
 #=
-cd ~/github/landcover/
-# Download Copernicus land cover data, many downloads to cover whole extent
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W160N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W160N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W160N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W160N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W160N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W160N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W140N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W140N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W140N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W140N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W140N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W140N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W120N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W120N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W120N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W120N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W120N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W120N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W100N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W100N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W100N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W100N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W100N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W100N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W080N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W080N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W080N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W080N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W080N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W080N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W060N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W060N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W060N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W060N60.zip
-
-# Unzip files in separate directories
-for i in *.zip; do unzip "$i" -d "${i%%.zip}"; done
-
-# Delete zip files
-rm *.zip
-
-# Create repositories if needed
-mkdir coverfraction
-(cd coverfraction; mkdir bare crops grass moss shrub snow tree urban water-permanent water-seasonal)
-
-# Batch commands for each land cover variable
-for i in $(ls coverfraction/)
+cd ../landcover/
+## Download Copernicus global land cover data from Zenodo
+# BEWARE, can be very long, 25 GB of data in total
+# Launching downloads in parallel, 1 core/variable = 10 cores at most, not much RAM needed
+landcover_variables=(bare crops grass moss shrub snow tree urban water-permanent water-seasonal)
+for i in "${landcover_variables[@]}"
 do
-    # Copy landcover data in 1 folder per variable
-    for j in landcover*; do cp "$j"/*"$i"-coverfraction-layer* coverfraction/"$i"/; done
-    # Set resolution to 10 arc-minutes & merge all layers in one
-    gdalwarp -tr 0.166667 0.166667 -r average coverfraction/"$i"/W*.tif ../BioClim/assets/landcover/lc_"$i"_10m.tif
-    # Set resolution to 5 arc-minutes & merge all layers in one
-    gdalwarp -tr 0.0833333 0.0833333 -r average coverfraction/"$i"/W*.tif ../BioClim/assets/landcover/lc_"$i"-5m.tif
+    wget https://zenodo.org/record/3243509/files/ProbaV_LC100_epoch2015_global_v2.0.2_"$i"-coverfraction-layer_EPSG-4326.tif -O landcover_copernicus_global_100m_v2.0.2_"$i".tif &
 done
+wait
+echo "Downloads - All done"
+rm wget-log*
+
+## Coarsen resolution
+# BEWARE, can be very long and will take 10 cores, took 30 min and ~ 16GB of RAM in my case
+for i in "${landcover_variables[@]}"
+do
+    # Set resolution to 10 arc-minutes
+    gdalwarp -tr 0.166667 0.166667 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi landcover_copernicus_global_100m_v2.0.2_"$i".tif lc_"$i"_10m.tif &
+done
+wait
+echo "10 arc-minutes - All done"
+
+for i in "${landcover_variables[@]}"
+do
+    # Set resolution to 5 arc-minutes
+    gdalwarp -tr 0.0833333 0.0833333 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi landcover_copernicus_global_100m_v2.0.2_"$i".tif lc_"$i"_5m.tif &
+done
+wait
+echo "5 arc-minutes - All done"
 =#
 
-##  Test landcover variables
+## Test landcover variables
 
 # Define coordinates range
 lon_range = (-145.0, -50.0)
