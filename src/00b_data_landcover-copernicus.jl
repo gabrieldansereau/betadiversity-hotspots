@@ -5,52 +5,20 @@ using Distributed
 ## Conditional arguments
 # save_figures = true # should figures be overwritten (optional)
 
-## Bash commands to download & prepare data, to run in terminal in ../landcover/
-#=
-cd ~/github/landcover/
-# Download Copernicus land cover data, many downloads to cover whole extent
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W160N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W160N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W160N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W160N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W160N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W160N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W140N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W140N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W140N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W140N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W140N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W140N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W120N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W120N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W120N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W120N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W120N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W120N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W100N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W100N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W100N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W100N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W100N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W100N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W080N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W080N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W080N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W080N60.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W080N40_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W080N40.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W060N80_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W060N80.zip
-wget https://s3-eu-west-1.amazonaws.com/vito-downloads/ZIPfiles/W060N60_ProbaV_LC100_epoch2015_global_v2.0.1_products_EPSG-4326.zip -O landcover_W060N60.zip
+## Run bash scripts to download & coarsen landcover data from Zenodo (if files missing)
+lc_files = readdir("assets/landcover/")
+# Check if landcover files are missing
+if any(startswith.(lc_files, r"^lc_"))
+    # Check if full resolution files are missing
+    if any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
+        # Download full resolution files
+        run(`bash src/bin/landcover_download.sh`)
+    end
+    # Coarsen resolution
+    run(`bash src/bin/landcover_coarsen.sh`)
+end
 
-# Unzip files in separate directories
-for i in *.zip; do unzip "$i" -d "${i%%.zip}"; done
-
-# Delete zip files
-rm *.zip
-
-# Create repositories if needed
-mkdir coverfraction
-(cd coverfraction; mkdir bare crops grass moss shrub snow tree urban water-permanent water-seasonal)
-
-# Batch commands for each land cover variable
-for i in $(ls coverfraction/)
-do
-    # Copy landcover data in 1 folder per variable
-    for j in landcover*; do cp "$j"/*"$i"-coverfraction-layer* coverfraction/"$i"/; done
-    # Set resolution to 10 arc-minutes & merge all layers in one
-    gdalwarp -tr 0.166667 0.166667 -r average coverfraction/"$i"/W*.tif ../BioClim/assets/landcover/lc_"$i"_10m.tif
-    # Set resolution to 5 arc-minutes & merge all layers in one
-    gdalwarp -tr 0.0833333 0.0833333 -r average coverfraction/"$i"/W*.tif ../BioClim/assets/landcover/lc_"$i"-5m.tif
-done
-=#
-
-##  Test landcover variables
-
+## Test landcover variables
 # Define coordinates range
 lon_range = (-145.0, -50.0)
 lat_range = (20.0, 75.0)

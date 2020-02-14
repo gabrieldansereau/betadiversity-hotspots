@@ -69,7 +69,7 @@ relationtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          grid=:none)
 scatter!(relationtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[1].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
-relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[3].grid),
+relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          markersize = 2,
          c = :skyblue,
          msw = 0,
@@ -77,7 +77,7 @@ relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[3].grid),
          legend = :topright,
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
          grid=:none)
-scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[3].grid),
+scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[2].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 
 ## Save result
