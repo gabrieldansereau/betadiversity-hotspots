@@ -63,7 +63,7 @@ if (@isdefined create_distributions) && create_distributions == true
         # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers)
     elseif outcome == "sdm"
         # Get sdm distributions (with different training resolutions)
-        @time distributions = @showprogress pmap(x -> bioclim(x, env_vars, train_vars = env_vars_train), warblers);
+        @time distributions = @showprogress pmap(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
     end
 end
 
