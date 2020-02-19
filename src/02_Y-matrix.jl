@@ -18,7 +18,7 @@ else
 end
 
 ## Load presence-absence data for all species
-@load "data/jld2/$(outcome)-distributions.jld2" distributions
+@load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
 
 ## Create matrix Y (site-by-species community data table)
 # Get distributions as vectors

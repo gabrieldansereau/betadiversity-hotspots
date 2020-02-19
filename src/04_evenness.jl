@@ -17,7 +17,7 @@ else
 end
 
 ## Load distributions for all species
-@load "data/jld2/$(outcome)-distributions.jld2" distributions
+@load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
 
 ## Create custom functions
 # Function for Pielou's evenness index
