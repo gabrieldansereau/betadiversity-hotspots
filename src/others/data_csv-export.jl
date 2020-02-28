@@ -52,3 +52,36 @@ CSV.write("data/proc/distributions_spa.csv", spadf, delim="\t")
 
 # Test load
 testdf = CSV.read("data/proc/distributions_spe.csv", header=true, delim="\t")
+
+##### Restrict data to Quebec
+
+## Preliminary verifications
+# Any sites without observations
+filter(x -> all(Array(x) .== 0), eachrow(spedf))
+# Any species without observations
+filter(x -> all(Array(x) .== 0), eachrow(spedf))
+
+# Any sites without envdf data
+filter(x -> all(isnan.(Array(x))), eachrow(envdf))
+# Any sites without landcover data
+filter(x -> all(isnan.(Array(x))), eachrow(envdf[:,20:end]))
+
+## Limit observation range
+# Coordinates range
+qc_lon_range = (-80.0, -55.0)
+qc_lat_range = (45.0, 63.0)
+# Get indexes
+inds_qc = findall(x -> (qc_lon_range[1] < x.lon < qc_lon_range[2]) &&
+                       (qc_lat_range[1] < x.lat < qc_lat_range[2]), eachrow(spadf))
+# Filter datasets
+speqc = spedf[inds_qc,:]
+envqc = envdf[inds_qc,:]
+spaqc = spadf[inds_qc,:]
+# Remove species without observations
+cols_obs = findall(x -> sum(x) > 0, eachcol(speqc))
+speqc_obs = speqc[:, cols_obs]
+
+## Export QC data
+CSV.write("data/proc/distributions_spe_qc.csv", speqc_obs, delim="\t")
+CSV.write("data/proc/distributions_env_qc.csv", envqc, delim="\t")
+CSV.write("data/proc/distributions_spa_qc.csv", spaqc, delim="\t")
