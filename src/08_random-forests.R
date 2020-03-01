@@ -1,11 +1,20 @@
 library(party)
 library(randomForest)
+library(parallel)
 
 #### 0. Load data ####
 # Load QC data
 spe <-  read.csv("data/proc/distributions_spe_qc.csv", header=TRUE, sep="\t")
 spa <-  read.csv("data/proc/distributions_spa_qc.csv", header=TRUE, sep="\t")
 env <-  read.csv("data/proc/distributions_env_qc.csv", header=TRUE, sep="\t")
+
+# Remove site with NAs for landcover variables
+(inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
+if (length(inds_withNAs) > 0) {
+  spe <- spe[-inds_withNAs,]
+  spa <- spa[-inds_withNAs,]
+  env <- env[-inds_withNAs,]
+}
 
 # Combine environmental variables
 vars <- cbind(env, spa)
@@ -26,8 +35,10 @@ vars_test <- vars[-inds_train,]
 
 # Remove species without observations in subsets
 (inds_withoutobs <- c(which(sapply(spe_train, sum) == 0), which(sapply(spe_test, sum) == 0)))
-spe_train <- spe_train[, -inds_withoutobs]
-spe_test <- spe_test[, -inds_withoutobs]
+if (length(inds_withoutobs > 0)) {
+  spe_train <- spe_train[, -inds_withoutobs]
+  spe_test <- spe_test[, -inds_withoutobs]
+}
 
 #### 1. Party ####
 
@@ -97,7 +108,7 @@ rf_train <- function(sp, vars, ...) {
 }
 
 system.time(
-  rf_models <- lapply(spe_train, function(x) rf_train(x, vars_train))
+  rf_models <- mclapply(spe_train, function(x) rf_train(x, vars_train), mc.cores = 12)
   )
 
 rf_res <- data.frame(species = colnames(spe_train),
