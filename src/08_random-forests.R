@@ -1,4 +1,5 @@
 library(party)
+library(caret)
 library(randomForest)
 library(parallel)
 
@@ -102,7 +103,7 @@ rf_train <- function(sp, vars, ...) {
   sp_train <- as.factor(sp)
   rf <- randomForest(sp_train ~ .,
                      data = vars,
-                     importance = TRUE, 
+                     importance = TRUE,
                      ...)
   return(rf)
 }
@@ -128,7 +129,7 @@ rf_test <- function(sp_train, sp_test, vars, ...) {
   sp_train <- as.factor(sp)
   rf <- randomForest(sp_train ~ .,
                      data = vars,
-                     importance = TRUE, 
+                     importance = TRUE,
                      ...)
   return(rf)
 }
