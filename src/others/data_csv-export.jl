@@ -85,3 +85,28 @@ speqc_obs = speqc[:, cols_obs]
 CSV.write("data/proc/distributions_spe_qc.csv", speqc_obs, delim="\t")
 CSV.write("data/proc/distributions_env_qc.csv", envqc, delim="\t")
 CSV.write("data/proc/distributions_spa_qc.csv", spaqc, delim="\t")
+
+#### Export full range environmental data ####
+
+# Get environment data for sampled sites
+vars_env_full = map(x -> vec(x.grid), env_vars)
+# Create env matrix
+env_full = hcat(vars_env_full...)
+
+# Get sites latitudes
+lats_full = repeat(collect(latitudes(env_vars[1])), outer=size(env_vars[1].grid, 2))
+# Get sites longitudes
+lons_full = repeat(collect(longitudes(env_vars[1])), inner=size(env_vars[1].grid, 1))
+# Create spa matrix
+spa_full = hcat(lats_full, lons_full)
+
+## Convert to dataframes
+# Create environmental dataframe
+envdf_full = DataFrame(env_full)
+rename!(envdf_full, vcat(Symbol.("wc", collect(1:size(wc_vars,1 ))), Symbol.("lc", collect(1:size(lc_vars, 1)))))
+# Create species dataframe
+spadf_full = DataFrame(lat = lats_full, lon = lons_full)
+
+## Export dataframes
+CSV.write("data/proc/distributions_env_full.csv", envdf_full, delim="\t")
+CSV.write("data/proc/distributions_spa_full.csv", spadf_full, delim="\t")
