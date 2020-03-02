@@ -11,102 +11,86 @@ using Distributed
 # Define coordinates range
 lon_range = (-145.0, -50.0)
 lat_range = (20.0, 75.0)
+# Define coordinates range for Quebec (for smaller scale analysis)
+qc_lon_range = (-80.0, -55.0)
+qc_lat_range = (45.0, 63.0)
 
 ## Get environmental data data
 # WorldClim data
-@time wc_vars = pmap(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
+@time wc_vars = map(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
 # Landcover data
 @time lc_vars = map(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10);
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
 
-# Get presence-absence data for sampled sites, spe matrix
-spe = Yobs
-
 # Get environment data for sampled sites
-vars_env = map(x -> vec(x.grid[inds_obs]), env_vars)
+env_vars_vec = map(x -> vec(x.grid), env_vars)
 # Create env matrix
-env = hcat(vars_env...)
+env_mat = hcat(env_vars_vec...)
 
 # Get sites latitudes
-lats = repeat(collect(latitudes(env_vars[1])), outer=size(env_vars[1].grid, 2))[inds_obs]
+lats = repeat(collect(latitudes(wc_vars[1])), outer=size(wc_vars[1].grid, 2))
 # Get sites longitudes
-lons = repeat(collect(longitudes(env_vars[1])), inner=size(env_vars[1].grid, 1))[inds_obs]
+lons = repeat(collect(longitudes(wc_vars[1])), inner=size(wc_vars[1].grid, 1))
 # Create spa matrix
-spa = hcat(lats, lons)
+spa_mat = hcat(lats, lons)
 
 ## Convert to dataframes
 # Create species dataframe
-spedf = DataFrame(spe)
-rename!(spedf, Symbol.("sp", collect(1:size(spe,2))))
+spe_full = DataFrame(Y)
+rename!(spe_full, Symbol.("sp", 1:ncol(spe_full)))
 # Create environmental dataframe
-envdf = DataFrame(env)
-rename!(envdf, vcat(Symbol.("wc", collect(1:size(wc_vars,1 ))), Symbol.("lc", collect(1:size(lc_vars, 1)))))
+env_full = DataFrame(env_mat)
+rename!(env_full, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
 # Create species dataframe
-spadf = DataFrame(lat = lats, lon = lons)
+spa_full = DataFrame(lat = lats, lon = lons)
 
 ## Export dataframes
-CSV.write("data/proc/distributions_spe.csv", spedf, delim="\t")
-CSV.write("data/proc/distributions_env.csv", envdf, delim="\t")
-CSV.write("data/proc/distributions_spa.csv", spadf, delim="\t")
+# CSV.write("data/proc/distributions_spe_full.csv", spe_full, delim="\t") # not needed
+CSV.write("data/proc/distributions_env_full.csv", env_full, delim="\t")
+CSV.write("data/proc/distributions_spa_full.csv", spa_full, delim="\t")
 
 # Test load
-testdf = CSV.read("data/proc/distributions_spe.csv", header=true, delim="\t")
+testdf = CSV.read("data/proc/distributions_spa_full.csv", header=true, delim="\t")
 
-##### Restrict data to Quebec
+## Filter to observed sites ##
 
-## Preliminary verifications
-# Any sites without observations
-filter(x -> all(Array(x) .== 0), eachrow(spedf))
-# Any species without observations
-filter(x -> all(Array(x) .== 0), eachrow(spedf))
+# Filter dataframes to observed sites only
+spe_obs = spe_full[inds_obs,:]
+env_obs = env_full[inds_obs,:]
+spa_obs = spa_full[inds_obs,:]
 
-# Any sites without envdf data
-filter(x -> all(isnan.(Array(x))), eachrow(envdf))
-# Any sites without landcover data
-filter(x -> all(isnan.(Array(x))), eachrow(envdf[:,20:end]))
+# Export observed dataframes
+CSV.write("data/proc/distributions_spe.csv", spe_obs, delim="\t")
+CSV.write("data/proc/distributions_env.csv", env_obs, delim="\t")
+CSV.write("data/proc/distributions_spa.csv", spa_obs, delim="\t")
+
+#### Restrict data to Quebec ####
 
 ## Limit observation range
-# Coordinates range
-qc_lon_range = (-80.0, -55.0)
-qc_lat_range = (45.0, 63.0)
 # Get indexes
 inds_qc = findall(x -> (qc_lon_range[1] < x.lon < qc_lon_range[2]) &&
-                       (qc_lat_range[1] < x.lat < qc_lat_range[2]), eachrow(spadf))
+                       (qc_lat_range[1] < x.lat < qc_lat_range[2]), eachrow(spa_full))
+inds_qcobs = intersect(inds_obs, inds_qc)
+
 # Filter datasets
-speqc = spedf[inds_qc,:]
-envqc = envdf[inds_qc,:]
-spaqc = spadf[inds_qc,:]
+speqc_full = spe_full[inds_qc,:]
+envqc_full = env_full[inds_qc,:]
+spaqc_full = spa_full[inds_qc,:]
+speqc_obs = spe_full[inds_qcobs,:]
+envqc_obs = env_full[inds_qcobs,:]
+spaqc_obs = spa_full[inds_qcobs,:]
+
+## Preliminary verifications
 # Remove species without observations
-cols_obs = findall(x -> sum(x) > 0, eachcol(speqc))
-speqc_obs = speqc[:, cols_obs]
+cols_obs = findall(x -> sum(x) > 0, eachcol(speqc_obs))
+speqc_full = speqc_full[:, cols_obs]
+speqc_obs = speqc_obs[:, cols_obs]
 
 ## Export QC data
+# CSV.write("data/proc/distributions_spe_qc_full.csv", speqc_full, delim="\t") # not needed
+CSV.write("data/proc/distributions_env_qc_full.csv", envqc_full, delim="\t")
+CSV.write("data/proc/distributions_spa_qc_full.csv", spaqc_full, delim="\t")
 CSV.write("data/proc/distributions_spe_qc.csv", speqc_obs, delim="\t")
-CSV.write("data/proc/distributions_env_qc.csv", envqc, delim="\t")
-CSV.write("data/proc/distributions_spa_qc.csv", spaqc, delim="\t")
-
-#### Export full range environmental data ####
-
-# Get environment data for sampled sites
-vars_env_full = map(x -> vec(x.grid), env_vars)
-# Create env matrix
-env_full = hcat(vars_env_full...)
-
-# Get sites latitudes
-lats_full = repeat(collect(latitudes(env_vars[1])), outer=size(env_vars[1].grid, 2))
-# Get sites longitudes
-lons_full = repeat(collect(longitudes(env_vars[1])), inner=size(env_vars[1].grid, 1))
-# Create spa matrix
-spa_full = hcat(lats_full, lons_full)
-
-## Convert to dataframes
-# Create environmental dataframe
-envdf_full = DataFrame(env_full)
-rename!(envdf_full, vcat(Symbol.("wc", collect(1:size(wc_vars,1 ))), Symbol.("lc", collect(1:size(lc_vars, 1)))))
-# Create species dataframe
-spadf_full = DataFrame(lat = lats_full, lon = lons_full)
-
-## Export dataframes
-CSV.write("data/proc/distributions_env_full.csv", envdf_full, delim="\t")
-CSV.write("data/proc/distributions_spa_full.csv", spadf_full, delim="\t")
+CSV.write("data/proc/distributions_env_qc.csv", envqc_obs, delim="\t")
+CSV.write("data/proc/distributions_spa_qc.csv", spaqc_obs, delim="\t")
