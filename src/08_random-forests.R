@@ -2,6 +2,7 @@ library(party)
 library(caret)
 library(randomForest)
 library(parallel)
+library(ranger)
 
 #### 0. Load data ####
 # Load QC data
@@ -60,9 +61,11 @@ set.seed(42)
 sp <- "sp1"
 sp_train <- as.factor(spe_train[,sp])
 sp_test <- as.factor(spe_test[,sp])
-model1 <- randomForest(sp_train ~ .,
-                       data = vars_train,
-                       importance = TRUE)
+system.time(
+  model1 <- randomForest(sp_train ~ .,
+                         data = vars_train,
+                         importance = TRUE)
+)
 model1
 # Predict test set
 pred_test <- predict(model1, vars_test, type = "class")
@@ -139,3 +142,51 @@ rf_tests
 
 rf_res$test_error_rate <- mapply(function(x,y) 1 - confusionMatrix(as.factor(x), y)$overall["Accuracy"], spe_test, rf_tests)
 barplot(rf_res$test_error_rate, names.arg = rf_res$species)
+
+#### 3. Ranger ####
+# Time models
+system.time(rf_model <- randomForest(sp_train ~ ., data = vars_train, importance = TRUE))
+system.time(ranger_model <- ranger(sp_train ~ ., data = vars_train, importance = "impurity", seed = 42))
+
+## Wrap as function
+ranger_train <- function(sp, vars, ...) {
+  sp_train <- as.factor(sp)
+  rf <- ranger(sp_train ~ .,
+               data = vars,
+               importance = "impurity",
+               seed = 42,
+               ...)
+  return(rf)
+}
+
+# Multi-species calls
+system.time(
+  rf_models <- lapply(spe_train[,1:10], function(x) rf_train(x, vars_train))
+)
+system.time(
+  ranger_models <- lapply(spe_train[,], function(x) ranger_train(x, vars_train))
+)
+
+
+# Parallized calls
+system.time(
+  rf_models <- mclapply(spe_train[,], function(x) rf_train(x, vars_train), mc.cores = 12)
+)
+system.time(
+  ranger_models <- mclapply(spe_train[,], function(x) ranger_train(x, vars_train), mc.cores = 12)
+)
+
+rf_res <- data.frame(species = colnames(spe_train),
+                     OOB = sapply(ranger_models, function(x) x$prediction.error),
+                     error_rate_0 = sapply(ranger_models, function(x) x$confusion.matrix[3]/sum(x$confusion.matrix[c(1,3)])),
+                     error_rate_1 = sapply(ranger_models, function(x) x$confusion.matrix[2]/sum(x$confusion.matrix[c(2,4)]))
+)
+rf_res
+
+barplot(rf_res$OOB, names.arg = rf_res$species)
+hist(rf_res$OOB, breaks=20)
+boxplot(rf_res$OOB)
+
+barplot(rf_res$error_rate_0, names.arg = rf_res$species)
+
+barplot(rf_res$error_rate_1, names.arg = rf_res$species)
