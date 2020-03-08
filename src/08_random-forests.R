@@ -3,6 +3,7 @@ library(caret)
 library(randomForest)
 library(parallel)
 library(ranger)
+library(pbapply)
 
 #### 0. Load data ####
 # Load QC data
@@ -164,7 +165,7 @@ system.time(
   rf_models <- lapply(spe_train[,1:10], function(x) rf_train(x, vars_train))
 )
 system.time(
-  ranger_models <- lapply(spe_train[,], function(x) ranger_train(x, vars_train))
+  ranger_models <- pblapply(spe_train[,], function(x) ranger_train(x, vars_train))
 )
 
 
