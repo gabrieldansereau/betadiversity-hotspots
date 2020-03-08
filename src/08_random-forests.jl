@@ -12,7 +12,8 @@ using RCall
 @rput spe spa env
 begin
     R"""
-    library(randomForest)
+    library(ranger)
+    library(pbapply)
 
     ## Predict distributions for full range
     env_full <- read.csv("data/proc/distributions_env_full.csv", header = TRUE, sep = "\t")
@@ -24,7 +25,7 @@ begin
     load("data/proc/rf_models.RData")
 
     # Make predictions
-    system.time(rf_pred <- sapply(rf_models, function(x) predict(x, vars_full, type = "class")))
+    system.time(rf_pred <- pbsapply(ranger_models, function(x) predict(x, vars_full)))
     """
 end
 @rget rf_pred
