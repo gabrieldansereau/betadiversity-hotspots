@@ -190,3 +190,10 @@ boxplot(rf_res$OOB)
 barplot(rf_res$error_rate_0, names.arg = rf_res$species)
 
 barplot(rf_res$error_rate_1, names.arg = rf_res$species)
+## Export model
+save(ranger_models, file = "data/proc/rf_models.RData")
+
+## Test ranger predictions
+system.time(ranger_tests <- lapply(ranger_models, function(x) predict(x, vars_test, type = "class")))
+rf_tests
+
