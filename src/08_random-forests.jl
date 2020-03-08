@@ -3,13 +3,15 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Load data
+#=
 spe = CSV.read("data/proc/distributions_spe.csv", header=true, delim="\t")
 spa = CSV.read("data/proc/distributions_spa.csv", header=true, delim="\t")
 env = CSV.read("data/proc/distributions_env.csv", header=true, delim="\t")
+=#
 
 ## Perform RandomForests
 using RCall
-@rput spe spa env
+# @rput spe spa env
 begin
     R"""
     library(ranger)
@@ -21,18 +23,28 @@ begin
     vars_full <- cbind(env_full, spa_full)
     head(vars_full)
 
+    # Remove sites with NA values
+    (inds_withNAs <- unique(unlist(sapply(env_full, function(x) which(is.na(x))))))
+    vars_nona <- vars_full[-inds_withNAs,]
+
     # Load model
     load("data/proc/rf_models.RData")
 
     # Make predictions
-    system.time(rf_pred <- pbsapply(ranger_models, function(x) predict(x, vars_full)))
+    system.time(rf_pred <- pblapply(ranger_models, function(x) predict(x, vars_nona)))
+
+    # Extract predictions
+    predictions <- sapply(rf_pred, function(x) as.numeric(levels(x$predictions))[x$predictions])
+
+    # Add sites with NAs
+    predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = length(ranger_models))
+    colnames(predictions_full) <- colnames(predictions)
+    predictions_full[-inds_withNAs,] <- predictions
     """
 end
-@rget rf_pred
+@rget predictions_full
 
-Yrf = replace(rf_pred, missing => NaN,
-                           "0" => 0,
-                           "1" => 1)
+Yrf = replace(predictions_full, missing => NaN)
 Yrf = Array{Float64}(Yrf)
 
 ## Load distributions for all species
