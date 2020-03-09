@@ -57,7 +57,7 @@ sdm = (distributions = distributions,
        spenames = spenames,
        speindex = speindex)
 
-rf_grids = [reshape(rf_pred[:,i], size(sdm.distributions[1])) for i in 1:size(rf_pred,2)]
+rf_grids = [reshape(Yrf[:,i], size(sdm.distributions[1])) for i in 1:size(Yrf,2)]
 rf_distributions = SimpleSDMResponse.(rf_grids, sdm.distributions[1].left, sdm.distributions[1].right,
                                          sdm.distributions[1].bottom, sdm.distributions[1].top)
 
