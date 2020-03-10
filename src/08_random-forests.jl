@@ -61,9 +61,9 @@ rf_grids = [reshape(Yrf[:,i], size(sdm.distributions[1])) for i in 1:size(Yrf,2)
 rf_distributions = SimpleSDMResponse.(rf_grids, sdm.distributions[1].left, sdm.distributions[1].right,
                                          sdm.distributions[1].bottom, sdm.distributions[1].top)
 
-plotSDM(rf_distributions[24], c=:BuPu)
-plotSDM(raw.distributions[24], c=:BuPu)
-plotSDM(sdm.distributions[24], c=:BuPu)
+plotSDM(rf_distributions[1], c=:BuPu)
+plotSDM(raw.distributions[1], c=:BuPu)
+plotSDM(sdm.distributions[1], c=:BuPu)
 
 #### Richness ####
 
@@ -162,7 +162,7 @@ sdm = (distributions = distributions,
 
 dist_rf = plotSDM(rf.distributions[1], c=:BuPu)
 dist_raw = plotSDM(raw.distributions[1], c=:BuPu)
-dist_sdm = plotSDM(rf.distributions[1], c=:BuPu)
+dist_sdm = plotSDM(sdm.distributions[1], c=:BuPu)
 
 rich_rf = plotSDM(rf.richness, c=:viridis)
 rich_raw = plotSDM(raw.richness, c=:viridis)
