@@ -24,8 +24,9 @@ begin
     head(vars_full)
 
     # Remove sites with NA values
-    (inds_withNAs <- unique(unlist(sapply(env_full, function(x) which(is.na(x))))))
-    vars_nona <- vars_full[-inds_withNAs,]
+    inds_na <- sapply(env_full, function(x) which(is.na(x)))
+    (inds_na <- sort(unique(unlist(inds_na))))
+    vars_nona <- vars_full[-inds_na,]
 
     # Load model
     load("data/proc/rf_models.RData")
@@ -39,31 +40,29 @@ begin
     # Add sites with NAs
     predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = length(ranger_models))
     colnames(predictions_full) <- colnames(predictions)
-    predictions_full[-inds_withNAs,] <- predictions
+    predictions_full[-inds_na,] <- predictions
     """
 end
-@rget predictions_full
+@rget predictions predictions_full inds_na
 
+# Create Y matrices
 Yrf = replace(predictions_full, missing => NaN)
 Yrf = Array{Float64}(Yrf)
+Yobs = predictions
+inds_notobs = inds_na
+inds_obs = collect(1:size(Yrf,1))[Not(inds_notobs)]
 
-## Load distributions for all species
-@load "data/jld2/raw-distributions.jld2" distributions spenames speindex
-raw = (distributions = distributions,
-       spenames = spenames,
-       speindex = speindex)
-@load "data/jld2/sdm-distributions.jld2" distributions spenames speindex
-sdm = (distributions = distributions,
-       spenames = spenames,
-       speindex = speindex)
+# Load raw distributions (for grid size)
+@load "data/jld2/raw-distributions.jld2" distributions
 
-rf_grids = [reshape(Yrf[:,i], size(sdm.distributions[1])) for i in 1:size(Yrf,2)]
-rf_distributions = SimpleSDMResponse.(rf_grids, sdm.distributions[1].left, sdm.distributions[1].right,
-                                         sdm.distributions[1].bottom, sdm.distributions[1].top)
+# Create RF distribution layers
+Ydistrib = replace(Yrf, 0.0 => NaN)
+rf_grids = [reshape(Ydistrib[:,i], size(distributions[1])) for i in 1:size(Ydistrib, 2)]
+# map(x -> reshape(Ydistrib[:,x], size(distributions[1]), 1:size(Ydistrib, 2)))
+rf_distributions = SimpleSDMResponse.(rf_grids, distributions[1].left, distributions[1].right,
+                                         distributions[1].bottom, distributions[1].top)
 
 plotSDM(rf_distributions[1], c=:BuPu)
-plotSDM(raw.distributions[1], c=:BuPu)
-plotSDM(sdm.distributions[1], c=:BuPu)
 
 #### Richness ####
 
