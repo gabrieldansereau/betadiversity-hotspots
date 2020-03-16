@@ -34,30 +34,28 @@ sums = reshape(sums, size(distributions[1]))
 richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 
 ## Plot results
-richness_plot = plotSDM(richness, c=:viridis)
-heatmap!(richness_plot,
-          title = "Richness ($outcome distributions)",
-          clim=(0.0, 60.0),
-          colorbar_title = "Number of species per site",
-          dpi=300)
-richness_qplot = plotSDM(quantiles(richness), c=:viridis)
-heatmap!(richness_qplot,
-          title = "Richness quantiles ($outcome distributions)",
-          colorbar_title = "Number of species per site (quantiles)",
-          dpi=300)
+richness_plot = plotSDM(richness, c=:viridis,
+                        title = "Richness ($outcome distributions)",
+                        clim=(0.0, 60.0),
+                        colorbar_title = "Number of species per site",
+                        dpi=300)
+richness_qplot = plotSDM(quantiles(richness), c=:viridis,
+                         title = "Richness quantiles ($outcome distributions)",
+                         colorbar_title = "Number of species per site (quantiles)",
+                         dpi=300)
 
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) richness)"
-    savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.pdf")
+    savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.png")
 else
     @info "Figures not saved ($(outcome) richness)"
 end
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) richness)"
-    savefig(richness_qplot, "fig/quantiles/03_$(outcome)_richness_quantiles.pdf")
+    savefig(richness_qplot, "fig/quantiles/03_$(outcome)_richness_quantiles.png")
 else
     @info "Figures not saved ($(outcome) richness)"
 end

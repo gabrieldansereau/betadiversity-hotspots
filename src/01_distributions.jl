@@ -86,16 +86,16 @@ sort(pres_counts)
 ## Plot result
 # Species 1
 sp1 = "Setophaga_townsendi"
-map_sp1 = plotSDM(distributions[speindex[sp1]], c=:BuPu)
-heatmap!(map_sp1, title = "$(sp1) distribution ($(outcome))",
-         colorbar=:none, dpi=300)
+map_sp1 = plotSDM(distributions[speindex[sp1]], c=:BuPu,
+                  title = "$(sp1) distribution ($(outcome))",
+                  colorbar=:none, dpi=300)
 scatter!(map_sp1, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
                         legend=:bottomright, legendfontsize=5)
 # Species 2
 sp2 = "Setophaga_petechia"
-map_sp2 = plotSDM(distributions[speindex[sp2]], c=:BuPu)
-heatmap!(map_sp2, title = "$(sp2) distribution ($(outcome))",
-         colorbar=:none, dpi=300)
+map_sp2 = plotSDM(distributions[speindex[sp2]], c=:BuPu,
+                  map_sp2, title = "$(sp2) distribution ($(outcome))",
+                  colorbar=:none, dpi=300)
 scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
                         legend=:bottomright, legendfontsize=5)
 
@@ -103,8 +103,8 @@ scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, m
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) distributions)"
-    savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).pdf")
-    savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).pdf")
+    savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).png")
+    savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).png")
 else
     @info "Figures not saved ($(outcome) distributions)"
 end

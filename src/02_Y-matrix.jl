@@ -72,8 +72,9 @@ rowsum = sum.(eachrow(Yobs))
 colsum = sum.(eachcol(Yobs))
 sortedrows = sortperm(rowsum)
 sortedcols = sortperm(colsum, rev=true)
-heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols], title = "$(titlecase(outcome)) matrix Y (sorted by row and column sums)",
-                   ylabel = "Site number", xlabel = "Species number")
+heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols],
+                          title = "$(titlecase(outcome)) matrix Y (sorted by row and column sums)",
+                          ylabel = "Site number", xlabel = "Species number", dpi=300)
 
 ## Export results
 # save_figures = true # should figures be overwritten (optional)

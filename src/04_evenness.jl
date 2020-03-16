@@ -62,19 +62,19 @@ diversity = SimpleSDMResponse(output, distributions[1].left, distributions[1].ri
 diversity2 = SimpleSDMResponse(output2, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 
 ## Plot result
-diversity_plot = plotSDM(diversity, c=:BuPu)
-heatmap!(diversity_plot, title = "Community evenness ($(outcome) distributions)",
-         colorbar_title = "Pielou's evenness index (site richness)")
-diversity_plot2 = plotSDM(diversity2, c=:BuPu)
-heatmap!(diversity_plot2, title = "Community evenness ($(outcome) distributions)",
-         colorbar_title = "Pielou's evenness index (total richness)")
+diversity_plot = plotSDM(diversity, c=:BuPu,
+                         title = "Community evenness ($(outcome) distributions)",
+                         colorbar_title = "Pielou's evenness index (site richness)")
+diversity_plot2 = plotSDM(diversity2, c=:BuPu,
+                          title = "Community evenness ($(outcome) distributions)",
+                          colorbar_title = "Pielou's evenness index (total richness)")
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) evenness)"
-    savefig(diversity_plot, "fig/$(outcome)/04_$(outcome)_diversity-pielou.pdf")
-    savefig(diversity_plot2, "fig/$(outcome)/04_$(outcome)_diversity-pielou2.pdf")
+    savefig(diversity_plot, "fig/$(outcome)/04_$(outcome)_diversity-pielou.png")
+    savefig(diversity_plot2, "fig/$(outcome)/04_$(outcome)_diversity-pielou2.png")
 else
     @info "Figures not saved ($(outcome) evenness)"
 end

@@ -48,19 +48,17 @@ filter(x -> x > 120, nul_layer_nonan)
 
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)
-wc_plot = plotSDM(wc_vars[1], c=:auto)
-heatmap!(wc_plot, clim=extrema(filter(!isnan,wc_vars[1].grid)),
-         colorbar_title="Annual Mean Temperature (°C)", dpi=300)
+wc_plot = plotSDM(wc_vars[1], clim=extrema(filter(!isnan,wc_vars[1].grid)),
+                  colorbar_title="Annual Mean Temperature (°C)", dpi=300)
 # Plot lcvars2 (urban)
-lc_plot = plotSDM(lc_vars[2], c=:auto)
-heatmap!(lc_plot, colorbar_title="Crops land cover (%)", dpi=300)
+lc_plot = plotSDM(lc_vars[2], colorbar_title="Crops land cover (%)", dpi=300)
 
 ## Export figures
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved (environmental variables)"
-    savefig(wc_plot, "fig/00b_wc1-temperature.pdf")
-    savefig(lc_plot, "fig/00b_lc2-crops.pdf")
+    savefig(wc_plot, "fig/00b_wc1-temperature.png")
+    savefig(lc_plot, "fig/00b_lc2-crops.png")
 else
     @info "Figures not saved (environmental variables)"
 end

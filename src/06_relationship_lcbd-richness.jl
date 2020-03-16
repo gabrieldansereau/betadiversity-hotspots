@@ -54,7 +54,8 @@ relation_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[1].grid),
          xlims = (0.0, 1.0), ylims = (0.0, 1.0),
          yticks = 0.0:0.20:1.0,
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none)
+         grid = :none,
+         dpi = 300)
 scatter!(relation_plot, vec(rel_richness[2]), vec(sdm.LCBD[1].grid),
          markersize = 2, color=:orange, msw = 0, label = "SDM predictions")
 relationtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
@@ -66,7 +67,8 @@ relationtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          xlims = (0.0, 1.0), ylims = (0.0, 1.0),
          yticks = 0.0:0.20:1.0,
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relationtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[1].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
@@ -76,7 +78,8 @@ relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          label = "Raw occurrence data",
          legend = :topright,
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[2].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 
@@ -101,7 +104,8 @@ relation_qplot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LCBD[1
          xlims = (0.0, 1.0), ylims = (0.0, 1.0),
          yticks = 0.0:0.20:1.0,
          xlabel = "Species richness (quantile)", ylabel = "LCBD quantile",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relation_qplot, quantiles(vec(rel_richness[2])), quantiles(vec(sdm.LCBD[1].grid)),
          markersize = 2, color=:orange, msw = 0, label = "SDM predictions")
 relationtr_qplot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LCBD[2].grid)),
@@ -113,7 +117,8 @@ relationtr_qplot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LCBD
          xlims = (0.0, 1.0), ylims = (0.0, 1.0),
          yticks = 0.0:0.20:1.0,
          xlabel = "Species richness (quantile)", ylabel = "LCBD quantile (raw data hellinger transformed)",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relationtr_qplot, qfinder(vec(rel_richness[2])), quantiles(vec(sdm.LCBD[1].grid)),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 relationdbtr_qplot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LCBD[2].grid)),
@@ -123,7 +128,8 @@ relationdbtr_qplot = scatter(qfinder(vec(rel_richness[1])), quantiles(vec(raw.LC
          label = "Raw occurrence data",
          legend = :topright,
          xlabel = "Species richness (quantile)", ylabel = "LCBD quantile (hellinger transformed)",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relationdbtr_qplot, qfinder(vec(rel_richness[2])), quantiles(vec(sdm.LCBD[2].grid)),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 relationdbtr_nbsp_plot = scatter(vec(raw.richness.grid), quantiles(vec(raw.LCBD[2].grid)),
@@ -133,7 +139,8 @@ relationdbtr_nbsp_plot = scatter(vec(raw.richness.grid), quantiles(vec(raw.LCBD[
          label = "Raw occurrence data",
          legend = :topright,
          xlabel = "Species richness (total species)", ylabel = "LCBD quantile (hellinger transformed)",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relationdbtr_nbsp_plot, vec(sdm.richness.grid), quantiles(vec(sdm.LCBD[2].grid)),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 

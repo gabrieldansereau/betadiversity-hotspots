@@ -43,38 +43,39 @@ LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
 # Fill in grids
 [LCBDgrids[i][inds_obs] = LCBDsets[i] for i in 1:length(LCBDgrids)]
 # Create SimpleSDMLayer with LCBD values
-LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
+LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right,
+                          distributions[1].bottom, distributions[1].top)
 
 ## Plot results
 # Relative values
-lcbd_plot = plotSDM(LCBD[1], c=:viridis)
-heatmap!(lcbd_plot, title = "LCBD values per site ($(outcome) distributions)",
-         colorbar_title = "LCBD value (relative to maximum)", dpi=300)
-lcbdtr_plot = plotSDM(LCBD[2], c=:viridis) # hellinger transformed
-heatmap!(lcbdtr_plot, title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
-         colorbar_title = "LCBD value (relative to maximum)", dpi=300)
+lcbd_plot = plotSDM(LCBD[1], c=:viridis,
+                    title = "LCBD values per site ($(outcome) distributions)",
+                    colorbar_title = "LCBD value (relative to maximum)", dpi=300)
+lcbdtr_plot = plotSDM(LCBD[2], c=:viridis,
+                      title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
+                      colorbar_title = "LCBD value (relative to maximum)", dpi=300)
 # Quantile scores
-lcbd_qplot = plotSDM(quantiles(LCBD[1]), c=:viridis)
-heatmap!(lcbd_qplot, title = "LCBD quantiles ($(outcome) distributions)",
-         colorbar_title = "LCBD quantile score", dpi=300)
-lcbdtr_qplot = plotSDM(quantiles(LCBD[2]), c=:viridis) # hellinger transformed
-heatmap!(lcbdtr_qplot, title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
-         colorbar_title = "LCBD quantile score", dpi=300)
+lcbd_qplot = plotSDM(quantiles(LCBD[1]), c=:viridis,
+                     title = "LCBD quantiles ($(outcome) distributions)",
+                     colorbar_title = "LCBD quantile score", dpi=300)
+lcbdtr_qplot = plotSDM(quantiles(LCBD[2]), c=:viridis,
+                       title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
+                       colorbar_title = "LCBD quantile score", dpi=300)
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(lcbd_plot, "fig/$(outcome)/05_$(outcome)_lcbd.pdf")
-    savefig(lcbdtr_plot, "fig/$(outcome)/05_$(outcome)_lcbd-transf.pdf")
+    savefig(lcbd_plot, "fig/$(outcome)/05_$(outcome)_lcbd.png")
+    savefig(lcbdtr_plot, "fig/$(outcome)/05_$(outcome)_lcbd-transf.png")
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end
 # Quantile figures
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(lcbd_qplot, "fig/quantiles/05_$(outcome)_lcbd_quantiles.pdf")
-    savefig(lcbdtr_qplot, "fig/quantiles/05_$(outcome)_lcbd-transf_quantiles.pdf")
+    savefig(lcbd_qplot, "fig/quantiles/05_$(outcome)_lcbd_quantiles.png")
+    savefig(lcbdtr_qplot, "fig/quantiles/05_$(outcome)_lcbd-transf_quantiles.png")
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end

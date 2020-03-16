@@ -41,29 +41,27 @@ endemism = SimpleSDMResponse(endemism_grid, distributions[1].left, distributions
 
 ## Plot results
 # Raw endemism scores
-endemism_plot = plotSDM(endemism, c=:viridis)
-heatmap!(endemism_plot,
-          title = "Endemism ($outcome distributions)",
-          colorbar_title = "Weigthed endemism (area of occurrence)",
-          dpi=300)
+endemism_plot = plotSDM(endemism, c=:viridis,
+                        title = "Endemism ($outcome distributions)",
+                        colorbar_title = "Weigthed endemism (area of occurrence)",
+                        dpi = 300)
 # Quantile endemism scores
-endemism_qplot = plotSDM(quantiles(endemism), c=:viridis)
-heatmap!(endemism_qplot,
-          title = "Endemism quantiles ($outcome distributions)",
-          colorbar_title = "Weighted endemism quantile (area of occurrence)",
-          dpi=300)
+endemism_qplot = plotSDM(quantiles(endemism), c=:viridis,
+                         title = "Endemism quantiles ($outcome distributions)",
+                         colorbar_title = "Weighted endemism quantile (area of occurrence)",
+                         dpi = 300)
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(endemism_plot, "fig/$(outcome)/07_$(outcome)_endemism.pdf")
+    savefig(endemism_plot, "fig/$(outcome)/07_$(outcome)_endemism.png")
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(endemism_qplot, "fig/quantiles/07_$(outcome)_endemism_quantiles.pdf")
+    savefig(endemism_qplot, "fig/quantiles/07_$(outcome)_endemism_quantiles.png")
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end
