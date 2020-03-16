@@ -159,33 +159,33 @@ sdm = (distributions = distributions,
        richness = richness,
        LCBD = LCBD)
 
-dist_rf = plotSDM(rf.distributions[1], c=:BuPu, title = "Distributions - RF")
-dist_raw = plotSDM(raw.distributions[1], c=:BuPu, title = "Distributions - Raw")
-dist_sdm = plotSDM(sdm.distributions[1], c=:BuPu, title = "Distributions - SDM")
+dist_rf = plotSDM(rf.distributions[1], c=:BuPu, title = "Distributions - RF", dpi = 300)
+dist_raw = plotSDM(raw.distributions[1], c=:BuPu, title = "Distributions - Raw", dpi = 300)
+dist_sdm = plotSDM(sdm.distributions[1], c=:BuPu, title = "Distributions - SDM", dpi = 300)
 
-rich_rf = plotSDM(rf.richness, c=:viridis, title = "Richness - RF")
-rich_raw = plotSDM(raw.richness, c=:viridis, title = "Richness - Raw")
-rich_sdm = plotSDM(sdm.richness, c=:viridis, title = "Richness - SDM")
+rich_rf = plotSDM(rf.richness, c=:viridis, title = "Richness - RF", dpi=300)
+rich_raw = plotSDM(raw.richness, c=:viridis, title = "Richness - Raw", dpi = 300)
+rich_sdm = plotSDM(sdm.richness, c=:viridis, title = "Richness - SDM", dpi = 300)
 
-rich_qrf = plotSDM(quantiles(rf.richness), c=:viridis, title = "Richness quantiles - RF")
-rich_qraw = plotSDM(quantiles(raw.richness), c=:viridis, title = "Richness quantiles - Raw")
-rich_qsdm = plotSDM(quantiles(sdm.richness), c=:viridis, title = "Richness quantiles - SDM")
+rich_qrf = plotSDM(quantiles(rf.richness), c=:viridis, title = "Richness quantiles - RF", dpi = 300)
+rich_qraw = plotSDM(quantiles(raw.richness), c=:viridis, title = "Richness quantiles - Raw", dpi = 300)
+rich_qsdm = plotSDM(quantiles(sdm.richness), c=:viridis, title = "Richness quantiles - SDM", dpi = 300)
 
-lcbd_rf = plotSDM(rf.LCBD[1], c=:viridis, title = "LCBD - RF")
-lcbd_raw = plotSDM(raw.LCBD[1], c=:viridis, title = "LCBD - Raw")
-lcbd_sdm = plotSDM(sdm.LCBD[1], c=:viridis, title = "LCBD - SDM")
+lcbd_rf = plotSDM(rf.LCBD[1], c=:viridis, title = "LCBD - RF", dpi = 300)
+lcbd_raw = plotSDM(raw.LCBD[1], c=:viridis, title = "LCBD - Raw", dpi = 300)
+lcbd_sdm = plotSDM(sdm.LCBD[1], c=:viridis, title = "LCBD - SDM", dpi = 300)
 
-lcbdtr_rf = plotSDM(rf.LCBD[2], c=:viridis, title = "LCBD dbtr - RF")
-lcbdtr_raw = plotSDM(raw.LCBD[2], c=:viridis, title = "LCBD dbtr - Raw")
-lcbdtr_sdm = plotSDM(sdm.LCBD[2], c=:viridis, title = "LCBD dbtr - SDM")
+lcbdtr_rf = plotSDM(rf.LCBD[2], c=:viridis, title = "LCBD dbtr - RF", dpi = 300)
+lcbdtr_raw = plotSDM(raw.LCBD[2], c=:viridis, title = "LCBD dbtr - Raw", dpi = 300)
+lcbdtr_sdm = plotSDM(sdm.LCBD[2], c=:viridis, title = "LCBD dbtr - SDM", dpi = 300)
 
-lcbd_qrf = plotSDM(quantiles(rf.LCBD[1]), c=:viridis, title = "LCBD quantiles - RF")
-lcbd_qraw = plotSDM(quantiles(raw.LCBD[1]), c=:viridis, title = "LCBD quantiles - Raw")
-lcbd_qsdm = plotSDM(quantiles(sdm.LCBD[1]), c=:viridis, title = "LCBD quantiles - SDM")
+lcbd_qrf = plotSDM(quantiles(rf.LCBD[1]), c=:viridis, title = "LCBD quantiles - RF", dpi = 300)
+lcbd_qraw = plotSDM(quantiles(raw.LCBD[1]), c=:viridis, title = "LCBD quantiles - Raw", dpi = 300)
+lcbd_qsdm = plotSDM(quantiles(sdm.LCBD[1]), c=:viridis, title = "LCBD quantiles - SDM", dpi = 300)
 
-lcbdtr_qrf = plotSDM(quantiles(rf.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - RF")
-lcbdtr_qraw = plotSDM(quantiles(raw.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - Raw")
-lcbdtr_qsdm = plotSDM(quantiles(sdm.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - SDM")
+lcbdtr_qrf = plotSDM(quantiles(rf.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - RF", dpi = 300)
+lcbdtr_qraw = plotSDM(quantiles(raw.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - Raw", dpi = 300)
+lcbdtr_qsdm = plotSDM(quantiles(sdm.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - SDM", dpi = 300)
 
 dist = plot(dist_rf, dist_raw, dist_sdm)
 rich = plot(rich_rf, rich_raw, rich_sdm)
@@ -216,7 +216,8 @@ relation_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[1].grid),
          xlims = (0.0, 1.0), ylims = (0.0, 1.0),
          yticks = 0.0:0.20:1.0,
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relation_plot, vec(rel_richness[2]), vec(rf.LCBD[1].grid),
          markersize = 2, color=:orange, msw = 0, label = "SDM predictions")
 relationtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
@@ -228,7 +229,8 @@ relationtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          xlims = (0.0, 1.0), ylims = (0.0, 1.0),
          yticks = 0.0:0.20:1.0,
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none)
+         grid=:none,
+         dpi = 300)
 scatter!(relationtr_plot, vec(rel_richness[2]), vec(rf.LCBD[1].grid),
          markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
@@ -240,6 +242,18 @@ relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          xlims = (0.0, 1.0), ylims = (0.0, 1.0),
          yticks = 0.0:0.20:1.0,
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none)
+         grid = :none,
+         dpi = 300)
 scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD[2].grid),
          markersize = 2, c = :orange, msw = 0, label = "SDM predictions")
+
+#### Export figures
+
+savefig(dist_rf, "fig/random-forests/01_rf_sp-Setophaga-coronata.png")
+savefig(rich_rf, "fig/random-forests/03_rf_richness.png")
+savefig(rich_qrf, "fig/random-forests/03_rf_richness_quantiles.png")
+savefig(lcbd_rf, "fig/random-forests/05_rf_lcbd.png")
+savefig(lcbdtr_rf, "fig/random-forests/05_rf_lcbd_transf.png")
+savefig(lcbd_qrf, "fig/random-forests/05_rf_lcbd_quantiles.png")
+savefig(lcbdtr_qrf, "fig/random-forests/05_rf_lcbd_transf_quantiles.png")
+savefig(relationdbtr_plot, "fig/random-forests/06_rf_relationship_dbtransf.png")
