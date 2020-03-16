@@ -8,10 +8,11 @@ using Distributed
 ## Run bash scripts to download & coarsen landcover data from Zenodo (if files missing)
 lc_files = readdir("assets/landcover/")
 # Check if landcover files are missing
-if any(startswith.(lc_files, r"^lc_"))
+if !any(startswith.(lc_files, r"^lc_"))
     # Check if full resolution files are missing
-    if any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
+    if !any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
         # Download full resolution files
+        # BEWARE, can be long to download, 25 GB of data
         run(`bash src/bin/landcover_download.sh`)
     end
     # Coarsen resolution
