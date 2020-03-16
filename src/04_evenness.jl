@@ -64,10 +64,12 @@ diversity2 = SimpleSDMResponse(output2, distributions[1].left, distributions[1].
 ## Plot result
 diversity_plot = plotSDM(diversity, c=:BuPu,
                          title = "Community evenness ($(outcome) distributions)",
-                         colorbar_title = "Pielou's evenness index (site richness)")
+                         colorbar_title = "Pielou's evenness index (site richness)",
+                         dpi = 300)
 diversity_plot2 = plotSDM(diversity2, c=:BuPu,
                           title = "Community evenness ($(outcome) distributions)",
-                          colorbar_title = "Pielou's evenness index (total richness)")
+                          colorbar_title = "Pielou's evenness index (total richness)",
+                          dpi = 300)
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
