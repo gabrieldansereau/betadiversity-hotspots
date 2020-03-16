@@ -1,12 +1,12 @@
 ## Functions to plot SimpleSDMLayer elements more easily
 
 # Plot layer as a heatmap with worldmap background
-function plotSDM(layer::SimpleSDMLayer; c=:auto, scatter::Bool=false, occ=nothing)
+function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
     ## Arguments
     # layer: SimpleSDMLayer to plot
-    # c: colorpalette to use
     # scatter: add observations as points in scatter plot, requires to define occ
     # occ: observations to represent if scatter=true
+    # kw: optional plotting arguments
 
     # Load & clip worldmap background to SimpleSDMLayer (from shp in /assets folder)
     worldmap = clip(worldshape(50), layer)
@@ -29,10 +29,10 @@ function plotSDM(layer::SimpleSDMLayer; c=:auto, scatter::Bool=false, occ=nothin
     heatmap!(
         sdm_plot,
         longitudes(layer), latitudes(layer), # layer range
-        layer.grid, # evenness values
+        layer.grid, # layer values
         aspectratio=92.60/60.75, # aspect ratio
-        c=c, # ~color palette
-        clim=(0.0, maximum(filter(!isnan, layer.grid))) # colorbar limits
+        clim=(0.0, maximum(filter(!isnan, layer.grid))); # colorbar limits
+        kw... # additional keyword arguments
     )
 
     # Redraw polygons' outer lines over heatmap values
