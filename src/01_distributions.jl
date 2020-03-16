@@ -94,7 +94,7 @@ scatter!(map_sp1, [NaN], label="Occurrence", color=:purple, markershape=:rect, m
 # Species 2
 sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM(distributions[speindex[sp2]], c=:BuPu,
-                  map_sp2, title = "$(sp2) distribution ($(outcome))",
+                  title = "$(sp2) distribution ($(outcome))",
                   colorbar=:none, dpi=300)
 scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
                         legend=:bottomright, legendfontsize=5)

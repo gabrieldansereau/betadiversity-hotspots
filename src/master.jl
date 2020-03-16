@@ -3,9 +3,6 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
-# Precompile plot function
-@time plot() # speeds thing up
-
 #### Data preparation
 
 ## 0a. EBD data preparation (if needed)
@@ -44,4 +41,5 @@ outcome = "raw" # desired outcome (required)
 @time include("06_relationship_lcbd-richness.jl")
 
 ## 7. Run endemism analysis
-@time incluce("07_endemism.jl")
+# save_figures = true
+@time include("07_endemism.jl")
