@@ -85,7 +85,7 @@ function auc_plot(model, vld_features, vld_labels)
     presence_proba = apply_forest_proba(model, vld_features, [0,1])[:,2]
     thresholds = collect(0.0:0.01:1.0)
     thrsh_preds = [replace(prob -> prob .>= thrsh ? 1 : 0, presence_proba) for thrsh in thresholds]
-    acc_mes = [accuracy_measures(vld_labels, pred) for pred in thrsh_preds]
+    acc_mes = [accuracy_measures(vld_labels[:,nsp], pred) for pred in thrsh_preds]
     FP_rates = map(x -> x.FP_rate, acc_mes)
     sensitivities = map(x -> x.sensitivity, acc_mes)
     p = plot([0,1], [0,1],
@@ -94,7 +94,37 @@ function auc_plot(model, vld_features, vld_labels)
              xlabel = "False-positive rate (1 - Specificity)",
              ylabel = "True-positive rate (Sensitivity)" ,
              legend = :none, aspect_ratio=1)
-    p = plot!(p, FP_rates, sensitivities)
+    p = scatter!(p, FP_rates, sensitivities)
     return p
 end
-auc_plot(model, vld_features, vld_labels[:, nsp])
+roc_plot =  auc_plot(model, vld_features, vld_labels[:, nsp])
+cumsum(roc_plot)
+areaplot([0.0, 0.5, 0.1])
+
+FPrev, sensrev = FP_rates[end:-1:1], sensitivities[end:-1:1]
+plot(FPrev, sensrev, xlims=(0,1), ylims=(0,1), aspectratio=1)
+
+score = 0.0
+deltas = FPrev[2:end] .- FPrev[1:end-1]
+areas = deltas .* sensrev[2:end]
+sum(areas)
+
+# From https://github.com/marubontan/MLUtils.jl/blob/master/src/utils.jl
+function auc(yTruth::Array{Int}, yScore::Array{Float64})
+	dIndex = findall(1 .== yTruth)
+	dnIndex = findall(0 .== yTruth)
+	score = 0.0
+	for ydn in dnIndex
+		for yd in dIndex
+			if yScore[yd] > yScore[ydn]
+				score += 1
+			elseif yScore[ydn] == yScore[yd]
+				score += 0.5
+			end
+		end
+	end
+	return score / (length(dIndex) * length(dnIndex))
+end
+yTruth = vld_labels[:, nsp]
+yScore = apply_forest_proba(model, vld_features, [0,1])[:,2]
+auc(yTruth, yScore)
