@@ -40,15 +40,20 @@ pred_accuracy(predictions, vld_labels[:, nsp])
 countmap(vld_labels[:, nsp])
 tmp = confusion_matrix(vld_labels[:, nsp], predictions)
 
-function accuracy_measures(obsv, preds)
+function accuracy_measures(obsv::Array{T,1}, preds::Array{T,1}) where {T}
     cm = confusion_matrix(obsv, preds)
     n = sum(cm.matrix)
-    TN, FN, FP, TP = cm.matrix
+	if isone(length(cm.classes))
+		@warn "Only one class in confusion matrix"
+		TN, FN, FP, TP = 0., 0., 0., 1.
+	else
+    	TN, FN, FP, TP = cm.matrix
+	end
     sensitivity = TP/(TP + FN)
     FN_rate = 1 - sensitivity
     specificity = TN/(TN + FP)
     FP_rate = 1 - specificity
-    percent_correct_classification = (TP + TN)/n
+    accuracy = (TP + TN)/n
     positive_predictive_power = TP/(TP + FP)
     odds_ratio = (TP * TN)/(FP * FN)
     kappa = ( (TP+TN) - (((TP+FN)*(TP+FP) + (FP+TN)*(FN+TN))/n)) / (n-(((TP+FN)*(TP+FP) + (FP+TN)*(FN+TN))/n))
@@ -59,7 +64,7 @@ function accuracy_measures(obsv, preds)
                FN_rate = FN_rate,
                specificity = specificity,
                FP_rate = FP_rate,
-               percent_correct_classification = percent_correct_classification,
+               accuracy = accuracy,
                positive_predictive_power = positive_predictive_power,
                odds_ratio = odds_ratio,
                kappa = kappa,
@@ -71,18 +76,18 @@ end
 tmp.cm
 tmp.sensitivity
 tmp.specificity
-tmp.percent_correct_classification
+tmp.accuracy
 tmp.kappa
 tmp
 
 p = plot([0,1], [0,1], xlim=(0,1), ylim=(0,1), aspect_ratio=1)
 p = scatter!(p, [tmp.FP_rate], [tmp.sensitivity])
 
-function auc(model, vld_features, vld_labels)
+function auc(model::Ensemble{S,T}, vld_features::Array{S}, vld_labels::Array{T,1}) where {S,T}
 	presence_proba = apply_forest_proba(model, vld_features, [0,1])[:,2]
 	thresholds = collect(0.0:0.01:1.0)
-	thrsh_preds = [replace(prob -> prob .>= thrsh ? 1 : 0, presence_proba) for thrsh in thresholds]
-	acc_mes = [accuracy_measures(vld_labels[:,nsp], pred) for pred in thrsh_preds]
+	thrsh_preds = [Int64.(replace(prob -> prob .>= thrsh ? 1 : 0, presence_proba)) for thrsh in thresholds]
+	acc_mes = [accuracy_measures(vld_labels, pred) for pred in thrsh_preds]
 	FP_rates = map(x -> x.FP_rate, acc_mes)
 	sensitivities = map(x -> x.sensitivity, acc_mes)
 	score = auc_score(FP_rates, sensitivities)
@@ -115,8 +120,31 @@ test.plot
 # cumsum(roc_plot)
 # areaplot([0.0, 0.5, 0.1])
 
+## Repeat for all species
+@time models = map(x -> build_forest(trn_labels[:,x], trn_features, nsubfeatures, ntrees), 1:size(trn_labels,2));
+@time predictions = map(m -> apply_forest(m, vld_features), models)
+predictions_mat = hcat(predictions...)
+
+@time acc_mes = map(x -> accuracy_measures(predictions_mat[:,x], vld_labels[:,x]), 1:size(predictions_mat,2));
+@time auc_stats = map(x -> auc(models[x], vld_features, vld_labels[:,x]), 1:length(models))
+res = DataFrame(spe = string.("sp", eachindex(acc_mes)),
+				freq_abs = Int.(map(sum, eachcol(spe))),
+				accuracy = map(x -> x.accuracy, acc_mes),
+				sensitivity = map(x -> x.sensitivity, acc_mes),
+				specificity = map(x -> x.specificity, acc_mes),
+				kappa = map(x -> x.kappa, acc_mes),
+				auc = map(x -> x.score, auc_stats),
+				plot = map(x -> x.plot, auc_stats)
+				)
+
+auc_plot(1 .- res.specificity, res.sensitivity, NaN)
+quantile(res.accuracy)
+quantile(filter(!isnan, res.sensitivity))
+quantile(filter(!isnan, res.specificity))
+
 # From https://github.com/marubontan/MLUtils.jl/blob/master/src/utils.jl
-function auc(yTruth::Array{Int}, yScore::Array{Float64})
+#=
+function auc2(yTruth::Array{Int}, yScore::Array{Float64})
 	dIndex = findall(1 .== yTruth)
 	dnIndex = findall(0 .== yTruth)
 	score = 0.0
@@ -133,4 +161,5 @@ function auc(yTruth::Array{Int}, yScore::Array{Float64})
 end
 yTruth = vld_labels[:, nsp]
 yScore = apply_forest_proba(model, vld_features, [0,1])[:,2]
-auc(yTruth, yScore)
+auc2(yTruth, yScore)
+=#
