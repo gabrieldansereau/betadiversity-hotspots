@@ -29,7 +29,7 @@ nfolds = 3
 @time model = build_forest(trn_labels[:, nsp], trn_features, nsubfeatures, ntrees)
 @time accuracy = nfoldCV_forest(trn_labels[:, nsp], trn_features, nfolds, nsubfeatures, ntrees)
 
-predictions = apply_forest(model, vld_features)
+@time predictions = apply_forest(model, vld_features)
 predictions_proba = apply_forest_proba(model, vld_features, [0, 1])
 
 function pred_accuracy(preds, obsv)
@@ -37,7 +37,7 @@ function pred_accuracy(preds, obsv)
 end
 pred_accuracy(predictions, vld_labels[:, nsp])
 
-countmap(obsv)
+countmap(vld_labels[:, nsp])
 tmp = confusion_matrix(vld_labels[:, nsp], predictions)
 
 function accuracy_measures(obsv, preds)
@@ -54,10 +54,7 @@ function accuracy_measures(obsv, preds)
     kappa = ( (TP+TN) - (((TP+FN)*(TP+FP) + (FP+TN)*(FN+TN))/n)) / (n-(((TP+FN)*(TP+FP) + (FP+TN)*(FN+TN))/n))
     TSS = 1 - (sensitivity + specificity)
     acc_mes = (cm = cm.matrix,
-               TN = TN,
-               FN = FN,
-               FP = FP,
-               TP = TP,
+               TN = TN, FN = FN, FP = FP, TP = TP,
                sensitivity = sensitivity,
                FN_rate = FN_rate,
                specificity = specificity,
@@ -81,33 +78,42 @@ tmp
 p = plot([0,1], [0,1], xlim=(0,1), ylim=(0,1), aspect_ratio=1)
 p = scatter!(p, [tmp.FP_rate], [tmp.sensitivity])
 
-function auc_plot(model, vld_features, vld_labels)
-    presence_proba = apply_forest_proba(model, vld_features, [0,1])[:,2]
-    thresholds = collect(0.0:0.01:1.0)
-    thrsh_preds = [replace(prob -> prob .>= thrsh ? 1 : 0, presence_proba) for thrsh in thresholds]
-    acc_mes = [accuracy_measures(vld_labels[:,nsp], pred) for pred in thrsh_preds]
-    FP_rates = map(x -> x.FP_rate, acc_mes)
-    sensitivities = map(x -> x.sensitivity, acc_mes)
-    p = plot([0,1], [0,1],
-             xlim=(0,1), ylim=(0,1),
-             title = "Receiver operating curve",
-             xlabel = "False-positive rate (1 - Specificity)",
-             ylabel = "True-positive rate (Sensitivity)" ,
-             legend = :none, aspect_ratio=1)
-    p = scatter!(p, FP_rates, sensitivities)
-    return p
+function auc(model, vld_features, vld_labels)
+	presence_proba = apply_forest_proba(model, vld_features, [0,1])[:,2]
+	thresholds = collect(0.0:0.01:1.0)
+	thrsh_preds = [replace(prob -> prob .>= thrsh ? 1 : 0, presence_proba) for thrsh in thresholds]
+	acc_mes = [accuracy_measures(vld_labels[:,nsp], pred) for pred in thrsh_preds]
+	FP_rates = map(x -> x.FP_rate, acc_mes)
+	sensitivities = map(x -> x.sensitivity, acc_mes)
+	score = auc_score(FP_rates, sensitivities)
+ 	p = auc_plot(FP_rates, sensitivities, score)
+	return (score = score, plot = p)
 end
-roc_plot =  auc_plot(model, vld_features, vld_labels[:, nsp])
-cumsum(roc_plot)
-areaplot([0.0, 0.5, 0.1])
+function auc_score(FP_rates, sensitivities)
+	FPrev, sensrev = FP_rates[end:-1:1], sensitivities[end:-1:1]
+	deltas = FPrev[2:end] .- FPrev[1:end-1]
+	areas = deltas .* sensrev[2:end]
+	score = sum(areas)
+	return score
+end
+function auc_plot(FP_rates, sensitivities, score)
+	p = plot([0,1], [0,1],
+			 xlim=(0,1), ylim=(0,1),
+			 title = "Receiver operating curve",
+			 xlabel = "False-positive rate (1 - Specificity)",
+			 ylabel = "True-positive rate (Sensitivity)" ,
+			 legend = :none, aspect_ratio=1)
+	scatter!(p, FP_rates, sensitivities,
+			 ann = (0.8, 0.1, "AUC = $(round(score, digits = 3))"))
+	return p
+end
 
-FPrev, sensrev = FP_rates[end:-1:1], sensitivities[end:-1:1]
-plot(FPrev, sensrev, xlims=(0,1), ylims=(0,1), aspectratio=1)
+@time test = auc(model, vld_features, vld_labels[:, nsp])
+test.score
+test.plot
 
-score = 0.0
-deltas = FPrev[2:end] .- FPrev[1:end-1]
-areas = deltas .* sensrev[2:end]
-sum(areas)
+# cumsum(roc_plot)
+# areaplot([0.0, 0.5, 0.1])
 
 # From https://github.com/marubontan/MLUtils.jl/blob/master/src/utils.jl
 function auc(yTruth::Array{Int}, yScore::Array{Float64})
