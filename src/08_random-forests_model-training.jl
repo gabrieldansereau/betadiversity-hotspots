@@ -8,52 +8,6 @@ spa = CSV.read("data/proc/distributions_spa_qc.csv", header=true, delim="\t")
 env = CSV.read("data/proc/distributions_env_qc.csv", header=true, delim="\t")
 var = hcat(env, spa)
 
-function get_features_and_labels(features, labels)
-end
-features = spe
-labels = var
-
-idx = collect(1:nrow(var))
-@time begin
-	idx0 = map(x -> findall(iszero, x), eachcol(features))
-	idx1 = map(x -> findall(isone, x), eachcol(features))
-
-	Random.seed!(42)
-	shuffle!.(idx0)
-	shuffle!.(idx1)
-
-	n_training0 = [convert(Int64, round(0.7*size(i, 1); digits=0)) for i in idx0]
-	n_training1 = [convert(Int64, round(0.7*size(i, 1); digits=0)) for i in idx1]
-	trn_idx0 = [i[1:n_training0] for i in idx0]
-	trn_idx1 = [i[1:n_training1] for i in idx1]
-end
-
-function separate_indices(idx, ratio)
-	Random.seed!(42)
-	shuffle!(idx)
-	ntraining = convert(Int64, round(ratio*size(idx, 1); digits=0))
-	trn_idx = idx[1:ntraining]
-	vld_idx = idx[ntraining+1:end]
-	return (trn = trn_idx, vld = vld_idx)
-end
-
-function separate_features_labels_indices(sp)
-	idx0 = findall(iszero, sp)
-	idx1 = findall(isone, sp)
-
-	idx0_trn, idx0_vld = separate_indices(idx0, 0.7)
-	idx1_trn, idx1_vld = separate_indices(idx1, 0.7)
-
-	idx_trn = vcat(idx0_trn, idx1_trn)
-	idx_vld = vcat(idx0_vld, idx1_vld)
-	return (trn = idx_trn, vld = idx_vld)
-end
-
-tmp = map(separate_features_labels_indices, eachcol(spe))
-
-trn_set = [spe[:,i][tmp[i].trn] for i in 1:ncol(spe)]
-vld_set = [spe[:,i][tmp[i].vld] for i in 1:ncol(spe)]
-
 ## Shuffle row indices
 idx = collect(1:nrow(var))
 Random.seed!(42)
