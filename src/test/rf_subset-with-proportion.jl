@@ -26,6 +26,7 @@ vld_idx = Array{Array{Int64,1},1}()
 	push!(vld_idx, separate_trn_vld(sp).vld)
 end
 
+# Option 1
 @time begin
 	# Create labels sets
 	trn_labels = [Int64.(spe[trn_idx[i], i]) for i in 1:ncol(spe)];
@@ -34,10 +35,16 @@ end
 	trn_features = [Array(var[trn_idx[i], :]) for i in 1:ncol(spe)];
 	vld_features = [Array(var[trn_idx[i], :]) for i in 1:ncol(spe)];
 end;
+rm_labs_feats()
+
+# Option 2
 @time begin
 	trn_labels, vld_labels = [map(i -> Int64.(spe[idx[i], i]), 1:ncol(spe)) for idx in (trn_idx, vld_idx)];
 	trn_features, vld_features = [map(i -> Array(var[i, :]), idx) for idx in (trn_idx, vld_idx)];
 end;
+rm_labs_feats()
+
+# Option 3
 @time begin
 	trn_labels = Array{Array{Int64,1},1}()
 	vld_labels = Array{Array{Int64,1},1}()
@@ -49,4 +56,28 @@ end;
 		push!(trn_features, Array(var[trn_idx[i], :]))
 		push!(vld_features, Array(var[vld_idx[i], :]))
 	end
+end;
+rm_labs_feats()
+
+# Option 4
+function get_labels_features_subsets(labels, features, indices)
+	labels_set = Array{Array{Int64,1},1}()
+	features_set = Array{Array{Float64,2},1}()
+	for i in 1:ncol(labels)
+		push!(labels_set, Int64.(labels[indices[i], i]))
+		push!(features_set, Array(features[trn_idx[i], :]))
+	end
+	return labels_set, features_set
+end
+@time begin
+	trn_labels, trn_features = get_labels_features_subsets(spe, var, trn_idx);
+	vld_labels, vld_features = get_labels_features_subsets(spe, var, vld_idx);
+end;
+rm_labs_feats()
+
+function rm_labs_feats()
+	global trn_labels = nothing
+	global trn_features = nothing
+	global vld_labels = nothing
+	global vld_features = nothing
 end
