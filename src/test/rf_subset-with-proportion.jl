@@ -1,3 +1,14 @@
+import Pkg; Pkg.activate(".")
+using Distributed
+@time @everywhere include("src/required.jl")
+@everywhere include("src/lib/model-evaluation.jl")
+
+## Load data
+spe = CSV.read("data/proc/distributions_spe.csv", header=true, delim="\t")
+spa = CSV.read("data/proc/distributions_spa.csv", header=true, delim="\t")
+env = CSV.read("data/proc/distributions_env.csv", header=true, delim="\t")
+var = hcat(env, spa)
+
 import MLJ.partition
 
 function partition_by_class(values, fraction; shuffle = true, rng = 42)
