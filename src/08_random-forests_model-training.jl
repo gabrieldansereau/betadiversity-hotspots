@@ -83,7 +83,7 @@ tmp
 p = plot([0,1], [0,1], xlim=(0,1), ylim=(0,1), aspect_ratio=1)
 p = scatter!(p, [tmp.FP_rate], [tmp.sensitivity])
 
-function auc(model::Ensemble{S,T}, vld_features::Array{S}, vld_labels::Array{T,1}) where {S,T}
+function auc(model::Ensemble{S,T}, vld_features::Array{S}, vld_labels::Array{T,1}; plot = true, kw...) where {S,T}
 	presence_proba = apply_forest_proba(model, vld_features, [0,1])[:,2]
 	thresholds = collect(0.0:0.01:1.0)
 	thrsh_preds = [Int64.(replace(prob -> prob .>= thrsh ? 1 : 0, presence_proba)) for thrsh in thresholds]
@@ -91,8 +91,12 @@ function auc(model::Ensemble{S,T}, vld_features::Array{S}, vld_labels::Array{T,1
 	FP_rates = map(x -> x.FP_rate, acc_mes)
 	sensitivities = map(x -> x.sensitivity, acc_mes)
 	score = auc_score(FP_rates, sensitivities)
- 	p = auc_plot(FP_rates, sensitivities, score)
-	return (score = score, plot = p)
+	if plot
+ 		p = auc_plot(FP_rates, sensitivities, score; kw...)
+		return (score = score, FP_rates = FP_rates, sensitivities = sensitivities, plot = p)
+	else
+		return (score = score, FP_rates = FP_rates, sensitivities = sensitivities)
+	end
 end
 function auc_score(FP_rates, sensitivities)
 	FPrev, sensrev = FP_rates[end:-1:1], sensitivities[end:-1:1]
@@ -101,15 +105,16 @@ function auc_score(FP_rates, sensitivities)
 	score = sum(areas)
 	return score
 end
-function auc_plot(FP_rates, sensitivities, score)
+function auc_plot(FP_rates, sensitivities, score; kw...)
 	p = plot([0,1], [0,1],
 			 xlim=(0,1), ylim=(0,1),
 			 title = "Receiver operating curve",
 			 xlabel = "False-positive rate (1 - Specificity)",
 			 ylabel = "True-positive rate (Sensitivity)" ,
 			 legend = :none, aspect_ratio=1)
-	scatter!(p, FP_rates, sensitivities,
-			 ann = (0.8, 0.1, "AUC = $(round(score, digits = 3))"))
+	plot!(p, FP_rates, sensitivities,
+		  ann = (0.8, 0.1, "AUC = $(round(score, digits = 3))");
+		  kw...)
 	return p
 end
 
