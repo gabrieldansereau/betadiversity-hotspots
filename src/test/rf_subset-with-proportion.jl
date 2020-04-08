@@ -98,3 +98,11 @@ res100 = filter(x -> x.freq_abs > 100, res)
 quantile(res100.accuracy)
 quantile(filter(!isnan, res100.sensitivity))
 quantile(filter(!isnan, res100.specificity))
+
+p = auc_plot([0], [0], NaN, dpi = 200)
+for auc in auc_stats
+	plot!(p, auc.FP_rates, auc.sensitivities)
+end
+p
+
+savefig(p, "fig/random-forests/08_rf_auc.png")
