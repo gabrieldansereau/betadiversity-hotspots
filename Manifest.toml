@@ -675,9 +675,9 @@ version = "0.3.1"
 
 [[SimpleSDMLayers]]
 deps = ["GDAL", "HTTP", "RecipesBase", "Requires", "Statistics", "ZipFile"]
-git-tree-sha1 = "a30119aedcdd0cdf4408207b0a2f9afb3de9b51f"
+git-tree-sha1 = "a7616b577a7954ec0cd92c3ce2703f8cc170c496"
 uuid = "2c645270-77db-11e9-22c3-0f302a89c64c"
-version = "0.2.1"
+version = "0.2.2"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
