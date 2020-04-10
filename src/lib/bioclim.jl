@@ -34,20 +34,22 @@ function _bioclim_layer(occ::Union{G,D}, layer::T; training_layer::T=layer) wher
 end
 
 # Complete BIOCLIM model on all environmental layers, including 1st part function
-function bioclim(occ, layers; training_layers=layers, binary=true, with_threshold=false, threshold::Float64=0.05)
+function bioclim(occ, layers; training_layers=layers, binary=true, threshold::Float64=0.0)
     # occ: occurences of a single species as a DataFrame with latitude and longitude columns
     # layers: layers of environmental variables used for prediction
     # training_layers: optional, training environmental layers, can use a different resolution
     # binary: optional, convert result to binary presence-absence values
     # with_threshold: optional, apply threshold to remove lower predictions
-    # threshold: optional, set threshold to use (default = 0.05)
+    # threshold: optional, percentage of lower predictions to remove (e.g. 0.05)
+
+    @assert 0.0 ≤ threshold < 1.0 "Threshold must be between 0.0 and 1.0"
 
     # Apply 1st part of BIOCLIM on each environmental variable
     predictions = [_bioclim_layer(occ, layers[i], training_layer = training_layers[i]) for i in eachindex(layers)];
     # Reduce to single layer with minimum values
     prediction = reduce(minimum, predictions);
-    # Apply threshold (if requested, default is false)
-    if with_threshold == true
+    # Apply threshold (if specified)
+    if threshold > 0.0
         # Select non-NaN values only
         no_nan = filter(!isnan, prediction[occ]);
         # Apply threshold only if there are non-NaN values
