@@ -15,20 +15,19 @@ spenames = [w.species[1] for w in warblers]
 speindex = indexmap(spenames)
 
 # Define coordinates range
-lon_range = (-145.0, -50.0)
-lat_range = (20.0, 75.0)
+coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 # Observed coordinates range
-lon_range_obs = extrema(df.longitude)
-lat_range_obs = extrema(df.latitude)
+coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
+              bottom = minimum(df.latitude), top = maximum(df.latitude))
 
 ## Get environmental data (with different training resolutions)
 # WorldClim data
-wc_vars = map(x -> worldclim(x, resolution = "10")[lon_range, lat_range], [1,12]);
+wc_vars = map(x -> worldclim(x, resolution = "10")[coords], [1,12]);
 # Landcover data
-lc_vars = map(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10);
+lc_vars = map(x -> landcover(x, resolution = "10")[coords], 1:10);
 # Training data with finer resolution
-wc_vars_train = map(x -> worldclim(x, resolution = "5")[lon_range_obs, lat_range_obs], [1,12]);
-lc_vars_train = map(x -> landcover(x, resolution = "5")[lon_range_obs, lat_range_obs], 1:10);
+wc_vars_train = map(x -> worldclim(x, resolution = "5")[coords_obs], [1,12]);
+lc_vars_train = map(x -> landcover(x, resolution = "5")[coords_obs], 1:10);
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)

@@ -21,17 +21,16 @@ end
 
 ## Test landcover variables
 # Define coordinates range
-lon_range = (-145.0, -50.0)
-lat_range = (20.0, 75.0)
+coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 
 # Test loading variables
 lc_vars = landcover(1:10, resolution = "10")
 lc_vars = landcover(1:10, resolution = "5")
-lc_vars = map(x -> landcover(x, resolution = "5")[lon_range, lat_range], 1:10)
+lc_vars = map(x -> landcover(x, resolution = "5")[coords], 1:10)
 fig1 = plotSDM(lc_vars[2])
 
 # Plot worldclim to compare
-@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[coords], 1:19);
 fig2 = plotSDM(wc_vars[1])
 fig1
 fig2

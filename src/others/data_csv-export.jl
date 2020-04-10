@@ -9,17 +9,15 @@ using Distributed
 @load "data/jld2/raw-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 
 # Define coordinates range
-lon_range = (-145.0, -50.0)
-lat_range = (20.0, 75.0)
+coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 # Define coordinates range for Quebec (for smaller scale analysis)
-qc_lon_range = (-80.0, -55.0)
-qc_lat_range = (45.0, 63.0)
+coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 
 ## Get environmental data data
 # WorldClim data
-@time wc_vars = map(x -> worldclim(x, resolution = "10")[lon_range, lat_range], 1:19);
+@time wc_vars = map(x -> worldclim(x, resolution = "10")[coords], 1:19);
 # Landcover data
-@time lc_vars = map(x -> landcover(x, resolution = "10")[lon_range, lat_range], 1:10);
+@time lc_vars = map(x -> landcover(x, resolution = "10")[coords], 1:10);
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
 
@@ -69,8 +67,8 @@ CSV.write("data/proc/distributions_spa.csv", spa_obs, delim="\t")
 
 ## Limit observation range
 # Get indexes
-inds_qc = findall(x -> (qc_lon_range[1] < x.lon < qc_lon_range[2]) &&
-                       (qc_lat_range[1] < x.lat < qc_lat_range[2]), eachrow(spa_full))
+inds_qc = findall(x -> (coords_qc.left < x.lon < coords_qc.right) &&
+                       (coords_qc.bottom < x.lat < coords_qc.top), eachrow(spa_full))
 inds_qcobs = intersect(inds_obs, inds_qc)
 
 # Filter datasets

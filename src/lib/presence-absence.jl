@@ -8,12 +8,11 @@ function presence_absence(species::DataFrame, copy_layer::SimpleSDMLayer; full_r
     # binary: convert to binary presence-absence values per site
 
     # Extract coordinates
-    lon_range = (copy_layer.left, copy_layer.right)
-    lat_range = (copy_layer.bottom, copy_layer.top)
+    coords = (left = copy_layer.left, right = copy_layer.right, bottom = copy_layer.bottom, top = copy_layer.top)
     # Filter observations to range of interest (default)
     if full_range == false
-        filter!(x -> lon_range[1] < x[:longitude] < lon_range[2], species)
-        filter!(x -> lat_range[1] < x[:latitude] < lat_range[2], species)
+        filter!(x -> coords.left < x[:longitude] < coords.right, species)
+        filter!(x -> coords.bottom < x[:latitude] < coords.top, species)
     end
     # Create empty grid for presence-absence data (with NaN)
     distribution_grid = copy(copy_layer.grid)

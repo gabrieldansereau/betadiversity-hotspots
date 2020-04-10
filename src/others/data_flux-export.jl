@@ -7,11 +7,10 @@ using Distributed
 @load "data/jld2/raw-Y-matrices.jld2" Y Ypred Ytransf inds_pred inds_notpred
 
 # Define coordinates range
-lon_range = (-145.0, -50.0)
-lat_range = (20.0, 75.0)
+coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 
 # Get worldclim variables
-@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[lon_range, lat_range], 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[coords], 1:19);
 
 # Get sites pres-abs data
 vars_spe = map(x -> vec(x.grid[inds_pred]), pres_abs[1:3])
