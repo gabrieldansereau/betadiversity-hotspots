@@ -3,10 +3,10 @@
 # import SimpleSDMLayers: bioclim
 
 # Small internal function for BIOCLIM. Ensures values are equal for both tails and between 0-1
-bcscore(x) = isnan(x) ? NaN : (x > 0.5 ? 2*(1-x) : 2x)
+_bcscore(x) = isnan(x) ? NaN : (x > 0.5 ? 2*(1-x) : 2x)
 
 # 1st part of BIOCLIM model for single environmental layer
-function bioclim_layer(occ::Union{G,D}, layer::T; training_layer::T=layer) where {T <: SimpleSDMLayer, D <: DataFrame, G <: GBIFRecords}
+function _bioclim_layer(occ::Union{G,D}, layer::T; training_layer::T=layer) where {T <: SimpleSDMLayer, D <: DataFrame, G <: GBIFRecords}
     # occ: occurences of a single species as a DataFrame with latitude and longitude columns
     # layer: layer of environmental variables used for prediction
     # training_layer: optional, training environmental layer, can use a different resolution
@@ -24,7 +24,7 @@ function bioclim_layer(occ::Union{G,D}, layer::T; training_layer::T=layer) where
         # Create ECDF function to extract quantile values
         qfinder = ecdf(obs)
         # Get prediction score
-        pred.grid = bcscore.(qfinder.(layer.grid))
+        pred.grid = _bcscore.(qfinder.(layer.grid))
     end
     # Restore NaNs from original layer
     for idx in findall(isnan, layer.grid)
@@ -43,7 +43,7 @@ function bioclim(occ, layers; training_layers=layers, binary=true, with_threshol
     # threshold: optional, set threshold to use (default = 0.05)
 
     # Apply 1st part of BIOCLIM on each environmental variable
-    predictions = [bioclim_layer(occ, layers[i], training_layer = training_layers[i]) for i in eachindex(layers)];
+    predictions = [_bioclim_layer(occ, layers[i], training_layer = training_layers[i]) for i in eachindex(layers)];
     # Reduce to single layer with minimum values
     prediction = reduce(minimum, predictions);
     # Apply threshold (if requested, default is false)
