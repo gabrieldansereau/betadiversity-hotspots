@@ -407,9 +407,9 @@ version = "0.2.1"
 
 [[MLJModels]]
 deps = ["CategoricalArrays", "Dates", "Distances", "Distributions", "InteractiveUtils", "LinearAlgebra", "MLJBase", "MLJModelInterface", "MultivariateStats", "OrderedCollections", "Parameters", "Pkg", "Random", "Requires", "ScientificTypes", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "8d9185d1c47b6e42aae995b8333f256cbb615267"
+git-tree-sha1 = "64932df6c71608f4c6663dc1734a0e0f4ceb5839"
 uuid = "d491faf4-2d78-11e9-2867-c94bc002c0b7"
-version = "0.9.3"
+version = "0.9.4"
 
 [[MLJScientificTypes]]
 deps = ["CategoricalArrays", "ColorTypes", "PrettyTables", "ScientificTypes", "Tables"]
@@ -675,9 +675,9 @@ version = "0.3.1"
 
 [[SimpleSDMLayers]]
 deps = ["GDAL", "HTTP", "RecipesBase", "Requires", "Statistics", "ZipFile"]
-git-tree-sha1 = "d0afa8299defaf69acf426374d5751a246245e30"
+git-tree-sha1 = "a30119aedcdd0cdf4408207b0a2f9afb3de9b51f"
 uuid = "2c645270-77db-11e9-22c3-0f302a89c64c"
-version = "0.2.0"
+version = "0.2.1"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
