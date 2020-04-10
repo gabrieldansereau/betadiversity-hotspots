@@ -33,18 +33,41 @@ lc_vars_train = map(x -> landcover(x, resolution = "5")[coords_obs], 1:10);
 env_vars = vcat(wc_vars, lc_vars)
 env_vars_train = vcat(wc_vars_train, lc_vars_train)
 
-## Get distribution for all species
-# Runs only if create_distributions = true, as it can take a while. Loaded from file otherwise
-# create_distributions = true # should distributions be computed (optional, loaded otherwise)
-if (@isdefined create_distributions) && create_distributions == true
-    @info "$(outcome) distributions to be created"
-    # Select function to run given desired outcome
-    if outcome == "raw"
-        # Get raw distributions
-        @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers)
-        # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers)
-    elseif outcome == "sdm"
-        # Get sdm distributions (with different training resolutions)
-        @time distributions = @showprogress pmap(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
-    end
+## Partition training-validation datasets
+import MLJ.partition
+# Create empty sets
+train_sets = Array{DataFrame, 1}()
+valid_sets = Array{DataFrame, 1}()
+for w in warblers
+    # Get training and validation indices
+    train_idx, valid_idx = partition(eachindex(eachrow(w)), 0.7, shuffle = true, rng = 42)
+    # Extract training and validations sets
+    push!(train_sets, w[train_idx, :])
+    push!(valid_sets, w[valid_idx, :])
 end
+train_sets
+valid_sets
+
+## Get distribution for all species
+# Get sdm distributions (with different training resolutions)
+@time distributions = @showprogress pmap(x -> bioclim(x, env_vars, training_layers = env_vars_train), train_sets[[24,3]]);
+
+## Count sites with presence per species
+pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distributions]
+sort(pres_counts)
+
+## Plot result
+# Species 1
+sp1 = "Setophaga_townsendi"
+map_sp1 = plotSDM(distributions[1], c=:BuPu,
+                  title = "$(sp1) distribution",
+                  colorbar=:none, dpi=300)
+scatter!(map_sp1, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
+                        legend=:bottomright, legendfontsize=5)
+# Species 2
+sp2 = "Setophaga_petechia"
+map_sp2 = plotSDM(distributions[speindex[sp2]], c=:BuPu,
+                  title = "$(sp2) distribution",
+                  colorbar=:none, dpi=300)
+scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
+                        legend=:bottomright, legendfontsize=5)
