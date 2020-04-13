@@ -57,12 +57,16 @@ inds_obs = collect(1:size(Yrf,1))[Not(inds_notobs)]
 
 # Create RF distribution layers
 Ydistrib = replace(Yrf, 0.0 => NaN)
-rf_grids = [reshape(Ydistrib[:,i], size(distributions[1])) for i in 1:size(Ydistrib, 2)]
+rf_grids = [reshape(Ydistrib[:,i], size(distributions[1].grid)) for i in 1:size(Ydistrib, 2)]
 # map(x -> reshape(Ydistrib[:,x], size(distributions[1]), 1:size(Ydistrib, 2)))
 rf_distributions = SimpleSDMResponse.(rf_grids, distributions[1].left, distributions[1].right,
                                          distributions[1].bottom, distributions[1].top)
 
 plotSDM(rf_distributions[1], c=:BuPu)
+
+## Export results
+@save "data/jld2/rf-distributions.jld2" rf_distributions
+@save "data/jld2/rf-Y-matrices.jld2" Yrf Yobs inds_obs inds_notobs
 
 #### Richness ####
 
