@@ -24,7 +24,7 @@ distributions_NE = [d[coords_NE] for d in distributions]
 coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
 distributions_SW = [d[coords_SW] for d in distributions]
 
-
+## Get Ymatrices
 using RCall
 function calculate_Ymatrix(distributions)
   ## Create matrix Y (site-by-species community data table)
@@ -59,15 +59,13 @@ function calculate_Ymatrix(distributions)
 
   output = (Y = Y, Yobs = Yobs, Ytransf = Ytransf,
             inds_obs = inds_obs, inds_notobs = inds_notobs)
-
   return output
-
 end
-
 NE = calculate_Ymatrix(distributions_NE)
 SW = calculate_Ymatrix(distributions_SW)
 
 
+## Richness
 function calculate_richness(Y, inds_notobs, distributions)
   ## Get number of species per site
   sums = map(x -> Float64(sum(x)), eachrow(Y))
@@ -78,13 +76,14 @@ function calculate_richness(Y, inds_notobs, distributions)
   ## Create SimpleSDMLayer
   richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 end
-
 richness_NE = calculate_richness(NE.Y, NE.inds_notobs, distributions_NE)
 richness_SW = calculate_richness(SW.Y, SW.inds_notobs, distributions_SW)
 
+# Visualize
 plotSDM(richness_NE, c = :viridis)
 plotSDM(richness_SW, c = :viridis)
 
+## LCBD
 # Load functions
 include("lib/beta-div.jl")
 function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
@@ -115,16 +114,18 @@ end
 lcbd_NE = calculate_lcbd(NE.Yobs, NE.Ytransf, NE.inds_obs, distributions_NE)
 lcbd_SW = calculate_lcbd(SW.Yobs, SW.Ytransf, SW.inds_obs, distributions_SW)
 
+# Visualize
 plotSDM(lcbd_NE[1], c = :viridis)
 plotSDM(lcbd_NE[2], c = :viridis)
 plotSDM(lcbd_SW[1], c = :viridis)
 plotSDM(lcbd_SW[2], c = :viridis)
-
+# Quantiles
 plotSDM(quantiles(lcbd_NE[1]), c = :viridis)
 plotSDM(quantiles(lcbd_NE[2]), c = :viridis)
 plotSDM(quantiles(lcbd_SW[1]), c = :viridis)
 plotSDM(quantiles(lcbd_SW[2]), c = :viridis)
 
+## Relationship
 histogram2d(richness_NE, lcbd_NE[1], c = :viridis, bins = 40,
             xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
 histogram2d(richness_NE, lcbd_NE[2], c = :viridis, bins = 40,
