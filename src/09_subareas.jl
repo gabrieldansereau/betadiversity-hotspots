@@ -121,3 +121,12 @@ plotSDM(quantiles(lcbd_sa1[1]), c = :viridis)
 plotSDM(quantiles(lcbd_sa1[2]), c = :viridis)
 plotSDM(quantiles(lcbd_sa2[1]), c = :viridis)
 plotSDM(quantiles(lcbd_sa2[2]), c = :viridis)
+
+histogram2d(richness_sa1, lcbd_sa1[1], c = :viridis, bins = 40,
+            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+histogram2d(richness_sa1, lcbd_sa1[2], c = :viridis, bins = 40,
+            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+histogram2d(richness_sa2, lcbd_sa2[1], c = :viridis, bins = 40, 
+            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+histogram2d(richness_sa2, lcbd_sa2[2], c = :viridis, bins = 40,
+            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
