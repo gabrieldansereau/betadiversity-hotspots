@@ -16,11 +16,14 @@ end
 @load "data/jld2/$(outcome)-distributions.jld2" rf_distributions
 distributions = rf_distributions
 
-coords_subarea1 = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
-coords_subarea2 = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
+## Extract subareas
+# Northeast subarea
+coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
+distributions_NE = [d[coords_NE] for d in distributions]
+# Southwest subarea
+coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
+distributions_SW = [d[coords_SW] for d in distributions]
 
-distributions_sa1 = [d[coords_subarea1] for d in distributions]
-distributions_sa2 = [d[coords_subarea2] for d in distributions]
 
 using RCall
 function calculate_Ymatrix(distributions)
@@ -61,8 +64,8 @@ function calculate_Ymatrix(distributions)
 
 end
 
-sa1 = calculate_Ymatrix(distributions_sa1)
-sa2 = calculate_Ymatrix(distributions_sa2)
+NE = calculate_Ymatrix(distributions_NE)
+SW = calculate_Ymatrix(distributions_SW)
 
 
 function calculate_richness(Y, inds_notobs, distributions)
@@ -76,11 +79,11 @@ function calculate_richness(Y, inds_notobs, distributions)
   richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 end
 
-richness_sa1 = calculate_richness(sa1.Y, sa1.inds_notobs, distributions_sa1)
-richness_sa2 = calculate_richness(sa2.Y, sa2.inds_notobs, distributions_sa2)
+richness_NE = calculate_richness(NE.Y, NE.inds_notobs, distributions_NE)
+richness_SW = calculate_richness(SW.Y, SW.inds_notobs, distributions_SW)
 
-plotSDM(richness_sa1, c = :viridis)
-plotSDM(richness_sa2, c = :viridis)
+plotSDM(richness_NE, c = :viridis)
+plotSDM(richness_SW, c = :viridis)
 
 # Load functions
 include("lib/beta-div.jl")
@@ -109,24 +112,24 @@ function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
                             distributions[1].bottom, distributions[1].top)
   return LCBD
 end
-lcbd_sa1 = calculate_lcbd(sa1.Yobs, sa1.Ytransf, sa1.inds_obs, distributions_sa1)
-lcbd_sa2 = calculate_lcbd(sa2.Yobs, sa2.Ytransf, sa2.inds_obs, distributions_sa2)
+lcbd_NE = calculate_lcbd(NE.Yobs, NE.Ytransf, NE.inds_obs, distributions_NE)
+lcbd_SW = calculate_lcbd(SW.Yobs, SW.Ytransf, SW.inds_obs, distributions_SW)
 
-plotSDM(lcbd_sa1[1], c = :viridis)
-plotSDM(lcbd_sa1[2], c = :viridis)
-plotSDM(lcbd_sa2[1], c = :viridis)
-plotSDM(lcbd_sa2[2], c = :viridis)
+plotSDM(lcbd_NE[1], c = :viridis)
+plotSDM(lcbd_NE[2], c = :viridis)
+plotSDM(lcbd_SW[1], c = :viridis)
+plotSDM(lcbd_SW[2], c = :viridis)
 
-plotSDM(quantiles(lcbd_sa1[1]), c = :viridis)
-plotSDM(quantiles(lcbd_sa1[2]), c = :viridis)
-plotSDM(quantiles(lcbd_sa2[1]), c = :viridis)
-plotSDM(quantiles(lcbd_sa2[2]), c = :viridis)
+plotSDM(quantiles(lcbd_NE[1]), c = :viridis)
+plotSDM(quantiles(lcbd_NE[2]), c = :viridis)
+plotSDM(quantiles(lcbd_SW[1]), c = :viridis)
+plotSDM(quantiles(lcbd_SW[2]), c = :viridis)
 
-histogram2d(richness_sa1, lcbd_sa1[1], c = :viridis, bins = 40,
+histogram2d(richness_NE, lcbd_NE[1], c = :viridis, bins = 40,
             xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-histogram2d(richness_sa1, lcbd_sa1[2], c = :viridis, bins = 40,
+histogram2d(richness_NE, lcbd_NE[2], c = :viridis, bins = 40,
             xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-histogram2d(richness_sa2, lcbd_sa2[1], c = :viridis, bins = 40, 
+histogram2d(richness_SW, lcbd_SW[1], c = :viridis, bins = 40,
             xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-histogram2d(richness_sa2, lcbd_sa2[2], c = :viridis, bins = 40,
+histogram2d(richness_SW, lcbd_SW[2], c = :viridis, bins = 40,
             xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
