@@ -80,8 +80,8 @@ richness_NE = calculate_richness(NE.Y, NE.inds_notobs, distributions_NE)
 richness_SW = calculate_richness(SW.Y, SW.inds_notobs, distributions_SW)
 
 # Visualize
-plotSDM(richness_NE, c = :viridis)
-plotSDM(richness_SW, c = :viridis)
+plot(richness_NE, c = :viridis)
+plot(richness_SW, c = :viridis)
 
 ## LCBD
 # Load functions
@@ -115,22 +115,22 @@ lcbd_NE = calculate_lcbd(NE.Yobs, NE.Ytransf, NE.inds_obs, distributions_NE)
 lcbd_SW = calculate_lcbd(SW.Yobs, SW.Ytransf, SW.inds_obs, distributions_SW)
 
 # Visualize
-plotSDM(lcbd_NE[1], c = :viridis)
-plotSDM(lcbd_NE[2], c = :viridis)
-plotSDM(lcbd_SW[1], c = :viridis)
-plotSDM(lcbd_SW[2], c = :viridis)
+plot(lcbd_NE[1], c = :viridis)
+plot(lcbd_NE[2], c = :viridis)
+plot(lcbd_SW[1], c = :viridis)
+plot(lcbd_SW[2], c = :viridis)
 # Quantiles
-plotSDM(quantiles(lcbd_NE[1]), c = :viridis)
-plotSDM(quantiles(lcbd_NE[2]), c = :viridis)
-plotSDM(quantiles(lcbd_SW[1]), c = :viridis)
-plotSDM(quantiles(lcbd_SW[2]), c = :viridis)
+plot(quantiles(lcbd_NE[1]), c = :viridis)
+plot(quantiles(lcbd_NE[2]), c = :viridis)
+plot(quantiles(lcbd_SW[1]), c = :viridis)
+plot(quantiles(lcbd_SW[2]), c = :viridis)
 
 ## Relationship
-histogram2d(richness_NE, lcbd_NE[1], c = :viridis, bins = 40,
-            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-histogram2d(richness_NE, lcbd_NE[2], c = :viridis, bins = 40,
-            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-histogram2d(richness_SW, lcbd_SW[1], c = :viridis, bins = 40,
-            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-histogram2d(richness_SW, lcbd_SW[2], c = :viridis, bins = 40,
-            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+rel_NE = histogram2d(richness_NE, lcbd_NE[1], c = :viridis, bins = 40,
+          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+rel_tr_NE = histogram2d(richness_NE, lcbd_NE[2], c = :viridis, bins = 40,
+              xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+rel_SW = histogram2d(richness_SW, lcbd_SW[1], c = :viridis, bins = 40,
+          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+rel_tr_SW = histogram2d(richness_SW, lcbd_SW[2], c = :viridis, bins = 40,
+              xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
