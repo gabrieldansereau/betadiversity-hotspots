@@ -13,8 +13,7 @@ else
 end
 
 ## Load distribution data for all species
-@load "data/jld2/$(outcome)-distributions.jld2" rf_distributions
-distributions = rf_distributions
+@load "data/jld2/$(outcome)-distributions.jld2" distributions
 
 ## Extract subareas
 # Northeast subarea
