@@ -133,3 +133,36 @@ rel_SW = histogram2d(richness_SW, lcbd_SW[1], c = :viridis, bins = 40,
           xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
 rel_tr_SW = histogram2d(richness_SW, lcbd_SW[2], c = :viridis, bins = 40,
               xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+
+## Combine figures
+function plot_lcbd_richness(richness, lcbd; title = "", kw...)
+  p1 = plot(richness, c = :viridis, title = "Richness", colorbar_title = "Number of species")
+  p2 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score")
+  p3 = plot(quantiles(lcbd), c = :viridis, title = "LCBD quantiles", colorbar_title = "Quantile rank")
+  p4 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
+            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+  if title != ""
+    l = @layout [t{.01h}; grid(2,2)]
+    ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
+    p = plot(ptitle, p1, p2, p4, p3, layout = l; kw...)
+  else
+    p = plot(p1, p2, p4, p3; kw...)
+  end
+  return p
+end
+
+resNE   = plot_lcbd_richness(richness_NE, lcbd_NE[1], dpi = 150,
+            title = "NE subarea - $(uppercase(outcome)) results")
+resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE[2], dpi = 150,
+            title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
+
+resSW   = plot_lcbd_richness(richness_SW, lcbd_SW[1], dpi = 150,
+            title = "SW subarea - $(uppercase(outcome)) results")
+resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW[2], dpi = 150,
+            title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
+
+# Export figures
+savefig(resNE, "fig/$(outcome)/09_$(outcome)_subareas_NE.png")
+savefig(resNEtr, "fig/$(outcome)/09_$(outcome)_subareas_NEtr.png")
+savefig(resSW, "fig/$(outcome)/09_$(outcome)_subareas_SW.png")
+savefig(resSWtr, "fig/$(outcome)/09_$(outcome)_subareas_SWtr.png")
