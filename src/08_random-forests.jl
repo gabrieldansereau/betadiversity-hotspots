@@ -257,11 +257,11 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD[2].grid),
 
 #### Export figures
 
-savefig(dist_rf, "fig/random-forests/01_rf_sp-Setophaga-coronata.png")
-savefig(rich_rf, "fig/random-forests/03_rf_richness.png")
-savefig(rich_qrf, "fig/random-forests/03_rf_richness_quantiles.png")
-savefig(lcbd_rf, "fig/random-forests/05_rf_lcbd.png")
-savefig(lcbdtr_rf, "fig/random-forests/05_rf_lcbd_transf.png")
-savefig(lcbd_qrf, "fig/random-forests/05_rf_lcbd_quantiles.png")
-savefig(lcbdtr_qrf, "fig/random-forests/05_rf_lcbd_transf_quantiles.png")
-savefig(relationdbtr_plot, "fig/random-forests/06_rf_relationship_dbtransf.png")
+savefig(dist_rf, "fig/rf/01_rf_sp-Setophaga-coronata.png")
+savefig(rich_rf, "fig/rf/03_rf_richness.png")
+savefig(rich_qrf, "fig/rf/03_rf_richness_quantiles.png")
+savefig(lcbd_rf, "fig/rf/05_rf_lcbd.png")
+savefig(lcbdtr_rf, "fig/rf/05_rf_lcbd_transf.png")
+savefig(lcbd_qrf, "fig/rf/05_rf_lcbd_quantiles.png")
+savefig(lcbdtr_qrf, "fig/rf/05_rf_lcbd_transf_quantiles.png")
+savefig(relationdbtr_plot, "fig/rf/06_rf_relationship_dbtransf.png")
