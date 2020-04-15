@@ -46,29 +46,29 @@ end
 @rget predictions predictions_full inds_na
 
 # Create Y matrices
-Yrf = replace(predictions_full, missing => NaN)
-Yrf = Array{Float64}(Yrf)
+Y = replace(predictions_full, missing => NaN)
+Y = Array{Float64}(Y)
 Yobs = predictions
 inds_notobs = inds_na
-inds_obs = collect(1:size(Yrf,1))[Not(inds_notobs)]
+inds_obs = collect(1:size(Y,1))[Not(inds_notobs)]
 
 # Load raw distributions (for grid size)
 @load "data/jld2/raw-distributions.jld2" distributions
 
 # Create RF distribution layers
-Ydistrib = replace(Yrf, 0.0 => NaN)
-rf_grids = [reshape(Ydistrib[:,i], size(distributions[1])) for i in 1:size(Ydistrib, 2)]
+Ydistrib = replace(Y, 0.0 => NaN)
+rf_grids = [reshape(Ydistrib[:,i], size(distributions[1].grid)) for i in 1:size(Ydistrib, 2)]
 # map(x -> reshape(Ydistrib[:,x], size(distributions[1]), 1:size(Ydistrib, 2)))
-rf_distributions = SimpleSDMResponse.(rf_grids, distributions[1].left, distributions[1].right,
+distributions = SimpleSDMResponse.(rf_grids, distributions[1].left, distributions[1].right,
                                          distributions[1].bottom, distributions[1].top)
 
-plotSDM(rf_distributions[1], c=:BuPu)
+plotSDM(distributions[1], c=:BuPu)
 
 #### Richness ####
 
 #### Species richness
 ## Get number of species per site
-sums = map(x -> Float64(sum(x)), eachrow(Yrf))
+sums = map(x -> Float64(sum(x)), eachrow(Y))
 # Reshape to grid format
 sums = reshape(sums, size(distributions[1]))
 
@@ -77,9 +77,9 @@ richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right
 
 #### LCBD
 
-inds_obs = findall(map(x -> !any(isnan.(x)), eachrow(Yrf)))
-inds_notobs = findall(map(x -> any(isnan.(x)), eachrow(Yrf)))
-Yobs = Yrf[inds_obs,:]
+inds_obs = findall(map(x -> !any(isnan.(x)), eachrow(Y)))
+inds_notobs = findall(map(x -> any(isnan.(x)), eachrow(Y)))
+Yobs = Y[inds_obs,:]
 @rput Yobs
 begin
     R"""
@@ -113,15 +113,23 @@ LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
 LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 
 #### Compare with previous results
+## Export results
+@save "data/jld2/rf-distributions.jld2" distributions
+@save "data/jld2/rf-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+# Load results
+@load "data/jld2/rf-distributions.jld2" distributions
+@load "data/jld2/rf-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+
 ## Save random forest results
-rf = (distributions = rf_distributions,
-      Y = Yrf,
+rf = (distributions = distributions,
+      Y = Y,
       Yobs = Yobs,
       Ytransf = Ytransf,
       inds_obs = inds_obs,
       inds_notobs = inds_notobs,
       richness = richness,
       LCBD = LCBD)
+
 
 ## Load raw LCBD & richness results
 outcome = "raw"
@@ -249,11 +257,11 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD[2].grid),
 
 #### Export figures
 
-savefig(dist_rf, "fig/random-forests/01_rf_sp-Setophaga-coronata.png")
-savefig(rich_rf, "fig/random-forests/03_rf_richness.png")
-savefig(rich_qrf, "fig/random-forests/03_rf_richness_quantiles.png")
-savefig(lcbd_rf, "fig/random-forests/05_rf_lcbd.png")
-savefig(lcbdtr_rf, "fig/random-forests/05_rf_lcbd_transf.png")
-savefig(lcbd_qrf, "fig/random-forests/05_rf_lcbd_quantiles.png")
-savefig(lcbdtr_qrf, "fig/random-forests/05_rf_lcbd_transf_quantiles.png")
-savefig(relationdbtr_plot, "fig/random-forests/06_rf_relationship_dbtransf.png")
+savefig(dist_rf, "fig/rf/01_rf_sp-Setophaga-coronata.png")
+savefig(rich_rf, "fig/rf/03_rf_richness.png")
+savefig(rich_qrf, "fig/rf/03_rf_richness_quantiles.png")
+savefig(lcbd_rf, "fig/rf/05_rf_lcbd.png")
+savefig(lcbdtr_rf, "fig/rf/05_rf_lcbd_transf.png")
+savefig(lcbd_qrf, "fig/rf/05_rf_lcbd_quantiles.png")
+savefig(lcbdtr_qrf, "fig/rf/05_rf_lcbd_transf_quantiles.png")
+savefig(relationdbtr_plot, "fig/rf/06_rf_relationship_dbtransf.png")
