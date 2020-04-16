@@ -15,14 +15,6 @@ end
 ## Load distribution data for all species
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
-## Extract subareas
-# Northeast subarea
-coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
-distributions_NE = [d[coords_NE] for d in distributions]
-# Southwest subarea
-coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
-distributions_SW = [d[coords_SW] for d in distributions]
-
 ## Get Ymatrices
 using RCall
 function calculate_Ymatrix(distributions)
@@ -60,9 +52,6 @@ function calculate_Ymatrix(distributions)
             inds_obs = inds_obs, inds_notobs = inds_notobs)
   return output
 end
-NE = calculate_Ymatrix(distributions_NE)
-SW = calculate_Ymatrix(distributions_SW)
-
 
 ## Richness
 function calculate_richness(Y, inds_notobs, distributions)
@@ -75,12 +64,6 @@ function calculate_richness(Y, inds_notobs, distributions)
   ## Create SimpleSDMLayer
   richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 end
-richness_NE = calculate_richness(NE.Y, NE.inds_notobs, distributions_NE)
-richness_SW = calculate_richness(SW.Y, SW.inds_notobs, distributions_SW)
-
-# Visualize
-plot(richness_NE, c = :viridis)
-plot(richness_SW, c = :viridis)
 
 ## LCBD
 # Load functions
@@ -110,29 +93,6 @@ function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
                             distributions[1].bottom, distributions[1].top)
   return LCBD
 end
-lcbd_NE = calculate_lcbd(NE.Yobs, NE.Ytransf, NE.inds_obs, distributions_NE)
-lcbd_SW = calculate_lcbd(SW.Yobs, SW.Ytransf, SW.inds_obs, distributions_SW)
-
-# Visualize
-plot(lcbd_NE[1], c = :viridis)
-plot(lcbd_NE[2], c = :viridis)
-plot(lcbd_SW[1], c = :viridis)
-plot(lcbd_SW[2], c = :viridis)
-# Quantiles
-plot(quantiles(lcbd_NE[1]), c = :viridis)
-plot(quantiles(lcbd_NE[2]), c = :viridis)
-plot(quantiles(lcbd_SW[1]), c = :viridis)
-plot(quantiles(lcbd_SW[2]), c = :viridis)
-
-## Relationship
-rel_NE = histogram2d(richness_NE, lcbd_NE[1], c = :viridis, bins = 40,
-          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-rel_tr_NE = histogram2d(richness_NE, lcbd_NE[2], c = :viridis, bins = 40,
-              xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-rel_SW = histogram2d(richness_SW, lcbd_SW[1], c = :viridis, bins = 40,
-          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
-rel_tr_SW = histogram2d(richness_SW, lcbd_SW[2], c = :viridis, bins = 40,
-              xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
 
 ## Combine figures
 function plot_lcbd_richness(richness, lcbd; title = "", kw...)
@@ -151,20 +111,36 @@ function plot_lcbd_richness(richness, lcbd; title = "", kw...)
   return p
 end
 
-resNE   = plot_lcbd_richness(richness_NE, lcbd_NE[1], dpi = 150,
-            title = "NE subarea - $(uppercase(outcome)) results")
-resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE[2], dpi = 150,
-            title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
+#### Repeat for different subareas
+function plot_subareas(coords, initial_distributions; transform = true, kw...)
+  distributions = [d[coords] for d in initial_distributions]
+  Y = calculate_Ymatrix(distributions)
+  richness = calculate_richness(Y.Y, Y.inds_notobs, distributions)
+  lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions)
+  if transform
+    p = plot_lcbd_richness(richness, lcbd[2]; kw...)
+  else
+    p = plot_lcbd_richness(richness, lcbd[1]; kw...)
+  end
+end
 
-resSW   = plot_lcbd_richness(richness_SW, lcbd_SW[1], dpi = 150,
-            title = "SW subarea - $(uppercase(outcome)) results")
-resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW[2], dpi = 150,
-            title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
+left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
+coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+p = plot_subareas(coords_subarea, distributions)
+p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
 
-# Export figures
-#=
-savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
-savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
-savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
-savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))
-=#
+subarea_plots = []
+
+@time while left > -145.0 && bottom > 20.0
+  global left -= 1.0
+  global bottom -= 0.5;
+  coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+  p = plot_subareas(coords_subarea, distributions, formatter = f -> "$(round(f, digits = 1))")
+  push!(subarea_plots, p)
+end
+subarea_plots
+
+anim = @animate for p in subarea_plots
+    plot(p)
+end
+gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
