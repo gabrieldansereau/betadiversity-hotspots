@@ -1,6 +1,6 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
 # save_relfigures = true # should relationship figures be overwritten (optional)
@@ -87,8 +87,8 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(sdm.LCBD[2].grid),
 # save_relfigures = true # should relationship figures be overwritten (optional)
 if (@isdefined save_relfigures) && save_relfigures == true
     @info "Figures saved (relationship)"
-    savefig(relation_plot, "fig/06_relationship_lcbd-richness.png")
-    savefig(relationtr_plot, "fig/06_relationship_lcbd-richness-transf.png")
+    savefig(relation_plot, joinpath("fig", "06_relationship_lcbd-richness.png"))
+    savefig(relationtr_plot, joinpath("fig", "06_relationship_lcbd-richness-transf.png"))
 else
     @info "Figures not saved (relationship)"
 end
@@ -148,8 +148,8 @@ scatter!(relationdbtr_nbsp_plot, vec(sdm.richness.grid), quantiles(vec(sdm.LCBD[
 # save_relfigures = true # should relationship figures be overwritten (optional)
 if (@isdefined save_relfigures) && save_relfigures == true
     @info "Figures saved (relationship)"
-    savefig(relationtr_qplot, "fig/quantiles/06_relationship_lcbd-richness-transf_quantiles.png")
-    savefig(relationdbtr_nbsp_plot, "fig/quantiles/06_relationship_lcbd-richness-dbtransf-nbsp_quantiles.png")
+    savefig(relationtr_qplot, joinpath("fig", "quantiles", "06_relationship_lcbd-richness-transf_quantiles.png"))
+    savefig(relationdbtr_nbsp_plot, joinpath("fig", "quantiles", "06_relationship_lcbd-richness-dbtransf-nbsp_quantiles.png"))
 else
     @info "Figures not saved (relationship)"
 end

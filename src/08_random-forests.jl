@@ -1,12 +1,12 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Load data
 #=
-spe = CSV.read("data/proc/distributions_spe.csv", header=true, delim="\t")
-spa = CSV.read("data/proc/distributions_spa.csv", header=true, delim="\t")
-env = CSV.read("data/proc/distributions_env.csv", header=true, delim="\t")
+spe = CSV.read(joinpath("data", "proc", "distributions_spe.csv"), header=true, delim="\t")
+spa = CSV.read(joinpath("data", "proc", "distributions_spa.csv"), header=true, delim="\t")
+env = CSV.read(joinpath("data", "proc", "distributions_env.csv"), header=true, delim="\t")
 =#
 
 ## Perform RandomForests
@@ -53,7 +53,7 @@ inds_notobs = inds_na
 inds_obs = collect(1:size(Y,1))[Not(inds_notobs)]
 
 # Load raw distributions (for grid size)
-@load "data/jld2/raw-distributions.jld2" distributions
+@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
 
 # Create RF distribution layers
 Ydistrib = replace(Y, 0.0 => NaN)
@@ -90,7 +90,7 @@ end
 @rget Ytransf
 
 # Load functions
-include("lib/beta-div.jl")
+include(joinpath("lib", "beta-div.jl"))
 # Compute BD statistics on distribution data
 resBDobs = BD(Yobs)
 # Compute BD statistics on transformed data
@@ -114,11 +114,11 @@ LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].rig
 
 #### Compare with previous results
 ## Export results
-@save "data/jld2/rf-distributions.jld2" distributions
-@save "data/jld2/rf-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+@save joinpath("data", "jld2", "rf-distributions.jld2") distributions
+@save joinpath("data", "jld2", "rf-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 # Load results
-@load "data/jld2/rf-distributions.jld2" distributions
-@load "data/jld2/rf-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+@load joinpath("data", "jld2", "rf-distributions.jld2") distributions
+@load joinpath("data", "jld2", "rf-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 
 ## Save random forest results
 rf = (distributions = distributions,
@@ -257,11 +257,11 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD[2].grid),
 
 #### Export figures
 
-savefig(dist_rf, "fig/rf/01_rf_sp-Setophaga-coronata.png")
-savefig(rich_rf, "fig/rf/03_rf_richness.png")
-savefig(rich_qrf, "fig/rf/03_rf_richness_quantiles.png")
-savefig(lcbd_rf, "fig/rf/05_rf_lcbd.png")
-savefig(lcbdtr_rf, "fig/rf/05_rf_lcbd_transf.png")
-savefig(lcbd_qrf, "fig/rf/05_rf_lcbd_quantiles.png")
-savefig(lcbdtr_qrf, "fig/rf/05_rf_lcbd_transf_quantiles.png")
-savefig(relationdbtr_plot, "fig/rf/06_rf_relationship_dbtransf.png")
+savefig(dist_rf, joinpath("fig", "rf", "01_rf_sp-Setophaga-coronata.png"))
+savefig(rich_rf, joinpath("fig", "rf", "03_rf_richness.png"))
+savefig(rich_qrf, joinpath("fig", "rf", "03_rf_richness_quantiles.png"))
+savefig(lcbd_rf, joinpath("fig", "rf", "05_rf_lcbd.png"))
+savefig(lcbdtr_rf, joinpath("fig", "rf", "05_rf_lcbd_transf.png"))
+savefig(lcbd_qrf, joinpath("fig", "rf", "05_rf_lcbd_quantiles.png"))
+savefig(lcbdtr_qrf, joinpath("fig", "rf", "05_rf_lcbd_transf_quantiles.png"))
+savefig(relationdbtr_plot, joinpath("fig", "rf", "06_rf_relationship_dbtransf.png"))

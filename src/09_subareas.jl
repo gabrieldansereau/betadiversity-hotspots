@@ -1,6 +1,6 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 # Make sure "outcome" is defined
 outcome = "rf"
@@ -13,7 +13,7 @@ else
 end
 
 ## Load distribution data for all species
-@load "data/jld2/$(outcome)-distributions.jld2" distributions
+@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
 ## Extract subareas
 # Northeast subarea
@@ -84,7 +84,7 @@ plot(richness_SW, c = :viridis)
 
 ## LCBD
 # Load functions
-include("lib/beta-div.jl")
+include(joinpath("lib", "beta-div.jl"))
 function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
   ## Compute beta diversity statistics
   # Compute BD statistics on distribution data
@@ -162,7 +162,7 @@ resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW[2], dpi = 150,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
 
 # Export figures
-savefig(resNE, "fig/$(outcome)/09_$(outcome)_subareas_NE.png")
-savefig(resNEtr, "fig/$(outcome)/09_$(outcome)_subareas_NEtr.png")
-savefig(resSW, "fig/$(outcome)/09_$(outcome)_subareas_SW.png")
-savefig(resSWtr, "fig/$(outcome)/09_$(outcome)_subareas_SWtr.png")
+savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
+savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
+savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
+savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))

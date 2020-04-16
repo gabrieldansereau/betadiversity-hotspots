@@ -1,7 +1,7 @@
 #### Master file - Raw observations
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 #### Data preparation
 

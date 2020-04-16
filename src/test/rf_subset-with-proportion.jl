@@ -1,15 +1,15 @@
 import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere begin
-	include("src/required.jl")
+	include(joinpath("src", "required.jl"))
 	using DecisionTree
-	include("src/lib/model-evaluation.jl")
+	include(joinpath("src", "lib", "model-evaluation.jl"))
 end
 
 ## Load data
-spe = CSV.read("data/proc/distributions_spe.csv", header=true, delim="\t")
-spa = CSV.read("data/proc/distributions_spa.csv", header=true, delim="\t")
-env = CSV.read("data/proc/distributions_env.csv", header=true, delim="\t")
+spe = CSV.read(joinpath("data", "proc", "distributions_spe.csv"), header=true, delim="\t")
+spa = CSV.read(joinpath("data", "proc", "distributions_spa.csv"), header=true, delim="\t")
+env = CSV.read(joinpath("data", "proc", "distributions_env.csv"), header=true, delim="\t")
 var = hcat(env, spa)
 
 ## Create training and validation sets, with partitioning propotional to class frequency
@@ -65,8 +65,8 @@ vld_pairs = Pair.(vld_labels, vld_features)
 
 # Train models
 @time models = [build_forest(lab, feat, nsubfeatures, ntrees) for (lab, feat) in trn_pairs];
-# @save "../julia-rf.jld2" models
-# @load "../julia-rf.jld2" models
+# @save joinpath("..", "julia-rf.jld2") models
+# @load joinpath("..", "julia-rf.jld2") models
 
 # Apply models
 @time predictions = apply_forest.(models, vld_features)

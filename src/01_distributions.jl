@@ -1,7 +1,7 @@
 import Pkg; Pkg.activate(".")
 using Distributed
 addprocs(9)
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
@@ -21,7 +21,7 @@ end
 
 ## Get & prepare data
 # Load data from CSV files
-@time df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
+@time df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t")
 # Separate species
 warblers = [df[df.species .== u,:] for u in unique(df.species)]
 # Reorder species by frequency
@@ -71,11 +71,11 @@ end
 if (@isdefined save_data) && save_data == true
     # Export data
     @info "Data exported to file ($(outcome) distributions data)"
-    @save "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+    @save joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
 else
     # Load data
     @info "Data imported from file ($(outcome) distributions data)"
-    @load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+    @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
 end
 
 ## Count sites with presence per species
@@ -102,8 +102,8 @@ scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, m
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) distributions)"
-    savefig(map_sp1, "fig/$(outcome)/01_$(outcome)_sp-$(sp1).png")
-    savefig(map_sp2, "fig/$(outcome)/01_$(outcome)_sp-$(sp2).png")
+    savefig(map_sp1, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp1).png")
+    savefig(map_sp2, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp2).png")
 else
     @info "Figures not saved ($(outcome) distributions)"
 end

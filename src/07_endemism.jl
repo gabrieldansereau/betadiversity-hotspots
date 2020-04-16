@@ -1,6 +1,6 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
@@ -17,9 +17,9 @@ else
 end
 
 ## Load distributions for all species
-@load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
 ## Load matrix Y
-@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+@load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 
 ## Weighted endemism
 # AOO (Area of occurrence): Species add 1/(number of sites occupied) to site scores
@@ -55,13 +55,13 @@ endemism_qplot = plotSDM(quantiles(endemism), c=:viridis,
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(endemism_plot, "fig/$(outcome)/07_$(outcome)_endemism.png")
+    savefig(endemism_plot, joinpath("fig", outcome, "07_$(outcome)_endemism.png"))
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(endemism_qplot, "fig/quantiles/07_$(outcome)_endemism_quantiles.png")
+    savefig(endemism_qplot, joinpath("fig", "quantiles", "07_$(outcome)_endemism_quantiles.png"))
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end

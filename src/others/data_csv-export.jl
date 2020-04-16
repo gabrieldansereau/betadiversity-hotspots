@@ -1,12 +1,12 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Export data to csv files with names consistent with NEwR
 
 # Load required results
-@load "data/jld2/raw-distributions.jld2" distributions spenames speindex
-@load "data/jld2/raw-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+@load joinpath("data", "jld2", "raw-distributions.jld2") distributions spenames speindex
+@load joinpath("data", "jld2", "raw-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 
 # Define coordinates range
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
@@ -45,11 +45,11 @@ spa_full = DataFrame(lat = lats, lon = lons)
 
 ## Export dataframes
 # CSV.write("data/proc/distributions_spe_full.csv", spe_full, delim="\t") # not needed
-CSV.write("data/proc/distributions_env_full.csv", env_full, delim="\t")
-CSV.write("data/proc/distributions_spa_full.csv", spa_full, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_full, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_full, delim="\t")
 
 # Test load
-testdf = CSV.read("data/proc/distributions_spa_full.csv", header=true, delim="\t")
+testdf = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t")
 
 ## Filter to observed sites ##
 
@@ -59,9 +59,9 @@ env_obs = env_full[inds_obs,:]
 spa_obs = spa_full[inds_obs,:]
 
 # Export observed dataframes
-CSV.write("data/proc/distributions_spe.csv", spe_obs, delim="\t")
-CSV.write("data/proc/distributions_env.csv", env_obs, delim="\t")
-CSV.write("data/proc/distributions_spa.csv", spa_obs, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_spe.csv"), spe_obs, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_env.csv"), env_obs, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_spa.csv"), spa_obs, delim="\t")
 
 #### Restrict data to Quebec ####
 
@@ -87,8 +87,8 @@ speqc_obs = speqc_obs[:, cols_obs]
 
 ## Export QC data
 # CSV.write("data/proc/distributions_spe_qc_full.csv", speqc_full, delim="\t") # not needed
-CSV.write("data/proc/distributions_env_qc_full.csv", envqc_full, delim="\t")
-CSV.write("data/proc/distributions_spa_qc_full.csv", spaqc_full, delim="\t")
-CSV.write("data/proc/distributions_spe_qc.csv", speqc_obs, delim="\t")
-CSV.write("data/proc/distributions_env_qc.csv", envqc_obs, delim="\t")
-CSV.write("data/proc/distributions_spa_qc.csv", spaqc_obs, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_env_qc_full.csv"), envqc_full, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_spa_qc_full.csv"), spaqc_full, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_spe_qc.csv"), speqc_obs, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_env_qc.csv"), envqc_obs, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spaqc_obs, delim="\t")
