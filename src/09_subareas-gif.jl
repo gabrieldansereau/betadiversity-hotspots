@@ -101,7 +101,7 @@ function plot_lcbd_richness(richness, lcbd; title = "", kw...)
   p3 = plot(quantiles(lcbd), c = :viridis, title = "LCBD quantiles", colorbar_title = "Quantile rank", clim = (0,1))
   p4 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
             xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-            xlim = (1, 40), ylim = (0.0, 1.0), clim = (0.0, 45.0))
+            xlim = (1, 40), ylim = (0.0, 1.0))
   if title != ""
     l = @layout [t{.01h}; grid(2,2)]
     ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
@@ -161,5 +161,5 @@ end
 anim = @animate for p in subarea_plots
     plot(p)
 end
-gif(anim, fps = 10)
+gif(anim, fps = 7)
 gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
