@@ -97,10 +97,11 @@ end
 ## Combine figures
 function plot_lcbd_richness(richness, lcbd; title = "", kw...)
   p1 = plot(richness, c = :viridis, title = "Richness", colorbar_title = "Number of species")
-  p2 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score")
-  p3 = plot(quantiles(lcbd), c = :viridis, title = "LCBD quantiles", colorbar_title = "Quantile rank")
+  p2 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
+  p3 = plot(quantiles(lcbd), c = :viridis, title = "LCBD quantiles", colorbar_title = "Quantile rank", clim = (0,1))
   p4 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
-            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites")
+            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
+            xlim = (1, 40), ylim = (0.0, 1.0), clim = (0.0, 45.0))
   if title != ""
     l = @layout [t{.01h}; grid(2,2)]
     ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
@@ -112,11 +113,15 @@ function plot_lcbd_richness(richness, lcbd; title = "", kw...)
 end
 
 #### Repeat for different subareas
-function plot_subareas(coords, initial_distributions; transform = true, kw...)
+function plot_subareas(coords, initial_distributions; display_coords = coords, transform = true, kw...)
   distributions = [d[coords] for d in initial_distributions]
   Y = calculate_Ymatrix(distributions)
   richness = calculate_richness(Y.Y, Y.inds_notobs, distributions)
   lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions)
+  if display_coords != coords
+    richness = richness[display_coords]
+    lcbd = [l[display_coords] for l in lcbd]
+  end
   if transform
     p = plot_lcbd_richness(richness, lcbd[2]; kw...)
   else
@@ -124,23 +129,37 @@ function plot_subareas(coords, initial_distributions; transform = true, kw...)
   end
 end
 
+# Initial subarea
 left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-p = plot_subareas(coords_subarea, distributions)
 p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
 
+# Expanding GIF
 subarea_plots = []
-
 @time while left > -145.0 && bottom > 20.0
   global left -= 1.0
   global bottom -= 0.5;
   coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-  p = plot_subareas(coords_subarea, distributions, formatter = f -> "$(round(f, digits = 1))")
+  p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
   push!(subarea_plots, p)
 end
-subarea_plots
 
+# Focused GIF
+display_coords = coords_subarea
+subarea_plots = []
+@time while left > -145.0 && bottom > 20.0
+  global left -= 1.0
+  global bottom -= 0.5;
+  coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+  p = plot_subareas(coords_subarea, distributions;
+                    display_coords = display_coords,
+                    formatter = f -> "$(round(f, digits = 1))")
+  push!(subarea_plots, p)
+end
+
+# Create GIF
 anim = @animate for p in subarea_plots
     plot(p)
 end
+gif(anim, fps = 10)
 gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
