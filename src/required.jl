@@ -12,7 +12,10 @@ using SimpleSDMLayers
 using Random
 using ProgressMeter
 using ArchGDAL
+using RCall
 
+include(joinpath("lib", "analysis.jl"))
+include(joinpath("lib", "beta-div.jl"))
 include(joinpath("lib", "bioclim.jl"))
 include(joinpath("lib", "csvdata.jl"))
 include(joinpath("lib", "landcover.jl"))
