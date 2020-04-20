@@ -9,16 +9,6 @@ using Distributed
 @load "data/jld2/raw-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
 
 ## Richness
-function calculate_richness(Y, inds_notobs, distributions)
-  ## Get number of species per site
-  sums = map(x -> Float64(sum(x)), eachrow(Y))
-  # Add NaN for non predicted sites
-  sums[inds_notobs] .= NaN
-  # Reshape to grid format
-  sums = reshape(sums, size(distributions[1]))
-  ## Create SimpleSDMLayer
-  richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
-end
 richness_raw = calculate_richness(Y, inds_notobs, distributions)
 
 # Visualize
@@ -28,7 +18,6 @@ plotSDM(richness_raw, c = :viridis)
 richness_values = Int64.(richness_raw.grid[inds_obs])
 
 ## Random Forest
-using RCall
 @rput richness_values inds_obs
 begin
   R"""
