@@ -49,7 +49,7 @@ end
 
 ## LCBD
 # Load functions
-function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
+function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions; relative = true)
   ## Compute beta diversity statistics
   # Compute BD statistics on distribution data
   resBDobs = BD(Yobs)
@@ -60,9 +60,11 @@ function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
   resBD = [resBDobs, resBDtransf]
   LCBDsets = [res.LCBDi for res in resBD]
   # Scale LCBDi values to maximum value
-  LCBDsets_raw = copy(LCBDsets)
-  LCBDsets = [LCBDi./maximum(LCBDi) for LCBDi in LCBDsets]
-  LCBDsets = [LCBDsets..., LCBDsets_raw...]
+  if relative
+    LCBDsets_raw = copy(LCBDsets)
+    LCBDsets = [LCBDi./maximum(LCBDi) for LCBDi in LCBDsets]
+    LCBDsets = [LCBDsets..., LCBDsets_raw...]
+  end
 
   ## Arrange LCBD values as grid
   # Create empty grids

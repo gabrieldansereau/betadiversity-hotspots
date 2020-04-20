@@ -34,11 +34,11 @@ function plot_lcbd_richness(richness, lcbd; title = "", kw...)
 end
 
 #### Repeat for different subareas
-function plot_subareas(coords, initial_distributions; display_coords = coords, transform = true, kw...)
+function plot_subareas(coords, initial_distributions; display_coords = coords, transform = true, relative = true, kw...)
   distributions = [d[coords] for d in initial_distributions]
   Y = calculate_Ymatrix(distributions)
   richness = calculate_richness(Y.Y, Y.inds_notobs, distributions)
-  lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions)
+  lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions; relative = relative)
   if display_coords != coords
     richness = richness[display_coords]
     lcbd = [l[display_coords] for l in lcbd]
@@ -54,6 +54,11 @@ end
 left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
+p = plot_subareas(coords_subarea, distributions;
+                  relative = false,
+                  clim = [() () () ()],
+                  ylim = [() () () ()],
+                  formatter = f -> "$(round(f, digits = 1))")
 
 ## Expanding GIF
 left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
