@@ -17,7 +17,7 @@ plotSDM(richness_raw, c = :viridis)
 ## Extract values for model
 richness_values = Int64.(richness_raw.grid[inds_obs])
 
-## Random Forest
+## Train Random Forest
 @rput richness_values inds_obs
 begin
   R"""
@@ -58,3 +58,15 @@ begin
 
   """
 end
+
+begin
+  R"""
+  predictions <- predict(classif_model, vars)$predictions
+  predictions <- as.numeric(levels(predictions))[predictions]
+  """
+end
+
+@rget predictions inds_withNa
+
+richness_rf = similar(richness_raw)
+richness_raw.grid[inds_obs] .= predictions
