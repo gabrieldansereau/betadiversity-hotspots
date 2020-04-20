@@ -12,12 +12,15 @@ using SimpleSDMLayers
 using Random
 using ProgressMeter
 using ArchGDAL
+using RCall
 
-include("lib/bioclim.jl")
-include("lib/csvdata.jl")
-include("lib/landcover.jl")
-include("lib/overloads.jl")
-include("lib/plotSDM.jl")
-include("lib/presence-absence.jl")
-include("lib/quantiles.jl")
-include("lib/shapefiles.jl")
+include(joinpath("lib", "analysis.jl"))
+include(joinpath("lib", "beta-div.jl"))
+include(joinpath("lib", "bioclim.jl"))
+include(joinpath("lib", "csvdata.jl"))
+include(joinpath("lib", "landcover.jl"))
+include(joinpath("lib", "overloads.jl"))
+include(joinpath("lib", "plotSDM.jl"))
+include(joinpath("lib", "presence-absence.jl"))
+include(joinpath("lib", "quantiles.jl"))
+include(joinpath("lib", "shapefiles.jl"))

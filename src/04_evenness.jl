@@ -1,6 +1,6 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
@@ -17,7 +17,7 @@ else
 end
 
 ## Load distributions for all species
-@load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
 
 ## Create custom functions
 # Function for Pielou's evenness index
@@ -75,8 +75,8 @@ diversity_plot2 = plotSDM(diversity2, c=:BuPu,
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) evenness)"
-    savefig(diversity_plot, "fig/$(outcome)/04_$(outcome)_diversity-pielou.png")
-    savefig(diversity_plot2, "fig/$(outcome)/04_$(outcome)_diversity-pielou2.png")
+    savefig(diversity_plot, joinpath("fig", outcome, "04_$(outcome)_diversity-pielou.png"))
+    savefig(diversity_plot2, joinpath("fig", outcome, "04_$(outcome)_diversity-pielou2.png"))
 else
     @info "Figures not saved ($(outcome) evenness)"
 end

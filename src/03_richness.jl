@@ -1,6 +1,6 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
@@ -17,10 +17,10 @@ else
 end
 
 ## Load distribution data for all species
-@load "data/jld2/$(outcome)-distributions.jld2" distributions spenames speindex
+@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
 
 ## Load matrix Y
-@load "data/jld2/$(outcome)-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+@load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 
 #### Species richness
 ## Get number of species per site
@@ -49,13 +49,13 @@ richness_qplot = plotSDM(quantiles(richness), c=:viridis,
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) richness)"
-    savefig(richness_plot, "fig/$(outcome)/03_$(outcome)_richness.png")
+    savefig(richness_plot, joinpath("fig", outcome, "03_$(outcome)_richness.png"))
 else
     @info "Figures not saved ($(outcome) richness)"
 end
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) richness)"
-    savefig(richness_qplot, "fig/quantiles/03_$(outcome)_richness_quantiles.png")
+    savefig(richness_qplot, joinpath("fig", "quantiles", "03_$(outcome)_richness_quantiles.png"))
 else
     @info "Figures not saved ($(outcome) richness)"
 end
