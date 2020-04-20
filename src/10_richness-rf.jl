@@ -59,14 +59,24 @@ begin
   """
 end
 
+## Extract Random Forest predictions for observed sites
 begin
   R"""
   predictions <- predict(classif_model, vars)$predictions
   predictions <- as.numeric(levels(predictions))[predictions]
   """
 end
+@rget predictions inds_withNAs
 
-@rget predictions inds_withNa
-
+## Plot predicted richness
 richness_rf = similar(richness_raw)
-richness_raw.grid[inds_obs] .= predictions
+richness_rf.grid[inds_obs[Not(inds_withNAs)]] = predictions
+
+plotSDM(richness_rf, c = :viridis)
+plotSDM(richness_rf, c = :viridis)
+
+# Map richness difference
+richness_diff = similar(richness_raw)
+richness_diff.grid = abs.(richness_rf.grid .- richness_raw.grid)
+plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf))
+histogram(filter(!isnan, richness_diff.grid), bins = 20)
