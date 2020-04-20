@@ -1,5 +1,4 @@
 ## Get Ymatrices
-using RCall
 function calculate_Ymatrix(distributions)
   ## Create matrix Y (site-by-species community data table)
   # Get distributions as vectors
@@ -50,7 +49,6 @@ end
 
 ## LCBD
 # Load functions
-include(joinpath("lib", "beta-div.jl"))
 function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
   ## Compute beta diversity statistics
   # Compute BD statistics on distribution data
