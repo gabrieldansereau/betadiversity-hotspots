@@ -55,17 +55,30 @@ left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
 
-# Expanding GIF
+## Expanding GIF
+left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
+coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 subarea_plots = []
 @time while left > -145.0 && bottom > 20.0
   global left -= 1.0
   global bottom -= 0.5;
   coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-  p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
+  p = plot_subareas(coords_subarea, distributions;
+                    formatter = f -> "$(round(f, digits = 1))",
+                    dpi = 150)
   push!(subarea_plots, p)
 end
 
-# Focused GIF
+# Create GIF
+anim = @animate for p in subarea_plots
+    plot(p)
+end
+gif(anim, fps = 3)
+gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
+
+## Focused GIF
+left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
+coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 display_coords = coords_subarea
 subarea_plots = []
 @time while left > -145.0 && bottom > 20.0
@@ -74,7 +87,9 @@ subarea_plots = []
   coords_subarea = (left = left, right = right, bottom = bottom, top = top)
   p = plot_subareas(coords_subarea, distributions;
                     display_coords = display_coords,
-                    formatter = f -> "$(round(f, digits = 1))")
+                    formatter = f -> "$(round(f, digits = 1))",
+                    clim = [(0,25) (0,1) (0,45) (0,1)],
+                    dpi = 150)
   push!(subarea_plots, p)
 end
 
@@ -83,4 +98,4 @@ anim = @animate for p in subarea_plots
     plot(p)
 end
 gif(anim, fps = 7)
-gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
+gif(anim, joinpath("fig", outcome, "09_subareas-focused.gif"), fps = 7)
