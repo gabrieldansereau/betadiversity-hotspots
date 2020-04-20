@@ -104,3 +104,40 @@ anim = @animate for p in subarea_plots
 end
 gif(anim, fps = 7)
 gif(anim, joinpath("fig", outcome, "09_subareas-focused.gif"), fps = 7)
+
+
+## 3 scales comparison
+
+ntimes = 55.0
+
+left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
+coords1 = (left = left , right = right, bottom = bottom, top = top)
+coords2 = (left = left - median(1:ntimes), right = right, bottom = bottom - 0.5*median(1:ntimes), top = top)
+coords3 = (left = left - ntimes, right = right, bottom = bottom - 0.5*ntimes, top = top)
+
+subarea_plots = [plot_subareas(c, distributions; formatter = f -> "$(round(f, digits = 1))") for c in (coords1, coords2, coords3)]
+subarea_plots = [plot_subareas(c, distributions;
+                               relative = false,
+                               clim = [() (0.0,Inf) () ()],
+                               ylim = [() () (0.0,Inf) ()],
+                               colorbar_title = ["Number of sites" "LCBD score" "Number of sites" "LCBD score" "Number of sites" "LCBD score"],
+                               formatter = :plain
+                               )
+                               for c in (coords1, coords2, coords3)]
+
+ps = []
+p_comb = []
+for p in subarea_plots
+  p_lcbd = p[2][1][:plot_object]
+  p_rel = p[3][1][:plot_object]
+  push!(ps, p_lcbd, p_rel)
+  push!(p_comb, plot(p_lcbd, p_rel, layout = (2,1)))
+end
+
+l1 = @layout [a{0.6w} b;
+              c{0.6w} d;
+              e{0.6w} f]
+p = plot(ps..., layout = l1, size = (1000,800))
+
+savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
+savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales-abs.png"))
