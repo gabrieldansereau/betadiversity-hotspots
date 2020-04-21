@@ -1,12 +1,12 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include("src/required.jl")
+@time @everywhere include(joinpath("src", "required.jl"))
 
 ## Load distribution data for all species
-@load "data/jld2/raw-distributions.jld2" distributions spenames speindex
+@load joinpath("data", "jld2", "raw-distributions.jld2") distributions spenames speindex
 
 ## Load matrix Y
-@load "data/jld2/raw-Y-matrices.jld2" Y Yobs Ytransf inds_obs inds_notobs
+@load joinpath("data", "jld2", "raw-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 
 ## Richness
 richness_raw = calculate_richness(Y, inds_notobs, distributions)
@@ -72,11 +72,71 @@ end
 richness_rf = similar(richness_raw)
 richness_rf.grid[inds_obs[Not(inds_withNAs)]] = predictions
 
-plotSDM(richness_rf, c = :viridis)
-plotSDM(richness_rf, c = :viridis)
+richness_plot = plotSDM(richness_rf, c = :viridis,
+                        title = "Richness RF predictions - Observed sites",
+                        colorbar_title = "Predicted number of species",
+                        dpi = 150)
 
 # Map richness difference
 richness_diff = similar(richness_raw)
 richness_diff.grid = abs.(richness_rf.grid .- richness_raw.grid)
-plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf))
+diff_plot = plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf),
+                    title = "Predicted richness - RF vs raw",
+                    colorbar_title = "Difference in predicted richness (absolute)",
+                    dpi = 150)
+histogram(filter(!isnan, richness_diff.grid), bins = 20)
+
+## Predictions for full range
+begin
+  R"""
+  ## Predict distributions for full range
+  env_full <- read.csv("data/proc/distributions_env_full.csv", header = TRUE, sep = "\t")
+  spa_full <- read.csv("data/proc/distributions_spa_full.csv", header = TRUE, sep = "\t")
+  vars_full <- cbind(env_full, spa_full)
+  head(vars_full)
+
+  # Remove sites with NA values
+  inds_na <- sapply(env_full, function(x) which(is.na(x)))
+  (inds_na <- sort(unique(unlist(inds_na))))
+  vars_nona <- vars_full[-inds_na,]
+
+  # Make predictions
+  predictions <- predict(classif_model, vars_nona)$predictions
+  predictions <- as.numeric(levels(predictions))[predictions]
+
+  # Add sites with NAs
+  predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = 1)
+  colnames(predictions_full) <- colnames(predictions)
+  predictions_full[-inds_na,] <- predictions
+
+  """
+end
+
+@rget predictions_full
+
+# Arrange as layer
+replace!(predictions_full, missing => NaN)
+predictions_full = reshape(predictions_full, size(richness_raw.grid)) |> Array{Float64}
+richness_rf_full = similar(richness_raw)
+richness_rf_full.grid = predictions_full
+
+# Visualize result
+richness_plot_full = plotSDM(richness_rf_full, c = :viridis,
+                             title = "Richness RF predictions- All sites",
+                             colorbar_title = "Predicted number of species",
+                             dpi = 150)
+
+# Get comparison
+@load joinpath("data/", "jld2", "rf-distributions.jld2") distributions
+sdm = calculate_Ymatrix(distributions)
+richness_sdm = calculate_richness(sdm.Y, sdm.inds_notobs, distributions)
+plotSDM(richness_sdm, c = :viridis)
+
+# Map richness difference
+richness_diff_full = similar(richness_rf_full)
+richness_diff_full.grid = abs.(richness_rf_full.grid .- richness_sdm.grid)
+diff_plot_full = plotSDM(richness_diff_full, c = :inferno, clim = (-Inf, Inf),
+                         title = "Predicted richness - RF vs SDM",
+                         colorbar_title = "Difference in predicted richness (absolute)",
+                         dpi = 150)
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
