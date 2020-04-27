@@ -102,12 +102,14 @@ p = plot_subareas(coords_subarea, distributions;
                   formatter = f -> "$(round(f, digits = 1))")
 
 ## Expanding GIF
-left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
+left = -71.0; right = -64.0; bottom = 46.0; top = 50.0
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 subarea_plots = []
-@time while left > -145.0 && bottom > 20.0
-  global left -= 1.0
-  global bottom -= 0.5;
+nplots = 0
+@time while left > -145.0+ratio && bottom > 20.0+0.66
+  global nplots += 1
+  global left -= ratio
+  global bottom -= 0.66;
   coords_subarea = (left = left, right = right, bottom = bottom, top = top)
   p = plot_subareas(coords_subarea, distributions;
                     formatter = f -> "$(round(f, digits = 1))",
@@ -119,7 +121,7 @@ end
 anim = @animate for p in subarea_plots
     plot(p)
 end
-gif(anim, fps = 3)
+gif(anim, fps = 10)
 gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
 
 ## Focused GIF
@@ -149,16 +151,17 @@ gif(anim, joinpath("fig", outcome, "09_subareas-focused.gif"), fps = 7)
 
 #### 3 scales comparison
 
-# Span of scale increases (-1 lon, -0.5 lat)
-ntimes = 55.0
+ratio = 92.60/60.75
+
 # Defines scales coordinates
-left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
-coords1 = (left = left , right = right, bottom = bottom, top = top)
-coords2 = (left = left - median(1:ntimes), right = right, bottom = bottom - 0.5*median(1:ntimes), top = top)
-coords3 = (left = left - ntimes, right = right, bottom = bottom - 0.5*ntimes, top = top)
+left = -71.0; right = -64.0; bottom = 46.5; top = 50.0
+coords1 = (left = left - ratio, right = right, bottom = bottom - 0.66, top = top)
+coords2 = (left = left - ratio*round(median(1:nplots)), right = right, bottom = bottom - 0.66*round(median(1:nplots)), top = top)
+coords3 = (left = left - ratio*nplots, right = right, bottom = bottom - nplots*0.66, top = top)
 
 # Get subarea plots
 subarea_plots = [plot_subareas(c, distributions; formatter = f -> "$(round(f, digits = 1))") for c in (coords1, coords2, coords3)]
+#=
 subarea_plots = [plot_subareas(c, distributions;
                                relative = false,
                                clim = [() (0.0,Inf) () ()],
@@ -167,6 +170,7 @@ subarea_plots = [plot_subareas(c, distributions;
                                formatter = :plain
                                )
                                for c in (coords1, coords2, coords3)]
+=#
 
 # Extract LCBD & relationship plots only
 ps = []
@@ -183,6 +187,8 @@ l1 = @layout [a{0.6w} b;
               c{0.6w} d;
               e{0.6w} f]
 p = plot(ps..., layout = l1, size = (1000,800))
+
+[[(c.left - c.right)/(c.top - c.bottom)/ratio] for c in (coords1, coords2, coords3)]
 
 # Export figures
 savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
