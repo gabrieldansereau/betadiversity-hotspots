@@ -102,9 +102,9 @@ p = plot_subareas(coords_subarea, distributions;
                   formatter = f -> "$(round(f, digits = 1))")
 
 ## Expanding GIF
+left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
+dim_ratio = (top-bottom)/(right-left)
 asp_ratio = 92.60/60.75
-dim_ratio = 0.5
-left = -71.0; right = -64.0; bottom = 46.0; top = 50.0
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 subarea_plots = []
 nplots = 0
@@ -115,26 +115,30 @@ nplots = 0
   coords_subarea = (left = left, right = right, bottom = bottom, top = top)
   p = plot_subareas(coords_subarea, distributions;
                     formatter = f -> "$(round(f, digits = 1))",
-                    aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio]
+                    aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio],
                     dpi = 150)
   push!(subarea_plots, p)
 end
 
 # Create GIF
-anim = @animate for p in subarea_plots
+anim = @animate for p in subarea_plots[Not(1)]
     plot(p)
 end
 gif(anim, fps = 7)
 gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
 
 ## Focused GIF
-left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
+left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
+dim_ratio = (top-bottom)/(right-left)
+asp_ratio = 92.60/60.75
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-display_coords = coords_subarea
 subarea_plots = []
-@time while left > -145.0 && bottom > 20.0
-  global left -= 1.0
-  global bottom -= 0.5;
+nplots = 0
+display_coords = coords_subarea
+@time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
+  global nplots += 1
+  global left -= asp_ratio
+  global bottom -= asp_ratio * dim_ratio
   coords_subarea = (left = left, right = right, bottom = bottom, top = top)
   p = plot_subareas(coords_subarea, distributions;
                     display_coords = display_coords,
@@ -145,7 +149,7 @@ subarea_plots = []
 end
 
 # Create GIF
-anim = @animate for p in subarea_plots
+anim = @animate for p in subarea_plots[Not(1)]
     plot(p)
 end
 gif(anim, fps = 7)
@@ -155,11 +159,13 @@ gif(anim, joinpath("fig", outcome, "09_subareas-focused.gif"), fps = 7)
 #### 3 scales comparison
 
 nplots
-asp_ratio = 92.60/60.75
-dim_ratio = 0.5
+asp_ratio
+dim_ratio
 
 # Defines scales coordinates
-left = -71.0; right = -64.0; bottom = 46.5; top = 50.0
+left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
+dim_ratio = (top-bottom)/(right-left)
+asp_ratio = 92.60/60.75
 coords1 = (left = left - asp_ratio,
            bottom = bottom - asp_ratio*dim_ratio,
            right = right, top = top)
@@ -183,7 +189,8 @@ subarea_plots = [plot_subareas(c, distributions;
                                clim = [() (0.0,Inf) () ()],
                                ylim = [() () (0.0,Inf) ()],
                                colorbar_title = ["Number of sites" "LCBD score" "Number of sites" "LCBD score" "Number of sites" "LCBD score"],
-                               formatter = :plain
+                               formatter = :plain,
+                               aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio]
                                )
                                for c in (coords1, coords2, coords3)]
 =#
