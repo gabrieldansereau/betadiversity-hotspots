@@ -90,16 +90,19 @@ function plot_subareas(coords, initial_distributions; display_coords = coords, t
 end
 
 # Initial subarea
-left = -71.0; right = -64.0; bottom = 47.5; top = 50.0
+left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 # Relative LCBD values
 p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
 # Non-relative values
 p = plot_subareas(coords_subarea, distributions;
                   relative = false,
-                  clim = [() () () ()],
-                  ylim = [() () () ()],
-                  formatter = f -> "$(round(f, digits = 1))")
+                  clim = [() (0.0,Inf) () ()],
+                  ylim = [() () (0.0,Inf) ()],
+                  colorbar_title = ["Number of sites" "LCBD score" "Number of sites" "LCBD score" "Number of sites" "LCBD score"],
+                  formatter = :plain,
+                  aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio]
+                  )
 
 ## Expanding GIF
 left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
@@ -127,82 +130,15 @@ end
 gif(anim, fps = 7)
 gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
 
-## Focused GIF
-left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
-dim_ratio = (top-bottom)/(right-left)
-asp_ratio = 92.60/60.75
-coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-subarea_plots = []
-nplots = 0
-display_coords = coords_subarea
-@time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
-  global nplots += 1
-  global left -= asp_ratio
-  global bottom -= asp_ratio * dim_ratio
-  coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-  p = plot_subareas(coords_subarea, distributions;
-                    display_coords = display_coords,
-                    formatter = f -> "$(round(f, digits = 1))",
-                    clim = [(0,25) (0,1) (0,45) (0,1)],
-                    dpi = 150)
-  push!(subarea_plots, p)
-end
-
-# Create GIF
-anim = @animate for p in subarea_plots[Not(1)]
-    plot(p)
-end
-gif(anim, fps = 7)
-gif(anim, joinpath("fig", outcome, "09_subareas-focused.gif"), fps = 7)
-
-
 #### 3 scales comparison
 
-nplots
-asp_ratio
-dim_ratio
-
-# Defines scales coordinates
-left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
-dim_ratio = (top-bottom)/(right-left)
-asp_ratio = 92.60/60.75
-coords1 = (left = left - asp_ratio,
-           bottom = bottom - asp_ratio*dim_ratio,
-           right = right, top = top)
-coords2 = (left = left - asp_ratio*round(median(1:nplots)),
-           bottom = bottom - asp_ratio*dim_ratio*round(median(1:nplots)),
-           right = right, top = top)
-coords3 = (left = left - asp_ratio*nplots,
-           bottom = bottom - asp_ratio*dim_ratio*nplots,
-           right = right, top = top)
-[(c.top - c.bottom)/(c.right - c.left) for c in (coords1, coords2, coords3)]
-
-# Get subarea plots
-subarea_plots = [plot_subareas(c, distributions;
-                               formatter = f -> "$(round(f, digits = 1))",
-                               aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio]
-                               )
-                 for c in (coords1, coords2, coords3)]
-#=
-subarea_plots = [plot_subareas(c, distributions;
-                               relative = false,
-                               clim = [() (0.0,Inf) () ()],
-                               ylim = [() () (0.0,Inf) ()],
-                               colorbar_title = ["Number of sites" "LCBD score" "Number of sites" "LCBD score" "Number of sites" "LCBD score"],
-                               formatter = :plain,
-                               aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio]
-                               )
-                               for c in (coords1, coords2, coords3)]
-=#
-
-# Extract LCBD & relationship plots only
+# Extract LCBD & relationship subplots for first, middle, last GIF plots
 ps = []
-p_comb = []
-for p in subarea_plots
+mid_ind = median(1:length(subarea_plots)) |> round |> Int64
+for p in subarea_plots[[1, mid_ind, end]]
   p_lcbd = p[2][1][:plot_object]
   p_rel = p[3][1][:plot_object]
   push!(ps, p_lcbd, p_rel)
-  push!(p_comb, plot(p_lcbd, p_rel, layout = (2,1)))
 end
 
 # Combine 3 scales
@@ -213,4 +149,3 @@ p = plot(ps..., layout = l1, size = (1000,800))
 
 # Export figures
 savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
-savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales-abs.png"))
