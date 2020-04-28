@@ -45,12 +45,16 @@ begin
 end
 @rget predictions predictions_full inds_na
 
-# Create Y matrices
+## Create Y matrices
+# Get matrix Y
 Y = replace(predictions_full, missing => NaN)
-Y = Array{Float64}(Y)
-Yobs = predictions
-inds_notobs = inds_na
-inds_obs = collect(1:size(Y,1))[Not(inds_notobs)]
+# Set values to NaN if no species present
+inds_zeros = findall(map(x -> all(iszero.(x)), eachrow(Y)))
+Y[inds_zeros,:] .= NaN
+# Get Yobs
+inds_obs = findall(map(x -> !any(isnan.(x)), eachrow(Y)))
+inds_notobs = findall(map(x -> any(isnan.(x)), eachrow(Y)))
+Yobs = Y[inds_obs,:]
 
 # Load raw distributions (for grid size)
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
@@ -66,22 +70,19 @@ plotSDM(distributions[1], c=:BuPu)
 
 #### Richness ####
 
-#### Species richness
-## Get number of species per site
+# Get number of species per site
 sums = map(x -> Float64(sum(x)), eachrow(Y))
-# Replace zeros by NaN
-replace!(x -> iszero(x) ? NaN : x, sums)
 # Reshape to grid format
 sums = reshape(sums, size(distributions[1]))
 
-## Create SimpleSDMLayer
+# Create SimpleSDMLayer
 richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
+
+plotSDM(richness, c = :viridis)
 
 #### LCBD
 
-inds_obs = findall(map(x -> !any(isnan.(x)), eachrow(Y)))
-inds_notobs = findall(map(x -> any(isnan.(x)), eachrow(Y)))
-Yobs = Y[inds_obs,:]
+# Apply Hellinger transformation
 @rput Yobs
 begin
     R"""
@@ -112,7 +113,10 @@ LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
 # Fill in grids
 [LCBDgrids[i][inds_obs] = LCBDsets[i] for i in 1:length(LCBDgrids)]
 # Create SimpleSDMLayer with LCBD values
-LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
+LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right,
+                                     distributions[1].bottom, distributions[1].top)
+
+plotSDM(LCBD[1], c = :viridis)
 
 #### Compare with previous results
 ## Export results
