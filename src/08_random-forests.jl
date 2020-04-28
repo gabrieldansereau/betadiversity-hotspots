@@ -69,6 +69,8 @@ plotSDM(distributions[1], c=:BuPu)
 #### Species richness
 ## Get number of species per site
 sums = map(x -> Float64(sum(x)), eachrow(Y))
+# Replace zeros by NaN
+replace!(x -> iszero(x) ? NaN : x, sums)
 # Reshape to grid format
 sums = reshape(sums, size(distributions[1]))
 
@@ -167,6 +169,8 @@ sdm = (distributions = distributions,
        richness = richness,
        LCBD = LCBD)
 
+## Compare results
+
 dist_rf = plotSDM(rf.distributions[1], c=:BuPu, title = "Distributions - RF", dpi = 300)
 dist_raw = plotSDM(raw.distributions[1], c=:BuPu, title = "Distributions - Raw", dpi = 300)
 dist_sdm = plotSDM(sdm.distributions[1], c=:BuPu, title = "Distributions - SDM", dpi = 300)
@@ -255,7 +259,7 @@ relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
 scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD[2].grid),
          markersize = 2, c = :orange, msw = 0, label = "SDM predictions")
 
-#### Export figures
+#### Export RF figures
 
 savefig(dist_rf, joinpath("fig", "rf", "01_rf_sp-Setophaga-coronata.png"))
 savefig(rich_rf, joinpath("fig", "rf", "03_rf_richness.png"))
