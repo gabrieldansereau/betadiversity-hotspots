@@ -55,6 +55,15 @@ Y[inds_zeros,:] .= NaN
 inds_obs = findall(map(x -> !any(isnan.(x)), eachrow(Y)))
 inds_notobs = findall(map(x -> any(isnan.(x)), eachrow(Y)))
 Yobs = Y[inds_obs,:]
+# Apply Hellinger transformation
+@rput Yobs
+begin
+    R"""
+        library(vegan)
+        Ytransf <- decostand(Yobs, "hel")
+    """
+end
+@rget Ytransf
 
 # Load raw distributions (for grid size)
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
@@ -68,57 +77,16 @@ distributions = SimpleSDMResponse.(rf_grids, distributions[1].left, distribution
 
 plotSDM(distributions[1], c=:BuPu)
 
-#### Richness ####
+## Richness
 
-# Get number of species per site
-sums = map(x -> Float64(sum(x)), eachrow(Y))
-# Reshape to grid format
-sums = reshape(sums, size(distributions[1]))
-
-# Create SimpleSDMLayer
-richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
-
+richness = calculate_richness(Y, inds_notobs, distributions)
 plotSDM(richness, c = :viridis)
 
-#### LCBD
+## LCBD
 
-# Apply Hellinger transformation
-@rput Yobs
-begin
-    R"""
-        library(vegan)
-        Ytransf <- decostand(Yobs, "hel")
-    """
-end
-@rget Ytransf
-
-# Load functions
-include(joinpath("lib", "beta-div.jl"))
-# Compute BD statistics on distribution data
-resBDobs = BD(Yobs)
-# Compute BD statistics on transformed data
-resBDtransf = BD(Ytransf)
-
-# Extract LCBD values
-resBD = [resBDobs, resBDtransf]
-LCBDsets = [res.LCBDi for res in resBD]
-# Scale LCBDi values to maximum value
-LCBDsets_raw = copy(LCBDsets)
-LCBDsets = [LCBDi./maximum(LCBDi) for LCBDi in LCBDsets]
-LCBDsets = [LCBDsets..., LCBDsets_raw...]
-
-## Arrange LCBD values as grid
-# Create empty grids
-LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
-# Fill in grids
-[LCBDgrids[i][inds_obs] = LCBDsets[i] for i in 1:length(LCBDgrids)]
-# Create SimpleSDMLayer with LCBD values
-LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right,
-                                     distributions[1].bottom, distributions[1].top)
-
+LCBD = calculate_lcbd(Yobs, Ytransf, inds_obs, distributions)
 plotSDM(LCBD[1], c = :viridis)
 
-#### Compare with previous results
 ## Export results
 @save joinpath("data", "jld2", "rf-distributions.jld2") distributions
 @save joinpath("data", "jld2", "rf-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
@@ -126,6 +94,7 @@ plotSDM(LCBD[1], c = :viridis)
 @load joinpath("data", "jld2", "rf-distributions.jld2") distributions
 @load joinpath("data", "jld2", "rf-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 
+#### Compare with previous results
 ## Save random forest results
 rf = (distributions = distributions,
       Y = Y,
@@ -135,7 +104,6 @@ rf = (distributions = distributions,
       inds_notobs = inds_notobs,
       richness = richness,
       LCBD = LCBD)
-
 
 ## Load raw LCBD & richness results
 outcome = "raw"
