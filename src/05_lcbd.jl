@@ -75,7 +75,7 @@ end
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
     savefig(lcbd_qplot, joinpath("fig", "quantiles", "05_$(outcome)_lcbd_quantiles.png")
-    savefig(lcbdtr_qplot, joinpath("fig", "quantiles", "05_$(outcome)_lcbd-transf_quantiles.png")
+    savefig(lcbdtr_qplot, joinpath("fig", "quantiles", "05_$(outcome)_lcbd-transf_quantiles.png"))
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end
