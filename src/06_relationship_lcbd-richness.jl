@@ -153,3 +153,18 @@ if (@isdefined save_relfigures) && save_relfigures == true
 else
     @info "Figures not saved (relationship)"
 end
+
+#### Histogram2D
+
+# outcome = "raw"
+@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
+
+Ymats = calculate_Ymatrix(distributions)
+richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions)
+lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions)
+
+rel2d = histogram2d(richness, lcbd[2], c = :viridis, bins = 40, title = "Relationship",
+        xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
+        xlim = (1, 45), ylim = (0.0, 1.0), dpi = 150)
+
+savefig(rel2d, joinpath("fig", outcome, "06_$(outcome)_relationship2d-transf.png"))
