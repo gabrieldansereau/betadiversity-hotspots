@@ -12,7 +12,7 @@ else
   @info "'outcome' currently set to '$(outcome)'"
 end
 
-## Load distribution data for all species
+## Prepare data
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
 distributions[1]
@@ -23,24 +23,24 @@ lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions)
 
 plotSDM(richness, c = :viridis)
 
-eachindex(richness.grid)
+## Dummy example
 
+# Dummy set
 mat = Array(reshape(1.:12., (3,4)))
 pos = Array(reshape(101.:112., (3,4)))
-
-rownum = 2
-colnum = 2
-
-rowit = size(mat,1) - rownum + 1
-colit = size(mat,2) - colnum + 1
+# Window size
+wsize = (2,2)
+# Number of iterations
+rowit = size(mat,1) - wsize[1] + 1
+colit = size(mat,2) - wsize[2] + 1
 totit = rowit * colit
-
+# Cartesian indices
 cartinds = findall(!isnan, mat)
-tmp[cartinds[1]]
-
+mat[cartinds[1]]
+# Get all windows
 newmats = []
-@time for j in 1:size(mat,2)-(colnum-1), i in 1:size(mat,1)-(rownum-1)
-  subrows, subcols = i:i+(rownum-1), j:j+(colnum-1)
+@time for j in 1:size(mat,2)-(wsize[2]-1), i in 1:size(mat,1)-(wsize[1]-1)
+  subrows, subcols = i:i+(wsize[1]-1), j:j+(wsize[2]-1)
   submat = mat[subrows, subcols]
   subpos = pos[subrows, subcols]
   subinds = indexin(vec(subpos), vec(pos))
@@ -50,21 +50,25 @@ newmats = []
 end
 newmats
 
-function sum_zat(m1, m2)
-    n1 = copy(p1.grid)
-    for i in eachindex(p1.grid)
-        n1[i] = min(p1.grid[i], p2.grid[i])
-    end
-    return SimpleSDMResponse(n1, p1.left, p1.right, p1.bottom, p1.top)
-end
-
-mapreduce(minimum, newmats)
-@time reduce(min, map(vec, newmats)) |> x-> reshape(x, size(mat));
-@time mapreduce(vec, min, newmats) |> x-> reshape(x, size(mat));
-
-@time mapreduce(vec, hcat, newmats);
+# Reduce to minimum value
+@time reduce(min, map(vec, newmats)) |> x-> reshape(x, size(mat))
+@time mapreduce(vec, min, newmats) |> x-> reshape(x, size(mat))
+# Combine values
+@time mapreduce(vec, hcat, newmats)
 @time reduce(hcat, map(vec, newmats))
 hcat(tmp...)
+
+# Custom mean function
+function mean_nonan(x, y)
+  mat_combined = mapreduce(vec, hcat, [x, y])
+  mat_mean = map(x -> mean(filter(!isnan, x)), eachrow(mat_combined))
+  mat_mean = reshape(mat_mean, size(x))
+end
+# Reduce by mean
+mean_nonan(newmats[1], newmats[2])
+reduce(mean_nonan, newmats)
+
+## Real example
 
 coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
 lonfull = longitudes(distributions[1])
