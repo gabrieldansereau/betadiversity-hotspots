@@ -70,32 +70,54 @@ end
 mean_nonan(newmats[1], newmats[2])
 reduce(mean_nonan, newmats)
 
-## Real example
-
-coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
-lonfull = longitudes(distributions[1])
-lonNE = longitudes(distributions[1][coords_NE])
-indexin(lonNE, lonfull)
-
-distributions_NE = [d[coords_NE] for d in distributions]
-wsize = size(distributions_NE[1])
-
-dpos = [CartesianIndices(d.grid) for d in distributions]
-
-@time dwindows = @showprogress map((d, pos) -> get_windows(d.grid, pos, wsize; step = 40), distributions, dpos);
-
-[d[1] for d in dwindows]
+## Alternative analysis functions
 
 # Previous workflow
 @time begin
   Ymats = calculate_Ymatrix(distributions);
-  @time calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions);
-  @time calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions);
+  @time richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions);
+  @time lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions);
 end;
 
 # New workflow
 @time begin
   Y = calculate_Y(distributions, transform = false);
-  @time calculate_richness(Y, distributions);
-  @time calculate_lcbd(Y, distributions; relative = true);
+  @time richness = calculate_richness(Y, distributions);
+  @time lcbd = calculate_lcbd(Y, distributions; relative = true);
 end;
+
+## Moving windows
+
+# Define subareas
+coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
+coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
+distributions_NE = [d[coords_NE] for d in distributions]
+# Define window size
+wsize = size(distributions_NE[1])
+# Extract grid positions
+grid_pos = CartesianIndices(distributions[1].grid)
+
+# Get distribution windows (per species)
+@time dwindows = @showprogress map((d, pos) -> get_windows(d.grid, pos, wsize; step = 33), distributions, grid_pos);
+
+# Arrange windows in a 2D array
+dmats = [d[i] for i in eachindex(dwindows[1]), d in dwindows]
+size(dmats)
+# Arrange as layers in 2D array
+dlayers = [SimpleSDMResponse(d, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top) for d in dmats]
+size(dlayers)
+
+# Get Ymatrices
+@time Ybatch = @showprogress [calculate_Y(distributions) for distributions in eachrow(dlayers)]
+# Remove ones without observation
+filter!(x -> !all(isnan, x), Ybatch)
+# Get LCBD values
+@time LCBDbatch = @showprogress [calculate_lcbd(Y, distributions; relative = true) for Y in Ybatch]
+
+# Arrange LCBD values as matrix
+LCBDmat = reduce(hcat, [vec(LCBD[2].grid) for LCBD in LCBDbatch])
+# Get mean LCBD value per site
+LCBDmean = map(x -> mean(filter(!isnan, x)), eachrow(LCBDmat))
+# Arrange mean values as layer
+LCBDwindow = similar(distributions[1])
+LCBDwindow.grid = reshape(LCBDmean, size(LCBDwindow.grid))
