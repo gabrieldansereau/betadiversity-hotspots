@@ -121,3 +121,28 @@ LCBDmean = map(x -> mean(filter(!isnan, x)), eachrow(LCBDmat))
 # Arrange mean values as layer
 LCBDwindow = similar(distributions[1])
 LCBDwindow.grid = reshape(LCBDmean, size(LCBDwindow.grid))
+
+## Visualize result
+function plot_lcbd_windows(richness, lcbd; title = "", kw...)
+  p1 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
+  p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
+            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
+            xlim = (1, 45), ylim = (0.0, 1.0))
+  if title != ""
+    l = @layout [t{.01h}; grid(1,2)]
+    ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
+    p = plot(ptitle, p1, p2, layout = l; kw...)
+  else
+    l = @layout [a b]
+    p = plot(p1, p2, layout = l; kw...)
+  end
+  return p
+end
+window_full = plot_lcbd_windows(richness, LCBDwindow, dpi = 150, size = (900,300))
+window_NE = plot_lcbd_windows(richness[coords_NE], LCBDwindow[coords_NE], dpi = 150, size = (900,300))
+window_SW = plot_lcbd_windows(richness[coords_SW], LCBDwindow[coords_SW], dpi = 150, size = (900,300))
+
+# Export figures
+savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-window_full.png"))
+savefig(window_NE, joinpath("fig", outcome, "11_$(outcome)_moving-window_NE.png"))
+savefig(window_SW, joinpath("fig", outcome, "11_$(outcome)_moving-window_SW.png"))
