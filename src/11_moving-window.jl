@@ -37,18 +37,21 @@ totit = rowit * colit
 # Cartesian indices
 cartinds = findall(!isnan, mat)
 mat[cartinds[1]]
-# Get all windows
-newmats = []
-@time for j in 1:size(mat,2)-(wsize[2]-1), i in 1:size(mat,1)-(wsize[1]-1)
-  subrows, subcols = i:i+(wsize[1]-1), j:j+(wsize[2]-1)
-  submat = mat[subrows, subcols]
-  subpos = pos[subrows, subcols]
-  subinds = indexin(vec(subpos), vec(pos))
-  newmat = fill(NaN, size(mat))
-  newmat[subinds] = submat
-  push!(newmats, newmat)
+function get_windows(mat, pos, wsize; step = 1)
+  # Get all windows
+  newmats = []
+  for j in 1:step:size(mat,2)-(wsize[2]-1), i in 1:step:size(mat,1)-(wsize[1]-1)
+    subrows, subcols = i:i+(wsize[1]-1), j:j+(wsize[2]-1)
+    submat = mat[subrows, subcols]
+    subpos = pos[subrows, subcols]
+    subinds = indexin(vec(subpos), vec(pos))
+    newmat = fill(NaN, size(mat))
+    newmat[subinds] = submat
+    push!(newmats, newmat)
+  end
+  return newmats
 end
-newmats
+newmats = get_windows(mat, pos, wsize)
 
 # Reduce to minimum value
 @time reduce(min, map(vec, newmats)) |> x-> reshape(x, size(mat))
@@ -74,3 +77,12 @@ coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
 lonfull = longitudes(distributions[1])
 lonNE = longitudes(distributions[1][coords_NE])
 indexin(lonNE, lonfull)
+
+distributions_NE = [d[coords_NE] for d in distributions]
+wsize = size(distributions_NE[1])
+
+dpos = [CartesianIndices(d.grid) for d in distributions]
+
+@time dwinds = @showprogress map((d, pos) -> get_windows(d.grid, pos, wsize; step = 40), distributions, dpos);
+
+[d[1] for d in dwinds]
