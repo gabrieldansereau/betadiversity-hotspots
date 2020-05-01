@@ -35,7 +35,7 @@ function calculate_Ymatrix(distributions)
   return output
 end
 
-function calculate_Ymatrix(distributions; transform = false)
+function calculate_Y(distributions; transform = false)
   ## Create matrix Y (site-by-species community data table)
   # Get distributions as vectors
   distributions_vec = [vec(d.grid) for d in distributions];

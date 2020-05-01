@@ -59,7 +59,6 @@ newmats = get_windows(mat, pos, wsize)
 # Combine values
 @time mapreduce(vec, hcat, newmats)
 @time reduce(hcat, map(vec, newmats))
-hcat(tmp...)
 
 # Custom mean function
 function mean_nonan(x, y)
@@ -83,6 +82,20 @@ wsize = size(distributions_NE[1])
 
 dpos = [CartesianIndices(d.grid) for d in distributions]
 
-@time dwinds = @showprogress map((d, pos) -> get_windows(d.grid, pos, wsize; step = 40), distributions, dpos);
+@time dwindows = @showprogress map((d, pos) -> get_windows(d.grid, pos, wsize; step = 40), distributions, dpos);
 
-[d[1] for d in dwinds]
+[d[1] for d in dwindows]
+
+# Previous workflow
+@time begin
+  Ymats = calculate_Ymatrix(distributions);
+  @time calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions);
+  @time calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions);
+end;
+
+# New workflow
+@time begin
+  Y = calculate_Y(distributions, transform = false);
+  @time calculate_richness(Y, distributions);
+  @time calculate_lcbd(Y, distributions; relative = true);
+end;
