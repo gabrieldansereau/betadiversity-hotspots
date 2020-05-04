@@ -108,8 +108,8 @@ psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
                  size = (900,600), dpi = 150)
 
 # Export figures
-savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-window_full.png"))
-savefig(psubareas, joinpath("fig", outcome, "11_$(outcome)_moving-window_subareas.png"))
+savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-windows_full.png"))
+savefig(psubareas, joinpath("fig", outcome, "11_$(outcome)_moving-windows_subareas.png"))
 
 ## GIF
 left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
