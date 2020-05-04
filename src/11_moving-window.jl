@@ -60,36 +60,100 @@ end
 coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
 coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
 distributions_NE = [d[coords_NE] for d in distributions]
+# Smaller test area
+distributions_full = copy(distributions)
+distributions = copy(distributions_NE)
+coords_mini = (left = -80.0, right = -70.0, bottom = 40.0, top = 45.0)
+distributions_mini = [d[coords_mini] for d in distributions]
+wsize = size(distributions_mini[1])
+grid_pos = CartesianIndices(distributions[1].grid)
 # Define window size
 wsize = size(distributions_NE[1])
 # Extract grid positions
 grid_pos = CartesianIndices(distributions[1].grid)
 
-# Get distribution windows (per species)
-@time dwindows = @showprogress map(d -> get_windows(d.grid, grid_pos, wsize; step = 36), distributions);
+## New version
+function get_windows_indices(index_mat, wsize; step = 1)
+  # Get all windows
+  winds = []
+  for j in 1:step:size(index_mat,2)-(wsize[2]-1), i in 1:step:size(index_mat,1)-(wsize[1]-1)
+    subrows, subcols = i:i+(wsize[1]-1), j:j+(wsize[2]-1)
+    subinds = index_mat[subrows, subcols]
+    push!(winds, subinds)
+  end
+  return winds
+end
+@time begin
+  # Get matrix Y
+  Y = calculate_Y(distributions)
+  # Create matrix of indices
+  index_mat = reshape(eachindex(distributions[1].grid), size(distributions[1])) |> Array
+  # Get windows indices
+  windows_inds = get_windows_indices(index_mat, wsize; step = 10)
+  # Extract windows from Y
+  Ywindows = [Y[vec(winds),:] for winds in windows_inds]
+  # Calculate LCBD values for Ywindows
+  LCBDwindows = [calculate_lcbd(Y, distributions_mini; relative = true) for Y in Ywindows]
 
-# Arrange windows in a 2D array
-dmats = [d[i] for i in eachindex(dwindows[1]), d in dwindows]
-size(dmats)
-# Arrange as layers in 2D array
-dlayers = [SimpleSDMResponse(d, distributions[1].left, distributions[1].right,
-                              distributions[1].bottom, distributions[1].top) for d in dmats]
-size(dlayers)
+  # Expand LCBD windows to match full extent
+  LCBDbatch = []
+  for i in eachindex(LCBDwindows)
+    mat = fill(NaN, size(distributions[1]))
+    mat[windows_inds[i]] = LCBDwindows[i][2].grid
+    push!(LCBDbatch, mat)
+  end
+  # Stack windows in single matrix
+  LCBDmat = reduce(hcat, map(vec, LCBDbatch));
+  # Get mean LCBD value per site
+  LCBDmean = map(x -> mean(filter(!isnan, x)), eachrow(LCBDmat))
+  # Arrange mean values as layer
+  LCBDwindow = similar(distributions[1])
+  LCBDwindow.grid = reshape(LCBDmean, size(LCBDwindow.grid))
+  LCBDwindow
+end;
+LCBDwindow_new = copy(LCBDwindow)
+plotSDM(LCBDwindow_new, c = :viridis)
 
-# Get Ymatrices
-@time Ybatch = @showprogress [calculate_Y(distributions) for distributions in eachrow(dlayers)]
-# Remove ones without observation
-filter!(x -> !all(isnan, x), Ybatch)
-# Get LCBD values
-@time LCBDbatch = @showprogress [calculate_lcbd(Y, distributions; relative = true) for Y in Ybatch]
+## Previous option
+@time begin
+  # Get distribution windows (per species)
+  dwindows = map(d -> get_windows(d.grid, grid_pos, wsize; step = 10), distributions);
 
-# Arrange LCBD values as matrix
-LCBDmat = reduce(hcat, [vec(LCBD[2].grid) for LCBD in LCBDbatch])
-# Get mean LCBD value per site
-LCBDmean = map(x -> mean(filter(!isnan, x)), eachrow(LCBDmat))
-# Arrange mean values as layer
-LCBDwindow = similar(distributions[1])
-LCBDwindow.grid = reshape(LCBDmean, size(LCBDwindow.grid))
+  # Arrange windows in a 2D array
+  dmats = [d[i] for i in eachindex(dwindows[1]), d in dwindows]
+  size(dmats)
+  # Arrange as layers in 2D array
+  dlayers = [SimpleSDMResponse(d, distributions[1].left, distributions[1].right,
+                                distributions[1].bottom, distributions[1].top) for d in dmats]
+  size(dlayers)
+
+  # Get Ymatrices
+  Ybatch = [calculate_Y(distributions) for distributions in eachrow(dlayers)]
+  # Remove ones without observation
+  filter!(x -> !all(isnan, x), Ybatch)
+  # Get LCBD values
+  LCBDbatch = [calculate_lcbd(Y, distributions; relative = true) for Y in Ybatch]
+
+  # Arrange LCBD values as matrix
+  LCBDmat = reduce(hcat, [vec(LCBD[2].grid) for LCBD in LCBDbatch])
+  # Get mean LCBD value per site
+  LCBDmean = map(x -> mean(filter(!isnan, x)), eachrow(LCBDmat))
+  # Arrange mean values as layer
+  LCBDwindow = similar(distributions[1])
+  LCBDwindow.grid = reshape(LCBDmean, size(LCBDwindow.grid))
+end;
+LCBDwindow_prev = copy(LCBDwindow)
+plotSDM(LCBDwindow_prev, c = :viridis)
+
+# Time comparison
+# prev: 1.7 sec, 5.50M alloc, 1.662 GB
+# new: 0.5sec, 3.07M alloc, 334.514 MB
+# Compare number of elements in options
+nprev = (62*7000) + (62*28*7000) + (28*62*7000) + (28*7000) + (7000)
+nnew = (62*7000) + (1*62*7000) + (28*62*1800) + (28*1800) + (28*7000) + (7000)
+nnew/nprev # 17% of previous nvals
+# Compare results
+filter(!isnan, LCBDwindow_prev.grid) == filter(!isnan, LCBDwindow_new.grid)
 
 ## Visualize result
 function plot_lcbd_windows(richness, lcbd; title = "", kw...)
