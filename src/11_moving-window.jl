@@ -15,8 +15,6 @@ end
 ## Prepare data
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
-distributions[1]
-
 Ymats = calculate_Ymatrix(distributions)
 richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions)
 lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions)
@@ -34,27 +32,36 @@ wsize = size(distributions_NE[1])
 
 ## Moving windows
 
-function get_windows_indices(index_mat, wsize; step = 1)
+function get_windows_indices(index_mat, wsize, steps::Tuple{Int64, Int64})
+  lat_step, lon_step = steps
   # Get all windows
   winds = []
-  for j in 1:step:size(index_mat,2)-(wsize[2]-1), i in 1:step:size(index_mat,1)-(wsize[1]-1)
+  for j in 1:lon_step:size(index_mat,2)-(wsize[2]-1), i in 1:lat_step:size(index_mat,1)-(wsize[1]-1)
     subrows, subcols = i:i+(wsize[1]-1), j:j+(wsize[2]-1)
     subinds = index_mat[subrows, subcols]
     push!(winds, subinds)
   end
   return winds
 end
+get_windows_indices(index_mat, wsize, steps::Int64) = get_windows_indices(index_mat, wsize, (steps, steps))
+
+# Apply moving windows
 @time begin
   # Get matrix Y
   Y = calculate_Y(distributions)
   # Create matrix of indices
   index_mat = reshape(eachindex(distributions[1].grid), size(distributions[1])) |> Array
   # Get windows indices
-  windows_inds = get_windows_indices(index_mat, wsize; step = 10)
+  steps = Int64.(round.(1.0./stride(distributions[1])))
+  windows_inds = get_windows_indices(index_mat, wsize, steps)
   # Extract windows from Y
   Ywindows = [Y[vec(winds),:] for winds in windows_inds]
+  # Remove ones without observation
+  allnan = map(x -> all(isnan, x), Ywindows)
+  deleteat!(windows_inds, allnan)
+  deleteat!(Ywindows, allnan)
   # Calculate LCBD values for Ywindows
-  LCBDwindows = [calculate_lcbd(Y, distributions_mini; relative = true) for Y in Ywindows]
+  LCBDwindows = @showprogress [calculate_lcbd(Y, distributions_NE; relative = true) for Y in Ywindows]
 
   # Expand LCBD windows to match full extent
   LCBDbatch = []
