@@ -105,3 +105,47 @@ window_SW = plot_lcbd_windows(richness[coords_SW], LCBDwindow[coords_SW], dpi = 
 savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-window_full.png"))
 savefig(window_NE, joinpath("fig", outcome, "11_$(outcome)_moving-window_NE.png"))
 savefig(window_SW, joinpath("fig", outcome, "11_$(outcome)_moving-window_SW.png"))
+
+## GIF
+left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
+dim_ratio = (top-bottom)/(right-left)
+asp_ratio = 92.60/60.75
+coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+subarea_plots = []
+nplots = 0
+@time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
+  global nplots += 1
+  global left -= asp_ratio
+  global bottom -= asp_ratio * dim_ratio
+  coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+  p = plot_lcbd_windows(richness[coords_subarea], LCBDwindow[coords_subarea],
+                        formatter = f -> "$(round(f, digits = 1))",
+                        aspect_ratio = [asp_ratio :auto],
+                        dpi = 150, size = (900,300))
+  push!(subarea_plots, p)
+end
+anim = @animate for p in subarea_plots[Not(1)]
+    plot(p)
+end
+gif(anim, fps = 3)
+gif(anim, joinpath("fig", outcome, "11_$(outcome)_moving-windows.gif"), fps = 3)
+
+## 3 scales comparison
+
+# Extract LCBD & relationship subplots for first, middle, last GIF plots
+ps = []
+mid_ind = median(1:length(subarea_plots)) |> round |> Int64
+for p in subarea_plots[[1, mid_ind, end]]
+  p_lcbd = p[1][1][:plot_object]
+  p_rel = p[2][1][:plot_object]
+  push!(ps, p_lcbd, p_rel)
+end
+
+# Combine 3 scales
+l1 = @layout [a{0.6w} b;
+              c{0.6w} d;
+              e{0.6w} f]
+p = plot(ps..., layout = l1, size = (1000,800))
+
+# Export figures
+savefig(p, joinpath("fig/", outcome, "11_$(outcome)_moving-windows_3scales.png"))
