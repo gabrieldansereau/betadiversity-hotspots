@@ -109,8 +109,6 @@ psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
 
 # Export figures
 savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-window_full.png"))
-savefig(window_NE, joinpath("fig", outcome, "11_$(outcome)_moving-window_NE.png"))
-savefig(window_SW, joinpath("fig", outcome, "11_$(outcome)_moving-window_SW.png"))
 savefig(psubareas, joinpath("fig", outcome, "11_$(outcome)_moving-window_subareas.png"))
 
 ## GIF
