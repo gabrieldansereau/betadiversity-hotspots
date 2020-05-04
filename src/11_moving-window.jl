@@ -100,11 +100,18 @@ end
 window_full = plot_lcbd_windows(richness, LCBDwindow, dpi = 150, size = (900,300))
 window_NE = plot_lcbd_windows(richness[coords_NE], LCBDwindow[coords_NE], dpi = 150, size = (900,300))
 window_SW = plot_lcbd_windows(richness[coords_SW], LCBDwindow[coords_SW], dpi = 150, size = (900,300))
+ptitle_NE = plot(annotation = (0.5, 0.5, "Northeast subarea", 16), framestyle = :none)
+ptitle_SW = plot(annotation = (0.5, 0.5, "Southwest subarea", 16), framestyle = :none)
+l = @layout [t1{.01h}; p1;
+             t2{.01h}; p2]
+psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
+                 size = (900,600), dpi = 150)
 
 # Export figures
 savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-window_full.png"))
 savefig(window_NE, joinpath("fig", outcome, "11_$(outcome)_moving-window_NE.png"))
 savefig(window_SW, joinpath("fig", outcome, "11_$(outcome)_moving-window_SW.png"))
+savefig(psubareas, joinpath("fig", outcome, "11_$(outcome)_moving-window_subareas.png"))
 
 ## GIF
 left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
