@@ -9,11 +9,11 @@ using Distributed
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-  @warn "'outcome' not defined, must be either 'raw' or 'sdm'"
+    @warn "'outcome' not defined, must be either 'raw' or 'sdm'"
 elseif (outcome != "raw" && outcome != "sdm")
-  @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
+    @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
 else
-  @info "'outcome' currently set to '$(outcome)'"
+    @info "'outcome' currently set to '$(outcome)'"
 end
 
 ## Load distribution data for all species

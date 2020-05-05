@@ -59,16 +59,16 @@ function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
 end
 
 @recipe function plot(layer::T) where {T <: SimpleSDMLayer}
-   seriestype --> :heatmap
-   @assert eltype(layer) <: Number
-   if get(plotattributes, :seriestype, :heatmap) in [:heatmap, :contour]
-      aspect_ratio --> 92.60/60.75
-      xlims --> (minimum(longitudes(layer)),maximum(longitudes(layer)))
-      ylims --> (minimum(latitudes(layer)),maximum(latitudes(layer)))
-      xlabel --> "Longitude"
-      ylabel --> "Latitude"
-      longitudes(layer), latitudes(layer), layer.grid
-   elseif get(plotattributes, :seriestype, :histogram) in [:histogram, :density]
-      filter(!isnan, layer.grid)
-   end
+    seriestype --> :heatmap
+    @assert eltype(layer) <: Number
+    if get(plotattributes, :seriestype, :heatmap) in [:heatmap, :contour]
+        aspect_ratio --> 92.60/60.75
+        xlims --> (minimum(longitudes(layer)),maximum(longitudes(layer)))
+        ylims --> (minimum(latitudes(layer)),maximum(latitudes(layer)))
+        xlabel --> "Longitude"
+        ylabel --> "Latitude"
+        longitudes(layer), latitudes(layer), layer.grid
+    elseif get(plotattributes, :seriestype, :histogram) in [:histogram, :density]
+        filter(!isnan, layer.grid)
+    end
 end

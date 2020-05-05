@@ -1,9 +1,9 @@
 import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere begin
-	include(joinpath("src", "required.jl"))
-	using DecisionTree
-	include(joinpath("src", "lib", "model-evaluation.jl"))
+    include(joinpath("src", "required.jl"))
+    using DecisionTree
+    include(joinpath("src", "lib", "model-evaluation.jl"))
 end
 
 ## Load data
@@ -71,14 +71,14 @@ predictions_mat = hcat(predictions...)
 @time auc_stats = map(x -> auc(models[x], vld_features, vld_labels[:,x]), 1:length(models))
 # Combine measures
 res = DataFrame(spe = string.("sp", eachindex(acc_mes)),
-				freq_abs = Int.(map(sum, eachcol(spe))),
-				accuracy = map(x -> x.accuracy, acc_mes),
-				sensitivity = map(x -> x.sensitivity, acc_mes),
-				specificity = map(x -> x.specificity, acc_mes),
-				kappa = map(x -> x.kappa, acc_mes),
-				auc = map(x -> x.score, auc_stats),
-				plot = map(x -> x.plot, auc_stats)
-				)
+                freq_abs = Int.(map(sum, eachcol(spe))),
+                accuracy = map(x -> x.accuracy, acc_mes),
+                sensitivity = map(x -> x.sensitivity, acc_mes),
+                specificity = map(x -> x.specificity, acc_mes),
+                kappa = map(x -> x.kappa, acc_mes),
+                auc = map(x -> x.score, auc_stats),
+                plot = map(x -> x.plot, auc_stats)
+                )
 
 # Explore measures
 auc_plot(1 .- res.specificity, res.sensitivity, NaN)

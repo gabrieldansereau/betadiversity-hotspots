@@ -23,51 +23,51 @@ richness_values = Int64.(richness_raw.grid[inds_obs])
 ## Train Random Forest
 @rput richness_values inds_obs
 begin
-  R"""
-  library(ranger)
-  spa <-  read.csv("data/proc/distributions_spa.csv", header=TRUE, sep="\t")
-  env <-  read.csv("data/proc/distributions_env.csv", header=TRUE, sep="\t")
+    R"""
+    library(ranger)
+    spa <- read.csv("data/proc/distributions_spa.csv", header=TRUE, sep="\t")
+    env <- read.csv("data/proc/distributions_env.csv", header=TRUE, sep="\t")
 
-  # Remove site with NAs for landcover variables
-  (inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
-  if (length(inds_withNAs) > 0) {
-    richness_values <- richness_values[-inds_withNAs]
-    spa <- spa[-inds_withNAs,]
-    env <- env[-inds_withNAs,]
-  }
+    # Remove site with NAs for landcover variables
+    (inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
+    if (length(inds_withNAs) > 0) {
+        richness_values <- richness_values[-inds_withNAs]
+        spa <- spa[-inds_withNAs,]
+        env <- env[-inds_withNAs,]
+    }
 
-  # Combine environmental variables
-  vars <- cbind(env, spa)
+    # Combine environmental variables
+    vars <- cbind(env, spa)
 
-  # Separate into training/testing datasets
-  set.seed(42)
-  inds_train <- sample(nrow(vars), 0.7*nrow(vars), replace = FALSE)
+    # Separate into training/testing datasets
+    set.seed(42)
+    inds_train <- sample(nrow(vars), 0.7*nrow(vars), replace = FALSE)
 
-  richness_train <- richness_values[inds_train]
-  vars_train <- vars[inds_train,]
+    richness_train <- richness_values[inds_train]
+    vars_train <- vars[inds_train,]
 
-  richness_test <- richness_values[-inds_train]
-  vars_test <- vars[-inds_train,]
+    richness_test <- richness_values[-inds_train]
+    vars_test <- vars[-inds_train,]
 
-  # Train model
-  system.time(regress_model <- ranger(richness_train ~ ., data = vars_train, importance = "impurity", seed = 42))
-  system.time(classif_model <- ranger(as.factor(richness_train) ~ ., data = vars_train, importance = "impurity", seed = 42))
+    # Train model
+    system.time(regress_model <- ranger(richness_train ~ ., data = vars_train, importance = "impurity", seed = 42))
+    system.time(classif_model <- ranger(as.factor(richness_train) ~ ., data = vars_train, importance = "impurity", seed = 42))
 
-  regress_pred <- predict(regress_model, vars_test)$predictions
-  sum(round(regress_pred) == richness_test)/length(richness_test)
+    regress_pred <- predict(regress_model, vars_test)$predictions
+    sum(round(regress_pred) == richness_test)/length(richness_test)
 
-  classif_pred <- predict(classif_model, vars_test)$predictions
-  sum(classif_pred == richness_test)/length(richness_test)
+    classif_pred <- predict(classif_model, vars_test)$predictions
+    sum(classif_pred == richness_test)/length(richness_test)
 
-  """
+    """
 end
 
 ## Extract Random Forest predictions for observed sites
 begin
-  R"""
-  predictions <- predict(classif_model, vars)$predictions
-  predictions <- as.numeric(levels(predictions))[predictions]
-  """
+    R"""
+    predictions <- predict(classif_model, vars)$predictions
+    predictions <- as.numeric(levels(predictions))[predictions]
+    """
 end
 @rget predictions inds_withNAs
 
@@ -91,28 +91,28 @@ histogram(filter(!isnan, richness_diff.grid), bins = 20)
 
 ## Predictions for full range
 begin
-  R"""
-  ## Predict distributions for full range
-  env_full <- read.csv("data/proc/distributions_env_full.csv", header = TRUE, sep = "\t")
-  spa_full <- read.csv("data/proc/distributions_spa_full.csv", header = TRUE, sep = "\t")
-  vars_full <- cbind(env_full, spa_full)
-  head(vars_full)
+    R"""
+    ## Predict distributions for full range
+    env_full <- read.csv("data/proc/distributions_env_full.csv", header = TRUE, sep = "\t")
+    spa_full <- read.csv("data/proc/distributions_spa_full.csv", header = TRUE, sep = "\t")
+    vars_full <- cbind(env_full, spa_full)
+    head(vars_full)
 
-  # Remove sites with NA values
-  inds_na <- sapply(env_full, function(x) which(is.na(x)))
-  (inds_na <- sort(unique(unlist(inds_na))))
-  vars_nona <- vars_full[-inds_na,]
+    # Remove sites with NA values
+    inds_na <- sapply(env_full, function(x) which(is.na(x)))
+    (inds_na <- sort(unique(unlist(inds_na))))
+    vars_nona <- vars_full[-inds_na,]
 
-  # Make predictions
-  predictions <- predict(classif_model, vars_nona)$predictions
-  predictions <- as.numeric(levels(predictions))[predictions]
+    # Make predictions
+    predictions <- predict(classif_model, vars_nona)$predictions
+    predictions <- as.numeric(levels(predictions))[predictions]
 
-  # Add sites with NAs
-  predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = 1)
-  colnames(predictions_full) <- colnames(predictions)
-  predictions_full[-inds_na,] <- predictions
+    # Add sites with NAs
+    predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = 1)
+    colnames(predictions_full) <- colnames(predictions)
+    predictions_full[-inds_na,] <- predictions
 
-  """
+    """
 end
 
 @rget predictions_full
@@ -147,9 +147,9 @@ histogram(filter(!isnan, richness_diff.grid), bins = 20)
 ## Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-  savefig(richness_plot, joinpath("fig", "raw", "10_raw_richness-rf.png"))
-  savefig(richness_plot_full, joinpath("fig", "rf", "10_rf_richness-rf.png"))
+    savefig(richness_plot, joinpath("fig", "raw", "10_raw_richness-rf.png"))
+    savefig(richness_plot_full, joinpath("fig", "rf", "10_rf_richness-rf.png"))
 
-  savefig(diff_plot, joinpath("fig", "raw", "10_raw_richness-diff.png"))
-  savefig(diff_plot_full, joinpath("fig", "rf", "10_rf_richness-diff.png"))
+    savefig(diff_plot, joinpath("fig", "raw", "10_raw_richness-diff.png"))
+    savefig(diff_plot_full, joinpath("fig", "rf", "10_rf_richness-diff.png"))
 end

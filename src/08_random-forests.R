@@ -7,16 +7,16 @@ library(pbapply)
 
 #### 0. Load data ####
 # Load QC data
-spe <-  read.csv("data/proc/distributions_spe_qc.csv", header=TRUE, sep="\t")
-spa <-  read.csv("data/proc/distributions_spa_qc.csv", header=TRUE, sep="\t")
-env <-  read.csv("data/proc/distributions_env_qc.csv", header=TRUE, sep="\t")
+spe <- read.csv("data/proc/distributions_spe_qc.csv", header=TRUE, sep="\t")
+spa <- read.csv("data/proc/distributions_spa_qc.csv", header=TRUE, sep="\t")
+env <- read.csv("data/proc/distributions_env_qc.csv", header=TRUE, sep="\t")
 
 # Remove site with NAs for landcover variables
 (inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
 if (length(inds_withNAs) > 0) {
-  spe <- spe[-inds_withNAs,]
-  spa <- spa[-inds_withNAs,]
-  env <- env[-inds_withNAs,]
+    spe <- spe[-inds_withNAs,]
+    spa <- spa[-inds_withNAs,]
+    env <- env[-inds_withNAs,]
 }
 
 # Combine environmental variables
@@ -39,8 +39,8 @@ vars_test <- vars[-inds_train,]
 # Remove species without observations in subsets
 (inds_withoutobs <- c(which(sapply(spe_train, sum) == 0), which(sapply(spe_test, sum) == 0)))
 if (length(inds_withoutobs > 0)) {
-  spe_train <- spe_train[, -inds_withoutobs]
-  spe_test <- spe_test[, -inds_withoutobs]
+    spe_train <- spe_train[, -inds_withoutobs]
+    spe_test <- spe_test[, -inds_withoutobs]
 }
 
 # Create single species subset
@@ -65,9 +65,9 @@ table(spe$sp1, sp1_pred)
 
 set.seed(42)
 system.time(
-  model1 <- randomForest(sp_train ~ .,
-                         data = vars_train,
-                         importance = TRUE)
+    model1 <- randomForest(sp_train ~ .,
+                            data = vars_train,
+                            importance = TRUE)
 )
 model1
 # Predict test set
@@ -105,18 +105,18 @@ mtry <- tuneRF(vars_train, sp_train, ntreeTry=500,
 
 ## Wrap as function
 rf_train <- function(sp, vars, ...) {
-  set.seed(42)
-  sp_train <- as.factor(sp)
-  rf <- randomForest(sp_train ~ .,
-                     data = vars,
-                     importance = TRUE,
-                     ...)
+    set.seed(42)
+    sp_train <- as.factor(sp)
+    rf <- randomForest(sp_train ~ .,
+                       data = vars,
+                       importance = TRUE,
+                       ...)
   return(rf)
 }
 
 system.time(
-  rf_models <- mclapply(spe_train, function(x) rf_train(x, vars_train), mc.cores = 12)
-  )
+    rf_models <- mclapply(spe_train, function(x) rf_train(x, vars_train), mc.cores = 12)
+    )
 
 rf_res <- data.frame(species = colnames(spe_train),
                      OOB = sapply(rf_models, function(x) 1 - sum(x$y == x$predicted)/length(x$y)),
@@ -143,29 +143,29 @@ system.time(ranger_model <- ranger(sp_train ~ ., data = vars_train, importance =
 
 ## Wrap as function
 ranger_train <- function(sp, vars, ...) {
-  sp_train <- as.factor(sp)
-  rf <- ranger(sp_train ~ .,
-               data = vars,
-               importance = "impurity",
-               seed = 42,
-               ...)
-  return(rf)
+    sp_train <- as.factor(sp)
+    rf <- ranger(sp_train ~ .,
+                 data = vars,
+                 importance = "impurity",
+                 seed = 42,
+                 ...)
+    return(rf)
 }
 
 # Multi-species calls
 system.time(
-  rf_models <- lapply(spe_train[,1:10], function(x) rf_train(x, vars_train))
+    rf_models <- lapply(spe_train[,1:10], function(x) rf_train(x, vars_train))
 )
 system.time(
-  ranger_models <- pblapply(spe_train, function(x) ranger_train(x, vars_train))
+    ranger_models <- pblapply(spe_train, function(x) ranger_train(x, vars_train))
 )
 
 # Parallized calls
 system.time(
-  rf_models <- mclapply(spe_train[,], function(x) rf_train(x, vars_train), mc.cores = 12)
+    rf_models <- mclapply(spe_train[,], function(x) rf_train(x, vars_train), mc.cores = 12)
 )
 system.time(
-  ranger_models <- mclapply(spe_train[,], function(x) ranger_train(x, vars_train), mc.cores = 12)
+    ranger_models <- mclapply(spe_train[,], function(x) ranger_train(x, vars_train), mc.cores = 12)
 )
 
 # View results
@@ -218,7 +218,7 @@ cor(rf_res[,-1], rf_test_res[,-1]) # correlations of 0.999, 0.999 and 0.982
 
 ## Training on full dataset
 system.time(
-  full_models <- pblapply(spe, function(x) ranger_train(x, vars))
+    full_models <- pblapply(spe, function(x) ranger_train(x, vars))
 )
 full_models
 

@@ -28,7 +28,7 @@ function _bioclim_layer(occ::Union{G,D}, layer::T; training_layer::T=layer) wher
     end
     # Restore NaNs from original layer
     for idx in findall(isnan, layer.grid)
-      pred.grid[idx] = NaN
+        pred.grid[idx] = NaN
     end
     return pred
 end

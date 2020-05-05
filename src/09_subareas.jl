@@ -8,11 +8,11 @@ outcome = "rf"
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-  @warn "'outcome' not defined, must be either 'raw', 'sdm' or 'rf'"
+    @warn "'outcome' not defined, must be either 'raw', 'sdm' or 'rf'"
 elseif !(outcome in ["raw", "sdm", "rf"])
-  @warn "'outcome' invalid, must be either 'raw', 'sdm' or 'rf'"
+    @warn "'outcome' invalid, must be either 'raw', 'sdm' or 'rf'"
 else
-  @info "'outcome' currently set to '$(outcome)'"
+    @info "'outcome' currently set to '$(outcome)'"
 end
 
 ## Load distribution data for all species
@@ -41,20 +41,20 @@ lcbd_SW = calculate_lcbd(SW.Yobs, SW.Ytransf, SW.inds_obs, distributions_SW)
 
 ## Combine figures
 function plot_lcbd_richness(richness, lcbd; title = "", kw...)
-  p1 = plot(richness, c = :viridis, title = "Richness", colorbar_title = "Number of species")
-  p2 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
-  p3 = plot(quantiles(lcbd), c = :viridis, title = "LCBD quantiles", colorbar_title = "Quantile rank", clim = (0,1))
-  p4 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
-            xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-            xlim = (1, 45), ylim = (0.0, 1.0))
-  if title != ""
-    l = @layout [t{.01h}; grid(2,2)]
-    ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
-    p = plot(ptitle, p1, p2, p4, p3, layout = l; kw...)
-  else
-    p = plot(p1, p2, p4, p3; kw...)
-  end
-  return p
+    p1 = plot(richness, c = :viridis, title = "Richness", colorbar_title = "Number of species")
+    p2 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
+    p3 = plot(quantiles(lcbd), c = :viridis, title = "LCBD quantiles", colorbar_title = "Quantile rank", clim = (0,1))
+    p4 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
+                     xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
+                     xlim = (1, 45), ylim = (0.0, 1.0))
+    if title != ""
+        l = @layout [t{.01h}; grid(2,2)]
+        ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
+        p = plot(ptitle, p1, p2, p4, p3, layout = l; kw...)
+    else
+        p = plot(p1, p2, p4, p3; kw...)
+    end
+    return p
 end
 
 resNE   = plot_lcbd_richness(richness_NE, lcbd_NE[1], dpi = 150,
@@ -70,27 +70,27 @@ resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW[2], dpi = 150,
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-  savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
-  savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
-  savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
-  savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))
+    savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
+    savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
+    savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
+    savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))
 end
 
 #### Repeat for different subareas
 function plot_subareas(coords, initial_distributions; display_coords = coords, transform = true, relative = true, kw...)
-  distributions = [d[coords] for d in initial_distributions]
-  Y = calculate_Ymatrix(distributions)
-  richness = calculate_richness(Y.Y, Y.inds_notobs, distributions)
-  lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions; relative = relative)
-  if display_coords != coords
-    richness = richness[display_coords]
-    lcbd = [l[display_coords] for l in lcbd]
-  end
-  if transform
-    p = plot_lcbd_richness(richness, lcbd[2]; kw...)
-  else
-    p = plot_lcbd_richness(richness, lcbd[1]; kw...)
-  end
+    distributions = [d[coords] for d in initial_distributions]
+    Y = calculate_Ymatrix(distributions)
+    richness = calculate_richness(Y.Y, Y.inds_notobs, distributions)
+    lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions; relative = relative)
+    if display_coords != coords
+        richness = richness[display_coords]
+        lcbd = [l[display_coords] for l in lcbd]
+    end
+    if transform
+        p = plot_lcbd_richness(richness, lcbd[2]; kw...)
+    else
+        p = plot_lcbd_richness(richness, lcbd[1]; kw...)
+    end
 end
 
 # Initial subarea
@@ -116,15 +116,15 @@ coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 subarea_plots = []
 nplots = 0
 @time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
-  global nplots += 1
-  global left -= asp_ratio
-  global bottom -= asp_ratio * dim_ratio
-  coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-  p = plot_subareas(coords_subarea, distributions;
-                    formatter = f -> "$(round(f, digits = 1))",
-                    aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio],
-                    dpi = 150)
-  push!(subarea_plots, p)
+    global nplots += 1
+    global left -= asp_ratio
+    global bottom -= asp_ratio * dim_ratio
+    coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+    p = plot_subareas(coords_subarea, distributions;
+                      formatter = f -> "$(round(f, digits = 1))",
+                      aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio],
+                      dpi = 150)
+    push!(subarea_plots, p)
 end
 
 # Create GIF
@@ -133,7 +133,7 @@ anim = @animate for p in subarea_plots[Not(1)]
 end
 gif(anim, fps = 7)
 if (@isdefined save_figures) && save_figures == true
-  gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
+    gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
 end
 
 #### 3 scales comparison
@@ -142,9 +142,9 @@ end
 ps = []
 mid_ind = median(1:length(subarea_plots)) |> round |> Int64
 for p in subarea_plots[[1, mid_ind, end]]
-  p_lcbd = p[2][1][:plot_object]
-  p_rel = p[3][1][:plot_object]
-  push!(ps, p_lcbd, p_rel)
+    p_lcbd = p[2][1][:plot_object]
+    p_rel = p[3][1][:plot_object]
+    push!(ps, p_lcbd, p_rel)
 end
 
 # Combine 3 scales
@@ -156,5 +156,5 @@ p = plot(ps..., layout = l1, size = (1000,800))
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-  savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
+    savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
 end
