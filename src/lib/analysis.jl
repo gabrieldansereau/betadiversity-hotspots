@@ -1,40 +1,4 @@
-## Get Ymatrices
-function calculate_Ymatrix(distributions)
-    ## Create matrix Y (site-by-species community data table)
-    # Get distributions as vectors
-    distributions_vec = [vec(d.grid) for d in distributions];
-    # Create matrix Y by combining distribution vectors
-    Y = hcat(distributions_vec...);
-
-    # Verify if sites have observations
-    sites_obs = [any(y .> 0.0) for y in eachrow(Y)];
-    # Get indices of sites with observations
-    inds_obs = findall(sites_obs);
-    # Get indices of sites without observations
-    inds_notobs = findall(.!sites_obs);
-
-    # Create matrix Yobs with observed sites only
-    Yobs = Y[inds_obs,:];
-    # Replace NaNs by zeros for observed sites (~true absences)
-    replace!(Yobs, NaN => 0.0);
-    # Replace NaNs in original matrix Y too
-    Y[inds_obs,:] = Yobs;
-
-    ## Apply Hellinger transformation (using vegan in R)
-    @rput Yobs
-    begin
-        R"""
-            library(vegan)
-            Ytransf <- decostand(Yobs, "hel")
-            """
-    end
-    @rget Ytransf
-
-    output = (Y = Y, Yobs = Yobs, Ytransf = Ytransf,
-              inds_obs = inds_obs, inds_notobs = inds_notobs)
-    return output
-end
-
+## Y matrix
 function calculate_Y(distributions; transform = false)
     ## Create matrix Y (site-by-species community data table)
     # Get distributions as vectors

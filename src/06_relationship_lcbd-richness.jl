@@ -159,12 +159,14 @@ end
 # outcome = "raw"
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
-Ymats = calculate_Ymatrix(distributions)
-richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions[1])
-lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions[1])
+Y = calculate_Y(distributions)
+richness = calculate_richness(Y, distributions[1])
+lcbd = calculate_lcbd(Y, distributions[1])
 
 rel2d = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
         xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
         xlim = (1, 45), ylim = (0.0, 1.0), dpi = 150)
 
-savefig(rel2d, joinpath("fig", outcome, "06_$(outcome)_relationship2d-transf.png"))
+if (@isdefined save_relfigures) && save_relfigures == true
+    savefig(rel2d, joinpath("fig", outcome, "06_$(outcome)_relationship2d-transf.png"))
+end

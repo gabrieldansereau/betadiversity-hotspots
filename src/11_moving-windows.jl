@@ -7,7 +7,6 @@ outcome = "rf"
 # save_figures = true
 
 # Make sure "outcome" is defined
-outcome = "rf"
 if !(@isdefined outcome)
     @warn "'outcome' not defined, must be either 'raw', 'sdm' or 'rf'"
 elseif !(outcome in ["raw", "sdm", "rf"])
@@ -19,9 +18,9 @@ end
 ## Prepare data
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
-Ymats = calculate_Ymatrix(distributions)
-richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions[1])
-lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions[1]; transform = true)
+Y = calculate_Y(distributions)
+richness = calculate_richness(Y, distributions[1])
+lcbd = calculate_lcbd(Y, distributions[1]; transform = true)
 
 plot(richness, c = :viridis)
 

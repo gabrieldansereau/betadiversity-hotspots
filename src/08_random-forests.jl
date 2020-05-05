@@ -82,12 +82,12 @@ plotSDM(distributions[1], c=:BuPu)
 
 ## Richness
 
-richness = calculate_richness(Y, inds_notobs, distributions[1])
+richness = calculate_richness(Y, distributions[1])
 plotSDM(richness, c = :viridis)
 
 ## LCBD
 
-LCBD = calculate_lcbd(Yobs, Ytransf, inds_obs, distributions[1])
+LCBD = calculate_lcbd(Y, distributions[1])
 plotSDM(LCBD, c = :viridis)
 
 ## Export results
