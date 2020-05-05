@@ -2,6 +2,10 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include(joinpath("src", "required.jl"))
 
+## Conditional arguments
+outcome = "rf"
+# save_figures = true
+
 # Make sure "outcome" is defined
 outcome = "rf"
 if !(@isdefined outcome)
@@ -108,8 +112,11 @@ psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
                  size = (900,600), dpi = 150)
 
 # Export figures
-savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-windows_full.png"))
-savefig(psubareas, joinpath("fig", outcome, "11_$(outcome)_moving-windows_subareas.png"))
+# save_figures = true
+if (@isdefined save_figures) && save_figures == true
+  savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-windows_full.png"))
+  savefig(psubareas, joinpath("fig", outcome, "11_$(outcome)_moving-windows_subareas.png"))
+end
 
 ## GIF
 left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
@@ -133,7 +140,9 @@ anim = @animate for p in subarea_plots[Not(1)]
     plot(p)
 end
 gif(anim, fps = 3)
-gif(anim, joinpath("fig", outcome, "11_$(outcome)_moving-windows.gif"), fps = 3)
+if (@isdefined save_figures) && save_figures == true
+  gif(anim, joinpath("fig", outcome, "11_$(outcome)_moving-windows.gif"), fps = 3)
+end
 
 ## 3 scales comparison
 
@@ -153,4 +162,7 @@ l1 = @layout [a{0.6w} b;
 p = plot(ps..., layout = l1, size = (1000,800))
 
 # Export figures
-savefig(p, joinpath("fig/", outcome, "11_$(outcome)_moving-windows_3scales.png"))
+# save_figures = true
+if (@isdefined save_figures) && save_figures == true
+  savefig(p, joinpath("fig/", outcome, "11_$(outcome)_moving-windows_3scales.png"))
+end

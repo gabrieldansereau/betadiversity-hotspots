@@ -2,6 +2,9 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include(joinpath("src", "required.jl"))
 
+## Conditional arguments
+# save_figures = true
+
 ## Load data
 #=
 spe = CSV.read(joinpath("data", "proc", "distributions_spe.csv"), header=true, delim="\t")
@@ -232,12 +235,13 @@ scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD[2].grid),
          markersize = 2, c = :orange, msw = 0, label = "SDM predictions")
 
 #### Export RF figures
-
-savefig(dist_rf, joinpath("fig", "rf", "01_rf_sp-Setophaga-coronata.png"))
-savefig(rich_rf, joinpath("fig", "rf", "03_rf_richness.png"))
-savefig(rich_qrf, joinpath("fig", "rf", "03_rf_richness_quantiles.png"))
-savefig(lcbd_rf, joinpath("fig", "rf", "05_rf_lcbd.png"))
-savefig(lcbdtr_rf, joinpath("fig", "rf", "05_rf_lcbd_transf.png"))
-savefig(lcbd_qrf, joinpath("fig", "rf", "05_rf_lcbd_quantiles.png"))
-savefig(lcbdtr_qrf, joinpath("fig", "rf", "05_rf_lcbd_transf_quantiles.png"))
-savefig(relationdbtr_plot, joinpath("fig", "rf", "06_rf_relationship_dbtransf.png"))
+if (@isdefined save_figures) && save_figures == true
+    savefig(dist_rf, joinpath("fig", "rf", "01_rf_sp-Setophaga-coronata.png"))
+    savefig(rich_rf, joinpath("fig", "rf", "03_rf_richness.png"))
+    savefig(rich_qrf, joinpath("fig", "rf", "03_rf_richness_quantiles.png"))
+    savefig(lcbd_rf, joinpath("fig", "rf", "05_rf_lcbd.png"))
+    savefig(lcbdtr_rf, joinpath("fig", "rf", "05_rf_lcbd_transf.png"))
+    savefig(lcbd_qrf, joinpath("fig", "rf", "05_rf_lcbd_quantiles.png"))
+    savefig(lcbdtr_qrf, joinpath("fig", "rf", "05_rf_lcbd_transf_quantiles.png"))
+    savefig(relationdbtr_plot, joinpath("fig", "rf", "06_rf_relationship_dbtransf.png"))
+end

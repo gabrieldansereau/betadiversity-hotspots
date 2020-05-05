@@ -2,6 +2,9 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include(joinpath("src", "required.jl"))
 
+## Conditional arguments
+# save_figures = true
+
 ## Load distribution data for all species
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions spenames speindex
 
@@ -142,8 +145,11 @@ diff_plot_full = plotSDM(richness_diff_full, c = :inferno, clim = (-Inf, Inf),
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
 
 ## Export figures
-savefig(richness_plot, joinpath("fig", "raw", "10_raw_richness-rf.png"))
-savefig(richness_plot_full, joinpath("fig", "rf", "10_rf_richness-rf.png"))
+# save_figures = true
+if (@isdefined save_figures) && save_figures == true
+  savefig(richness_plot, joinpath("fig", "raw", "10_raw_richness-rf.png"))
+  savefig(richness_plot_full, joinpath("fig", "rf", "10_rf_richness-rf.png"))
 
-savefig(diff_plot, joinpath("fig", "raw", "10_raw_richness-diff.png"))
-savefig(diff_plot_full, joinpath("fig", "rf", "10_rf_richness-diff.png"))
+  savefig(diff_plot, joinpath("fig", "raw", "10_raw_richness-diff.png"))
+  savefig(diff_plot_full, joinpath("fig", "rf", "10_rf_richness-diff.png"))
+end

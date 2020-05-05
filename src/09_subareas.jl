@@ -2,8 +2,11 @@ import Pkg; Pkg.activate(".")
 using Distributed
 @time @everywhere include(joinpath("src", "required.jl"))
 
-# Make sure "outcome" is defined
+## Conditional arguments
 outcome = "rf"
+# save_figures = true
+
+# Make sure "outcome" is defined
 if !(@isdefined outcome)
   @warn "'outcome' not defined, must be either 'raw', 'sdm' or 'rf'"
 elseif !(outcome in ["raw", "sdm", "rf"])
@@ -65,12 +68,13 @@ resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW[2], dpi = 150,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
 
 # Export figures
-#=
-savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
-savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
-savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
-savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))
-=#
+# save_figures = true
+if (@isdefined save_figures) && save_figures == true
+  savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
+  savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
+  savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
+  savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))
+end
 
 #### Repeat for different subareas
 function plot_subareas(coords, initial_distributions; display_coords = coords, transform = true, relative = true, kw...)
@@ -128,7 +132,9 @@ anim = @animate for p in subarea_plots[Not(1)]
     plot(p)
 end
 gif(anim, fps = 7)
-gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
+if (@isdefined save_figures) && save_figures == true
+  gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
+end
 
 #### 3 scales comparison
 
@@ -148,4 +154,7 @@ l1 = @layout [a{0.6w} b;
 p = plot(ps..., layout = l1, size = (1000,800))
 
 # Export figures
-savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
+# save_figures = true
+if (@isdefined save_figures) && save_figures == true
+  savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
+end
