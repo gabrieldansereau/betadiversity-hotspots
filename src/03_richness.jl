@@ -19,10 +19,8 @@ end
 ## Load distribution data for all species
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
-## Load matrix Y
-@load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y
-
 #### Species richness
+Y = calculate_Y(distributions)
 richness = calculate_richness(Y, distributions[1])
 
 ## Plot results

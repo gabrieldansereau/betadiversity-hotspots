@@ -91,11 +91,10 @@ LCBD = calculate_lcbd(Y, distributions[1])
 plotSDM(LCBD, c = :viridis)
 
 ## Export results
-@save joinpath("data", "jld2", "rf-distributions.jld2") distributions
-@save joinpath("data", "jld2", "rf-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
-# Load results
-@load joinpath("data", "jld2", "rf-distributions.jld2") distributions
-@load joinpath("data", "jld2", "rf-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
+# save_data = true
+if @isdefined save_data && save_data == true
+    @save joinpath("data", "jld2", "rf-distributions.jld2") distributions
+end
 
 #### Compare with previous results
 ## Save random forest results

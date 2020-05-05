@@ -5,7 +5,6 @@ using Distributed
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
 # outcome = "sdm" # desired outcome (required)
-# save_data = true # should data files be overwritten (optional)
 # save_figures = true # should figures be overwritten (optional)
 
 # Make sure "outcome" is defined
@@ -22,18 +21,6 @@ end
 
 ## Create matrix Y (site-by-species community data table)
 Y = calculate_Y(distributions)
-
-## Export results
-# save_data = true # should data files be overwritten (optional)
-if (@isdefined save_data) && save_data == true
-    # Export data
-    @info "Data exported to file ($(outcome) Y matrix)"
-    @save joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y
-else
-    # Load data
-    @info "Data imported from file ($(outcome) Y matrix)"
-    @load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y
-end
 
 ## Visualize patterns in Y
 # Heatmap of Y

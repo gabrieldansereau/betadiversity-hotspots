@@ -18,10 +18,9 @@ end
 
 ## Load distributions for all species
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
-## Load matrix Y
-@load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y
 
 ## Compute beta diversity statistics
+Y = calculate_Y(distributions)
 lcbd = calculate_lcbd(Y, distributions[1])
 
 ## Plot results

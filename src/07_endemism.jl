@@ -19,7 +19,7 @@ end
 ## Load distributions for all species
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
 ## Load matrix Y
-@load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
+Y = calculate_Y(distributions)
 
 ## Weighted endemism
 # AOO (Area of occurrence): Species add 1/(number of sites occupied) to site scores

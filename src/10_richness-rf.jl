@@ -6,18 +6,17 @@ using Distributed
 # save_figures = true
 
 ## Load distribution data for all species
-@load joinpath("data", "jld2", "raw-distributions.jld2") distributions spenames speindex
-
-## Load matrix Y
-@load joinpath("data", "jld2", "raw-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
+@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
 
 ## Richness
+Y = calculate_Y(distributions)
 richness_raw = calculate_richness(Y, distributions[1])
 
 # Visualize
 plotSDM(richness_raw, c = :viridis)
 
 ## Extract values for model
+inds_obs = _indsobs(Y)
 richness_values = Int64.(richness_raw.grid[inds_obs])
 
 ## Train Random Forest

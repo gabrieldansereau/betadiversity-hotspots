@@ -6,7 +6,8 @@ using Distributed
 
 # Load required results
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions spenames speindex
-@load joinpath("data", "jld2", "raw-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
+Y = calculate_Y(distributions)
+inds_obs = _indsobs(Y)
 
 # Define coordinates range
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
