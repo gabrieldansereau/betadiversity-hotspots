@@ -31,13 +31,13 @@ NE = calculate_Ymatrix(distributions_NE)
 SW = calculate_Ymatrix(distributions_SW)
 
 ## Richness
-richness_NE = calculate_richness(NE.Y, NE.inds_notobs, distributions_NE)
-richness_SW = calculate_richness(SW.Y, SW.inds_notobs, distributions_SW)
+richness_NE = calculate_richness(NE.Y, NE.inds_notobs, distributions_NE[1])
+richness_SW = calculate_richness(SW.Y, SW.inds_notobs, distributions_SW[1])
 
 ## LCBD
 # Load functions
-lcbd_NE = calculate_lcbd(NE.Yobs, NE.Ytransf, NE.inds_obs, distributions_NE)
-lcbd_SW = calculate_lcbd(SW.Yobs, SW.Ytransf, SW.inds_obs, distributions_SW)
+lcbd_NE = calculate_lcbd(NE.Yobs, NE.Ytransf, NE.inds_obs, distributions_NE[1])
+lcbd_SW = calculate_lcbd(SW.Yobs, SW.Ytransf, SW.inds_obs, distributions_SW[1])
 
 ## Combine figures
 function plot_lcbd_richness(richness, lcbd; title = "", kw...)
@@ -80,8 +80,8 @@ end
 function plot_subareas(coords, initial_distributions; display_coords = coords, transform = true, relative = true, kw...)
     distributions = [d[coords] for d in initial_distributions]
     Y = calculate_Ymatrix(distributions)
-    richness = calculate_richness(Y.Y, Y.inds_notobs, distributions)
-    lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions; relative = relative)
+    richness = calculate_richness(Y.Y, Y.inds_notobs, distributions[1])
+    lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions[1]; relative = relative)
     if display_coords != coords
         richness = richness[display_coords]
         lcbd = [l[display_coords] for l in lcbd]

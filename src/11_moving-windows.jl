@@ -20,8 +20,8 @@ end
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
 Ymats = calculate_Ymatrix(distributions)
-richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions)
-lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions)
+richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions[1])
+lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions[1])
 
 plot(richness, c = :viridis)
 
@@ -65,7 +65,7 @@ get_windows_indices(index_mat, wsize, steps::Int64) = get_windows_indices(index_
     deleteat!(windows_inds, allnan)
     deleteat!(Ywindows, allnan)
     # Calculate LCBD values for Ywindows
-    LCBDwindows = @showprogress [calculate_lcbd(Y, distributions_NE; relative = true) for Y in Ywindows]
+    LCBDwindows = @showprogress [calculate_lcbd(Y, distributions_NE[1]; relative = true) for Y in Ywindows]
 
     # Expand LCBD windows to match full extent
     LCBDbatch = []

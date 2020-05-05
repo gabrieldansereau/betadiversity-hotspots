@@ -12,7 +12,7 @@ using Distributed
 @load joinpath("data", "jld2", "raw-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
 
 ## Richness
-richness_raw = calculate_richness(Y, inds_notobs, distributions)
+richness_raw = calculate_richness(Y, inds_notobs, distributions[1])
 
 # Visualize
 plotSDM(richness_raw, c = :viridis)
@@ -132,7 +132,7 @@ richness_plot_full = plotSDM(richness_rf_full, c = :viridis,
 # Get comparison
 @load joinpath("data/", "jld2", "rf-distributions.jld2") distributions
 sdm = calculate_Ymatrix(distributions)
-richness_sdm = calculate_richness(sdm.Y, sdm.inds_notobs, distributions)
+richness_sdm = calculate_richness(sdm.Y, sdm.inds_notobs, distributions[1])
 plotSDM(richness_sdm, c = :viridis)
 
 # Map richness difference

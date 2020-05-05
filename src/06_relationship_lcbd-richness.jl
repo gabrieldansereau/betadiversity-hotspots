@@ -160,8 +160,8 @@ end
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
 Ymats = calculate_Ymatrix(distributions)
-richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions)
-lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions)
+richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions[1])
+lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions[1])
 
 rel2d = histogram2d(richness, lcbd[2], c = :viridis, bins = 40, title = "Relationship",
         xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",

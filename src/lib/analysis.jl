@@ -95,21 +95,21 @@ function _Ytransf(Yobs)
 end
 
 ## Richness
-function calculate_richness(Y, inds_notobs, distributions)
+function calculate_richness(Y, inds_notobs, layer)
     ## Get number of species per site
     sums = map(x -> Float64(sum(x)), eachrow(Y))
     # Add NaN for non predicted sites
     sums[inds_notobs] .= NaN
     # Reshape to grid format
-    sums = reshape(sums, size(distributions[1]))
+    sums = reshape(sums, size(layer))
     ## Create SimpleSDMLayer
-    richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
+    richness = SimpleSDMResponse(sums, layer.left, layer.right, layer.bottom, layer.top)
 end
-calculate_richness(Y, distributions) = calculate_richness(Y, _indsnotobs(Y), distributions)
+calculate_richness(Y, layer) = calculate_richness(Y, _indsnotobs(Y), layer)
 
 ## LCBD
 # Load functions
-function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions; relative = true)
+function calculate_lcbd(Yobs, Ytransf, inds_obs, layer; relative = true)
     ## Compute beta diversity statistics
     # Compute BD statistics on distribution data
     resBDobs = BD(Yobs)
@@ -126,20 +126,20 @@ function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions; relative = true)
 
     ## Arrange LCBD values as grid
     # Create empty grids
-    LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
+    LCBDgrids = [fill(NaN, size(layer)) for LCBDi in LCBDsets]
     # Fill in grids
     [LCBDgrids[i][inds_obs] = LCBDsets[i] for i in 1:length(LCBDgrids)]
     # Create SimpleSDMLayer with LCBD values
-    LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right,
-                                distributions[1].bottom, distributions[1].top)
+    LCBD = SimpleSDMResponse.(LCBDgrids, layer.left, layer.right,
+                                layer.bottom, layer.top)
     return LCBD
 end
 
-function calculate_lcbd(Y, distributions; kw...)
+function calculate_lcbd(Y, layer; kw...)
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
     Ytransf = _Ytransf(Yobs)
     # Compute LCBD indices
-    calculate_lcbd(Yobs, Ytransf, inds_obs, distributions; kw...)
+    calculate_lcbd(Yobs, Ytransf, inds_obs, layer; kw...)
 end
