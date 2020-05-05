@@ -45,7 +45,7 @@ function calculate_Y(distributions; transform = false)
     # Get indices of sites with observations
     inds_obs = _indsobs(Y)
     # Create matrix Yobs with observed sites only, replace NaNs by zeros
-    Yobs = _Yobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
     # Apply Hellinger transformation (using vegan in R)
     if transform
         Yobs = _Ytransf(Yobs)
@@ -72,14 +72,14 @@ function _indsnotobs(Y)
     return inds_notobs
 end
 
-function _Yobs(Y)
-    inds_obs = _indsobs(Y)
+function _Yobs(Y, inds_obs)
     # Create matrix Yobs with observed sites only
     Yobs = Y[inds_obs,:];
     # Replace NaNs by zeros for observed sites (~true absences)
     replace!(Yobs, NaN => 0.0);
     return Yobs
 end
+_Yobs(Y) = _Yobs(Y, _indsobs(Y))
 
 function _Ytransf(Yobs)
     ## Apply Hellinger transformation (using vegan in R)
@@ -105,7 +105,6 @@ function calculate_richness(Y, inds_notobs, distributions)
     ## Create SimpleSDMLayer
     richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
 end
-
 calculate_richness(Y, distributions) = calculate_richness(Y, _indsnotobs(Y), distributions)
 
 ## LCBD
@@ -138,9 +137,9 @@ end
 
 function calculate_lcbd(Y, distributions; kw...)
     # Create necessary Y elements
-    Yobs = _Yobs(Y)
-    Ytransf = _Ytransf(Yobs)
     inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    Ytransf = _Ytransf(Yobs)
     # Compute LCBD indices
     calculate_lcbd(Yobs, Ytransf, inds_obs, distributions; kw...)
 end
