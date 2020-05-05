@@ -17,26 +17,18 @@ else
 end
 
 ## Load distribution data for all species
-@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
+@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 
 ## Load matrix Y
-@load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y Yobs Ytransf inds_obs inds_notobs
+@load joinpath("data", "jld2", "$(outcome)-Y-matrices.jld2") Y
 
 #### Species richness
-## Get number of species per site
-sums = map(x -> Float64(sum(x)), eachrow(Y))
-# Add NaN for non predicted sites
-sums[inds_notobs] .= NaN
-# Reshape to grid format
-sums = reshape(sums, size(distributions[1]))
-
-## Create SimpleSDMLayer
-richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
+richness = calculate_richness(Y, distributions[1])
 
 ## Plot results
 richness_plot = plotSDM(richness, c=:viridis,
                         title = "Richness ($outcome distributions)",
-                        clim=(0.0, 60.0),
+                        clim=(0.0, Inf),
                         colorbar_title = "Number of species per site",
                         dpi=300)
 richness_qplot = plotSDM(quantiles(richness), c=:viridis,
