@@ -88,7 +88,7 @@ plotSDM(richness, c = :viridis)
 ## LCBD
 
 LCBD = calculate_lcbd(Yobs, Ytransf, inds_obs, distributions[1])
-plotSDM(LCBD[1], c = :viridis)
+plotSDM(LCBD, c = :viridis)
 
 ## Export results
 @save joinpath("data", "jld2", "rf-distributions.jld2") distributions
@@ -158,19 +158,11 @@ rich_qrf = plotSDM(quantiles(rf.richness), c=:viridis, title = "Richness quantil
 rich_qraw = plotSDM(quantiles(raw.richness), c=:viridis, title = "Richness quantiles - Raw", dpi = 300)
 rich_qsdm = plotSDM(quantiles(sdm.richness), c=:viridis, title = "Richness quantiles - SDM", dpi = 300)
 
-lcbd_rf = plotSDM(rf.LCBD[1], c=:viridis, title = "LCBD - RF", dpi = 300)
-lcbd_raw = plotSDM(raw.LCBD[1], c=:viridis, title = "LCBD - Raw", dpi = 300)
-lcbd_sdm = plotSDM(sdm.LCBD[1], c=:viridis, title = "LCBD - SDM", dpi = 300)
-
-lcbdtr_rf = plotSDM(rf.LCBD[2], c=:viridis, title = "LCBD dbtr - RF", dpi = 300)
+lcbdtr_rf = plotSDM(rf.LCBD, c=:viridis, title = "LCBD dbtr - RF", dpi = 300)
 lcbdtr_raw = plotSDM(raw.LCBD[2], c=:viridis, title = "LCBD dbtr - Raw", dpi = 300)
 lcbdtr_sdm = plotSDM(sdm.LCBD[2], c=:viridis, title = "LCBD dbtr - SDM", dpi = 300)
 
-lcbd_qrf = plotSDM(quantiles(rf.LCBD[1]), c=:viridis, title = "LCBD quantiles - RF", dpi = 300)
-lcbd_qraw = plotSDM(quantiles(raw.LCBD[1]), c=:viridis, title = "LCBD quantiles - Raw", dpi = 300)
-lcbd_qsdm = plotSDM(quantiles(sdm.LCBD[1]), c=:viridis, title = "LCBD quantiles - SDM", dpi = 300)
-
-lcbdtr_qrf = plotSDM(quantiles(rf.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - RF", dpi = 300)
+lcbdtr_qrf = plotSDM(quantiles(rf.LCBD), c=:viridis, title = "LCBD quantiles dbtr - RF", dpi = 300)
 lcbdtr_qraw = plotSDM(quantiles(raw.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - Raw", dpi = 300)
 lcbdtr_qsdm = plotSDM(quantiles(sdm.LCBD[2]), c=:viridis, title = "LCBD quantiles dbtr - SDM", dpi = 300)
 
@@ -194,32 +186,6 @@ lcbdtr_q
 # Calculate relative richness (α/γ)
 rel_richness = [res.richness.grid ./ (size(res.Y, 2)+1) for res in (raw,rf)]
 # Scatterplot LCBD ~ richness
-relation_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[1].grid),
-         markersize = 2,
-         c = :skyblue,
-         msw = 0,
-         label = "Raw occurrence data",
-         legend = :topright,
-         xlims = (0.0, 1.0), ylims = (0.0, 1.0),
-         yticks = 0.0:0.20:1.0,
-         xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none,
-         dpi = 300)
-scatter!(relation_plot, vec(rel_richness[2]), vec(rf.LCBD[1].grid),
-         markersize = 2, color=:orange, msw = 0, label = "SDM predictions")
-relationtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
-         markersize = 2,
-         c = :skyblue,
-         msw = 0,
-         label = "Raw occurrence data",
-         legend = :topright,
-         xlims = (0.0, 1.0), ylims = (0.0, 1.0),
-         yticks = 0.0:0.20:1.0,
-         xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
-         grid=:none,
-         dpi = 300)
-scatter!(relationtr_plot, vec(rel_richness[2]), vec(rf.LCBD[1].grid),
-         markersize = 3, c = :orange, msw = 0, label = "SDM predictions")
 relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          markersize = 2,
          c = :skyblue,
@@ -231,17 +197,15 @@ relationdbtr_plot = scatter(vec(rel_richness[1]), vec(raw.LCBD[2].grid),
          xlabel = "Species richness (\\alpha\\/\\gamma)", ylabel = "LCBD (relative to maximum)",
          grid = :none,
          dpi = 300)
-scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD[2].grid),
+scatter!(relationdbtr_plot, vec(rel_richness[2]), vec(rf.LCBD.grid),
          markersize = 2, c = :orange, msw = 0, label = "SDM predictions")
 
 #### Export RF figures
 if (@isdefined save_figures) && save_figures == true
     savefig(dist_rf, joinpath("fig", "rf", "01_rf_sp-Setophaga-coronata.png"))
     savefig(rich_rf, joinpath("fig", "rf", "03_rf_richness.png"))
-    savefig(rich_qrf, joinpath("fig", "rf", "03_rf_richness_quantiles.png"))
-    savefig(lcbd_rf, joinpath("fig", "rf", "05_rf_lcbd.png"))
+    savefig(rich_qrf, joinpath("fig", "quantiles", "03_rf_richness_quantiles.png"))
     savefig(lcbdtr_rf, joinpath("fig", "rf", "05_rf_lcbd_transf.png"))
-    savefig(lcbd_qrf, joinpath("fig", "rf", "05_rf_lcbd_quantiles.png"))
-    savefig(lcbdtr_qrf, joinpath("fig", "rf", "05_rf_lcbd_transf_quantiles.png"))
+    savefig(lcbdtr_qrf, joinpath("fig", "quantiles", "05_rf_lcbd_transf_quantiles.png"))
     savefig(relationdbtr_plot, joinpath("fig", "rf", "06_rf_relationship_dbtransf.png"))
 end

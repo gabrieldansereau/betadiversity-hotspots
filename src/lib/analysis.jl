@@ -109,37 +109,35 @@ calculate_richness(Y, layer) = calculate_richness(Y, _indsnotobs(Y), layer)
 
 ## LCBD
 # Load functions
-function calculate_lcbd(Yobs, Ytransf, inds_obs, layer; relative = true)
-    ## Compute beta diversity statistics
-    # Compute BD statistics on distribution data
-    resBDobs = BD(Yobs)
-    # Compute BD statistics on transformed data
-    resBDtransf = BD(Ytransf)
+function calculate_lcbd(Yobs, inds_obs, layer; transform = true, relative = true)
+    # Apply hellinger transformation
+    if transform
+        Yobs = _Ytransf(Yobs)
+    end
+    # Compute beta diversity statistics
+    BDstats = BD(Yobs)
 
     # Extract LCBD values
-    resBD = [resBDobs, resBDtransf]
-    LCBDsets = [res.LCBDi for res in resBD]
+    LCBDvals = BDstats.LCBDi
     # Scale LCBDi values to maximum value
     if relative
-        LCBDsets = [LCBDi./maximum(LCBDi) for LCBDi in LCBDsets]
+        LCBDvals = LCBDvals ./ maximum(LCBDvals)
     end
 
-    ## Arrange LCBD values as grid
-    # Create empty grids
-    LCBDgrids = [fill(NaN, size(layer)) for LCBDi in LCBDsets]
-    # Fill in grids
-    [LCBDgrids[i][inds_obs] = LCBDsets[i] for i in 1:length(LCBDgrids)]
+    # Create empty grid
+    LCBDgrid = fill(NaN, size(layer))
+    # Fill-in grid
+    LCBDgrid[inds_obs] = LCBDvals
     # Create SimpleSDMLayer with LCBD values
-    LCBD = SimpleSDMResponse.(LCBDgrids, layer.left, layer.right,
-                                layer.bottom, layer.top)
-    return LCBD
+    LCBDlayer = SimpleSDMResponse(LCBDgrid, layer.left, layer.right,
+                                    layer.bottom, layer.top)
+    return LCBDlayer
 end
 
 function calculate_lcbd(Y, layer; kw...)
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
-    Ytransf = _Ytransf(Yobs)
     # Compute LCBD indices
-    calculate_lcbd(Yobs, Ytransf, inds_obs, layer; kw...)
+    calculate_lcbd(Yobs, inds_obs, layer; kw...)
 end

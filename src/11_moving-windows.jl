@@ -21,7 +21,7 @@ end
 
 Ymats = calculate_Ymatrix(distributions)
 richness = calculate_richness(Ymats.Y, Ymats.inds_notobs, distributions[1])
-lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions[1])
+lcbd = calculate_lcbd(Ymats.Yobs, Ymats.Ytransf, Ymats.inds_obs, distributions[1]; transform = true)
 
 plot(richness, c = :viridis)
 
@@ -65,13 +65,15 @@ get_windows_indices(index_mat, wsize, steps::Int64) = get_windows_indices(index_
     deleteat!(windows_inds, allnan)
     deleteat!(Ywindows, allnan)
     # Calculate LCBD values for Ywindows
-    LCBDwindows = @showprogress [calculate_lcbd(Y, distributions_NE[1]; relative = true) for Y in Ywindows]
+    LCBDwindows = @showprogress [calculate_lcbd(Yobs, distributions_NE[1];
+                                                transform = true, relative = true)
+                                                for Yobs in Ywindows]
 
     # Expand LCBD windows to match full extent
     LCBDbatch = []
     for i in eachindex(LCBDwindows)
         mat = fill(NaN, size(distributions[1]))
-        mat[windows_inds[i]] = LCBDwindows[i][2].grid
+        mat[windows_inds[i]] = LCBDwindows[i].grid
         push!(LCBDbatch, mat)
     end
     # Stack windows in single matrix

@@ -57,22 +57,17 @@ function plot_lcbd_richness(richness, lcbd; title = "", kw...)
     return p
 end
 
-resNE   = plot_lcbd_richness(richness_NE, lcbd_NE[1], dpi = 150,
-            title = "NE subarea - $(uppercase(outcome)) results")
-resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE[2], dpi = 150,
+resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE, dpi = 150,
             title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
-
-resSW   = plot_lcbd_richness(richness_SW, lcbd_SW[1], dpi = 150,
-            title = "SW subarea - $(uppercase(outcome)) results")
-resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW[2], dpi = 150,
+resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW, dpi = 150,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
+    # savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
     savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
-    savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
+    # savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
     savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))
 end
 
@@ -81,16 +76,13 @@ function plot_subareas(coords, initial_distributions; display_coords = coords, t
     distributions = [d[coords] for d in initial_distributions]
     Y = calculate_Ymatrix(distributions)
     richness = calculate_richness(Y.Y, Y.inds_notobs, distributions[1])
-    lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions[1]; relative = relative)
+    lcbd = calculate_lcbd(Y.Yobs, Y.Ytransf, Y.inds_obs, distributions[1];
+                          transform = transform, relative = relative)
     if display_coords != coords
         richness = richness[display_coords]
         lcbd = [l[display_coords] for l in lcbd]
     end
-    if transform
-        p = plot_lcbd_richness(richness, lcbd[2]; kw...)
-    else
-        p = plot_lcbd_richness(richness, lcbd[1]; kw...)
-    end
+    p = plot_lcbd_richness(richness, lcbd; kw...)
 end
 
 # Initial subarea
