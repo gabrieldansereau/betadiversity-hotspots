@@ -24,11 +24,12 @@ function prepare_ebd_data(df::DataFrame)
         lowercasefirst .|>
         x -> replace(x, " " => "") .|>
         Symbol
-    names!(df, newnames)
+    rename!(df, newnames)
     # Rename species column
     rename!(df, :scientificName => :species)
     # Separate year-month-day
     df.year = year.(df.observationDate)
+    df.month = month.(df.observationDate)
     # Remove entries with missing data
     df = dropmissing(df, :species)
     # Replace spaces by underscores in species names
