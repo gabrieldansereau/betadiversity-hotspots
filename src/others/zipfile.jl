@@ -8,36 +8,37 @@ cd("../test/data/")
 @load "rf-distributions.jld2" distributions
 rfdist = distributions
 
-# Unzip existing zip file
-zf = ZipFile.Reader("rf-distributions.zip")
-@time write("test.jld2", read(zf.files[1]))
-# Load result
-@load "test.jld2" distributions
-zfdist = copy(distributions)
+## Zip existing file
+@time begin
+    w = ZipFile.Writer("$(outcome)-distributions.zip") # create archive folder
+    f = ZipFile.addfile(w, "$(outcome)-distributions.jld2", method=ZipFile.Deflate) # create file for compression
+    open("$(outcome)-distributions.jld2", "r") do io # file to compress
+        write(f, io) # compress file, ~60sec
+    end
+    close(w)
+end
 
-# Zip existing file
-w = ZipFile.Writer("example.zip")
-f = ZipFile.addfile(w, "test2.jld2", method=ZipFile.Deflate)
-@time write(f, open("test.jld2", "r"))
-close(w)
-# Unzip result & load
-zf2 = ZipFile.Reader("example.zip")
-@time write("test2.jld2", read(zf2.files[1]))
-@load "test2.jld2" distributions
-zfdist2 = copy(distributions)
+## Unzip a file
+
+# Unzip previously archived file & write to disk
+zf = ZipFile.Reader("$(outcome)-distributions.zip")
+@time write("unziptest.jld2", read(zf.files[1]))
+@load "unziptest.jld2" distributions
+zfdist = copy(distributions)
 
 # Compare results
 map(x -> filter(!isnan, x.grid), zfdist) == map(x -> filter(!isnan, x.grid), rfdist)
-map(x -> filter(!isnan, x.grid), zfdist2) == map(x -> filter(!isnan, x.grid), rfdist)
 
 ## Zipfile documentation
 using ZipFile
+# Zip files
 w = ZipFile.Writer("example.zip");
 f = ZipFile.addfile(w, "hello.txt");
 write(f, "hello world!")
 f = ZipFile.addfile(w, "julia.txt", method=ZipFile.Deflate);
 write(f, "Julia");
 close(w)
+# Unzip files
 r = ZipFile.Reader("example.zip");
 for f in r.files
       println("Filename: $(f.name)")
