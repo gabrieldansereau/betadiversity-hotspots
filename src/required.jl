@@ -13,6 +13,7 @@ using Random
 using ProgressMeter
 using ArchGDAL
 using RCall
+using ZipFile
 
 include(joinpath("lib", "analysis.jl"))
 include(joinpath("lib", "beta-div.jl"))
@@ -24,3 +25,4 @@ include(joinpath("lib", "plotSDM.jl"))
 include(joinpath("lib", "presence-absence.jl"))
 include(joinpath("lib", "quantiles.jl"))
 include(joinpath("lib", "shapefiles.jl"))
+include(joinpath("lib", "zipfile.jl"))

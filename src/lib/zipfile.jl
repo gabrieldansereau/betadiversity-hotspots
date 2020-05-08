@@ -7,7 +7,7 @@ and hosted on the remote repository.
 If a JLD2 does not exist, it will be extracted from the archives and written to disk.
 
 A warning will be returned if ZIP archives are more recent than their corresponding JLD2 files,
-likely indicating upstream changes. Re-run with `extract_recent` set to `true` to extract the newer files. 
+likely indicating upstream changes. Re-run with `extract_recent` set to `true` to extract the newer files.
 """
 function verify_jld2_data(path::AbstractString; extract_recent::Bool = false)
     # List zip files
@@ -39,9 +39,8 @@ function verify_jld2_data(path::AbstractString; extract_recent::Bool = false)
         end
     end
 end
-
-@time verify_jld2_data(joinpath("data", "jld2"))
-@time verify_jld2_data(joinpath("data", "jld2"); extract_recent = true)
+# @time verify_jld2_data(joinpath("data", "jld2"))
+# @time verify_jld2_data(joinpath("data", "jld2"); extract_recent = true)
 
 function _unzip_jld2(zip_path, jld_path)
     zf = ZipFile.Reader(zip_path)
@@ -59,4 +58,4 @@ function _zip_jld2(zip_path, jld_path)
     end
     close(w)
 end
-@time _zip_jld2(zipfiles[2], jldfiles[2])
+# @time _zip_jld2(zipfiles[2], jldfiles[2])
