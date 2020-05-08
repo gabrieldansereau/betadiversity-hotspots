@@ -2,10 +2,10 @@
 
 ## Bash commands to download & prepare landcover data from Zenodo
 # Just run following in bash terminal:
-# bash src/bin/landcover_download.sh
+# bash src/shell/landcover_download.sh
 
 # Make sure file is executable. If not (e.g. Permission denied error), run:
-# chmod +x src/bin/landcover_download.sh
+# chmod +x src/shell/landcover_download.sh
 
 ####
 

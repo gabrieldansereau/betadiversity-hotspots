@@ -13,10 +13,10 @@ if !any(startswith.(lc_files, r"^lc_"))
     if !any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
         # Download full resolution files
         # BEWARE, can be long to download, 25 GB of data
-        run(`bash src/bin/landcover_download.sh`)
+        run(`bash src/shell/landcover_download.sh`)
     end
     # Coarsen resolution
-    run(`bash src/bin/landcover_coarsen.sh`)
+    run(`bash src/shell/landcover_coarsen.sh`)
 end
 
 ## Test landcover variables
