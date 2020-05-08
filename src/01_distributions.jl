@@ -69,9 +69,16 @@ end
 ## Export distributions
 # save_data = true # should data files be overwritten (optional)
 if (@isdefined save_data) && save_data == true
-    # Export data
-    @info "Data exported to file ($(outcome) distributions data)"
+    # Export data to JLD2
+    @info "Exporting data to JLD2 file ($(outcome) distributions data)"
     @save joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
+    # Export to ZIP archive
+    outcome = "sdm"
+    @info "Exporting data from JLD2 to ZIP archive ($(outcome) distributions data)"
+    _zip_jld2(joinpath("data", "jld2", "$(outcome)-distributions.zip"),
+              joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
+    # Make sure JLD2 timestamp is more recent than ZIP archive
+    touch(joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
 else
     # Load data
     @info "Data imported from file ($(outcome) distributions data)"
