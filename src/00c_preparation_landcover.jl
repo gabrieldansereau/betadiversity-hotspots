@@ -57,8 +57,8 @@ lc_plot = plotSDM(lc_vars[2], colorbar_title="Crops land cover (%)", dpi=300)
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved (environmental variables)"
-    savefig(wc_plot, joinpath("fig", "00b_wc1-temperature.png"))
-    savefig(lc_plot, joinpath("fig/00b_lc2-crops.png"))
+    savefig(wc_plot, joinpath("fig", "00c_wc1-temperature.png"))
+    savefig(lc_plot, joinpath("fig", "00c_lc2-crops.png"))
 else
     @info "Figures not saved (environmental variables)"
 end

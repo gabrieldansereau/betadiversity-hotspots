@@ -65,10 +65,8 @@ resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW, dpi = 150,
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    # savefig(resNE, joinpath("fig", outcome, "09_$(outcome)_subareas_NE.png"))
-    savefig(resNEtr, joinpath("fig", outcome, "09_$(outcome)_subareas_NEtr.png"))
-    # savefig(resSW, joinpath("fig", outcome, "09_$(outcome)_subareas_SW.png"))
-    savefig(resSWtr, joinpath("fig", outcome, "09_$(outcome)_subareas_SWtr.png"))
+    savefig(resNEtr, joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
+    savefig(resSWtr, joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
 end
 
 #### Repeat for different subareas
@@ -125,7 +123,7 @@ anim = @animate for p in subarea_plots[Not(1)]
 end
 gif(anim, fps = 7)
 if (@isdefined save_figures) && save_figures == true
-    gif(anim, joinpath("fig", outcome, "09_subareas.gif"), fps = 3)
+    gif(anim, joinpath("fig", outcome, "05-3_$(outcome)_subareas.gif"), fps = 3)
 end
 
 #### 3 scales comparison
@@ -148,5 +146,5 @@ p = plot(ps..., layout = l1, size = (1000,800))
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(p, joinpath("fig/", outcome, "09_$(outcome)_subareas_3scales.png"))
+    savefig(p, joinpath("fig", outcome, "05-2_$(outcome)_subareas_3scales.png"))
 end

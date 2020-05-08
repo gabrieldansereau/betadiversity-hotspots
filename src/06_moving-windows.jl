@@ -115,8 +115,8 @@ psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(window_full, joinpath("fig", outcome, "11_$(outcome)_moving-windows_full.png"))
-    savefig(psubareas, joinpath("fig", outcome, "11_$(outcome)_moving-windows_subareas.png"))
+    savefig(window_full, joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_full.png"))
+    savefig(psubareas,   joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"))
 end
 
 ## GIF
@@ -142,7 +142,7 @@ anim = @animate for p in subarea_plots[Not(1)]
 end
 gif(anim, fps = 3)
 if (@isdefined save_figures) && save_figures == true
-    gif(anim, joinpath("fig", outcome, "11_$(outcome)_moving-windows.gif"), fps = 3)
+    gif(anim, joinpath("fig", outcome, "06-3_$(outcome)_moving-windows.gif"), fps = 3)
 end
 
 ## 3 scales comparison
@@ -165,5 +165,5 @@ p = plot(ps..., layout = l1, size = (1000,800))
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(p, joinpath("fig/", outcome, "11_$(outcome)_moving-windows_3scales.png"))
+    savefig(p, joinpath("fig/", outcome, "06-2_$(outcome)_moving-windows_3scales.png"))
 end

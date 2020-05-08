@@ -81,10 +81,10 @@ rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relat
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome)"
-    savefig(Yobs_plot, joinpath("fig", outcome, "02_$(outcome)_Yobs.png"))
-    savefig(richness_plot, joinpath("fig", outcome, "03_$(outcome)_richness.png"))
-    savefig(lcbdtr_plot, joinpath("fig", outcome, "05_$(outcome)_lcbd-transf.png"))
-    savefig(rel2d_plot, joinpath("fig", outcome, "06_$(outcome)_relationship2d-transf.png"))
+    savefig(Yobs_plot,     joinpath("fig", outcome, "04-1_$(outcome)_Yobs.png"))
+    savefig(richness_plot, joinpath("fig", outcome, "04-2_$(outcome)_richness.png"))
+    savefig(lcbdtr_plot,   joinpath("fig", outcome, "04-3_$(outcome)_lcbd-transf.png"))
+    savefig(rel2d_plot,    joinpath("fig", outcome, "04-4_$(outcome)_relationship2d-transf.png"))
 else
     @info "Figures not saved ($(outcome))"
 end
@@ -92,8 +92,8 @@ end
 # save_quantile_figures = true # should quantile figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Quantile figures saved ($(outcome))"
-    savefig(richness_qplot, joinpath("fig", "quantiles", "03_$(outcome)_richness_quantiles.png"))
-    savefig(lcbdtr_qplot, joinpath("fig", "quantiles", "05_$(outcome)_lcbd-transf_quantiles.png"))
+    savefig(richness_qplot, joinpath("fig", "quantiles", "04-2_$(outcome)_richness_quantiles.png"))
+    savefig(lcbdtr_qplot,   joinpath("fig", "quantiles", "04-3_$(outcome)_lcbd-transf_quantiles.png"))
 else
     @info "Quantile figures not saved ($(outcome) richness)"
 end
