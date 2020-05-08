@@ -90,23 +90,3 @@ end
 
 richness = calculate_richness(Y, distributions[1])
 lcbd = calculate_lcbd(Y, distributions[1])
-
-## Visualize results
-
-# Distributions
-dist_rf = plotSDM(distributions[1], c=:BuPu, title = "Distributions - RF", dpi = 300)
-# Richness
-rich_rf = plotSDM(richness, c=:viridis, title = "Richness - RF", dpi=300)
-rich_qrf = plotSDM(quantiles(richness), c=:viridis, title = "Richness quantiles - RF", dpi = 300)
-# LCBD
-lcbdtr_rf = plotSDM(lcbd, c=:viridis, title = "lcbd dbtr - RF", dpi = 300)
-lcbdtr_qrf = plotSDM(quantiles(lcbd), c=:viridis, title = "lcbd quantiles dbtr - RF", dpi = 300)
-
-## Export RF figures
-if (@isdefined save_figures) && save_figures == true
-    savefig(dist_rf, joinpath("fig", "rf", "01_rf_sp-Setophaga-coronata.png"))
-    savefig(rich_rf, joinpath("fig", "rf", "03_rf_richness.png"))
-    savefig(rich_qrf, joinpath("fig", "quantiles", "03_rf_richness_quantiles.png"))
-    savefig(lcbdtr_rf, joinpath("fig", "rf", "05_rf_lcbd_transf.png"))
-    savefig(lcbdtr_qrf, joinpath("fig", "quantiles", "05_rf_lcbd_transf_quantiles.png"))
-end
