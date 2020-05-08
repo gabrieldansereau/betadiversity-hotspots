@@ -18,8 +18,12 @@ function verify_jld2_data(path::AbstractString; extract_recent::Bool = false)
     missing_files = map(!isfile, jldfiles)
     # Extract missing files from archive & write to disk
     if any(missing_files)
-        for i in findall(missing_files)
-            @info "Reading $(jldfiles[i]) from archive ($(i)/$(sum(missing_files)))"
+        @warn """\n
+              One (or more) JLD2 file is missing.
+              It will be extracted from the ZIP archives and written to disk.
+              """
+        for (i,j) in zip(findall(missing_files), 1:sum(missing_files))
+            @info "Reading $(jldfiles[i]) from archive ($(j)/$(sum(missing_files)))"
             _unzip_jld2(zipfiles[i], jldfiles[i])
         end
     end
