@@ -24,18 +24,17 @@ end
 # Create matrix Y
 Y = calculate_Y(distributions; transform = false)
 
-# Heatmap of Y
+# Create matrix of observed sites only
 Yobs = _Yobs(Y)
-heat_y = heatmap(Yobs, title = "$(titlecase(outcome)) matrix Y (unsorted)",
-                   ylabel = "Site number", xlabel = "Species number")
-# Sort Y by rows & columns sums
-rowsum = sum.(eachrow(Yobs))
-colsum = sum.(eachcol(Yobs))
-sortedrows = sortperm(rowsum)
-sortedcols = sortperm(colsum, rev=true)
-heat_sortrowcol = heatmap(Yobs[sortedrows, sortedcols],
-                          title = "$(titlecase(outcome)) matrix Y (sorted by row and column sums)",
-                          ylabel = "Site number", xlabel = "Species number", dpi=300)
+
+# Sort Yobs by rows & columns sums
+Ysort = sortslices(Yobs, dims = 1, by = sum) |> y ->
+            sortslices(y, dims = 2, by = sum, rev = true)
+# Heatmap of Yobs
+Yobs_plot = heatmap(Ysort,
+                    title = "$(titlecase(outcome)) matrix Y (sorted by row and column sum)",
+                    ylabel = "Sites", yticks = :none, xlabel = "Species number", dpi=300
+                    )
 
 ## Richness
 
@@ -72,9 +71,9 @@ lcbdtr_qplot = plotSDM(quantiles(lcbd), c=:viridis,
 ## Relationship
 
 # Plot relationship as histogram2d
-rel2d = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
-                    xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                    xlim = (1, 45), ylim = (0.0, 1.0), dpi = 150)
+rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
+                         xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
+                         xlim = (1, 45), ylim = (0.0, 1.0), dpi = 150)
 
 
 ## Export figures
@@ -82,10 +81,10 @@ rel2d = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationsh
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome)"
-    savefig(heat_sortrowcol, joinpath("fig", outcome, "02_$(outcome)_Y-rowcolsorted.png"))
+    savefig(Yobs_plot, joinpath("fig", outcome, "02_$(outcome)_Yobs.png"))
     savefig(richness_plot, joinpath("fig", outcome, "03_$(outcome)_richness.png"))
     savefig(lcbdtr_plot, joinpath("fig", outcome, "05_$(outcome)_lcbd-transf.png"))
-    savefig(rel2d, joinpath("fig", outcome, "06_$(outcome)_relationship2d-transf.png"))
+    savefig(rel2d_plot, joinpath("fig", outcome, "06_$(outcome)_relationship2d-transf.png"))
 else
     @info "Figures not saved ($(outcome))"
 end
