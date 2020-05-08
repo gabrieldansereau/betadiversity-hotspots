@@ -26,3 +26,6 @@ include(joinpath("lib", "presence-absence.jl"))
 include(joinpath("lib", "quantiles.jl"))
 include(joinpath("lib", "shapefiles.jl"))
 include(joinpath("lib", "zipfile.jl"))
+
+verify_jld2_data(joinpath("data", "jld2"))
+# verify_jld2_data(joinpath("data", "jld2"); extract_recent = true)
