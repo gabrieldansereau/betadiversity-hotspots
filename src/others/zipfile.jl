@@ -56,6 +56,16 @@ function verify_jld2_data(path)
 end
 @time verify_jld2_data(joinpath("data", "jld2"))
 
+function _zip_jld2(zip_path, jld_path)
+    w = ZipFile.Writer(zip_path) # create archive folder
+    filename = split(jld_path, "/")[end]
+    f = ZipFile.addfile(w, filename, method=ZipFile.Deflate) # create file for compression
+    open(jld_path, "r") do io # file to compress
+        write(f, io) # compress file, ~60sec
+    end
+    close(w)
+end
+@time _zip_jld2(zipfiles[2], jldfiles[2])
 
 #############
 
