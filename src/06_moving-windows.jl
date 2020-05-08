@@ -8,9 +8,9 @@ outcome = "rf"
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-    @warn "'outcome' not defined, must be either 'raw', 'sdm' or 'rf'"
-elseif !(outcome in ["raw", "sdm", "rf"])
-    @warn "'outcome' invalid, must be either 'raw', 'sdm' or 'rf'"
+    @warn "'outcome' not defined, must be either 'raw', 'bio' or 'rf'"
+elseif !(outcome in ["raw", "bio", "rf"])
+    @warn "'outcome' invalid, must be either 'raw', 'bio' or 'rf'"
 else
     @info "'outcome' currently set to '$(outcome)'"
 end

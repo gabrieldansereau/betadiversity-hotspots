@@ -5,16 +5,15 @@ addprocs(9)
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
-# outcome = "sdm" # desired outcome (required)
 # create_distributions = true # should distributions be computed (optional, loaded otherwise)
 # save_data = true # should data files be overwritten (optional)
 # save_figures = true # should figures be overwritten (optional)
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-    @warn "'outcome' not defined, must be either 'raw' or 'sdm'"
-elseif (outcome != "raw" && outcome != "sdm")
-    @warn "'outcome' invalid, must be either 'raw' or 'sdm'"
+    @warn "'outcome' not defined, must be either 'raw' or 'bio'"
+elseif (outcome != "raw" && outcome != "bio")
+    @warn "'outcome' invalid, must be either 'raw' or 'bio'"
 else
     @info "'outcome' currently set to '$(outcome)'"
 end
@@ -60,7 +59,7 @@ if (@isdefined create_distributions) && create_distributions == true
         # Get raw distributions
         @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers)
         # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers)
-    elseif outcome == "sdm"
+    elseif outcome == "bio"
         # Get sdm distributions (with different training resolutions)
         @time distributions = @showprogress pmap(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
     end
@@ -73,7 +72,6 @@ if (@isdefined save_data) && save_data == true
     @info "Exporting data to JLD2 file ($(outcome) distributions data)"
     @save joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
     # Export to ZIP archive
-    outcome = "sdm"
     @info "Exporting data from JLD2 to ZIP archive ($(outcome) distributions data)"
     _zip_jld2(joinpath("data", "jld2", "$(outcome)-distributions.zip"),
               joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
