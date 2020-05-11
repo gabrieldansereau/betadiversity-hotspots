@@ -8,18 +8,24 @@ using Distributed
 
 ## Run bash scripts to download & coarsen landcover data from Zenodo (if files missing)
 if (@isdefined save_prepdata) && save_prepdata == true
+    @info "Starting landcover data saving process"
     lc_files = readdir("assets/landcover/")
     # Check if landcover files are missing
     if !any(startswith.(lc_files, r"^lc_"))
+        @info "Landcover files missing. Starting extraction"
         # Check if full resolution files are missing
         if !any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
             # Download full resolution files
             # BEWARE, can be long to download, 25 GB of data
+            @info "Full resolution files missing. Starting download"
             run(`bash src/shell/landcover_download.sh`)
         end
         # Coarsen resolution
+        @info "Coarsening resolution"
         run(`bash src/shell/landcover_coarsen.sh`)
     end
+else
+    @info "Not saving landcover data"
 end
 
 ## Test landcover variables
@@ -27,27 +33,12 @@ end
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 
 # Test loading variables
-lc_vars = landcover(1:10, resolution = "10")
 lc_vars = landcover(1:10, resolution = "5")
-lc_vars = map(x -> landcover(x, resolution = "5")[coords], 1:10)
-fig1 = plotSDM(lc_vars[2])
+lc_vars = landcover(1:10, resolution = "10")
+lc_vars = map(x -> landcover(x, resolution = "10")[coords], 1:10)
 
-# Plot worldclim to compare
-@time wc_vars = pmap(x -> worldclim(x, resolution = "5")[coords], 1:19);
-fig2 = plotSDM(wc_vars[1])
-fig1
-fig2
-
-# Test for sites with landcover over 100
-nul_layer = zeros(Float64, size(lc_vars[1].grid))
-for l in lc_vars
-    global nul_layer += l.grid
-end
-nul_layer
-nul_layer_nonan = filter(!isnan, nul_layer)
-describe(nul_layer_nonan)
-filter(x -> x > 110, nul_layer_nonan)
-filter(x -> x > 120, nul_layer_nonan)
+# Load worldclim variables to compare
+wc_vars = map(x -> worldclim(x, resolution = "10")[coords], 1:19);
 
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)
@@ -64,4 +55,58 @@ if (@isdefined save_figures) && save_figures == true
     savefig(lc_plot, joinpath("fig", "00c_lc2-crops.png"))
 else
     @info "Figures not saved (environmental variables)"
+end
+
+## Export to CSV
+
+# Combine environmental data
+env_vars = [wc_vars; lc_vars]
+# Create env matrix
+env_mat = mapreduce(x -> vec(x.grid), hcat, env_vars)
+# Create env dataframe
+env_df = DataFrame(env_mat)
+rename!(env_df, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
+insertcols!(env_df, 1, site = 1:nrow(env_df))
+
+# Get sites latitudes
+lats = repeat(collect(latitudes(wc_vars[1])), outer=size(wc_vars[1].grid, 2))
+# Get sites longitudes
+lons = repeat(collect(longitudes(wc_vars[1])), inner=size(wc_vars[1].grid, 1))
+# Create spa matrix
+spa_mat = [lats lons]
+# Create spa dataframe
+spa_df = DataFrame(site = eachindex(lats), lat = lats, lon = lons)
+
+# Export dataframes
+# save_prepdata = true
+if (@isdefined save_prepdata) && save_prepdata == true
+    @info "Exporting env & spa to CSV"
+    CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df, delim="\t")
+    CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_df, delim="\t")
+end
+
+# Test load
+#=
+testspa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t")
+testenv = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), header=true, delim="\t")
+testjoin = join(testspa, testenv, on = :site, kind = :inner)
+=#
+
+## Export QC data to csv (smaller scale)
+
+coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
+# Get site indices
+inds_qc = findall(x -> (coords_qc.left < x.lon < coords_qc.right) &&
+                       (coords_qc.bottom < x.lat < coords_qc.top), eachrow(spa_df))
+
+# Filter datasets
+env_qc = env_df[inds_qc,:]
+spa_qc = spa_df[inds_qc,:]
+
+# Export QC dataframes
+# save_prepdata = true
+if (@isdefined save_prepdata) && save_prepdata == true
+    @info "Exporting QC env & spa to CSV"
+    CSV.write(joinpath("data", "proc", "distributions_env_qc.csv"), env_qc, delim="\t")
+    CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spa_qc, delim="\t")
 end
