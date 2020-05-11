@@ -84,9 +84,9 @@ Else, the general workflow of the analyses is as follows:
 
 ### Species richness
 
-![Species richness - Random Forests][rf_richness]{width=50%}
-
-[rf_richness]: fig/rf/04-2_rf_richness.png
+<p align="center">
+  <img align = "center" src="fig/rf/04-2_rf_richness.png" width="75%">
+</p>
 
 ### LCBD & relationship to richness
 
