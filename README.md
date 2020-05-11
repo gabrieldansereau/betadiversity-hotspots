@@ -1,4 +1,9 @@
-# BioClim SDM
+# Beta Diversity Hotspots
+
+<p align="center">
+  <img align = "center" src="fig/rf/04-2_rf_richness.png" width="75%"
+       title = "Species richness">
+</p>
 
 This repository contains work for my *M.Sc.*
 on the identification of beta-diversity hotspots using species distribution models
@@ -85,7 +90,8 @@ Else, the general workflow of the analyses is as follows:
 ### Species richness
 
 <p align="center">
-  <img align = "center" src="fig/rf/04-2_rf_richness.png" width="75%">
+  <img align = "center" src="fig/rf/04-2_rf_richness.png" width="75%"
+       title = "Species richness">
 </p>
 
 ### LCBD & relationship to richness
