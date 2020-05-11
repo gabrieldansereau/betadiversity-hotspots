@@ -92,21 +92,16 @@ testenv = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), heade
 testjoin = join(testspa, testenv, on = :site, kind = :inner)
 =#
 
-## Export QC data to csv (smaller scale)
+## Export QC sites coordinates (for smaller scale analyses)
 
 coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 # Get site indices
-inds_qc = findall(x -> (coords_qc.left < x.lon < coords_qc.right) &&
-                       (coords_qc.bottom < x.lat < coords_qc.top), eachrow(spa_df))
-
-# Filter datasets
-env_qc = env_df[inds_qc,:]
-spa_qc = spa_df[inds_qc,:]
+spa_qc = filter(x -> (coords_qc.left < x.lon < coords_qc.right) &&
+                     (coords_qc.bottom < x.lat < coords_qc.top), spa_df)
 
 # Export QC dataframes
 # save_prepdata = true
 if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting QC env & spa to CSV"
-    CSV.write(joinpath("data", "proc", "distributions_env_qc.csv"), env_qc, delim="\t")
     CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spa_qc, delim="\t")
 end
