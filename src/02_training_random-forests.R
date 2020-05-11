@@ -1,8 +1,6 @@
-library(party)
-library(caret)
-library(randomForest)
-library(parallel)
 library(ranger)
+library(caret)
+library(parallel)
 library(pbapply)
 
 #### 0. Load data ####
@@ -65,97 +63,9 @@ sp <- "sp1"
 sp_train <- as.factor(spe_train[,sp])
 sp_test <- as.factor(spe_test[,sp])
 
-#### 1. Party ####
+#### Ranger ####
 
-rf <- cforest(as.factor(spe$sp20) ~ .,
-              data = vars,
-              control = cforest_unbiased(mtry = 2, ntree = 100))
-
-(vars_imp <- varimp(rf, conditional = T))
-(vars_imp <- varimp(rf))
-
-sp1_pred <- predict(rf, OOB=TRUE)
-
-table(spe$sp1, sp1_pred)
-
-#### 2. randomForest ####
-
-set.seed(42)
-system.time(
-    model1 <- randomForest(sp_train ~ .,
-                            data = vars_train,
-                            importance = TRUE)
-)
-model1
-# Predict test set
-pred_test <- predict(model1, vars_test, type = "class")
-# Checking classification accuracy
-table(sp_test, pred_test)
-mean(sp_test == pred_test)*100
-
-# Check variable importance
-importance(model1)
-varImpPlot(model1)
-
- # Select number of trees
-set.seed(42)
-model2 <- randomForest(sp_train ~ .,
-                       data = vars_train,
-                       importance = TRUE,
-                       ntree = 1000)
-set.seed(42)
-model3 <- randomForest(sp_train ~ .,
-                       data = vars_train,
-                       importance = TRUE,
-                       ntree = 2000)
-par(mfrow=c(2,2))
-plot(model1$err.rate[,"OOB"], type = "l", xlab = "ntree", ylab = "OOB error rate")
-plot(model2$err.rate[,"OOB"], type = "l", xlab = "ntree", ylab = "OOB error rate")
-plot(model3$err.rate[,"OOB"], type = "l", xlab = "ntree", ylab = "OOB error rate")
-par(mfrow=c(1,1))
-
-## Find optimal mtry value
-set.seed(42)
-mtry <- tuneRF(vars_train, sp_train, ntreeTry=500,
-               stepFactor=1.5,improve=0.01, trace=TRUE, plot=TRUE)
-# Best mtry = 5, same as default
-
-## Wrap as function
-rf_train <- function(sp, vars, ...) {
-    set.seed(42)
-    sp_train <- as.factor(sp)
-    rf <- randomForest(sp_train ~ .,
-                       data = vars,
-                       importance = TRUE,
-                       ...)
-  return(rf)
-}
-
-system.time(
-    rf_models <- mclapply(spe_train, function(x) rf_train(x, vars_train), mc.cores = 12)
-    )
-
-rf_res <- data.frame(species = colnames(spe_train),
-                     OOB = sapply(rf_models, function(x) 1 - sum(x$y == x$predicted)/length(x$y)),
-                     error_rate_0 = sapply(rf_models, function(x) median(x$err.rate[,"0"])),
-                     error_rate_1 = sapply(rf_models, function(x) median(x$err.rate[,"1"]))
-                     )
-rf_res
-
-barplot(rf_res$OOB, names.arg = rf_res$species)
-hist(rf_res$OOB, breaks=20)
-boxplot(rf_res$OOB)
-
-# Test on testing subset
-system.time(rf_tests <- lapply(rf_models, function(x) predict(x, vars_test, type = "class")))
-rf_tests
-
-rf_res$test_error_rate <- mapply(function(x,y) 1 - confusionMatrix(as.factor(x), y)$overall["Accuracy"], spe_test, rf_tests)
-barplot(rf_res$test_error_rate, names.arg = rf_res$species)
-
-#### 3. Ranger ####
-# Time models
-system.time(rf_model <- randomForest(sp_train ~ ., data = vars_train, importance = TRUE))
+# Single species time test
 system.time(ranger_model <- ranger(sp_train ~ ., data = vars_train, importance = "impurity", seed = 42))
 
 ## Wrap as function
@@ -171,22 +81,15 @@ ranger_train <- function(sp, vars, ...) {
 
 # Multi-species calls
 system.time(
-    rf_models <- lapply(spe_train[,1:10], function(x) rf_train(x, vars_train))
-)
-system.time(
     ranger_models <- pblapply(spe_train, function(x) ranger_train(x, vars_train))
 )
 
-# Parallized calls
-system.time(
-    rf_models <- mclapply(spe_train[,], function(x) rf_train(x, vars_train), mc.cores = 12)
-)
-system.time(
-    ranger_models <- mclapply(spe_train[,], function(x) ranger_train(x, vars_train), mc.cores = 12)
-)
+# Alternative parallized call
+# system.time(
+#     ranger_models <- mclapply(spe_train[,], function(x) ranger_train(x, vars_train), mc.cores = 12)
+# )
 
 # View results
-rf_models
 ranger_models
 
 # Combine results in dataframe
