@@ -1,45 +1,47 @@
-#### Master file - Raw observations
-import Pkg; Pkg.activate(".")
+#### Master file
+import Pkg
 using Distributed
 @time @everywhere include(joinpath("src", "required.jl"))
 
-#### Data preparation
+## Data preparation
 
-## 0a. EBD data preparation (if needed)
-# save_prepdata = true # should prepared data be overwritten (optional)
-@time include("00a_data_ebd-preparation.jl")
-
-## 0b. Landcover data preparation (if needed)
+# save_prepdata = true # should preparation data be overwritten (optional)
 # save_figures = true # should figures be overwritten (optional)
-@time include("00b_data_landcover-copernicus.jl")
 
-#### Analyses
+# 0a. EBD data extraction (if needed) (possibly very long)
+@time run("Rscript src/00a_preparation_ebd-extraction.R")
 
-outcome = "raw" # desired outcome (required)
-# outcome = "sdm" # desired outcome (required)
+# 0b. EBD data preparation (if needed)
+@time include("00b_preparation_ebd-preparation.jl")
+
+# 0c. Landcover data preparation (if needed)
+@time include("00c_preparation_landcover.jl")
+
+## Distributions & modelling
+
+outcome = "raw" # desired outcome (required) # "raw", "bio", or "rf"
 # create_distributions = true # should distributions be computed (optional, loaded otherwise)
 # save_data = true # should data files be overwritten (optional)
 # save_figures = true # should figures be overwritten (optional)
-# save_relfigures = true # should relationship figures be overwritten (optional)
 
-## 1. Generate presence-absence data & single species map
+# 1. Generate presence-absence data & single species map
 @time include("01_distributions.jl")
 
-## 2. Generate Y matrices data & heatmap visualization
-@time include("02_Y-matrix.jl")
+# 2. Train Random Forest models
+@time run("Rscript src/02_training_random-forests.R")
 
-## 3. Run species richness analysis
-@time include("03_richness.jl")
+# 3. Get Random Forest predictions
+@time include("03_predictions_random-forests.jl")
 
-## 4. Run evenness analysis
+## Analyses
+
+# save_figures = true # should figures be overwritten (optional)
+
+# 4. Run main analyses (Y-matrix, richness, LCBD, relationship)
 @time include("04_evenness.jl")
 
-## 5. Run LCBD analysis
+# 5. Run subareas analyses
 @time include("05_lcbd.jl")
 
-## 6. Run LCBD-richness relationship analysis
+# 6. Run moving-windows analyses for LCBD values
 @time include("06_relationship_lcbd-richness.jl")
-
-## 7. Run endemism analysis
-# save_figures = true
-@time include("07_endemism.jl")

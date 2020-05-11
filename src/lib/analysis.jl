@@ -1,40 +1,4 @@
-## Get Ymatrices
-function calculate_Ymatrix(distributions)
-    ## Create matrix Y (site-by-species community data table)
-    # Get distributions as vectors
-    distributions_vec = [vec(d.grid) for d in distributions];
-    # Create matrix Y by combining distribution vectors
-    Y = hcat(distributions_vec...);
-
-    # Verify if sites have observations
-    sites_obs = [any(y .> 0.0) for y in eachrow(Y)];
-    # Get indices of sites with observations
-    inds_obs = findall(sites_obs);
-    # Get indices of sites without observations
-    inds_notobs = findall(.!sites_obs);
-
-    # Create matrix Yobs with observed sites only
-    Yobs = Y[inds_obs,:];
-    # Replace NaNs by zeros for observed sites (~true absences)
-    replace!(Yobs, NaN => 0.0);
-    # Replace NaNs in original matrix Y too
-    Y[inds_obs,:] = Yobs;
-
-    ## Apply Hellinger transformation (using vegan in R)
-    @rput Yobs
-    begin
-        R"""
-            library(vegan)
-            Ytransf <- decostand(Yobs, "hel")
-            """
-    end
-    @rget Ytransf
-
-    output = (Y = Y, Yobs = Yobs, Ytransf = Ytransf,
-              inds_obs = inds_obs, inds_notobs = inds_notobs)
-    return output
-end
-
+## Y matrix
 function calculate_Y(distributions; transform = false)
     ## Create matrix Y (site-by-species community data table)
     # Get distributions as vectors
@@ -45,7 +9,7 @@ function calculate_Y(distributions; transform = false)
     # Get indices of sites with observations
     inds_obs = _indsobs(Y)
     # Create matrix Yobs with observed sites only, replace NaNs by zeros
-    Yobs = _Yobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
     # Apply Hellinger transformation (using vegan in R)
     if transform
         Yobs = _Ytransf(Yobs)
@@ -72,14 +36,14 @@ function _indsnotobs(Y)
     return inds_notobs
 end
 
-function _Yobs(Y)
-    inds_obs = _indsobs(Y)
+function _Yobs(Y, inds_obs)
     # Create matrix Yobs with observed sites only
     Yobs = Y[inds_obs,:];
     # Replace NaNs by zeros for observed sites (~true absences)
     replace!(Yobs, NaN => 0.0);
     return Yobs
 end
+_Yobs(Y) = _Yobs(Y, _indsobs(Y))
 
 function _Ytransf(Yobs)
     ## Apply Hellinger transformation (using vegan in R)
@@ -95,52 +59,49 @@ function _Ytransf(Yobs)
 end
 
 ## Richness
-function calculate_richness(Y, inds_notobs, distributions)
+function calculate_richness(Y, inds_notobs, layer)
     ## Get number of species per site
     sums = map(x -> Float64(sum(x)), eachrow(Y))
     # Add NaN for non predicted sites
     sums[inds_notobs] .= NaN
     # Reshape to grid format
-    sums = reshape(sums, size(distributions[1]))
+    sums = reshape(sums, size(layer))
     ## Create SimpleSDMLayer
-    richness = SimpleSDMResponse(sums, distributions[1].left, distributions[1].right, distributions[1].bottom, distributions[1].top)
+    richness = SimpleSDMResponse(sums, layer.left, layer.right, layer.bottom, layer.top)
 end
-
-calculate_richness(Y, distributions) = calculate_richness(Y, _indsnotobs(Y), distributions)
+calculate_richness(Y, layer) = calculate_richness(Y, _indsnotobs(Y), layer)
 
 ## LCBD
 # Load functions
-function calculate_lcbd(Yobs, Ytransf, inds_obs, distributions; relative = true)
-    ## Compute beta diversity statistics
-    # Compute BD statistics on distribution data
-    resBDobs = BD(Yobs)
-    # Compute BD statistics on transformed data
-    resBDtransf = BD(Ytransf)
+function calculate_lcbd(Yobs, inds_obs, layer; transform = true, relative = true)
+    # Apply hellinger transformation
+    if transform
+        Yobs = _Ytransf(Yobs)
+    end
+    # Compute beta diversity statistics
+    BDstats = BD(Yobs)
 
     # Extract LCBD values
-    resBD = [resBDobs, resBDtransf]
-    LCBDsets = [res.LCBDi for res in resBD]
+    LCBDvals = BDstats.LCBDi
     # Scale LCBDi values to maximum value
     if relative
-        LCBDsets = [LCBDi./maximum(LCBDi) for LCBDi in LCBDsets]
+        LCBDvals = LCBDvals ./ maximum(LCBDvals)
     end
 
-    ## Arrange LCBD values as grid
-    # Create empty grids
-    LCBDgrids = [fill(NaN, size(distributions[1])) for LCBDi in LCBDsets]
-    # Fill in grids
-    [LCBDgrids[i][inds_obs] = LCBDsets[i] for i in 1:length(LCBDgrids)]
+    # Create empty grid
+    LCBDgrid = fill(NaN, size(layer))
+    # Fill-in grid
+    LCBDgrid[inds_obs] = LCBDvals
     # Create SimpleSDMLayer with LCBD values
-    LCBD = SimpleSDMResponse.(LCBDgrids, distributions[1].left, distributions[1].right,
-                                distributions[1].bottom, distributions[1].top)
-    return LCBD
+    LCBDlayer = SimpleSDMResponse(LCBDgrid, layer.left, layer.right,
+                                    layer.bottom, layer.top)
+    return LCBDlayer
 end
 
-function calculate_lcbd(Y, distributions; kw...)
+function calculate_lcbd(Y, layer; kw...)
     # Create necessary Y elements
-    Yobs = _Yobs(Y)
-    Ytransf = _Ytransf(Yobs)
     inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
     # Compute LCBD indices
-    calculate_lcbd(Yobs, Ytransf, inds_obs, distributions; kw...)
+    calculate_lcbd(Yobs, inds_obs, layer; kw...)
 end
