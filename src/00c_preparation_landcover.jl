@@ -3,20 +3,23 @@ using Distributed
 @time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
+# save_prepdata = true # should preparation data be overwritten (optional)
 # save_figures = true # should figures be overwritten (optional)
 
 ## Run bash scripts to download & coarsen landcover data from Zenodo (if files missing)
-lc_files = readdir("assets/landcover/")
-# Check if landcover files are missing
-if !any(startswith.(lc_files, r"^lc_"))
-    # Check if full resolution files are missing
-    if !any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
-        # Download full resolution files
-        # BEWARE, can be long to download, 25 GB of data
-        run(`bash src/shell/landcover_download.sh`)
+if (@isdefined save_prepdata) && save_prepdata == true
+    lc_files = readdir("assets/landcover/")
+    # Check if landcover files are missing
+    if !any(startswith.(lc_files, r"^lc_"))
+        # Check if full resolution files are missing
+        if !any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
+            # Download full resolution files
+            # BEWARE, can be long to download, 25 GB of data
+            run(`bash src/shell/landcover_download.sh`)
+        end
+        # Coarsen resolution
+        run(`bash src/shell/landcover_coarsen.sh`)
     end
-    # Coarsen resolution
-    run(`bash src/shell/landcover_coarsen.sh`)
 end
 
 ## Test landcover variables
