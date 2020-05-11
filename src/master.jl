@@ -35,13 +35,15 @@ outcome = "raw" # desired outcome (required) # "raw", "bio", or "rf"
 
 ## Analyses
 
+# outcome = "raw"
 # save_figures = true # should figures be overwritten (optional)
+# save_quantile_figures = true # should figures be overwritten (optional)
 
 # 4. Run main analyses (Y-matrix, richness, LCBD, relationship)
-@time include("04_evenness.jl")
+@time include("04_analysis.jl")
 
 # 5. Run subareas analyses
-@time include("05_lcbd.jl")
+@time include("05_subareas.jl")
 
 # 6. Run moving-windows analyses for LCBD values
-@time include("06_relationship_lcbd-richness.jl")
+@time include("06_moving-windows.jl")
