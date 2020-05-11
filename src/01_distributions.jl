@@ -4,7 +4,7 @@ addprocs(9)
 @time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
-# outcome = "raw" # desired outcome (required)
+outcome = "raw" # desired outcome (required)
 # create_distributions = true # should distributions be computed (optional, loaded otherwise)
 # save_data = true # should data files be overwritten (optional)
 # save_figures = true # should figures be overwritten (optional)
@@ -68,6 +68,7 @@ end
 ## Export distributions
 # save_data = true # should data files be overwritten (optional)
 if (@isdefined save_data) && save_data == true
+    ## Export to JLD2
     # Export data to JLD2
     @info "Exporting data to JLD2 file ($(outcome) distributions data)"
     @save joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
@@ -77,6 +78,19 @@ if (@isdefined save_data) && save_data == true
               joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
     # Make sure JLD2 timestamp is more recent than ZIP archive
     touch(joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
+
+    ## Export to CSV as Y matrix
+    @info "Exporting data to CSV as Y matrix ($(outcome) distributions data)"
+    # Get Y matrix
+    Y = calculate_Y(distributions)
+    inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    # Convert to dataframe
+    spe_df = DataFrame(Yobs)
+    rename!(spe_df, Symbol.("sp", 1:ncol(spe_df)))
+    insertcols!(spe_df, 1, site = inds_obs)
+    # Export to CSV
+    CSV.write(joinpath("data", "proc", "distributions_spe_full.csv"), spe_df, delim="\t")
 else
     # Load data
     @info "Data imported from file ($(outcome) distributions data)"
