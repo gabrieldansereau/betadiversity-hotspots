@@ -7,10 +7,20 @@ using Distributed
 end
 
 ## Load data
-spe = CSV.read(joinpath("data", "proc", "distributions_spe.csv"), header=true, delim="\t")
-spa = CSV.read(joinpath("data", "proc", "distributions_spa.csv"), header=true, delim="\t")
-env = CSV.read(joinpath("data", "proc", "distributions_env.csv"), header=true, delim="\t")
-var = hcat(env, spa)
+spe = CSV.read(joinpath("data", "proc", "distributions_spe_full.csv"), header=true, delim="\t")
+spa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t")
+env = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), header=true, delim="\t")
+
+# Select observed sites only
+spa = spa[spe.site, :]
+env = env[spe.site, :]
+var = join(env, spa, on = :site)
+
+# Remove site column
+select!(spe, Not(:site))
+select!(spa, Not(:site))
+select!(env, Not(:site))
+select!(var, Not(:site))
 
 ## Shuffle row indices
 idx = collect(1:nrow(var))

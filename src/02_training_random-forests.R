@@ -6,10 +6,22 @@ library(ranger)
 library(pbapply)
 
 #### 0. Load data ####
-# Load QC data
-spe <- read.csv("data/proc/distributions_spe_qc.csv", header=TRUE, sep="\t")
-spa <- read.csv("data/proc/distributions_spa_qc.csv", header=TRUE, sep="\t")
-env <- read.csv("data/proc/distributions_env_qc.csv", header=TRUE, sep="\t")
+# Load data
+spe <- read.csv("data/proc/distributions_spe_full.csv", header=TRUE, sep="\t")
+spa <- read.csv("data/proc/distributions_spa_full.csv", header=TRUE, sep="\t")
+env <- read.csv("data/proc/distributions_env_full.csv", header=TRUE, sep="\t")
+
+# Select observed sites only
+inds_obs <- spe$site
+
+# Subset to QC data (optional)
+# spa_qc <- read.csv("data/proc/distributions_spa_qc.csv", header=TRUE, sep="\t")
+# inds_obs <- intersect(spa_qc$site, inds_obs)
+
+# Select observed sites only
+inds_obs <- spe$site
+spa <- spa[inds_obs,]
+env <- env[inds_obs,]
 
 # Remove site with NAs for landcover variables
 (inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
@@ -20,7 +32,12 @@ if (length(inds_withNAs) > 0) {
 }
 
 # Combine environmental variables
-vars <- cbind(env, spa)
+vars <- merge(env, spa, by = "site")
+# Remove site column
+spe <- subset(spe, select = -site)
+env <- subset(env, select = -site)
+spa <- subset(spa, select = -site)
+vars <- subset(vars, select = -site)
 
 # Separate into training/testing datasets
 set.seed(42)

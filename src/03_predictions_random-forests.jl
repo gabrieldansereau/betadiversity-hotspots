@@ -7,9 +7,9 @@ using Distributed
 
 ## Load data
 #=
-spe = CSV.read(joinpath("data", "proc", "distributions_spe.csv"), header=true, delim="\t")
-spa = CSV.read(joinpath("data", "proc", "distributions_spa.csv"), header=true, delim="\t")
-env = CSV.read(joinpath("data", "proc", "distributions_env.csv"), header=true, delim="\t")
+spe = CSV.read(joinpath("data", "proc", "distributions_spe_full.csv"), header=true, delim="\t")
+spa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t")
+env = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), header=true, delim="\t")
 =#
 
 ## Perform RandomForests
@@ -23,6 +23,12 @@ begin
     ## Predict distributions for full range
     env_full <- read.csv("data/proc/distributions_env_full.csv", header = TRUE, sep = "\t")
     spa_full <- read.csv("data/proc/distributions_spa_full.csv", header = TRUE, sep = "\t")
+
+    # Remove site column
+    env_full <- subset(env_full, select = -site)
+    spa_full <- subset(spa_full, select = -site)
+
+    # Combine variables
     vars_full <- cbind(env_full, spa_full)
     head(vars_full)
 
