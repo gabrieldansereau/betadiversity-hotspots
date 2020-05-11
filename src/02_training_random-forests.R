@@ -135,24 +135,3 @@ hist(comparison$OOB) # mostly < 1
 hist(comparison$error_rate_0, breaks = 10) # mostly < 1
 hist(comparison$error_rate_1, breaks = 20) # some extremes
 cor(rf_res[,-1], rf_test_res[,-1]) # correlations of 0.999, 0.999 and 0.982
-
-## Training on full dataset
-system.time(
-    full_models <- pblapply(spe, function(x) ranger_train(x, vars))
-)
-full_models
-
-# Combine results in dataframe
-rf_full_res <- data.frame(species = colnames(spe),
-                     OOB = sapply(full_models, function(x) x$prediction.error),
-                     error_rate_0 = sapply(full_models, function(x) x$confusion.matrix[3]/sum(x$confusion.matrix[c(1,3)])),
-                     error_rate_1 = sapply(full_models, function(x) x$confusion.matrix[2]/sum(x$confusion.matrix[c(2,4)]))
-)
-
-# Compare full training with 70% training
-(full_comparison <- (rf_res - rf_full_res[-60,]) * 100)
-summary(full_comparison) # not much prediction gain
-hist(full_comparison$OOB, breaks = 20) # mostly < 1
-hist(full_comparison$error_rate_0, breaks = 20) # mostly < 1
-hist(full_comparison$error_rate_1, breaks = 20) # some extremes
-cor(rf_res[,-1], rf_full_res[-60,-1])
