@@ -1,7 +1,8 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-addprocs(1)
 @time include("required.jl")
+addprocs(1)
+@time @everywhere include(joinpath("src", "required.jl"))
 
 # Case 1: package function
 wc = pmap(worldclim, 1:19) # A bit weird, somehow SimpleSDMLayers exports to all processors
