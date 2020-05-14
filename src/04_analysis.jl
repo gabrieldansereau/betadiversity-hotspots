@@ -5,6 +5,7 @@ addprocs(1)
 
 wc = pmap(worldclim, 1:19)
 pmap(x -> mean(filter(!isnan, x.grid)), wc)
+pmap(x -> Statistics.mean(filter(!isnan, x.grid)), wc)
 
 # mean_nonan(x) = mean(filter(!isnan, x))
 map(x -> mean_nonan(x.grid), wc)
