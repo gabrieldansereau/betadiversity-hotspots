@@ -15,5 +15,9 @@ using ArchGDAL
 using RCall
 using ZipFile
 
-@everywhere include(joinpath("src", "BetadiversityHotspots.jl"))
+if nprocs() > 1
+    @everywhere include(joinpath("src", "BetadiversityHotspots.jl"))
+else
+    include("BetadiversityHotspots.jl")
+end
 using .BetadiversityHotspots
