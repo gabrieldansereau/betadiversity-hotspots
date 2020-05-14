@@ -3,17 +3,21 @@ using Distributed
 addprocs(1)
 @time include("required.jl")
 
-wc = pmap(worldclim, 1:19)
-pmap(x -> mean(filter(!isnan, x.grid)), wc)
-pmap(x -> Statistics.mean(filter(!isnan, x.grid)), wc)
+# Case 1: package function
+wc = pmap(worldclim, 1:19) # A bit weird, somehow SimpleSDMLayers exports to all processors
+pmap(x -> mean(filter(!isnan, x.grid)), wc) # Normal package use case. 
+# Without @everywhere, packages are loaded on all processes, but only brought into scope in process where it's called
+pmap(x -> Statistics.mean(filter(!isnan, x.grid)), wc) 
+# Without @everywhere, calls to packages functions just have to be explicit
 
+# Case 2: module function
 # mean_nonan(x) = mean(filter(!isnan, x))
 map(x -> mean_nonan(x.grid), wc)
 map(x -> BetadiversityHotspots.mean_nonan(x.grid), wc)
 pmap(x -> mean_nonan(x.grid), wc)
-pmap(x -> BetadiversityHotspots.mean_nonan(x.grid), wc)
-
-@time @everywhere include(joinpath("src/required.jl"))
+pmap(x -> BetadiversityHotspots.mean_nonan(x.grid), wc) # Mimics package behavior with a tweak in required.jl
+# If module is loaded with @everywhere, it's loaded on all processes, but brought into scope of first one only
+# Without @everywhere, modules are NOT loaded on all processes, unlike packages
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
