@@ -1,6 +1,7 @@
-import Pkg; Pkg.activate(".")
+import Pkg
+Pkg.activate(".")
 using Distributed
-@time @everywhere include(joinpath("src", "required.jl"))
+@time include("required.jl")
 
 ## Conditional arguments
 # save_prepdata = true # should prepared data be overwritten (optional)

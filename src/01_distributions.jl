@@ -1,5 +1,7 @@
-import Pkg; Pkg.activate(".")
+import Pkg 
+Pkg.activate(".")
 using Distributed
+@time include("required.jl")
 addprocs(9)
 @time @everywhere include(joinpath("src", "required.jl"))
 

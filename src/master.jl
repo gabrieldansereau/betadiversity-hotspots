@@ -1,7 +1,8 @@
 #### Master file
 import Pkg
+Pkg.activate(".")
 using Distributed
-@time @everywhere include(joinpath("src", "required.jl"))
+@time include("required.jl")
 
 ## Data preparation
 

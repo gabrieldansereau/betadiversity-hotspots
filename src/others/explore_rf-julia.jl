@@ -1,7 +1,8 @@
-import Pkg; Pkg.activate(".")
+import Pkg
+Pkg.activate(".")
 using Distributed
-@time @everywhere begin
-    include(joinpath("src", "required.jl"))
+@time begin
+    @time include("required.jl")
     using DecisionTree
     include(joinpath("src", "lib", "model-evaluation.jl"))
 end

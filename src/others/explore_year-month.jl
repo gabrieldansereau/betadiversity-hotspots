@@ -1,6 +1,7 @@
-import Pkg; Pkg.activate(".")
+import Pkg
+Pkg.activate(".")
 using Distributed
-@time @everywhere include(joinpath("src", "required.jl"))
+@time include("required.jl")
 
 # Load data from CSV files (from file cut with terminal)
 @time df = CSV.read(joinpath("data", "raw", "ebd_warblers_cut.csv"), header=true, delim="\t")
