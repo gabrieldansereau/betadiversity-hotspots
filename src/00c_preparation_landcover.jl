@@ -97,8 +97,8 @@ testjoin = join(testspa, testenv, on = :site, kind = :inner)
 
 coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 # Get site indices
-spa_qc = filter(x -> (coords_qc.left < x.lon < coords_qc.right) &&
-                     (coords_qc.bottom < x.lat < coords_qc.top), spa_df)
+spa_qc = filter(x -> (coords_qc.left - stride(wc_vars[1], dims = 2) <= x.lon < coords_qc.right) &&
+                     (coords_qc.bottom - stride(wc_vars[1], dims = 1) <= x.lat < coords_qc.top), spa_df)
 
 # Export QC dataframes
 # save_prepdata = true
