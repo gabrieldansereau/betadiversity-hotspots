@@ -1,7 +1,7 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time include("required.jl")
 addprocs(1)
+@time include("required.jl")
 @time @everywhere include(joinpath("src", "required.jl"))
 
 # Case 1: package function
@@ -19,6 +19,12 @@ pmap(x -> mean_nonan(x.grid), wc)
 pmap(x -> BetadiversityHotspots.mean_nonan(x.grid), wc) # Mimics package behavior with a tweak in required.jl
 # If module is loaded with @everywhere, it's loaded on all processes, but brought into scope of first one only
 # Without @everywhere, modules are NOT loaded on all processes, unlike packages
+
+# Case 3: module functions not exported to global scope
+isin # not defined
+worldshape # not defined
+BetadiversityHotspots.worldshape # defined, not exported to global scope
+plotSDM(wc[1])
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)

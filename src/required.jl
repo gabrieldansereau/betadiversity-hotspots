@@ -15,15 +15,14 @@ using ArchGDAL
 using RCall
 using ZipFile
 
-#=
 if nprocs() > 1
     @everywhere include(joinpath("src", "BetadiversityHotspots.jl"))
 else
     include("BetadiversityHotspots.jl")
 end
 using .BetadiversityHotspots
-=#
 
+#=
 include(joinpath("lib", "analysis.jl"))
 include(joinpath("lib", "beta-div.jl"))
 include(joinpath("lib", "bioclim.jl"))
@@ -40,3 +39,4 @@ verify_jld2_data(joinpath("data", "jld2"))
 # verify_jld2_data(joinpath("data", "jld2"); extract_recent = true)
 
 mean_nonan(x) = mean(filter(!isnan, x))
+=#

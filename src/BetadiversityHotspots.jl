@@ -46,7 +46,7 @@ include(joinpath("lib", "quantiles.jl"))
 export quantiles, quantiles!
 
 include(joinpath("lib", "shapefiles.jl"))
-export download_shapefile, worldshape, clip, isin
+# export download_shapefile, worldshape, clip, isin
 
 include(joinpath("lib", "zipfile.jl"))
 export verify_jld2_data, _unzip_jld2, _zip_jld2
