@@ -1,6 +1,5 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time include("required.jl")
 @time @everywhere include(joinpath("src", "required.jl"))
 
 ## Conditional arguments
