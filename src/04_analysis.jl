@@ -1,6 +1,18 @@
 import Pkg; Pkg.activate(".")
 using Distributed
-@time @everywhere include(joinpath("src", "required.jl"))
+addprocs(1)
+@time include("required.jl")
+
+wc = pmap(worldclim, 1:19)
+pmap(x -> mean(filter(!isnan, x.grid)), wc)
+
+# mean_nonan(x) = mean(filter(!isnan, x))
+map(x -> mean_nonan(x.grid), wc)
+map(x -> BetadiversityHotspots.mean_nonan(x.grid), wc)
+pmap(x -> mean_nonan(x.grid), wc)
+pmap(x -> BetadiversityHotspots.mean_nonan(x.grid), wc)
+
+@time @everywhere include(joinpath("src/required.jl"))
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)

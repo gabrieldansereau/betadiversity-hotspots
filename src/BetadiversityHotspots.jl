@@ -55,4 +55,7 @@ export verify_jld2_data, _unzip_jld2, _zip_jld2
 verify_jld2_data(joinpath("data", "jld2"))
 # verify_jld2_data(joinpath("data", "jld2"); extract_recent = true)
 
+mean_nonan(x) = mean(filter(!isnan, x))
+export mean_nonan
+
 end
