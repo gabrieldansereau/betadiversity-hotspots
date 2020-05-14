@@ -15,9 +15,9 @@ inds_obs <- spe$site
 # Subset to QC data (optional)
 # spa_qc <- read.csv("data/proc/distributions_spa_qc.csv", header=TRUE, sep="\t")
 # inds_obs <- intersect(spa_qc$site, inds_obs)
+# spe <- spe[spe$site %in% inds_obs,]
 
-# Select observed sites only
-inds_obs <- spe$site
+# Filter datasets to observed sites only
 spa <- spa[inds_obs,]
 env <- env[inds_obs,]
 
