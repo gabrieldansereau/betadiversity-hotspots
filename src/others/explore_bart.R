@@ -88,5 +88,8 @@ names(vars_stack) <- xnames
 vars_stack
 
 # Predict species distribution
-map <- predict(sdm, vars_stack, quiet = TRUE)
-vars_stack[1]
+map <- predict(object = sdm, x.layers = vars_stack, splitby = 20, quiet = TRUE)
+
+# Plot predictions
+plot(map, main='Predicted probability', 
+     box=F, axes=F)
