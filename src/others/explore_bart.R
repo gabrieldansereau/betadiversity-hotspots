@@ -68,6 +68,7 @@ xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", 1:10))
 ## 2. Basic BART model ####
 
 # Train model
+set.seed(42)
 system.time(
     sdm <- bart(y.train = sp$sp17,
                 x.train = vars[,xnames],
@@ -114,10 +115,58 @@ par(mfrow=c(1,1))
 
 # Thresholded predictions
 summary(sdm) # Cutoff =  0.5556909
+threshold <- 0.533461
 par(mfrow=c(1,2), mar=c(10,4,10,7))
 plot(wc_layer, main = "Setophaga caerulescens", col = "grey", 
     legend=FALSE, box = FALSE, axes = F)
 plot(sp_layer, add = TRUE, main = "Setophaga caerulescens", col = viridis(2))
-plot(predictions[[1]] > 0.5556909, main='Predicted outcome', col = viridis(255),
+plot(predictions[[1]] > threshold, main='Predicted outcome', col = viridis(255),
      box=F, axes=F)
 par(mfrow=c(1,1))
+
+## 3. More advanced model ####
+
+pred_quant <- predict(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
+
+par(mfrow=c(2,2))
+par(mar=c(2,1,3,7))
+plot(pred_quant[[1]], main = 'Posterior mean', 
+     box=F, axes=F)
+plot(pred_quant[[2]], main = 'Lower 95% CI bound', 
+     box=F, axes=F)
+plot(pred_quant[[3]], main = 'Upper 95% CI bound', 
+     box=F, axes=F)
+plot(pred_quant[[3]]-pred_quant[[2]], main = 'Credible interval width', 
+     box=F, axes=F)
+
+plot(pred_quant[[1]] > threshold, main = 'Posterior mean', 
+     box=F, axes=F)
+plot(pred_quant[[2]] > threshold, main = 'Lower 95% CI bound', 
+     box=F, axes=F)
+plot(pred_quant[[3]] > threshold, main = 'Upper 95% CI bound', 
+     box=F, axes=F)
+plot((pred_quant[[3]]> threshold) - (pred_quant[[2]] > threshold),
+     main = 'Credible interval width', 
+     box=F, axes=F)
+plot(pred_quant[[3]] - pred_quant[[2]] > threshold,
+     main = 'Credible interval width', 
+     box=F, axes=F)
+par(mfrow=c(1,1))
+
+# Show first iterations
+plot.mcmc(sdm, vars_stack, iter=5, quiet = TRUE)
+
+# Show burn-in with fewer trees
+set.seed(42)
+sdm.tiny <- bart(y.train=sp[[1]],
+                 x.train=vars[,xnames],
+                 keeptrees = TRUE,
+                 ntree=5, # 5 tree models
+                 nskip=0) # No burnin
+summary(sdm.tiny)
+plot.mcmc(sdm.tiny, vars_stack, iter=100)
+
+# Timelapse of tree learning
+library(animation)
+saveGIF(plot.mcmc(sdm, vars_stack, iter=50), movie.name = "Timelapse.gif", #interval = 0.15, 
+  ani.width = 800, ani.height = 400)
