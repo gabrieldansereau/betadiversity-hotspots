@@ -63,7 +63,7 @@ sp_full <- subset(spe_full, select = "sp17") # black-throated blue warbler
 table(sp)
 
 # Select fewer variables
-xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", 1:10))
+xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 always zero
 
 ## 2. Basic BART model ####
 
@@ -98,8 +98,9 @@ vars_df <- vars_full[,xnames]
 vars_layers <- lapply(vars_df, 
     function(x) df_to_layer(x, lons = vars_df$lon, lats = vars_df$lat))
 (vars_stack <- stack(vars_layers, names = xnames))
-plot(vars_stack$wc1, main = "Temperature", col = "grey")
-plot(sp_layer, main = "Setophaga caerulescens", col = bpy.colors(2), add = TRUE)
+plot(vars_stack)
+plot(vars_stack$wc1, main = "Temperature", col = "grey", legend = FALSE)
+plot(sp_layer, main = "Setophaga caerulescens", col = viridis(2), add = TRUE)
 
 # Predict species distribution
 predictions <- predict(object = sdm, x.layers = vars_stack, splitby = 20, quiet = TRUE)
