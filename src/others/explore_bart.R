@@ -90,10 +90,10 @@ wc_layer <- df_to_layer(x = vars_full$wc1, lons = vars_full$lon, lats = vars_ful
 plot(wc_layer)
 
 # Stack raster layers
-vars_df <- as.data.frame(vars_full[,xnames])
-vars_layers <- lapply(1:ncol(vars_full[,xnames]), function(x) df_to_layer(vars_df[,x], lons = vars_df$lon, lats = vars_df$lat)
-vars_stack <- stack(vars_layers)
-names(vars_stack) <- xnames
+vars_df <- vars_full[,xnames]
+vars_layers <- lapply(vars_df, 
+    function(x) df_to_layer(x, lons = vars_df$lon, lats = vars_df$lat))
+(vars_stack <- stack(vars_layers, names = xnames))
 vars_stack
 
 # Predict species distribution
