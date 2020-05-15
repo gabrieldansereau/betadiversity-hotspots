@@ -171,3 +171,27 @@ plot.mcmc(sdm.tiny, vars_stack, iter=100)
 library(animation)
 saveGIF(plot.mcmc(sdm, vars_stack, iter=50), movie.name = "Timelapse.gif", #interval = 0.15, 
   ani.width = 800, ani.height = 400)
+
+## 5. Variable selection ####
+
+varimp(sdm, plot = TRUE)
+varimp.diag(vars[,xnames], sp[[1]], iter=50)
+
+# Stepwise variable set reduction
+step.model <- variable.step(x.data=vars[,xnames], 
+                            y.data=sp[[1]]
+                            )
+step.model
+
+## 6. Partial dependence plots
+
+partial(sdm, x.vars=c('wc1'),
+        trace=FALSE,
+        ci=FALSE,
+        smooth = 5,
+        equal = TRUE)
+
+# Spartial dependence plot
+p <- spartial(sdm, vars_stack, x.vars='wc1',
+               equal=TRUE, smooth=5)
+plot(p)
