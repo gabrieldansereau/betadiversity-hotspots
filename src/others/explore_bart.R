@@ -1,6 +1,7 @@
 ## 0. Load packages ####
 library(tidyverse)
 library(embarcadero)
+library(viridis)
 
 
 ## 1. Load data ####
@@ -87,18 +88,26 @@ df_to_layer <- function(x, lons, lats){
     return(layer)
 }
 wc_layer <- df_to_layer(x = vars_full$wc1, lons = vars_full$lon, lats = vars_full$lat)
-plot(wc_layer)
+sp_layer <- df_to_layer(x = sp_full[[1]], lons = vars_full$lon, lats = vars_full$lat)
+plot(wc_layer, col = "grey")
+plot(sp_layer, main = "Setophaga caerulescens", col = viridis(2), add = TRUE)
 
 # Stack raster layers
 vars_df <- vars_full[,xnames]
 vars_layers <- lapply(vars_df, 
     function(x) df_to_layer(x, lons = vars_df$lon, lats = vars_df$lat))
 (vars_stack <- stack(vars_layers, names = xnames))
-vars_stack
+plot(vars_stack$wc1, main = "Temperature", col = "grey")
+plot(sp_layer, main = "Setophaga caerulescens", col = bpy.colors(2), add = TRUE)
 
 # Predict species distribution
 map <- predict(object = sdm, x.layers = vars_stack, splitby = 20, quiet = TRUE)
 
 # Plot predictions
-plot(map, main='Predicted probability', 
+par(mfrow=c(1,2), mar=c(1,4,4,1))
+plot(wc_layer, main = "Setophaga caerulescens", col = "grey", 
+    legend=FALSE, box = FALSE, axes = F)
+plot(sp_layer, add = TRUE, main = "Setophaga caerulescens", col = viridis(2))
+plot(map[[1]], main='Predicted probability', col = viridis(255),
      box=F, axes=F)
+par(mfrow=c(1,1))
