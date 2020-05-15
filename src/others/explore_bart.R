@@ -6,23 +6,30 @@ library(embarcadero)
 ## 1. Load data ####
 
 # Load data
-spe_full <- read.csv("data/proc/distributions_spe_full.csv", header=TRUE, sep="\t")  %>% as_tibble() 
 spa_full <- read.csv("data/proc/distributions_spa_full.csv", header=TRUE, sep="\t")  %>% as_tibble()
 env_full <- read.csv("data/proc/distributions_env_full.csv", header=TRUE, sep="\t")  %>% as_tibble()
+spe      <- read.csv("data/proc/distributions_spe_full.csv", header=TRUE, sep="\t")  %>% as_tibble() 
 
 # Select observed sites only
-inds_obs <- spe_full$site
+sites_obs <- spe$site
+inds_obs  <- which(spa_full$site %in% sites_obs)
+all(sites_obs == inds_obs) # happen to be the same at full scale
 
 # Subset to QC data (optional)
 spa_full <- read.csv("data/proc/distributions_spa_qc.csv", header=TRUE, sep="\t")  %>% as_tibble()
-env_full <- env_full[spa_full$site,]
-inds_obs <- intersect(spa_full$site, inds_obs)
-spe_full <- spe_full[spe_full$site %in% inds_obs,]
+sites_qc <- spa_full$site
+env_full <- subset(env_full, site %in% sites_qc)
+spe      <- subset(spe, site %in% sites_qc)
+sites_obs <- intersect(sites_qc, sites_obs)
+inds_obs  <- which(sites_qc %in% inds_obs) # not the same for QC data
 
-# Filter datasets to observed sites only
-spa <- subset(spa_full, site %in% inds_obs)
-env <- subset(env_full, site %in% inds_obs)
-spe <- spe_full
+# Filter spa & env to observed sites only
+spa <- subset(spa_full, site %in% sites_obs)
+env <- subset(env_full, site %in% sites_obs)
+# Expand spe to full scale
+spe_full <- as_tibble(matrix(NaN, nrow = nrow(spa_full), ncol = ncol(spe), 
+    dimnames = list(NULL, names(spe))))
+spe_full[inds_obs,] <- spe
 
 # Remove site with NAs for landcover variables
 (inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
@@ -45,11 +52,13 @@ vars <- subset(vars, select = -site)
 (inds_withoutobs <- c(which(sapply(spe, sum) == 0)))
 if (length(inds_withoutobs > 0)) {
     spe <- subset(spe, select = -inds_withoutobs)
+    spe_full <- subset(spe_full, select = -inds_withoutobs)
 }
 
-# Select species with ~ same number of presences & absences
+# Select 1 species with ~ same number of presences & absences
 colSums(spe)/nrow(spe) # 17 seems good
 sp <- subset(spe, select = "sp17") # black-throated blue warbler
+sp_full <- subset(spe_full, select = "sp17") # black-throated blue warbler
 table(sp)
 
 # Select fewer variables
