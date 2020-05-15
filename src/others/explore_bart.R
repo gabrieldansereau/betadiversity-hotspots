@@ -104,10 +104,28 @@ plot(sp_layer, main = "Setophaga caerulescens", col = bpy.colors(2), add = TRUE)
 map <- predict(object = sdm, x.layers = vars_stack, splitby = 20, quiet = TRUE)
 
 # Plot predictions
-par(mfrow=c(1,2), mar=c(1,4,4,1))
+par(mfrow=c(1,2), mar=c(10,4,10,7))
 plot(wc_layer, main = "Setophaga caerulescens", col = "grey", 
     legend=FALSE, box = FALSE, axes = F)
 plot(sp_layer, add = TRUE, main = "Setophaga caerulescens", col = viridis(2))
 plot(map[[1]], main='Predicted probability', col = viridis(255),
      box=F, axes=F)
 par(mfrow=c(1,1))
+
+# rasterVis attempt
+library(rasterVis)
+levelplot(map[[1]])
+
+mapTheme <- rasterTheme(region = viridis(11),
+  layout.widths = list(right.padding = 10),
+  axis.line = list(col = "transparent"),
+  tick = list(col = 'transparent'))
+
+test <- stack(sp_layer, map[[1]])
+levelplot(test,
+  maxpixels = 1e10,
+  margin = FALSE,
+  par.settings = mapTheme,
+  scales = list(x = list(draw = FALSE),
+                y = list(draw = FALSE)),
+  zlim = c(0, 1))
