@@ -2,6 +2,7 @@
 library(embarcadero)
 library(tidyverse)
 library(viridis)
+library(ggthemes)
 
 
 ## 1. Load data ####
@@ -97,7 +98,7 @@ df_to_layer <- function(x, lons, lats){
 }
 wc_layer <- df_to_layer(x = vars_full$wc1, lons = vars_full$lon, lats = vars_full$lat)
 sp_layer <- df_to_layer(x = sp_full[[1]], lons = vars_full$lon, lats = vars_full$lat)
-plot(wc_layer, col = "grey")
+plot(wc_layer, col = "grey", legend = FALSE)
 plot(sp_layer, main = "Setophaga caerulescens", col = viridis(2), add = TRUE)
 
 # Stack raster layers
@@ -108,8 +109,6 @@ vars_layers <- lapply(
 )
 (vars_stack <- stack(vars_layers, names = xnames))
 plot(vars_stack)
-plot(vars_stack$wc1, main = "Temperature", col = "grey", legend = FALSE)
-plot(sp_layer, main = "Setophaga caerulescens", col = viridis(2), add = TRUE)
 
 # Predict species distribution
 predictions <- predict(object = sdm, x.layers = vars_stack, splitby = 20, quiet = TRUE)
@@ -134,10 +133,42 @@ plot(predictions[[1]] > threshold, main='Predicted outcome', col = viridis(255),
      box=F, axes=F)
 par(mfrow=c(1,1))
 
+# Messy ggplot attempts
+pred_df <- as.data.frame(predictions[[1]], xy = TRUE) %>% as_tibble()
+pred_df
+str(pred_df)
+qc_plot <- ggplot(pred_df, aes(x, y)) +
+     geom_raster(aes(fill = layer)) +
+     scale_fill_viridis_c(na.value = "white") +
+     ggtitle("Predictions") + 
+     coord_quickmap() +
+     theme_minimal()
+qc_plot
+
+qc_plot + 
+     geom_raster(aes(fill = values(wc_layer))) +
+     scale_fill_viridis_c(option = "inferno", na.value = "white")
+
+tmp <- left_join(spa_full, env_full) %>% select(xnames)
+tmp <- pivot_longer(
+    tmp, 
+    wc1:lc10,
+    names_to = "vars",
+    values_to = "values"
+)
+ggplot(tmp, aes(lon, lat, fill = values)) +
+    geom_raster() +
+    facet_wrap(~vars) +
+    coord_quickmap() +
+    theme_minimal() +
+    scale_fill_viridis_c(option = "inferno", na.value = "white")
+
 ## 3. More advanced model ####
 
+# Lower-upper quantiles
 pred_quant <- predict(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
 
+# Plot quantiles
 par(mfrow=c(2,2))
 par(mar=c(2,1,3,7))
 plot(pred_quant[[1]], 
@@ -153,6 +184,7 @@ plot(pred_quant[[3]]-pred_quant[[2]],
      main = 'Credible interval width', 
      box=F, axes=F)
 
+# Plot quantiles with threshold
 plot(pred_quant[[1]] > threshold, 
      main = 'Posterior mean', 
      box=F, axes=F)
@@ -163,14 +195,16 @@ plot(pred_quant[[3]] > threshold, main = 'Upper 95% CI bound',
      box=F, axes=F)
 plot((pred_quant[[3]]> threshold) - (pred_quant[[2]] > threshold),
      main = 'Credible interval width', 
-     box=F, axes=F)
+     box=F, axes=F) # Thresholded presence difference
 plot(pred_quant[[3]] - pred_quant[[2]] > threshold,
      main = 'Credible interval width', 
-     box=F, axes=F)
+     box=F, axes=F) # Probability difference vs threshold
 par(mfrow=c(1,1))
 
 # Show first iterations
-plot.mcmc(sdm, vars_stack, iter=5, quiet = TRUE)
+system.time(
+     plot.mcmc(sdm, vars_stack, iter=5, quiet = TRUE)
+)
 
 # Show burn-in with fewer trees
 set.seed(42)
