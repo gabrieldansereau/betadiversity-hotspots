@@ -86,6 +86,72 @@ system.time(
 # Model diagnostics
 summary(sdm)
 
+# Extract threshold
+summary(sdm)
+diagnostics <- summary(sdm)
+tss_tb <- as_tibble(diagnostics[[3]]$data)
+(threshold <- tss_tb$alpha[which(tss_tb$tss == max(tss_tb$tss))])
+
+# Inner calls
+summary_inner <- function(object){
+    # Fit
+    if(class(object)=='bart') {
+        fitobj <- object$fit
+    } else if(class(object)=='rbart') {
+        fitobj <- object$fit[[1]] 
+    }
+
+    # Call
+    (objcall <- object$call)
+
+    # Predictors
+    (predictors <- paste(attr(fitobj$data@x, "term.labels"), sep=' '))
+    
+    # Labels
+    (true.vector <- fitobj$data@y)
+
+    # Predictions
+    (predictions <- colMeans(pnorm(object$yhat.train)))
+    
+    # Prediction instance
+    (pred <- prediction(predictions, true.vector))
+    # Performance instance
+    (perf.tss <- performance(pred, "sens", "spec"))
+    # TSS values list
+    tss.list <- (perf.tss@x.values[[1]] + perf.tss@y.values[[1]] - 1)
+    # TSS values ~ threshold dataframe
+    (tss.df <- tibble(alpha=perf.tss@alpha.values[[1]],tss=tss.list))
+
+    # AUC
+    (auc <- performance(pred,"auc")@y.values[[1]])
+    
+    # Threshold
+    (thresh <- min(tss.df$alpha[which(tss.df$tss==max(tss.df$tss))]))
+    
+    # TSS
+    (tss <- tss.df[which(tss.df$alpha==thresh),'tss'][[1]])
+    
+    # Type I error rate (false positive)
+    (type_I <-  1 - perf.tss@y.values[[1]][which(perf.tss@alpha.values[[1]] == thresh)])
+    # Type II error rate (false negative)
+    (type_II <- 1 - perf.tss@x.values[[1]][which(perf.tss@alpha.values[[1]] == thresh)])
+    
+    diagnostics <- list(
+        fit = fitobj,
+        call = objcall,
+        predictors = predictors,
+        labels = true.vector,
+        predictions = predictions,
+        auc = auc,
+        threshold = threshold,
+        tss = tss,
+        type_I = type_I,
+        type_II = type_II
+    )
+    return(diagnostics)
+}
+(diagnostics <- summary_inner(sdm))
+
 # Create raster layer
 df_to_layer <- function(x, lons, lats){
     mat <- matrix(data = x, nrow = uniqueN(lats), ncol = uniqueN(lons))
@@ -123,8 +189,7 @@ plot(predictions[[1]], main='Predicted probability', col = viridis(255),
 par(mfrow=c(1,1))
 
 # Thresholded predictions
-summary(sdm) # Cutoff =  0.5556909
-threshold <- 0.533461
+threshold <- diagnostics$threshold
 par(mfrow=c(1,2), mar=c(10,4,10,7))
 plot(wc_layer, main = "Setophaga caerulescens", col = "grey", 
      legend=FALSE, box = FALSE, axes = F)
