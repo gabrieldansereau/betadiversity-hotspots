@@ -294,26 +294,34 @@ saveGIF(
 ## 5. Variable selection ####
 
 varimp(sdm, plot = TRUE)
-varimp.diag(vars[,xnames], sp[[1]], iter = 50)
+system.time(
+    varimp.diag(vars[,xnames], sp[[1]], iter = 50)
+) # ~ 15 min
 
 # Stepwise variable set reduction
-step.model <- variable.step(
-    x.data = vars[,xnames], 
-    y.data = sp[[1]]
-)
+system.time(
+    step.model <- variable.step(
+        x.data = vars[,xnames], 
+        y.data = sp[[1]]
+    )
+) # ~5 min
 step.model
 
 ## 6. Partial dependence plots
 
-partial(
-    sdm, 
-    x.vars = c('wc1'),
-    trace = FALSE,
-    ci = FALSE,
-    smooth = 5,
-    equal = TRUE
-)
+system.time(
+    partial(
+        sdm, 
+        x.vars = c('wc1'),
+        trace = FALSE,
+        ci = FALSE,
+        smooth = 5,
+        equal = TRUE
+    )
+) # ~ 3 min.
 
 # Spartial dependence plot
-p <- spartial(sdm, vars_stack, x.vars='wc1', equal=TRUE, smooth=5)
+system.time(
+    p <- spartial(sdm, vars_stack, x.vars='wc1', equal=TRUE, smooth=5)
+) # ~ 3 min.
 plot(p)
