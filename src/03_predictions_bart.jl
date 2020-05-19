@@ -1,5 +1,14 @@
 import Pkg
 Pkg.activate(".")
+using RCall
+begin
+    R"""
+    library(embarcadero)
+    library(tidyverse)
+    library(viridis)
+    library(furrr)
+    """
+end
 using Distributed
 @time include("required.jl")
 
@@ -14,17 +23,9 @@ env = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), header=tr
 =#
 
 ## Perform RandomForests
-using RCall
 # @rput spe spa env
 begin
     R"""
-    ## 0. Load packages ####
-    library(embarcadero)
-    library(tidyverse)
-    library(viridis)
-    library(furrr)
-
-
     ## 1. Load data ####
 
     # Load data
