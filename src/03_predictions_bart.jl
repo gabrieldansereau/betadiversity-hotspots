@@ -14,17 +14,9 @@ using Distributed
 @time include("required.jl")
 
 ## Conditional arguments
-# save_figures = true
+# save_data = true
 
-## Load data
-#=
-spe = CSV.read(joinpath("data", "proc", "distributions_spe_full.csv"), header=true, delim="\t")
-spa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t")
-env = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), header=true, delim="\t")
-=#
-
-## Perform RandomForests
-# @rput spe spa env
+## Perform BARTs
 begin
     R"""
     ## 1. Load data ####
@@ -68,15 +60,13 @@ begin
     load("data/proc/bart_models_qc.RData")
 
     # Quantile Predictions
-    system.time(
-        predictions <- future_map(
-            sdms,
-            function(x) predict(
-                object = x, 
-                x.layers = vars_stack,
-                quantiles = c(0.025, 0.975),
-                splitby = 20
-            )
+    predictions <- future_map(
+        sdms,
+        function(x) predict(
+            object = x, 
+            x.layers = vars_stack,
+            quantiles = c(0.025, 0.975),
+            splitby = 20
         )
     ) # ~ 8 min., ~ 1 min in parallel
 
@@ -240,5 +230,3 @@ end
 
 richness = calculate_richness(Y, distributions[1])
 lcbd = calculate_lcbd(Y, distributions[1])
-plot(richness, c = :viridis)
-plot(lcbd, c = :viridis)
