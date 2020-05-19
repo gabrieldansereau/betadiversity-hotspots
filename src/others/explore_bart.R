@@ -367,7 +367,7 @@ system.time(
     predictions <- map(
         sdms,
         function(x) predict(
-            object = sdms[[1]], 
+            object = x, 
             x.layers = vars_stack,
             quantiles = c(0.025, 0.975),
             splitby = 20
