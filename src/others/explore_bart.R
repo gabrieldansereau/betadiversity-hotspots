@@ -143,7 +143,7 @@ summary_inner <- function(object){
         labels = true.vector,
         predictions = predictions,
         auc = auc,
-        threshold = threshold,
+        threshold = thresh,
         tss = tss,
         type_I = type_I,
         type_II = type_II
@@ -325,3 +325,38 @@ system.time(
     p <- spartial(sdm, vars_stack, x.vars='wc1', equal=TRUE, smooth=5)
 ) # ~ 3 min.
 plot(p)
+
+## 7. Multi-species models ####
+
+# Run for all species
+set.seed(42)
+system.time(
+    sdms <- map(spe,
+        function(x) bart(
+            y.train = x,
+            x.train = vars[,xnames],
+            keeptrees = TRUE
+        )
+    )
+) # ~ 4 min.
+
+# Extract summary statistics
+summary(sdms[[1]])
+summaries <-  map(sdms, summary_inner)
+summaries[[20]]
+str(summaries)
+
+# Organize as tibble
+results <- tibble(
+    spe = names(spe),
+    auc = map_dbl(summaries, function(x) x$auc),
+    threshold = map_dbl(summaries, function(x) x$threshold),
+    tss = map_dbl(summaries, function(x) x$tss),
+    type_I = map_dbl(summaries, function(x) x$type_I),
+    type_II = map_dbl(summaries, function(x) x$type_II)
+)
+results
+summary(results)
+
+# Export results
+save(sdms, file = "data/proc/bart_models_qc.RData")
