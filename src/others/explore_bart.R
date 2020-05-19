@@ -362,25 +362,40 @@ summary(results)
 # save(sdms, file = "data/proc/bart_models_qc.RData")
 load("data/proc/bart_models_qc.RData")
 
-# Predictions
+# Quantile Predictions
 system.time(
     predictions <- map(
         sdms,
         function(x) predict(
             object = sdms[[1]], 
-            x.layers = vars_stack, 
+            x.layers = vars_stack,
+            quantiles = c(0.025, 0.975),
             splitby = 20
         )
     )
-) # 8 min.
+) # ~ 8 min.
 
-# Convert to dataframe
+# Predictions
 pred_df <- predictions %>% 
-    map(~ .$layer) %>% 
+    map(~ .$layer.1) %>% 
     stack() %>% 
     as.data.frame() %>% 
     as_tibble()
 pred_df
+# Lower quantiles
+lower_df <- predictions %>% 
+    map(~ .$layer.2) %>% 
+    stack() %>% 
+    as.data.frame() %>% 
+    as_tibble()
+lower_df
+# Upper quantiles
+upper_df <- predictions %>% 
+    map(~ .$layer.3) %>% 
+    stack() %>% 
+    as.data.frame() %>% 
+    as_tibble()
+upper_df
 
 # Extract summary statistics
 summaries <-  map(sdms, summary_inner)
@@ -396,6 +411,7 @@ results <- tibble(
 )
 results
 
+# Presence-absence dataframe
 pres_df <- map2_df(
     pred_df, results$threshold, 
     function(pred, thresh) ifelse(pred > thresh, 1, 0) 
