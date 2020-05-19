@@ -380,21 +380,27 @@ pred_df <- predictions %>%
     map(~ .$layer.1) %>% 
     stack() %>% 
     as.data.frame(xy = TRUE) %>% 
-    as_tibble()
+    as_tibble() %>% 
+    arrange(x, y) %>% 
+    select(-c(x, y))
 pred_df
 # Lower quantiles
 lower_df <- predictions %>% 
     map(~ .$layer.2) %>% 
     stack() %>% 
     as.data.frame(xy = TRUE) %>% 
-    as_tibble()
+    as_tibble() %>% 
+    arrange(x, y) %>% 
+    select(-c(x, y))
 lower_df
 # Upper quantiles
 upper_df <- predictions %>% 
-    map(~ .$layer.3) %>% 
+    map(~ .$layer.3) %>%
     stack() %>% 
-    as.data.frame(xy = TRUE) %>% 
-    as_tibble()
+    as.data.frame(xy = TRUE) %>%  
+    as_tibble() %>% 
+    arrange(x, y) %>% 
+    select(-c(x, y))
 upper_df
 
 # Extract summary statistics
@@ -413,14 +419,14 @@ results
 
 # Presence-absence dataframe
 pres_df <- map2_df(
-    pred_df[,-c(1,2)], results$threshold, 
+    pred_df, results$threshold, 
     function(pred, thresh) ifelse(pred > thresh, 1, 0) 
 )
 pres_df
 
 # Plot predictions
-pred_plot <- ggplot(pred_df, aes(x, y)) +
-    geom_raster(aes(fill = sp1)) +
+pred_plot <- ggplot(spa_full, aes(lon, lat)) +
+    geom_raster(aes(fill = pred_df$sp17)) +
     scale_fill_viridis_c(na.value = "white") +
     ggtitle("Predictions") + 
     coord_quickmap() +
