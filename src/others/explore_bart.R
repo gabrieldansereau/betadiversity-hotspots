@@ -379,21 +379,21 @@ system.time(
 pred_df <- predictions %>% 
     map(~ .$layer.1) %>% 
     stack() %>% 
-    as.data.frame() %>% 
+    as.data.frame(xy = TRUE) %>% 
     as_tibble()
 pred_df
 # Lower quantiles
 lower_df <- predictions %>% 
     map(~ .$layer.2) %>% 
     stack() %>% 
-    as.data.frame() %>% 
+    as.data.frame(xy = TRUE) %>% 
     as_tibble()
 lower_df
 # Upper quantiles
 upper_df <- predictions %>% 
     map(~ .$layer.3) %>% 
     stack() %>% 
-    as.data.frame() %>% 
+    as.data.frame(xy = TRUE) %>% 
     as_tibble()
 upper_df
 
@@ -413,7 +413,20 @@ results
 
 # Presence-absence dataframe
 pres_df <- map2_df(
-    pred_df, results$threshold, 
+    pred_df[,-c(1,2)], results$threshold, 
     function(pred, thresh) ifelse(pred > thresh, 1, 0) 
 )
 pres_df
+
+# Plot predictions
+pred_plot <- ggplot(pred_df, aes(x, y)) +
+    geom_raster(aes(fill = sp1)) +
+    scale_fill_viridis_c(na.value = "white") +
+    ggtitle("Predictions") + 
+    coord_quickmap() +
+    theme_minimal()
+pred_plot
+pred_plot + geom_raster(aes(fill = lower_df$sp17))
+pred_plot + geom_raster(aes(fill = upper_df$sp17))
+pred_plot + geom_raster(aes(fill = upper_df$sp17 - lower_df$sp17))
+pred_plot + geom_raster(aes(fill = pres_df$sp17))
