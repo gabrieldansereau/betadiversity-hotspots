@@ -220,10 +220,10 @@ distributions
 ## Export results
 # save_data = true
 if (@isdefined save_data) && save_data == true
-    @save joinpath("data", "jld2", "bart-distributions_qc.jld2") distributions prob_distrib lower_distrib upper_distrib
-    _zip_jld2(joinpath("data", "jld2", "bart-distributions_qc.zip"),
-              joinpath("data", "jld2", "bart-distributions_qc.jld2"))
-    touch(joinpath("data", "jld2", "bart-distributions_qc.jld2"))
+    @save joinpath("data", "jld2", "bart-distributions.jld2") distributions prob_distrib lower_distrib upper_distrib
+    _zip_jld2(joinpath("data", "jld2", "bart-distributions.zip"),
+              joinpath("data", "jld2", "bart-distributions.jld2"))
+    touch(joinpath("data", "jld2", "bart-distributions.jld2"))
 end
 
 ## Get richness & LCBD
