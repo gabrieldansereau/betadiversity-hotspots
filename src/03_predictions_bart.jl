@@ -7,6 +7,7 @@ begin
     library(tidyverse)
     library(viridis)
     library(furrr)
+    plan(multiprocess)
     """
 end
 using Distributed
@@ -170,7 +171,7 @@ begin
 
     # Organize as tibble
     results <- tibble(
-        spe = names(spe),
+        spe = names(sdms),
         auc = map_dbl(summaries, function(x) x$auc),
         threshold = map_dbl(summaries, function(x) x$threshold),
         tss = map_dbl(summaries, function(x) x$tss),
@@ -191,36 +192,34 @@ end
 @rget pred_df lower_df upper_df pres_df results
 
 ## Create Y matrices
+
 # Get matrix Y
-Y = replace(predictions_full, missing => NaN)
+Y = replace(Array(pres_df), missing => NaN)
+Yprob  = replace(Array(pred_df),  missing => NaN)
+Ylower = replace(Array(lower_df), missing => NaN)
+Yupper = replace(Array(upper_df), missing => NaN)
 # Set values to NaN if no species present
 inds_zeros = findall(map(x -> all(iszero.(x)), eachrow(Y)))
 Y[inds_zeros,:] .= NaN
-# Get Yobs
-inds_obs = findall(map(x -> !any(isnan.(x)), eachrow(Y)))
-inds_notobs = findall(map(x -> any(isnan.(x)), eachrow(Y)))
-Yobs = Y[inds_obs,:]
-# Apply Hellinger transformation
-@rput Yobs
-begin
-    R"""
-        library(vegan)
-        Ytransf <- decostand(Yobs, "hel")
-    """
-end
-@rget Ytransf
 
 ## Create distributions
 
 # Load raw distributions (for grid size)
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
+raw_distributions = distributions
+# Cut to Quebec coordinates (optional)
+coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
+raw_distributions = [d[coords_qc] for d in raw_distributions]
+# Get layer dimensions & limits
+dims = size(raw_distributions[1].grid)
+lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
+        bottom = raw_distributions[1].bottom, top = raw_distributions[1].top)
 
-# Create RF distribution layers
+# Create distribution layers
 Ydistrib = replace(Y, 0.0 => NaN)
-rf_grids = [reshape(Ydistrib[:,i], size(distributions[1].grid)) for i in 1:size(Ydistrib, 2)]
-# map(x -> reshape(Ydistrib[:,x], size(distributions[1]), 1:size(Ydistrib, 2)))
-distributions = SimpleSDMResponse.(rf_grids, distributions[1].left, distributions[1].right,
-                                         distributions[1].bottom, distributions[1].top)
+Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib,2)]
+Ygrids = reshape.(Ygrids, dims...)
+distributions = SimpleSDMResponse.(Ygrids, lims...)
 
 ## Export results
 # save_data = true
@@ -232,3 +231,5 @@ end
 
 richness = calculate_richness(Y, distributions[1])
 lcbd = calculate_lcbd(Y, distributions[1])
+plot(richness, c = :viridis)
+plot(lcbd, c = :viridis)
