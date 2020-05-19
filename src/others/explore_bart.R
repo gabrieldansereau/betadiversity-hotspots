@@ -2,7 +2,8 @@
 library(embarcadero)
 library(tidyverse)
 library(viridis)
-library(ggthemes)
+library(furrr)
+plan(multiprocess)
 
 
 ## 1. Load data ####
@@ -169,7 +170,7 @@ plot(sp_layer, main = "Setophaga caerulescens", col = viridis(2), add = TRUE)
 
 # Stack raster layers
 vars_df <- vars_full[,xnames]
-vars_layers <- lapply(
+vars_layers <- map(
     vars_df, 
     function(x) df_to_layer(x, lons = vars_df$lon, lats = vars_df$lat)
 )
@@ -331,14 +332,14 @@ plot(p)
 # Run for all species
 set.seed(42)
 system.time(
-    sdms <- map(spe,
+    sdms <- future_map(spe,
         function(x) bart(
             y.train = x,
             x.train = vars[,xnames],
             keeptrees = TRUE
         )
     )
-) # ~ 4 min.
+) # ~ 4 min., 45 sec. in parallel
 
 # Extract summary statistics
 summary(sdms[[1]])
@@ -364,7 +365,7 @@ load("data/proc/bart_models_qc.RData")
 
 # Quantile Predictions
 system.time(
-    predictions <- map(
+    predictions <- future_map(
         sdms,
         function(x) predict(
             object = x, 
@@ -373,7 +374,7 @@ system.time(
             splitby = 20
         )
     )
-) # ~ 8 min.
+) # ~ 8 min., 1 min. in parallel
 
 # Predictions
 pred_df <- predictions %>% 
