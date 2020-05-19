@@ -359,4 +359,45 @@ results
 summary(results)
 
 # Export results
-save(sdms, file = "data/proc/bart_models_qc.RData")
+# save(sdms, file = "data/proc/bart_models_qc.RData")
+load("data/proc/bart_models_qc.RData")
+
+# Predictions
+system.time(
+    predictions <- map(
+        sdms,
+        function(x) predict(
+            object = sdms[[1]], 
+            x.layers = vars_stack, 
+            splitby = 20
+        )
+    )
+) # 8 min.
+
+# Convert to dataframe
+pred_df <- predictions %>% 
+    map(~ .$layer) %>% 
+    stack() %>% 
+    as.data.frame() %>% 
+    as_tibble()
+pred_df
+
+# Extract summary statistics
+summaries <-  map(sdms, summary_inner)
+
+# Organize as tibble
+results <- tibble(
+    spe = names(spe),
+    auc = map_dbl(summaries, function(x) x$auc),
+    threshold = map_dbl(summaries, function(x) x$threshold),
+    tss = map_dbl(summaries, function(x) x$tss),
+    type_I = map_dbl(summaries, function(x) x$type_I),
+    type_II = map_dbl(summaries, function(x) x$type_II)
+)
+results
+
+pres_df <- map2_df(
+    pred_df, results$threshold, 
+    function(pred, thresh) ifelse(pred > thresh, 1, 0) 
+)
+pres_df
