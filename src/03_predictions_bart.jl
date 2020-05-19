@@ -216,15 +216,24 @@ lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
         bottom = raw_distributions[1].bottom, top = raw_distributions[1].top)
 
 # Create distribution layers
-Ydistrib = replace(Y, 0.0 => NaN)
-Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib,2)]
-Ygrids = reshape.(Ygrids, dims...)
-distributions = SimpleSDMResponse.(Ygrids, lims...)
+layers = []
+for Y in (Y, Yprob, Ylower, Yupper)
+    Ydistrib = replace(Y, 0.0 => NaN)
+    Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib,2)]
+    Ygrids = reshape.(Ygrids, dims...)
+    distributions = SimpleSDMResponse.(Ygrids, lims...)
+    push!(layers, distributions)
+end
+distributions, prob_distrib, lower_distrib, upper_distrib = layers;
+distributions
 
 ## Export results
 # save_data = true
-if @isdefined save_data && save_data == true
-    @save joinpath("data", "jld2", "rf-distributions.jld2") distributions
+if (@isdefined save_data) && save_data == true
+    @save joinpath("data", "jld2", "bart-distributions_qc.jld2") distributions prob_distrib lower_distrib upper_distrib
+    _zip_jld2(joinpath("data", "jld2", "bart-distributions_qc.zip"),
+              joinpath("data", "jld2", "bart-distributions_qc.jld2"))
+    touch(joinpath("data", "jld2", "bart-distributions_qc.jld2"))
 end
 
 ## Get richness & LCBD
