@@ -70,7 +70,11 @@ sp_full <- select(spe_full, sp17) # black-throated blue warbler
 table(sp)
 
 # Select fewer variables
-xnames <- c(paste0("wc", c(1:19)), paste0("lc", c(1:5, 7:10))) # lc6 always zero
+# xnames <- c(paste0("wc", c(1:19)), paste0("lc", c(1:5, 7:10))) # lc6 always zero
+# xnames <- c("wc1", "wc2", "wc7", "wc8", "wc10", "wc11", "lc2", "lc3", "lc5") # (all vars - QC)
+# xnames <- c("lat", "lon", "wc1", "wc2", "wc8",  "wc11", "lc2", "lc5", "lc8") # (all vars - QC with lat-lon)
+# xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:5, 7:10))) # ~ vars from CCHF vignette + landcover
+xnames <- c("wc1", "wc2", "wc5", "wc6", "wc12", "wc13", "wc14", "wc15", "lc2", "lc3", "lc5", "lc8") # stepwise selection on CCHF vignette
 
 ## 2. Create layers ####
 
@@ -222,8 +226,6 @@ system.time(
     )
 ) # ~5 min
 step.model
-# xnames <- c("wc1", "wc2", "wc7", "wc8", "wc10", "wc11", "lc2", "lc3", "lc5") # (all vars - QC)
-# xnames <- c("lat", "lon", "wc1", "wc2", "wc8",  "wc11", "lc2", "lc5", "lc8") # (all vars - QC with lat-lon)
 
 ## 6. Partial dependence plots
 
