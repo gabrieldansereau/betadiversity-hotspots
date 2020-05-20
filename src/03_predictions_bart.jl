@@ -37,6 +37,8 @@ begin
     xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 always zero
     vars_df <- vars_full[,xnames]
  
+    ## 2. Create layers ####
+
     # Convert variables to layers
     df_to_layer <- function(x, lons, lats){
         mat <- matrix(data = x, nrow = uniqueN(lats), ncol = uniqueN(lons))
@@ -54,7 +56,7 @@ begin
     # Stack raster layers
     (vars_stack <- stack(vars_layers, names = xnames))
 
-    ## 2. Models ####
+    ## 3. Models ####
     
     # Load models
     load("data/proc/bart_models_qc.RData")
