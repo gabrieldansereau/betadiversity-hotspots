@@ -112,6 +112,7 @@ system.time(
 
 # Model diagnostics
 summary(sdm)
+varimp(sdm, plot = TRUE)
 # Extract inner values
 source("src/lib/R/bart.R")
 diagnostics <- summary_inner(sdm)
@@ -174,7 +175,7 @@ plot(
 )
 plot(
     (predictions[[3]] > threshold) - (predictions[[2]] > threshold), 
-    main = 'Threshold predictions - Upper-lower CI bounds site difference ', 
+    main = 'Threshold predictions - Upper-lower site difference', 
     col = viridis(255),
     box = FALSE, axes = FALSE
 )
@@ -221,7 +222,8 @@ system.time(
     )
 ) # ~5 min
 step.model
-# "wc1"  "wc2"  "wc7"  "wc8"  "wc10" "wc11" "lc2"  "lc3"  "lc5" 
+# xnames <- c("wc1", "wc2", "wc7", "wc8", "wc10", "wc11", "lc2", "lc3", "lc5") # (all vars - QC)
+# xnames <- c("lat", "lon", "wc1", "wc2", "wc8",  "wc11", "lc2", "lc5", "lc8") # (all vars - QC with lat-lon)
 
 ## 6. Partial dependence plots
 
