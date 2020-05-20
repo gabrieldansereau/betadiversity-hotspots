@@ -219,6 +219,18 @@ results <- tibble(
 results
 summary(results)
 
+# Extract variable importance
+varimps <- map(sdms, varimp) %>% 
+    map_df(~ .$varimps) %>% 
+    mutate(vars = xnames) %>% 
+    select(vars, everything())
+varimps
+varimps %>% 
+    pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
+    group_by(vars) %>% 
+    summarize(mean = mean(varimp)) %>% 
+    arrange(desc(mean))
+
 # Export results
 # save(sdms, file = "data/proc/bart_models_qc.RData")
 load("data/proc/bart_models_qc.RData")
