@@ -70,7 +70,7 @@ sp_full <- select(spe_full, sp17) # black-throated blue warbler
 table(sp)
 
 # Select fewer variables
-xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 always zero
+xnames <- c(paste0("wc", c(1:19)), paste0("lc", c(1:5, 7:10))) # lc6 always zero
 
 ## 2. Basic BART model ####
 
@@ -78,17 +78,16 @@ xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 alway
 set.seed(42)
 system.time(
     sdm <- bart(
-        y.train = sp$sp17,
+        y.train = sp[[1]],
         x.train = vars[,xnames],
         keeptrees = TRUE
     )
-)
+) # 5 sec. for QC, 90 sec. at full scale
 
 # Model diagnostics
 summary(sdm)
 
 # Extract threshold
-summary(sdm)
 diagnostics <- summary(sdm)
 tss_tb <- as_tibble(diagnostics[[3]]$data)
 (threshold <- tss_tb$alpha[which(tss_tb$tss == max(tss_tb$tss))])
@@ -172,13 +171,13 @@ plot(sp_layer, main = "Setophaga caerulescens", col = viridis(2), add = TRUE)
 vars_df <- vars_full[,xnames]
 vars_layers <- map(
     vars_df, 
-    function(x) df_to_layer(x, lons = vars_df$lon, lats = vars_df$lat)
+    function(x) df_to_layer(x, lons = vars_full$lon, lats = vars_full$lat)
 )
 (vars_stack <- stack(vars_layers, names = xnames))
 plot(vars_stack)
 
 # Predict species distribution
-predictions <- predict(object = sdm, x.layers = vars_stack, splitby = 20, quiet = TRUE)
+predictions <- predict(object = sdm, x.layers = vars_stack, splitby = 20)
 
 # Plot predictions
 par(mfrow=c(1,2), mar=c(10,4,10,7))
@@ -187,7 +186,7 @@ plot(wc_layer, main = "Setophaga caerulescens", col = "grey",
 plot(sp_layer, add = TRUE, main = "Setophaga caerulescens", col = viridis(2))
 plot(predictions[[1]], main='Predicted probability', col = viridis(255),
      box=F, axes=F)
-par(mfrow=c(1,1))
+par(mfrow=c(1,1), mar=c(5,4,4,2)+0.1)
 
 # Thresholded predictions
 threshold <- diagnostics$threshold
@@ -197,7 +196,7 @@ plot(wc_layer, main = "Setophaga caerulescens", col = "grey",
 plot(sp_layer, add = TRUE, main = "Setophaga caerulescens", col = viridis(2))
 plot(predictions[[1]] > threshold, main='Predicted outcome', col = viridis(255),
      box=F, axes=F)
-par(mfrow=c(1,1))
+par(mfrow=c(1,1), mar=c(5,4,4,2)+0.1)
 
 # Messy ggplot attempts
 pred_df <- as.data.frame(predictions[[1]], xy = TRUE) %>% as_tibble()
@@ -212,7 +211,7 @@ qc_plot <- ggplot(pred_df, aes(x, y)) +
 qc_plot
 
 qc_plot + 
-     geom_raster(aes(fill = values(wc_layer))) +
+     geom_raster(aes(fill = raster::values(wc_layer))) +
      scale_fill_viridis_c(option = "inferno", na.value = "white")
 
 tmp <- left_join(spa_full, env_full) %>% select(xnames)
@@ -307,6 +306,7 @@ system.time(
     )
 ) # ~5 min
 step.model
+# "wc1"  "wc2"  "wc7"  "wc8"  "wc10" "wc11" "lc2"  "lc3"  "lc5" 
 
 ## 6. Partial dependence plots
 
