@@ -117,65 +117,69 @@ source("src/lib/R/bart.R")
 diagnostics <- summary_inner(sdm)
 
 # Predict species distribution
-predictions <- predict(object = sdm, x.layers = vars_stack, splitby = 20)
+predictions <- predict(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
 
-# Plot predictions
-par(mfrow=c(1,2), mar=c(10,4,10,7))
-plot(wc_layer, main = "Setophaga caerulescens", col = "grey", 
-    legend=FALSE, box = FALSE, axes = F)
-plot(sp_layer, add = TRUE, main = "Setophaga caerulescens", col = viridis(2))
-plot(predictions[[1]], main='Predicted probability', col = viridis(255),
-     box=F, axes=F)
-par(mfrow=c(1,1), mar=c(5,4,4,2)+0.1)
+# Plot probability predictions
+plot(
+    wc_layer, 
+    main = "Original distribution",
+    col = "grey",  
+    legend = FALSE, box = FALSE, axes = FALSE
+)
+plot(sp_layer, add = TRUE, col = viridis(2))
+plot(
+    predictions[[1]], 
+    main = 'Probability predictions - Posterior mean', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
+plot(
+    predictions[[2]], 
+    main = 'Probability predictions - Lower 95% CI bound', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
+plot(
+    predictions[[3]], 
+    main = 'Probability predictions - Upper 95% CI bound', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
+plot(
+    predictions[[3]] - predictions[[2]], 
+    main = 'Probability predictions - Credible interval width', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
 
-# Thresholded predictions
+# Plot threshold predictions
 threshold <- diagnostics$threshold
-par(mfrow=c(1,2), mar=c(10,4,10,7))
-plot(wc_layer, main = "Setophaga caerulescens", col = "grey", 
-     legend=FALSE, box = FALSE, axes = F)
-plot(sp_layer, add = TRUE, main = "Setophaga caerulescens", col = viridis(2))
-plot(predictions[[1]] > threshold, main='Predicted outcome', col = viridis(255),
-     box=F, axes=F)
-par(mfrow=c(1,1), mar=c(5,4,4,2)+0.1)
+plot(
+    predictions[[1]] > threshold, 
+    main = 'Threshold predictions - Posterior mean', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
+plot(
+    predictions[[2]] > threshold, 
+    main = 'Threshold predictions - Lower 95% CI bound', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
+plot(
+    predictions[[3]] > threshold, 
+    main = 'Threshold predictions - Upper 95% CI bound', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
+plot(
+    (predictions[[3]] > threshold) - (predictions[[2]] > threshold), 
+    main = 'Threshold predictions - Upper-lower CI bounds site difference ', 
+    col = viridis(255),
+    box = FALSE, axes = FALSE
+)
 
-
-## 3. More advanced model ####
-
-# Lower-upper quantiles
-pred_quant <- predict(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
-
-# Plot quantiles
-par(mfrow=c(2,2))
-par(mar=c(2,1,3,7))
-plot(pred_quant[[1]], 
-     main = 'Posterior mean', 
-     box=F, axes=F, col = viridis(255))
-plot(pred_quant[[2]], 
-     main = 'Lower 95% CI bound', 
-     box=F, axes=F, col = viridis(255))
-plot(pred_quant[[3]], 
-     main = 'Upper 95% CI bound', 
-     box=F, axes=F, col = viridis(255))
-plot(pred_quant[[3]]-pred_quant[[2]], 
-     main = 'Credible interval width', 
-     box=F, axes=F, col = viridis(255))
-
-# Plot quantiles with threshold
-plot(pred_quant[[1]] > threshold, 
-     main = 'Posterior mean', 
-     box=F, axes=F, col = viridis(255))
-plot(pred_quant[[2]] > threshold, 
-     main = 'Lower 95% CI bound', 
-     box=F, axes=F, col = viridis(255))
-plot(pred_quant[[3]] > threshold, main = 'Upper 95% CI bound', 
-     box=F, axes=F, col = viridis(255))
-plot((pred_quant[[3]]> threshold) - (pred_quant[[2]] > threshold),
-     main = 'Credible interval width', 
-     box=F, axes=F, col = viridis(255)) # Thresholded presence difference
-plot(pred_quant[[3]] - pred_quant[[2]] > threshold,
-     main = 'Credible interval width', 
-     box=F, axes=F, col = viridis(255)) # Probability difference vs threshold
-par(mfrow=c(1,1))
+## 4. More advanced model ####
 
 # Show first iterations
 system.time(
