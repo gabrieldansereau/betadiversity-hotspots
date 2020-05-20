@@ -72,85 +72,7 @@ table(sp)
 # Select fewer variables
 xnames <- c(paste0("wc", c(1:19)), paste0("lc", c(1:5, 7:10))) # lc6 always zero
 
-## 2. Basic BART model ####
-
-# Train model
-set.seed(42)
-system.time(
-    sdm <- bart(
-        y.train = sp[[1]],
-        x.train = vars[,xnames],
-        keeptrees = TRUE
-    )
-) # 5 sec. for QC, 90 sec. at full scale
-
-# Model diagnostics
-summary(sdm)
-
-# Extract threshold
-diagnostics <- summary(sdm)
-tss_tb <- as_tibble(diagnostics[[3]]$data)
-(threshold <- tss_tb$alpha[which(tss_tb$tss == max(tss_tb$tss))])
-
-# Inner calls
-summary_inner <- function(object){
-    # Fit
-    if(class(object)=='bart') {
-        fitobj <- object$fit
-    } else if(class(object)=='rbart') {
-        fitobj <- object$fit[[1]] 
-    }
-
-    # Call
-    (objcall <- object$call)
-
-    # Predictors
-    (predictors <- paste(attr(fitobj$data@x, "term.labels"), sep=' '))
-    
-    # Labels
-    (true.vector <- fitobj$data@y)
-
-    # Predictions
-    (predictions <- colMeans(pnorm(object$yhat.train)))
-    
-    # Prediction instance
-    (pred <- prediction(predictions, true.vector))
-    # Performance instance
-    (perf.tss <- performance(pred, "sens", "spec"))
-    # TSS values list
-    tss.list <- (perf.tss@x.values[[1]] + perf.tss@y.values[[1]] - 1)
-    # TSS values ~ threshold dataframe
-    (tss.df <- tibble(alpha=perf.tss@alpha.values[[1]],tss=tss.list))
-
-    # AUC
-    (auc <- performance(pred,"auc")@y.values[[1]])
-    
-    # Threshold
-    (thresh <- min(tss.df$alpha[which(tss.df$tss==max(tss.df$tss))]))
-    
-    # TSS
-    (tss <- tss.df[which(tss.df$alpha==thresh),'tss'][[1]])
-    
-    # Type I error rate (false positive)
-    (type_I <-  1 - perf.tss@y.values[[1]][which(perf.tss@alpha.values[[1]] == thresh)])
-    # Type II error rate (false negative)
-    (type_II <- 1 - perf.tss@x.values[[1]][which(perf.tss@alpha.values[[1]] == thresh)])
-    
-    diagnostics <- list(
-        fit = fitobj,
-        call = objcall,
-        predictors = predictors,
-        labels = true.vector,
-        predictions = predictions,
-        auc = auc,
-        threshold = thresh,
-        tss = tss,
-        type_I = type_I,
-        type_II = type_II
-    )
-    return(diagnostics)
-}
-(diagnostics <- summary_inner(sdm))
+## 2. Create layers ####
 
 # Create raster layer
 df_to_layer <- function(x, lons, lats){
@@ -175,6 +97,24 @@ vars_layers <- map(
 )
 (vars_stack <- stack(vars_layers, names = xnames))
 plot(vars_stack)
+
+## 3. Basic BART model ####
+
+# Train model
+set.seed(42)
+system.time(
+    sdm <- bart(
+        y.train = sp[[1]],
+        x.train = vars[,xnames],
+        keeptrees = TRUE
+    )
+) # 5 sec. for QC, 90 sec. at full scale
+
+# Model diagnostics
+summary(sdm)
+# Extract inner values
+source("src/lib/R/bart.R")
+diagnostics <- summary_inner(sdm)
 
 # Predict species distribution
 predictions <- predict(object = sdm, x.layers = vars_stack, splitby = 20)
