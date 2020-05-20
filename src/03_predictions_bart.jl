@@ -24,14 +24,14 @@ begin
     # Load data
     spa_full <- read_tsv("data/proc/distributions_spa_full.csv")
     env_full <- read_tsv("data/proc/distributions_env_full.csv")
-
-    # Subset to QC data (optional)
-    spa_full <- read_tsv("data/proc/distributions_spa_qc.csv")
-    sites_qc <- spa_full$site
-    env_full <- filter(env_full, site %in% sites_qc)
-
-    # Combine environmental variables
-    vars_full <- left_join(spa_full, env_full, by = "site")
+    spe      <- read_tsv("data/proc/distributions_spe_full.csv") 
+    
+    # Load QC data (optional)
+    spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
+    
+    # Prepare data
+    subset_qc <- TRUE # subset to QC data (optional)
+    source("src/02_training_data-preparation.R")
 
     # Select fewer variables
     xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 always zero

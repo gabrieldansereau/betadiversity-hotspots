@@ -13,55 +13,21 @@ spa_full <- read_tsv("data/proc/distributions_spa_full.csv")
 env_full <- read_tsv("data/proc/distributions_env_full.csv")
 spe      <- read_tsv("data/proc/distributions_spe_full.csv") 
 
-# Select observed sites only
-sites_obs <- spe$site
-inds_obs  <- which(spa_full$site %in% sites_obs)
-all(sites_obs == inds_obs) # happen to be the same at full scale
+# Load QC data (optional)
+spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
 
-# Subset to QC data (optional)
-spa_full <- read_tsv("data/proc/distributions_spa_qc.csv")
-sites_qc <- spa_full$site
-env_full <- filter(env_full, site %in% sites_qc)
-spe      <- filter(spe, site %in% sites_qc)
-sites_obs <- intersect(sites_qc, sites_obs)
-inds_obs  <- which(sites_qc %in% inds_obs) # not the same for QC data
+# Prepare data
+subset_qc <- TRUE # subset to QC data (optional)
+source("src/02_training_data-preparation.R")
 
-# Filter spa & env to observed sites only
-spa <- filter(spa_full, site %in% sites_obs)
-env <- filter(env_full, site %in% sites_obs)
-# Expand spe to full scale
-spe_full <- as_tibble(
-     matrix(
-          NaN, 
-          nrow = nrow(spa_full), ncol = ncol(spe), 
-          dimnames = list(NULL, names(spe))
-     )
-)
-spe_full[inds_obs,] <- spe
-
-# Remove site with NAs for landcover variables
-(inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
-if (length(inds_withNAs) > 0) {
-    spe <- spe[-inds_withNAs,]
-    spa <- spa[-inds_withNAs,]
-    env <- env[-inds_withNAs,]
-}
-
-# Combine environmental variables
-vars <- left_join(spa, env, by = "site")
-vars_full <- left_join(spa_full, env_full, by = "site")
-# Remove site column
-spe  <- select(spe, -site)
-env  <- select(env, -site)
-spa  <- select(spa, -site)
-vars <- select(vars, -site)
-
-# Remove species without observations
-(inds_withoutobs <- c(which(sapply(spe, sum) == 0)))
-if (length(inds_withoutobs > 0)) {
-    spe <- subset(spe, select = -inds_withoutobs)
-    spe_full <- subset(spe_full, select = -inds_withoutobs)
-}
+# Check prepared data
+spa_full
+env_full
+spe_full
+vars_full
+spa
+env
+spe
 
 # Select 1 species with ~ same number of presences & absences
 colSums(spe)/nrow(spe) # 17 seems good
