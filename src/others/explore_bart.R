@@ -136,24 +136,32 @@ plot(
     predictions[[1]], 
     main = 'Probability predictions - Posterior mean', 
     col = viridis(255),
+    zlim = c(0, 1),
+    legend.args=list(text='Probability', side=2, line=1.3),
     box = FALSE, axes = FALSE
 )
 plot(
     predictions[[2]], 
     main = 'Probability predictions - Lower 95% CI bound', 
     col = viridis(255),
+    zlim = c(0, 1), 
+    legend.args=list(text='Probability', side=2, line=1.3),
     box = FALSE, axes = FALSE
 )
 plot(
     predictions[[3]], 
     main = 'Probability predictions - Upper 95% CI bound', 
     col = viridis(255),
+    zlim = c(0, 1),
+    legend.args=list(text='Probability', side=2, line=1.3),
     box = FALSE, axes = FALSE
 )
 plot(
     predictions[[3]] - predictions[[2]], 
     main = 'Probability predictions - Credible interval width', 
     col = viridis(255),
+    zlim = c(0, 1),
+    legend.args=list(text='Probability', side=2, line=1.3),
     box = FALSE, axes = FALSE
 )
 
@@ -162,13 +170,13 @@ threshold <- diagnostics$threshold
 plot(
     predictions[[1]] > threshold, 
     main = 'Threshold predictions - Posterior mean', 
-    col = viridis(255),
+    col = viridis(2),
     box = FALSE, axes = FALSE
 )
 plot(
     predictions[[2]] > threshold, 
     main = 'Threshold predictions - Lower 95% CI bound', 
-    col = viridis(255),
+    col = viridis(2),
     box = FALSE, axes = FALSE
 )
 plot(
@@ -180,7 +188,7 @@ plot(
 plot(
     (predictions[[3]] > threshold) - (predictions[[2]] > threshold), 
     main = 'Threshold predictions - Upper-lower site difference', 
-    col = viridis(255),
+    col = viridis(2),
     box = FALSE, axes = FALSE
 )
 
