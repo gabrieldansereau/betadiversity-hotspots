@@ -138,35 +138,6 @@ plot(predictions[[1]] > threshold, main='Predicted outcome', col = viridis(255),
      box=F, axes=F)
 par(mfrow=c(1,1), mar=c(5,4,4,2)+0.1)
 
-# Messy ggplot attempts
-pred_df <- as.data.frame(predictions[[1]], xy = TRUE) %>% as_tibble()
-pred_df
-str(pred_df)
-qc_plot <- ggplot(pred_df, aes(x, y)) +
-     geom_raster(aes(fill = layer)) +
-     scale_fill_viridis_c(na.value = "white") +
-     ggtitle("Predictions") + 
-     coord_quickmap() +
-     theme_minimal()
-qc_plot
-
-qc_plot + 
-     geom_raster(aes(fill = raster::values(wc_layer))) +
-     scale_fill_viridis_c(option = "inferno", na.value = "white")
-
-tmp <- left_join(spa_full, env_full) %>% select(xnames)
-tmp <- pivot_longer(
-    tmp, 
-    wc1:lc10,
-    names_to = "vars",
-    values_to = "values"
-)
-ggplot(tmp, aes(lon, lat, fill = values)) +
-    geom_raster() +
-    facet_wrap(~vars) +
-    coord_quickmap() +
-    theme_minimal() +
-    scale_fill_viridis_c(option = "inferno", na.value = "white")
 
 ## 3. More advanced model ####
 
