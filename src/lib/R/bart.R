@@ -1,3 +1,13 @@
+df_to_layer <- function(x, lons, lats){
+    mat <- matrix(data = x, nrow = uniqueN(lats), ncol = uniqueN(lons))
+    layer <- raster(
+        mat[nrow(mat):1,],
+        xmn=min(lons), xmx=max(lons), 
+        ymn=min(lats), ymx=max(lats)
+     )
+    return(layer)
+}
+
 summary_inner <- function(object){
     # Fit
     if(class(object)=='bart') {

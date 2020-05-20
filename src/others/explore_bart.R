@@ -5,6 +5,8 @@ library(viridis)
 library(furrr)
 plan(multiprocess)
 
+# Custom functions
+source("src/lib/R/bart.R")
 
 ## 1. Load data ####
 
@@ -44,28 +46,16 @@ xnames <- c("wc1", "wc2", "wc5", "wc6", "wc12", "wc13", "wc14", "wc15", "lc2", "
 
 ## 2. Create layers ####
 
-# Create raster layer
-df_to_layer <- function(x, lons, lats){
-    mat <- matrix(data = x, nrow = uniqueN(lats), ncol = uniqueN(lons))
-    layer <- raster(
-        mat[nrow(mat):1,],
-        xmn=min(lons), xmx=max(lons), 
-        ymn=min(lats), ymx=max(lats)
-     )
-    return(layer)
-}
-wc_layer <- df_to_layer(x = vars_full$wc1, lons = vars_full$lon, lats = vars_full$lat)
+# Create raster layers
 sp_layer <- df_to_layer(x = sp_full[[1]], lons = vars_full$lon, lats = vars_full$lat)
-plot(wc_layer, col = "grey", legend = FALSE)
-plot(sp_layer, main = "Setophaga caerulescens", col = viridis(2), add = TRUE)
-
-# Stack raster layers
-vars_df <- vars_full[,xnames]
 vars_layers <- map(
-    vars_df, 
+    vars_full[,xnames], 
     function(x) df_to_layer(x, lons = vars_full$lon, lats = vars_full$lat)
 )
-(vars_stack <- stack(vars_layers, names = xnames))
+wc_layer <- vars_layers$wc1
+
+# Stack variables layers
+vars_stack <- stack(vars_layers, names = xnames)
 plot(vars_stack)
 
 ## 3. Basic BART model ####
@@ -84,7 +74,6 @@ system.time(
 summary(sdm)
 varimp(sdm, plot = TRUE)
 # Extract inner values
-source("src/lib/R/bart.R")
 diagnostics <- summary_inner(sdm)
 
 # Predict species distribution
