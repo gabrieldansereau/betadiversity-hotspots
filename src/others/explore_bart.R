@@ -8,6 +8,7 @@ plan(multiprocess)
 # Custom functions
 source("src/lib/R/bart.R")
 
+
 ## 1. Load data ####
 
 # Load data
@@ -57,6 +58,7 @@ wc_layer <- vars_layers$wc1
 # Stack variables layers
 vars_stack <- stack(vars_layers, names = xnames)
 plot(vars_stack)
+
 
 ## 3. Basic BART model ####
 
@@ -147,34 +149,8 @@ plot(
     box = FALSE, axes = FALSE
 )
 
-## 4. More advanced model ####
 
-# Show first iterations
-system.time(
-     plot.mcmc(sdm, vars_stack, iter=5, quiet = TRUE)
-)
-
-# Show burn-in with fewer trees
-set.seed(42)
-sdm.tiny <- bart(
-    y.train=sp[[1]],
-    x.train=vars[,xnames],
-    keeptrees = TRUE,
-    ntree=5, # 5 tree models
-    nskip=0
-) # No burnin
-summary(sdm.tiny)
-plot.mcmc(sdm.tiny, vars_stack, iter=100)
-
-# Timelapse of tree learning
-library(animation)
-saveGIF(
-    plot.mcmc(sdm, vars_stack, iter=50), 
-    movie.name = "Timelapse.gif", #interval = 0.15, 
-    ani.width = 800, ani.height = 400
-)
-
-## 5. Variable selection ####
+## 4. Variable selection ####
 
 varimp(sdm, plot = TRUE)
 system.time(
@@ -190,7 +166,8 @@ system.time(
 ) # ~5 min
 step.model
 
-## 6. Partial dependence plots
+
+## 5. Partial dependence plots ####
 
 system.time(
     partial(
@@ -209,7 +186,8 @@ system.time(
 ) # ~ 3 min.
 plot(p)
 
-## 7. Multi-species models ####
+
+## 6. Multi-species models ####
 
 # Run for all species
 set.seed(42)
@@ -319,3 +297,32 @@ pred_plot + geom_raster(aes(fill = lower_df$sp17))
 pred_plot + geom_raster(aes(fill = upper_df$sp17))
 pred_plot + geom_raster(aes(fill = upper_df$sp17 - lower_df$sp17))
 pred_plot + geom_raster(aes(fill = pres_df$sp17))
+
+
+## 7. Others ####
+
+# Show first iterations
+system.time(
+     plot.mcmc(sdm, vars_stack, iter=5, quiet = TRUE)
+)
+
+# Show burn-in with fewer trees
+set.seed(42)
+sdm.tiny <- bart(
+    y.train=sp[[1]],
+    x.train=vars[,xnames],
+    keeptrees = TRUE,
+    ntree=5, # 5 tree models
+    nskip=0
+) # No burnin
+summary(sdm.tiny)
+plot.mcmc(sdm.tiny, vars_stack, iter=100)
+
+# Timelapse of tree learning
+library(animation)
+saveGIF(
+    plot.mcmc(sdm, vars_stack, iter=50), 
+    movie.name = "Timelapse.gif", #interval = 0.15, 
+    ani.width = 800, ani.height = 400
+)
+
