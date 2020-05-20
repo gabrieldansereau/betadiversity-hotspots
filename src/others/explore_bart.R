@@ -238,32 +238,32 @@ par(mfrow=c(2,2))
 par(mar=c(2,1,3,7))
 plot(pred_quant[[1]], 
      main = 'Posterior mean', 
-     box=F, axes=F)
+     box=F, axes=F, col = viridis(255))
 plot(pred_quant[[2]], 
      main = 'Lower 95% CI bound', 
-     box=F, axes=F)
+     box=F, axes=F, col = viridis(255))
 plot(pred_quant[[3]], 
      main = 'Upper 95% CI bound', 
-     box=F, axes=F)
+     box=F, axes=F, col = viridis(255))
 plot(pred_quant[[3]]-pred_quant[[2]], 
      main = 'Credible interval width', 
-     box=F, axes=F)
+     box=F, axes=F, col = viridis(255))
 
 # Plot quantiles with threshold
 plot(pred_quant[[1]] > threshold, 
      main = 'Posterior mean', 
-     box=F, axes=F)
+     box=F, axes=F, col = viridis(255))
 plot(pred_quant[[2]] > threshold, 
      main = 'Lower 95% CI bound', 
-     box=F, axes=F)
+     box=F, axes=F, col = viridis(255))
 plot(pred_quant[[3]] > threshold, main = 'Upper 95% CI bound', 
-     box=F, axes=F)
+     box=F, axes=F, col = viridis(255))
 plot((pred_quant[[3]]> threshold) - (pred_quant[[2]] > threshold),
      main = 'Credible interval width', 
-     box=F, axes=F) # Thresholded presence difference
+     box=F, axes=F, col = viridis(255)) # Thresholded presence difference
 plot(pred_quant[[3]] - pred_quant[[2]] > threshold,
      main = 'Credible interval width', 
-     box=F, axes=F) # Probability difference vs threshold
+     box=F, axes=F, col = viridis(255)) # Probability difference vs threshold
 par(mfrow=c(1,1))
 
 # Show first iterations
