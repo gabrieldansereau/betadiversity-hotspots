@@ -11,15 +11,15 @@ if (exists("subset_qc") && isTRUE(subset_qc)) {
     message("Subsetting to QC data")
     spa_full <- spa_qc
     sites_qc <- spa_full$site
-    env_full <- filter(env_full, site %in% sites_qc)
-    spe      <- filter(spe, site %in% sites_qc)
-    sites_obs <- intersect(sites_qc, sites_obs)
+    env_full <- dplyr::filter(env_full, site %in% sites_qc)
+    spe      <- dplyr::filter(spe, site %in% sites_qc)
+    sites_obs <- dplyr::intersect(sites_qc, sites_obs)
     inds_obs  <- which(sites_qc %in% inds_obs) # not the same for QC data
 }
 
 # Filter spa & env to observed sites only
-spa <- filter(spa_full, site %in% sites_obs)
-env <- filter(env_full, site %in% sites_obs)
+spa <- dplyr::filter(spa_full, site %in% sites_obs)
+env <- dplyr::filter(env_full, site %in% sites_obs)
 # Expand spe to full scale
 spe_full <- as_tibble(
      matrix(
@@ -42,10 +42,10 @@ if (length(inds_withNAs) > 0) {
 vars <- left_join(spa, env, by = "site")
 vars_full <- left_join(spa_full, env_full, by = "site")
 # Remove site column
-spe  <- select(spe, -site)
-env  <- select(env, -site)
-spa  <- select(spa, -site)
-vars <- select(vars, -site)
+spe  <- dplyr::select(spe, -site)
+env  <- dplyr::select(env, -site)
+spa  <- dplyr::select(spa, -site)
+vars <- dplyr::select(vars, -site)
 
 # Remove species without observations
 (inds_withoutobs <- c(which(sapply(spe, sum) == 0)))

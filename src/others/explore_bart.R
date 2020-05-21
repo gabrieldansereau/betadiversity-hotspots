@@ -1,9 +1,15 @@
 ## 0. Load packages ####
+# library(conflicted)
 library(embarcadero)
 library(tidyverse)
 library(viridis)
 library(furrr)
 plan(multiprocess)
+
+# conflict_scout()
+# conflict_prefer("filter", "dplyr")
+# conflict_prefer("intersect", "dplyr")
+# conflict_prefer("select", "dplyr")
 
 # Custom functions
 source("src/lib/R/bart.R")
@@ -34,11 +40,12 @@ spe
 
 # Select 1 species with ~ same number of presences & absences
 colSums(spe)/nrow(spe) # 17 seems good
-sp <- select(spe, sp17) # black-throated blue warbler
-sp_full <- select(spe_full, sp17) # black-throated blue warbler
+sp <- dplyr::select(spe, sp17) # black-throated blue warbler
+sp_full <- dplyr::select(spe_full, sp17) # black-throated blue warbler
 table(sp)
 
 # Select fewer variables
+# xnames <- c("wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 always zero
 # xnames <- c(paste0("wc", c(1:19)), paste0("lc", c(1:5, 7:10))) # lc6 always zero
 # xnames <- c("wc1", "wc2", "wc7", "wc8", "wc10", "wc11", "lc2", "lc3", "lc5") # (all vars - QC)
 # xnames <- c("lat", "lon", "wc1", "wc2", "wc8",  "wc11", "lc2", "lc5", "lc8") # (all vars - QC with lat-lon)
@@ -79,7 +86,7 @@ varimp(sdm, plot = TRUE)
 diagnostics <- summary_inner(sdm)
 
 # Predict species distribution
-predictions <- predict(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
+predictions <- raster::predict(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
 
 # Plot probability predictions
 plot(
@@ -255,7 +262,7 @@ pred_df <- predictions %>%
     as.data.frame(xy = TRUE) %>% 
     as_tibble() %>% 
     arrange(x, y) %>% 
-    select(-c(x, y))
+    dplyr::select(-c(x, y))
 pred_df
 # Lower quantiles
 lower_df <- predictions %>% 
@@ -264,7 +271,7 @@ lower_df <- predictions %>%
     as.data.frame(xy = TRUE) %>% 
     as_tibble() %>% 
     arrange(x, y) %>% 
-    select(-c(x, y))
+    dplyr::select(-c(x, y))
 lower_df
 # Upper quantiles
 upper_df <- predictions %>% 
@@ -273,7 +280,7 @@ upper_df <- predictions %>%
     as.data.frame(xy = TRUE) %>%  
     as_tibble() %>% 
     arrange(x, y) %>% 
-    select(-c(x, y))
+    dplyr::select(-c(x, y))
 upper_df
 
 # Extract summary statistics
