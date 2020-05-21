@@ -8,6 +8,8 @@ begin
     library(viridis)
     library(furrr)
     plan(multiprocess)
+    # Custom functions
+    source("src/lib/R/bart.R")
     """
 end
 using Distributed
@@ -34,28 +36,18 @@ begin
     source("src/02_training_data-preparation.R")
 
     # Select fewer variables
-    xnames <- c("lat", "lon", "wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 always zero
-    vars_df <- vars_full[,xnames]
- 
+    xnames <- c("wc1", "wc2", "wc5", "wc6", "wc12", "wc13", "wc14", "wc15", "lc2", "lc3", "lc5", "lc8") # stepwise selection on CCHF vignette
+    
     ## 2. Create layers ####
 
     # Convert variables to layers
-    df_to_layer <- function(x, lons, lats){
-        mat <- matrix(data = x, nrow = uniqueN(lats), ncol = uniqueN(lons))
-        layer <- raster(
-            mat[nrow(mat):1,],
-            xmn=min(lons), xmx=max(lons), 
-            ymn=min(lats), ymx=max(lats)
-         )
-        return(layer)
-    }
     vars_layers <- map(
-        vars_df, 
-        function(x) df_to_layer(x, lons = vars_df$lon, lats = vars_df$lat)
+        vars_full[,xnames], 
+        function(x) df_to_layer(x, lons = vars_full$lon, lats = vars_full$lat)
     )
     # Stack raster layers
-    (vars_stack <- stack(vars_layers, names = xnames))
-
+    vars_stack <- stack(vars_layers, names = xnames)
+    
     ## 3. Models ####
     
     # Load models
@@ -68,8 +60,10 @@ begin
             object = x, 
             x.layers = vars_stack,
             quantiles = c(0.025, 0.975),
-            splitby = 20
-        )
+            splitby = 20,
+            quiet = TRUE
+        ),
+        .progress = TRUE
     ) # ~ 8 min., ~ 1 min in parallel
 
     # Predictions
@@ -79,7 +73,7 @@ begin
         as.data.frame(xy = TRUE) %>% 
         as_tibble() %>% 
         arrange(x, y) %>% 
-        select(-c(x, y))
+        dplyr::select(-c(x, y))
     pred_df
     # Lower quantiles
     lower_df <- predictions %>% 
@@ -88,7 +82,7 @@ begin
         as.data.frame(xy = TRUE) %>% 
         as_tibble() %>% 
         arrange(x, y) %>% 
-        select(-c(x, y))
+        dplyr::select(-c(x, y))
     lower_df
     # Upper quantiles
     upper_df <- predictions %>% 
@@ -97,12 +91,11 @@ begin
         as.data.frame(xy = TRUE) %>%  
         as_tibble() %>% 
         arrange(x, y) %>% 
-        select(-c(x, y))
+        dplyr::select(-c(x, y))
     upper_df
 
     # Extract summary statistics
     # Inner calls
-    source("src/lib/R/bart.R")
     summaries <-  map(sdms, summary_inner)
 
     # Organize as tibble
@@ -122,7 +115,6 @@ begin
         function(pred, thresh) ifelse(pred > thresh, 1, 0) 
     )
     pres_df
-
     """
 end
 @rget pred_df lower_df upper_df pres_df results
