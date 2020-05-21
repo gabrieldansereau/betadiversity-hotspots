@@ -3,8 +3,6 @@
 library(embarcadero)
 library(tidyverse)
 library(viridis)
-library(furrr)
-plan(multiprocess)
 
 # conflict_scout()
 # conflict_prefer("filter", "dplyr")
@@ -199,13 +197,15 @@ plot(p)
 # Run for all species
 set.seed(42)
 system.time(
-    sdms <- map(
+    sdms <- parallel::mclapply(
         spe,
         function(x) bart(
             y.train = x,
             x.train = vars[,xnames],
-            keeptrees = TRUE
-        )
+            keeptrees = TRUE,
+            verbose = FALSE
+        ),
+        mc.cores = 15
     )
 ) # ~ 4 min., 45 sec. in parallel
 
@@ -245,14 +245,16 @@ load("data/proc/bart_models_qc.RData")
 
 # Quantile Predictions
 system.time(
-    predictions <- future_map(
+    predictions <- parallel::mclapply(
         sdms,
         function(x) predict2.bart(
             object = x, 
             x.layers = vars_stack,
             quantiles = c(0.025, 0.975),
-            splitby = 20
-        )
+            splitby = 20,
+            quiet = TRUE
+        ),
+        mc.cores = 15
     )
 ) # ~ 8 min., 1 min. in parallel
 
