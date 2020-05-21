@@ -14,6 +14,10 @@ plan(multiprocess)
 # Custom functions
 source("src/lib/R/bart.R")
 
+# Conditional evaluations
+subset_qc <- TRUE # subset to QC data (optional)
+# save_models <- TRUE # save & overwrite models
+
 
 ## 1. Load data ####
 
@@ -26,7 +30,7 @@ spe      <- read_tsv("data/proc/distributions_spe_full.csv")
 spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
 
 # Prepare data
-subset_qc <- TRUE # subset to QC data (optional)
+# subset_qc <- TRUE # subset to QC data (optional)
 source("src/02_training_data-preparation.R")
 
 # Check prepared data
@@ -194,7 +198,7 @@ system.time(
 plot(p)
 
 
-## 6. Multi-species models ####
+## 6. Multi-species model training ####
 
 # Run for all species
 set.seed(42)
@@ -209,6 +213,16 @@ system.time(
         )
     )
 ) # ~ 4 min., 45 sec. in parallel
+
+# Export results
+# save_models <- TRUE
+if (exists("save_models") && isTRUE(save_models)) {
+    message("Saving models to RData")
+    save(sdms, file = "data/proc/bart_models_qc.RData")
+} else {
+    message("Loading models from RData")
+    load("data/proc/bart_models_qc.RData")
+}
 
 # Extract summary statistics
 summary(sdms[[1]])
@@ -240,9 +254,8 @@ varimps %>%
     summarize(mean = mean(varimp)) %>% 
     arrange(desc(mean))
 
-# Export results
-# save(sdms, file = "data/proc/bart_models_qc.RData")
-load("data/proc/bart_models_qc.RData")
+
+## 7. Multi-species predictions ####
 
 # Quantile Predictions
 system.time(
@@ -322,7 +335,7 @@ pred_plot + geom_raster(aes(fill = upper_df$sp17 - lower_df$sp17))
 pred_plot + geom_raster(aes(fill = pres_df$sp17))
 
 
-## 7. Others ####
+## 8. Others ####
 
 # Show first iterations
 system.time(
