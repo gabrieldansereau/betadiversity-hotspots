@@ -86,7 +86,7 @@ varimp(sdm, plot = TRUE)
 diagnostics <- summary_inner(sdm)
 
 # Predict species distribution
-predictions <- raster::predict(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
+predictions <- predict2.bart(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby = 20)
 
 # Plot probability predictions
 plot(
@@ -246,7 +246,7 @@ load("data/proc/bart_models_qc.RData")
 system.time(
     predictions <- future_map(
         sdms,
-        function(x) predict(
+        function(x) predict2.bart(
             object = x, 
             x.layers = vars_stack,
             quantiles = c(0.025, 0.975),
