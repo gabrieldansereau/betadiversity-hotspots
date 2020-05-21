@@ -1,15 +1,16 @@
 ## 0. Load packages ####
-# library(conflicted)
+library(conflicted)
 library(embarcadero)
 library(tidyverse)
 library(viridis)
 library(furrr)
 plan(multiprocess)
 
-# conflict_scout()
-# conflict_prefer("filter", "dplyr")
-# conflict_prefer("intersect", "dplyr")
-# conflict_prefer("select", "dplyr")
+# Resolve conflicts
+conflict_scout()
+conflict_prefer("filter", "dplyr")
+conflict_prefer("intersect", "dplyr")
+conflict_prefer("select", "dplyr")
 
 # Custom functions
 source("src/lib/R/bart.R")
@@ -44,8 +45,8 @@ spe
 
 # Select 1 species with ~ same number of presences & absences
 colSums(spe)/nrow(spe) # 17 seems good
-sp <- dplyr::select(spe, sp17) # black-throated blue warbler
-sp_full <- dplyr::select(spe_full, sp17) # black-throated blue warbler
+sp <- select(spe, sp17) # black-throated blue warbler
+sp_full <- select(spe_full, sp17) # black-throated blue warbler
 table(sp)
 
 # Select fewer variables
@@ -279,7 +280,7 @@ pred_df <- predictions %>%
     as.data.frame(xy = TRUE) %>% 
     as_tibble() %>% 
     arrange(x, y) %>% 
-    dplyr::select(-c(x, y))
+    select(-c(x, y))
 pred_df
 # Lower quantiles
 lower_df <- predictions %>% 
@@ -288,7 +289,7 @@ lower_df <- predictions %>%
     as.data.frame(xy = TRUE) %>% 
     as_tibble() %>% 
     arrange(x, y) %>% 
-    dplyr::select(-c(x, y))
+    select(-c(x, y))
 lower_df
 # Upper quantiles
 upper_df <- predictions %>% 
@@ -297,7 +298,7 @@ upper_df <- predictions %>%
     as.data.frame(xy = TRUE) %>%  
     as_tibble() %>% 
     arrange(x, y) %>% 
-    dplyr::select(-c(x, y))
+    select(-c(x, y))
 upper_df
 
 # Extract summary statistics

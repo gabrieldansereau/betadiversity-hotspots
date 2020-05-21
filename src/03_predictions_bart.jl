@@ -3,11 +3,18 @@ Pkg.activate(".")
 using RCall
 begin
     R"""
+    library(conflicted)
     library(embarcadero)
     library(tidyverse)
     library(viridis)
     library(furrr)
     plan(multiprocess)
+
+    # Resolve conflicts
+    conflict_prefer("filter", "dplyr")
+    conflict_prefer("intersect", "dplyr")
+    conflict_prefer("select", "dplyr")
+
     # Custom functions
     source("src/lib/R/bart.R")
     """
@@ -73,7 +80,7 @@ begin
         as.data.frame(xy = TRUE) %>% 
         as_tibble() %>% 
         arrange(x, y) %>% 
-        dplyr::select(-c(x, y))
+        select(-c(x, y))
     pred_df
     # Lower quantiles
     lower_df <- predictions %>% 
@@ -82,7 +89,7 @@ begin
         as.data.frame(xy = TRUE) %>% 
         as_tibble() %>% 
         arrange(x, y) %>% 
-        dplyr::select(-c(x, y))
+        select(-c(x, y))
     lower_df
     # Upper quantiles
     upper_df <- predictions %>% 
@@ -91,7 +98,7 @@ begin
         as.data.frame(xy = TRUE) %>%  
         as_tibble() %>% 
         arrange(x, y) %>% 
-        dplyr::select(-c(x, y))
+        select(-c(x, y))
     upper_df
 
     # Extract summary statistics
