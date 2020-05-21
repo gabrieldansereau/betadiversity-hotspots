@@ -199,7 +199,8 @@ plot(p)
 # Run for all species
 set.seed(42)
 system.time(
-    sdms <- future_map(spe,
+    sdms <- map(
+        spe,
         function(x) bart(
             y.train = x,
             x.train = vars[,xnames],
