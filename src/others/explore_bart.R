@@ -199,12 +199,13 @@ plot(p)
 # Run for all species
 set.seed(42)
 system.time(
-    sdms <- map(
+    sdms <- pbapply::pblapply(
         spe,
         function(x) bart(
             y.train = x,
             x.train = vars[,xnames],
-            keeptrees = TRUE
+            keeptrees = TRUE,
+            verbose = FALSE
         )
     )
 ) # ~ 4 min., 45 sec. in parallel
@@ -251,8 +252,10 @@ system.time(
             object = x, 
             x.layers = vars_stack,
             quantiles = c(0.025, 0.975),
-            splitby = 20
-        )
+            splitby = 20,
+            quiet = TRUE
+        ),
+        .progress = TRUE
     )
 ) # ~ 8 min., 1 min. in parallel
 
