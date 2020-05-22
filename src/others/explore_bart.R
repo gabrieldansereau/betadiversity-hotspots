@@ -16,7 +16,7 @@ conflict_prefer("select", "dplyr")
 source("src/lib/R/bart.R")
 
 # Conditional evaluations
-subset_qc <- TRUE # subset to QC data (optional)
+# subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
 
@@ -55,7 +55,9 @@ table(sp)
 # xnames <- c("wc1", "wc2", "wc7", "wc8", "wc10", "wc11", "lc2", "lc3", "lc5") # (all vars - QC)
 # xnames <- c("lat", "lon", "wc1", "wc2", "wc8",  "wc11", "lc2", "lc5", "lc8") # (all vars - QC with lat-lon)
 # xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:5, 7:10))) # ~ vars from CCHF vignette + landcover
-xnames <- c("wc1", "wc2", "wc5", "wc6", "wc12", "wc13", "wc14", "wc15", "lc2", "lc3", "lc5", "lc8") # stepwise selection on CCHF vignette
+# xnames <- c("wc1", "wc2", "wc5", "wc6", "wc12", "wc13", "wc14", "wc15", "lc2", "lc3", "lc5", "lc8") # stepwise selection on CCHF vignette
+# xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:10)))
+xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
 
 ## 2. Create layers ####
 
@@ -166,7 +168,7 @@ plot(
 
 varimp(sdm, plot = TRUE)
 system.time(
-    varimp.diag(vars[,xnames], sp[[1]], iter = 50)
+    # varimp.diag(vars[,xnames], sp[[1]], iter = 50)
 ) # ~ 15 min
 
 # Stepwise variable set reduction
@@ -178,6 +180,8 @@ system.time(
 ) # ~5 min
 step.model
 
+# 2:30:00 for full scale 
+# wc1  wc5  wc6  wc12 wc14 wc15 lc7  lc8  lc9
 
 ## 5. Partial dependence plots ####
 
@@ -219,10 +223,10 @@ system.time(
 # save_models <- TRUE
 if (exists("save_models") && isTRUE(save_models)) {
     message("Saving models to RData")
-    save(sdms, file = "data/proc/bart_models_qc.RData")
+    save(sdms, file = "data/proc/bart_models.RData")
 } else {
     message("Loading models from RData")
-    load("data/proc/bart_models_qc.RData")
+    load("data/proc/bart_models.RData")
 }
 
 # Extract summary statistics
@@ -241,6 +245,7 @@ results <- tibble(
     type_II = map_dbl(summaries, function(x) x$type_II)
 )
 results
+print(results, n = Inf)
 summary(results)
 
 # Extract variable importance
@@ -251,6 +256,9 @@ varimps <- map(sdms, varimp) %>%
 varimps
 varimps %>% 
     pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
+    pivot_wider(spe, names_from = "vars", values_from = "varimp")
+varimps %>% 
+    pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
     group_by(vars) %>% 
     summarize(mean = mean(varimp)) %>% 
     arrange(desc(mean))
@@ -259,6 +267,7 @@ varimps %>%
 ## 7. Multi-species predictions ####
 
 # Quantile Predictions
+sdms <- sdms[1:15] 
 system.time(
     predictions <- future_map(
         sdms,
@@ -306,7 +315,7 @@ summaries <-  map(sdms, summary_inner)
 
 # Organize as tibble
 results <- tibble(
-    spe = names(spe),
+    spe = names(spe[1:15]),
     auc = map_dbl(summaries, function(x) x$auc),
     threshold = map_dbl(summaries, function(x) x$threshold),
     tss = map_dbl(summaries, function(x) x$tss),
@@ -324,16 +333,16 @@ pres_df
 
 # Plot predictions
 pred_plot <- ggplot(spa_full, aes(lon, lat)) +
-    geom_raster(aes(fill = pred_df$sp17)) +
+    geom_raster(aes(fill = pred_df$sp1)) +
     scale_fill_viridis_c(na.value = "white") +
     ggtitle("Predictions") + 
     coord_quickmap() +
     theme_minimal()
 pred_plot
-pred_plot + geom_raster(aes(fill = lower_df$sp17))
-pred_plot + geom_raster(aes(fill = upper_df$sp17))
-pred_plot + geom_raster(aes(fill = upper_df$sp17 - lower_df$sp17))
-pred_plot + geom_raster(aes(fill = pres_df$sp17))
+pred_plot + geom_raster(aes(fill = lower_df$sp1))
+pred_plot + geom_raster(aes(fill = upper_df$sp1))
+pred_plot + geom_raster(aes(fill = upper_df$sp1 - lower_df$sp1))
+pred_plot + geom_raster(aes(fill = pres_df$sp1))
 
 
 ## 8. Others ####
