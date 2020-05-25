@@ -209,7 +209,7 @@ plot(p)
 set.seed(42)
 system.time(
     sdms <- pbapply::pblapply(
-        spe,
+        spe[1:10],
         function(x) bart(
             y.train = x,
             x.train = vars[,xnames],
@@ -232,7 +232,7 @@ if (exists("save_models") && isTRUE(save_models)) {
 # Extract summary statistics
 summary(sdms[[1]])
 summaries <-  map(sdms, summary_inner)
-summaries[[20]]
+summaries[[2]]
 str(summaries)
 
 # Organize as tibble
@@ -267,10 +267,10 @@ varimps %>%
 ## 7. Multi-species predictions ####
 
 # Quantile Predictions
-sdms <- sdms[1:15] 
+sdms <- sdms[1:10] 
 system.time(
     predictions <- future_map(
-        sdms,
+        sdms[1:2],
         function(x) predict2.bart(
             object = x, 
             x.layers = vars_stack,
@@ -315,7 +315,7 @@ summaries <-  map(sdms, summary_inner)
 
 # Organize as tibble
 results <- tibble(
-    spe = names(spe[1:15]),
+    spe = names(sdms),
     auc = map_dbl(summaries, function(x) x$auc),
     threshold = map_dbl(summaries, function(x) x$threshold),
     tss = map_dbl(summaries, function(x) x$tss),
