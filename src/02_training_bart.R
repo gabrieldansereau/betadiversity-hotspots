@@ -34,15 +34,6 @@ spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
 # subset_qc <- TRUE # subset to QC data (optional)
 source("src/02_training_data-preparation.R")
 
-# Check prepared data
-spa_full
-env_full
-spe_full
-vars_full
-spa
-env
-spe
-
 # Select 1 species with ~ same number of presences & absences
 colSums(spe)/nrow(spe) # 17 seems good
 sp <- select(spe, sp17) # black-throated blue warbler
@@ -50,19 +41,11 @@ sp_full <- select(spe_full, sp17) # black-throated blue warbler
 table(sp)
 
 # Select fewer variables
-# xnames <- c("wc1", "wc12", paste0("lc", c(1:5, 7:10))) # lc6 always zero
-# xnames <- c(paste0("wc", c(1:19)), paste0("lc", c(1:5, 7:10))) # lc6 always zero
-# xnames <- c("wc1", "wc2", "wc7", "wc8", "wc10", "wc11", "lc2", "lc3", "lc5") # (all vars - QC)
-# xnames <- c("lat", "lon", "wc1", "wc2", "wc8",  "wc11", "lc2", "lc5", "lc8") # (all vars - QC with lat-lon)
-# xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:5, 7:10))) # ~ vars from CCHF vignette + landcover
-# xnames <- c("wc1", "wc2", "wc5", "wc6", "wc12", "wc13", "wc14", "wc15", "lc2", "lc3", "lc5", "lc8") # stepwise selection on CCHF vignette
-# xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:10)))
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
 
 ## 2. Create layers ####
 
 # Create raster layers
-sp_layer <- df_to_layer(x = sp_full[[1]], lons = vars_full$lon, lats = vars_full$lat)
 vars_layers <- map(
     vars_full[,xnames], 
     function(x) df_to_layer(x, lons = vars_full$lon, lats = vars_full$lat)
