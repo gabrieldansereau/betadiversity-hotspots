@@ -183,6 +183,7 @@ step.model
 # 2:30:00 for full scale 
 # wc1  wc5  wc6  wc12 wc14 wc15 lc7  lc8  lc9
 
+
 ## 5. Partial dependence plots ####
 
 system.time(
@@ -203,149 +204,7 @@ system.time(
 plot(p)
 
 
-## 6. Multi-species model training ####
-
-# Run for all species
-set.seed(42)
-system.time(
-    sdms <- pbapply::pblapply(
-        spe[1:10],
-        function(x) bart(
-            y.train = x,
-            x.train = vars[,xnames],
-            keeptrees = TRUE,
-            verbose = FALSE
-        )
-    )
-) # ~ 4 min., 45 sec. in parallel
-
-# Export results
-# save_models <- TRUE
-if (exists("save_models") && isTRUE(save_models)) {
-    message("Saving models to RData")
-    save(sdms, file = "data/proc/bart_models.RData")
-} else {
-    message("Loading models from RData")
-    load("data/proc/bart_models.RData")
-}
-
-# Extract summary statistics
-summary(sdms[[1]])
-summaries <-  map(sdms, summary_inner)
-summaries[[2]]
-str(summaries)
-
-# Organize as tibble
-results <- tibble(
-    spe = names(spe),
-    auc = map_dbl(summaries, function(x) x$auc),
-    threshold = map_dbl(summaries, function(x) x$threshold),
-    tss = map_dbl(summaries, function(x) x$tss),
-    type_I = map_dbl(summaries, function(x) x$type_I),
-    type_II = map_dbl(summaries, function(x) x$type_II)
-)
-results
-print(results, n = Inf)
-summary(results)
-
-# Extract variable importance
-varimps <- map(sdms, varimp) %>% 
-    map_df(~ .$varimps) %>% 
-    mutate(vars = xnames) %>% 
-    select(vars, everything())
-varimps
-varimps %>% 
-    pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
-    pivot_wider(spe, names_from = "vars", values_from = "varimp")
-varimps %>% 
-    pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
-    group_by(vars) %>% 
-    summarize(mean = mean(varimp)) %>% 
-    arrange(desc(mean))
-
-
-## 7. Multi-species predictions ####
-
-# Quantile Predictions
-sdms <- sdms[1:10] 
-system.time(
-    predictions <- future_map(
-        sdms[1:2],
-        function(x) predict2.bart(
-            object = x, 
-            x.layers = vars_stack,
-            quantiles = c(0.025, 0.975),
-            splitby = 20,
-            quiet = TRUE
-        ),
-        .progress = TRUE
-    )
-) # ~ 8 min., 1 min. in parallel
-
-# Predictions
-pred_df <- predictions %>% 
-    map(~ .$layer.1) %>% 
-    stack() %>% 
-    as.data.frame(xy = TRUE) %>% 
-    as_tibble() %>% 
-    arrange(x, y) %>% 
-    select(-c(x, y))
-pred_df
-# Lower quantiles
-lower_df <- predictions %>% 
-    map(~ .$layer.2) %>% 
-    stack() %>% 
-    as.data.frame(xy = TRUE) %>% 
-    as_tibble() %>% 
-    arrange(x, y) %>% 
-    select(-c(x, y))
-lower_df
-# Upper quantiles
-upper_df <- predictions %>% 
-    map(~ .$layer.3) %>%
-    stack() %>% 
-    as.data.frame(xy = TRUE) %>%  
-    as_tibble() %>% 
-    arrange(x, y) %>% 
-    select(-c(x, y))
-upper_df
-
-# Extract summary statistics
-summaries <-  map(sdms, summary_inner)
-
-# Organize as tibble
-results <- tibble(
-    spe = names(sdms),
-    auc = map_dbl(summaries, function(x) x$auc),
-    threshold = map_dbl(summaries, function(x) x$threshold),
-    tss = map_dbl(summaries, function(x) x$tss),
-    type_I = map_dbl(summaries, function(x) x$type_I),
-    type_II = map_dbl(summaries, function(x) x$type_II)
-)
-results
-
-# Presence-absence dataframe
-pres_df <- map2_df(
-    pred_df, results$threshold, 
-    function(pred, thresh) ifelse(pred > thresh, 1, 0) 
-)
-pres_df
-
-# Plot predictions
-pred_plot <- ggplot(spa_full, aes(lon, lat)) +
-    geom_raster(aes(fill = pred_df$sp1)) +
-    scale_fill_viridis_c(na.value = "white") +
-    ggtitle("Predictions") + 
-    coord_quickmap() +
-    theme_minimal()
-pred_plot
-pred_plot + geom_raster(aes(fill = lower_df$sp1))
-pred_plot + geom_raster(aes(fill = upper_df$sp1))
-pred_plot + geom_raster(aes(fill = upper_df$sp1 - lower_df$sp1))
-pred_plot + geom_raster(aes(fill = pres_df$sp1))
-
-
-## 8. Others ####
+## 6. Others ####
 
 # Show first iterations
 system.time(
