@@ -187,13 +187,12 @@ pres_df
 
 # Plot predictions
 pred_plot <- ggplot(spa_full, aes(lon, lat)) +
-    geom_raster(aes(fill = pred_df$sp1)) +
-    scale_fill_viridis_c(na.value = "white") +
-    ggtitle("Predictions") + 
+    scale_fill_viridis_c(na.value = "white", "Value") +
     coord_quickmap() +
     theme_minimal()
-pred_plot
-pred_plot + geom_raster(aes(fill = lower_df$sp1))
-pred_plot + geom_raster(aes(fill = upper_df$sp1))
-pred_plot + geom_raster(aes(fill = upper_df$sp1 - lower_df$sp1))
-pred_plot + geom_raster(aes(fill = pres_df$sp1))
+sp_no <- 4
+pred_plot + geom_raster(aes(fill = pred_df[[sp_no]])) + ggtitle("Posterior mean")
+pred_plot + geom_raster(aes(fill = lower_df[[sp_no]])) + ggtitle("Lower CI")
+pred_plot + geom_raster(aes(fill = upper_df[[sp_no]])) + ggtitle("Upper CI")
+pred_plot + geom_raster(aes(fill = upper_df[[sp_no]] - lower_df[[sp_no]])) + ggtitle("CI difference")
+pred_plot + geom_raster(aes(fill = pres_df[[sp_no]])) + ggtitle("Presence-absence")
