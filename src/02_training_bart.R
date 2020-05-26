@@ -80,6 +80,33 @@ bart_parallel <- function(x.train, y.train, ...) {
     return(sdm)
 }
 
+# Prepare global sets
+sdms_list <- list()
+predictions_list <- list()
+results_global <- matrix(
+    NaN, 
+    nrow = ncol(spe), ncol = 6, 
+    dimnames = list(NULL, c("spe", "auc", "treshold", "tss", "type_I", "type_II"))
+) %>% as_tibble()
+results_global$spe <- names(spe)
+varimps_global <- matrix(
+    NaN,
+    nrow = length(xnames), ncol = ncol(spe),
+    dimnames = list(NULL, names(spe))
+) %>% 
+    as_tibble() %>% 
+    mutate(vars = xnames) %>% 
+    select(vars, everything())
+pred_df_global <- matrix(
+    NaN,
+    nrow = nrow(vars_full), ncol = ncol(spe),
+    dimnames = list(NULL, names(spe))
+) %>% as_tibble()
+lower_df_global <- pred_df_global
+upper_df_global <- pred_df_global
+pres_df_global <- pred_df_global
+
+
 # Run for species groups 1
 gp <- 1
 create_models <- TRUE
@@ -98,7 +125,7 @@ if (exists("create_models") && isTRUE(create_models)){
 }
 
 # Export results
-save_models <- TRUE
+# save_models <- TRUE
 filepath <- paste0("data/proc/bart_models_qc", gp, ".RData")
 if (exists("save_models") && isTRUE(save_models)) {
     message("Saving models to RData")
@@ -194,14 +221,29 @@ pres_df <- map2_df(
 )
 pres_df
 
-# Plot predictions
+# Export group results
+sdms_list[[gp]] <- sdms
+predictions_list[[gp]] <- predictions
+results_global[spe_splits[[gp]],] <- results
+varimps_global[spe_splits[[gp]]+1] <- varimps[,-1]
+pred_df_global[spe_splits[[gp]]] <- pred_df
+lower_df_global[spe_splits[[gp]]] <- lower_df
+upper_df_global[spe_splits[[gp]]] <- upper_df
+pres_df_global[spe_splits[[gp]]] <- pres_df
+
+
+## 5. Visualize results ####
+
+# Empty canvas
 pred_plot <- ggplot(spa_full, aes(lon, lat)) +
     scale_fill_viridis_c(na.value = "white", "Value") +
     coord_quickmap() +
     theme_minimal()
+
+# Plot predictions
 sp_no <- 2
-pred_plot + geom_raster(aes(fill = pred_df[[sp_no]])) + ggtitle("Posterior mean")
-pred_plot + geom_raster(aes(fill = lower_df[[sp_no]])) + ggtitle("Lower CI")
-pred_plot + geom_raster(aes(fill = upper_df[[sp_no]])) + ggtitle("Upper CI")
-pred_plot + geom_raster(aes(fill = upper_df[[sp_no]] - lower_df[[sp_no]])) + ggtitle("CI difference")
-pred_plot + geom_raster(aes(fill = pres_df[[sp_no]])) + ggtitle("Presence-absence")
+pred_plot + geom_raster(aes(fill = pred_df_global[[sp_no]])) + ggtitle("Posterior mean")
+pred_plot + geom_raster(aes(fill = lower_df_global[[sp_no]])) + ggtitle("Lower CI")
+pred_plot + geom_raster(aes(fill = upper_df_global[[sp_no]])) + ggtitle("Upper CI")
+pred_plot + geom_raster(aes(fill = upper_df_global[[sp_no]] - lower_df_global[[sp_no]])) + ggtitle("CI difference")
+pred_plot + geom_raster(aes(fill = pres_df_global[[sp_no]])) + ggtitle("Presence-absence")
