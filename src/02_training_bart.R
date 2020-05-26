@@ -16,7 +16,7 @@ conflict_prefer("select", "dplyr")
 source("src/lib/R/bart.R")
 
 # Conditional evaluations
-# subset_qc <- TRUE # subset to QC data (optional)
+subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
 
@@ -79,7 +79,7 @@ if (exists("create_models") && isTRUE(create_models)){
     set.seed(42)
     system.time(
         sdms <- future_map(
-            spe[1:10],
+            spe,
             function(x) bart_parallel(
                 y.train = x,
                 x.train = vars[,xnames]
@@ -93,10 +93,10 @@ if (exists("create_models") && isTRUE(create_models)){
 # save_models <- TRUE
 if (exists("save_models") && isTRUE(save_models)) {
     message("Saving models to RData")
-    save(sdms, file = "data/proc/bart_models_01-10.RData")
+    save(sdms, file = "data/proc/bart_models_qc.RData")
 } else {
     message("Loading models from RData")
-    load("data/proc/bart_models_01-10.RData")
+    load("data/proc/bart_models_qc.RData")
 }
 
 # Extract summary statistics
