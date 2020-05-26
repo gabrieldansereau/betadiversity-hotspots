@@ -53,8 +53,8 @@ Y[inds_zeros,:] .= NaN
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
 raw_distributions = distributions
 # Cut to Quebec coordinates (optional)
-coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
-raw_distributions = [d[coords_qc] for d in raw_distributions]
+# coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
+# raw_distributions = [d[coords_qc] for d in raw_distributions]
 # Get layer dimensions & limits
 dims = size(raw_distributions[1].grid)
 lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
