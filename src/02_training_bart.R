@@ -22,6 +22,8 @@ source("src/lib/R/bart.R")
 
 ## 1. Load data ####
 
+message("Loading & preparing data")
+
 # Load data
 spa_full <- read_tsv("data/proc/distributions_spa_full.csv")
 env_full <- read_tsv("data/proc/distributions_env_full.csv")
@@ -45,6 +47,8 @@ xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:
 
 ## 2. Create layers ####
 
+message("Creating layers")
+
 # Create raster layers
 vars_layers <- map(
     vars_full[,xnames], 
@@ -58,6 +62,8 @@ plot(vars_stack)
 
 
 ## 3. Multi-species model training ####
+
+message("Training multi-species models")
 
 bart_parallel <- function(x.train, y.train, ...) {
     # BART SDM
@@ -131,6 +137,8 @@ varimps %>%
 
 
 ## 4. Multi-species predictions ####
+
+message("Predicting species distributions")
 
 # Quantile Predictions
 system.time(
