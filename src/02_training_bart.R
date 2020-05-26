@@ -60,34 +60,41 @@ plot(vars_stack)
 ## 3. Multi-species model training ####
 
 # Run for all species
-set.seed(42)
-system.time(
-    sdms <- pbapply::pblapply(
-        spe[1:10],
-        function(x) bart(
-            y.train = x,
-            x.train = vars[,xnames],
-            keeptrees = TRUE,
-            verbose = FALSE
+# create_models <- TRUE
+if (exists("create_models") && isTRUE(save_models)){
+    set.seed(42)
+    system.time(
+        sdms <- pbapply::pblapply(
+            spe[1:2],
+            function(x) bart(
+                y.train = x,
+                x.train = vars[,xnames],
+                keeptrees = TRUE,
+                verbose = FALSE
+            )
         )
-    )
-) # ~ 4 min., 45 sec. in parallel
+    ) # ~ 4 min., 45 sec. in parallel
+    invisible(map(sdms, function(x) x$fit$state))
+    sdms_backup <- sdms
+}
 
 # Export results
 # save_models <- TRUE
 if (exists("save_models") && isTRUE(save_models)) {
     message("Saving models to RData")
-    save(sdms, file = "data/proc/bart_models_01-10.RData")
+    save(sdms, file = "data/proc/bart_models_01-02_touch.RData")
 } else {
     message("Loading models from RData")
-    load("data/proc/bart_models_01-10.RData")
+    load("data/proc/bart_models_01-02.RData")
+    sdms_orig <- sdms
+    load("data/proc/bart_models_01-02_touch.RData")
+    sdms_touch <- sdms
+    rm(sdms)
 }
 
 # Extract summary statistics
-summary(sdms[[1]])
 summaries <-  future_map(sdms, summary_inner)
 summaries[[2]]
-str(summaries)
 
 # Organize as tibble
 results <- tibble(
@@ -123,7 +130,9 @@ varimps %>%
 # Quantile Predictions
 system.time(
     predictions <- future_map(
-        sdms,
+        # sdms,
+        # sdms_orig,
+        sdms_touch,
         function(x) predict2.bart(
             object = x, 
             x.layers = vars_stack,
@@ -134,6 +143,8 @@ system.time(
         .progress = TRUE
     )
 ) # ~ 8 min., 1 min. in parallel
+predictions_orig <- predictions
+predictions_touch <- predictions
 
 # Predictions
 pred_df <- predictions %>% 
