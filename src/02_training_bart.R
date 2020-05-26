@@ -107,131 +107,135 @@ upper_df_global <- pred_df_global
 pres_df_global <- pred_df_global
 
 
-# Run for species groups 1
-gp <- 1
-create_models <- TRUE
-if (exists("create_models") && isTRUE(create_models)){
-    set.seed(42)
+# Run for each group
+system.time(
+for (gp in seq_along(spe_groups)) {
+
+    message(paste0("Training multi-species group (", gp, "/", length(spe_groups)), ")")
+
+    create_models <- TRUE
+    if (exists("create_models") && isTRUE(create_models)){
+        set.seed(42)
+        system.time(
+            sdms <- future_map(
+                spe_groups[[gp]],
+                function(x) bart_parallel(
+                    y.train = x,
+                    x.train = vars[,xnames]
+                ),
+                .progress = TRUE
+            )
+        ) # ~ 4 min in parallel
+    }
+
+    # Export results
+    # save_models <- TRUE
+    filepath <- paste0("data/proc/bart_models_qc", gp, ".RData")
+    if (exists("save_models") && isTRUE(save_models)) {
+        message("Saving models to RData")
+        save(sdms, file = filepath)
+    } else {
+        message("Loading models from RData")
+        load(filepath)
+    }
+
+    # Extract summary statistics
+    summaries <-  future_map(sdms, summary_inner)
+
+    # Organize as tibble
+    results <- tibble(
+        spe = names(sdms),
+        auc = map_dbl(summaries, function(x) x$auc),
+        threshold = map_dbl(summaries, function(x) x$threshold),
+        tss = map_dbl(summaries, function(x) x$tss),
+        type_I = map_dbl(summaries, function(x) x$type_I),
+        type_II = map_dbl(summaries, function(x) x$type_II)
+    )
+    print(results, n = Inf)
+    summary(results)
+
+    # Extract variable importance
+    varimps <- map(sdms, varimp) %>% 
+        map_df(~ .$varimps) %>% 
+        mutate(vars = xnames) %>% 
+        select(vars, everything())
+    varimps
+    varimps %>% 
+        pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
+        pivot_wider(spe, names_from = "vars", values_from = "varimp")
+    varimps %>% 
+        pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
+        group_by(vars) %>% 
+        summarize(mean = mean(varimp)) %>% 
+        arrange(desc(mean))
+
+
+    ## 4. Multi-species predictions ####
+
+    message("Predicting species distributions")
+
+    # Quantile Predictions
     system.time(
-        sdms <- future_map(
-            spe_groups[[gp]],
-            function(x) bart_parallel(
-                y.train = x,
-                x.train = vars[,xnames]
+        predictions <- future_map(
+            sdms,
+            # sdms_backup,
+            function(x) predict2.bart(
+                object = x, 
+                x.layers = vars_stack,
+                quantiles = c(0.025, 0.975),
+                splitby = 20,
+                quiet = TRUE
             ),
             .progress = TRUE
         )
-    ) # ~ 4 min in parallel
-}
+    ) # ~ 3 min in parallel
 
-# Export results
-# save_models <- TRUE
-filepath <- paste0("data/proc/bart_models_qc", gp, ".RData")
-if (exists("save_models") && isTRUE(save_models)) {
-    message("Saving models to RData")
-    save(sdms, file = filepath)
-} else {
-    message("Loading models from RData")
-    load(filepath)
-}
+    # Predictions
+    pred_df <- predictions %>% 
+        map(~ .$layer.1) %>% 
+        stack() %>% 
+        as.data.frame(xy = TRUE) %>% 
+        as_tibble() %>% 
+        arrange(x, y) %>% 
+        select(-c(x, y))
+    pred_df
+    # Lower quantiles
+    lower_df <- predictions %>% 
+        map(~ .$layer.2) %>% 
+        stack() %>% 
+        as.data.frame(xy = TRUE) %>% 
+        as_tibble() %>% 
+        arrange(x, y) %>% 
+        select(-c(x, y))
+    lower_df
+    # Upper quantiles
+    upper_df <- predictions %>% 
+        map(~ .$layer.3) %>%
+        stack() %>% 
+        as.data.frame(xy = TRUE) %>%  
+        as_tibble() %>% 
+        arrange(x, y) %>% 
+        select(-c(x, y))
+    upper_df
 
-# Extract summary statistics
-summaries <-  future_map(sdms, summary_inner)
-
-# Organize as tibble
-results <- tibble(
-    spe = names(sdms),
-    auc = map_dbl(summaries, function(x) x$auc),
-    threshold = map_dbl(summaries, function(x) x$threshold),
-    tss = map_dbl(summaries, function(x) x$tss),
-    type_I = map_dbl(summaries, function(x) x$type_I),
-    type_II = map_dbl(summaries, function(x) x$type_II)
-)
-print(results, n = Inf)
-summary(results)
-
-# Extract variable importance
-varimps <- map(sdms, varimp) %>% 
-    map_df(~ .$varimps) %>% 
-    mutate(vars = xnames) %>% 
-    select(vars, everything())
-varimps
-varimps %>% 
-    pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
-    pivot_wider(spe, names_from = "vars", values_from = "varimp")
-varimps %>% 
-    pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
-    group_by(vars) %>% 
-    summarize(mean = mean(varimp)) %>% 
-    arrange(desc(mean))
-
-
-## 4. Multi-species predictions ####
-
-message("Predicting species distributions")
-
-# Quantile Predictions
-system.time(
-    predictions <- future_map(
-        sdms,
-        # sdms_backup,
-        function(x) predict2.bart(
-            object = x, 
-            x.layers = vars_stack,
-            quantiles = c(0.025, 0.975),
-            splitby = 20,
-            quiet = TRUE
-        ),
-        .progress = TRUE
+    # Presence-absence dataframe
+    pres_df <- map2_df(
+        pred_df, results$threshold, 
+        function(pred, thresh) ifelse(pred > thresh, 1, 0) 
     )
-) # ~ 3 min in parallel
+    pres_df
 
-# Predictions
-pred_df <- predictions %>% 
-    map(~ .$layer.1) %>% 
-    stack() %>% 
-    as.data.frame(xy = TRUE) %>% 
-    as_tibble() %>% 
-    arrange(x, y) %>% 
-    select(-c(x, y))
-pred_df
-# Lower quantiles
-lower_df <- predictions %>% 
-    map(~ .$layer.2) %>% 
-    stack() %>% 
-    as.data.frame(xy = TRUE) %>% 
-    as_tibble() %>% 
-    arrange(x, y) %>% 
-    select(-c(x, y))
-lower_df
-# Upper quantiles
-upper_df <- predictions %>% 
-    map(~ .$layer.3) %>%
-    stack() %>% 
-    as.data.frame(xy = TRUE) %>%  
-    as_tibble() %>% 
-    arrange(x, y) %>% 
-    select(-c(x, y))
-upper_df
-
-# Presence-absence dataframe
-pres_df <- map2_df(
-    pred_df, results$threshold, 
-    function(pred, thresh) ifelse(pred > thresh, 1, 0) 
+    # Export group results
+    sdms_list[[gp]] <- sdms
+    predictions_list[[gp]] <- predictions
+    results_global[spe_splits[[gp]],] <- results
+    varimps_global[spe_splits[[gp]]+1] <- varimps[,-1]
+    pred_df_global[spe_splits[[gp]]] <- pred_df
+    lower_df_global[spe_splits[[gp]]] <- lower_df
+    upper_df_global[spe_splits[[gp]]] <- upper_df
+    pres_df_global[spe_splits[[gp]]] <- pres_df
+}
 )
-pres_df
-
-# Export group results
-sdms_list[[gp]] <- sdms
-predictions_list[[gp]] <- predictions
-results_global[spe_splits[[gp]],] <- results
-varimps_global[spe_splits[[gp]]+1] <- varimps[,-1]
-pred_df_global[spe_splits[[gp]]] <- pred_df
-lower_df_global[spe_splits[[gp]]] <- lower_df
-upper_df_global[spe_splits[[gp]]] <- upper_df
-pres_df_global[spe_splits[[gp]]] <- pres_df
-
-
 ## 5. Visualize results ####
 
 # Empty canvas
