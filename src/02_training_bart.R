@@ -59,6 +59,13 @@ plot(vars_stack)
 
 message("Training multi-species models")
 
+# Split species in groups
+max_procs <- availableCores() - 1
+spe_num <- 1:ncol(spe)
+spe_splits <- split(spe_num, ceiling(spe_num/max_procs))
+spe_groups <- map(spe_splits, ~ select(spe, all_of(.)))
+
+# Function to run BART in parallel
 bart_parallel <- function(x.train, y.train, ...) {
     # BART SDM
     sdm <- bart(
@@ -73,13 +80,14 @@ bart_parallel <- function(x.train, y.train, ...) {
     return(sdm)
 }
 
-# Run for all species
-# create_models <- TRUE
+# Run for species groups 1
+gp <- 1
+create_models <- TRUE
 if (exists("create_models") && isTRUE(create_models)){
     set.seed(42)
     system.time(
         sdms <- future_map(
-            spe,
+            spe_groups[[gp]],
             function(x) bart_parallel(
                 y.train = x,
                 x.train = vars[,xnames]
@@ -90,13 +98,14 @@ if (exists("create_models") && isTRUE(create_models)){
 }
 
 # Export results
-# save_models <- TRUE
+save_models <- TRUE
+filepath <- paste0("data/proc/bart_models_qc", gp, ".RData")
 if (exists("save_models") && isTRUE(save_models)) {
     message("Saving models to RData")
-    save(sdms, file = "data/proc/bart_models_qc.RData")
+    save(sdms, file = filepath)
 } else {
     message("Loading models from RData")
-    load("data/proc/bart_models_qc.RData")
+    load(filepath)
 }
 
 # Extract summary statistics
