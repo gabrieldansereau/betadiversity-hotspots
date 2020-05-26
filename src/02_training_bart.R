@@ -36,12 +36,6 @@ spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
 # subset_qc <- TRUE # subset to QC data (optional)
 source("src/02_training_data-preparation.R")
 
-# Select 1 species with ~ same number of presences & absences
-colSums(spe)/nrow(spe) # 17 seems good
-sp <- select(spe, sp17) # black-throated blue warbler
-sp_full <- select(spe_full, sp17) # black-throated blue warbler
-table(sp)
-
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
 
@@ -81,7 +75,7 @@ bart_parallel <- function(x.train, y.train, ...) {
 
 # Run for all species
 # create_models <- TRUE
-if (exists("create_models") && isTRUE(save_models)){
+if (exists("create_models") && isTRUE(create_models)){
     set.seed(42)
     system.time(
         sdms <- future_map(
