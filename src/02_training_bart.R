@@ -59,18 +59,28 @@ plot(vars_stack)
 
 ## 3. Multi-species model training ####
 
+bart_parallel <- function(x.train, y.train, ...) {
+    sdm <- bart(
+        y.train = y.train,
+        x.train = x.train,
+        keeptrees = TRUE,
+        verbose = FALSE,
+        ...
+    )
+    invisible(sdm$fit$state)
+    return(sdm)
+}
+
 # Run for all species
 # create_models <- TRUE
 if (exists("create_models") && isTRUE(save_models)){
     set.seed(42)
     system.time(
-        sdms <- pbapply::pblapply(
+        sdms <- future_map(
             spe[1:2],
-            function(x) bart(
+            function(x) bart_parallel(
                 y.train = x,
-                x.train = vars[,xnames],
-                keeptrees = TRUE,
-                verbose = FALSE
+                x.train = vars[,xnames]
             )
         )
     ) # ~ 4 min., 45 sec. in parallel
@@ -82,14 +92,10 @@ if (exists("create_models") && isTRUE(save_models)){
 # save_models <- TRUE
 if (exists("save_models") && isTRUE(save_models)) {
     message("Saving models to RData")
-    save(sdms, file = "data/proc/bart_models_01-02_touch.RData")
+    save(sdms, file = "data/proc/bart_models_01-02.RData")
 } else {
     message("Loading models from RData")
     load("data/proc/bart_models_01-02.RData")
-    sdms_orig <- sdms
-    load("data/proc/bart_models_01-02_touch.RData")
-    sdms_touch <- sdms
-    rm(sdms)
 }
 
 # Extract summary statistics
@@ -130,9 +136,8 @@ varimps %>%
 # Quantile Predictions
 system.time(
     predictions <- future_map(
-        # sdms,
-        # sdms_orig,
-        sdms_touch,
+        sdms,
+        # sdms_backup,
         function(x) predict2.bart(
             object = x, 
             x.layers = vars_stack,
@@ -186,7 +191,7 @@ pred_plot <- ggplot(spa_full, aes(lon, lat)) +
     scale_fill_viridis_c(na.value = "white", "Value") +
     coord_quickmap() +
     theme_minimal()
-sp_no <- 4
+sp_no <- 2
 pred_plot + geom_raster(aes(fill = pred_df[[sp_no]])) + ggtitle("Posterior mean")
 pred_plot + geom_raster(aes(fill = lower_df[[sp_no]])) + ggtitle("Lower CI")
 pred_plot + geom_raster(aes(fill = upper_df[[sp_no]])) + ggtitle("Upper CI")
