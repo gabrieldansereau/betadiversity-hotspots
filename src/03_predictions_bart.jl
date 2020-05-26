@@ -26,6 +26,15 @@ using Distributed
 # save_data = true
 
 ## Perform BARTs
+@time begin
+    R"""
+    create_models <- FALSE
+    save_models <- FALSE
+
+    source("src/02_training_bart.R")
+    """
+end
+
 begin
     R"""
     ## 1. Load data ####
