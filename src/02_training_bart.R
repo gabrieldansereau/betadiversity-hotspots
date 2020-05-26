@@ -60,6 +60,7 @@ plot(vars_stack)
 ## 3. Multi-species model training ####
 
 bart_parallel <- function(x.train, y.train, ...) {
+    # BART SDM
     sdm <- bart(
         y.train = y.train,
         x.train = x.train,
@@ -67,6 +68,7 @@ bart_parallel <- function(x.train, y.train, ...) {
         verbose = FALSE,
         ...
     )
+    # Touch state so that saving will work
     invisible(sdm$fit$state)
     return(sdm)
 }
@@ -77,30 +79,28 @@ if (exists("create_models") && isTRUE(save_models)){
     set.seed(42)
     system.time(
         sdms <- future_map(
-            spe[1:2],
+            spe[1:10],
             function(x) bart_parallel(
                 y.train = x,
                 x.train = vars[,xnames]
-            )
+            ),
+            .progress = TRUE
         )
-    ) # ~ 4 min., 45 sec. in parallel
-    invisible(map(sdms, function(x) x$fit$state))
-    sdms_backup <- sdms
+    ) # ~ 4 min in parallel
 }
 
 # Export results
 # save_models <- TRUE
 if (exists("save_models") && isTRUE(save_models)) {
     message("Saving models to RData")
-    save(sdms, file = "data/proc/bart_models_01-02.RData")
+    save(sdms, file = "data/proc/bart_models_01-10.RData")
 } else {
     message("Loading models from RData")
-    load("data/proc/bart_models_01-02.RData")
+    load("data/proc/bart_models_01-10.RData")
 }
 
 # Extract summary statistics
 summaries <-  future_map(sdms, summary_inner)
-summaries[[2]]
 
 # Organize as tibble
 results <- tibble(
@@ -111,7 +111,6 @@ results <- tibble(
     type_I = map_dbl(summaries, function(x) x$type_I),
     type_II = map_dbl(summaries, function(x) x$type_II)
 )
-results
 print(results, n = Inf)
 summary(results)
 
@@ -147,9 +146,7 @@ system.time(
         ),
         .progress = TRUE
     )
-) # ~ 8 min., 1 min. in parallel
-predictions_orig <- predictions
-predictions_touch <- predictions
+) # ~ 3 min in parallel
 
 # Predictions
 pred_df <- predictions %>% 
