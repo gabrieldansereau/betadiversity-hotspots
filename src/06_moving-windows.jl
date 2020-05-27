@@ -4,14 +4,15 @@ using Distributed
 @time include("required.jl")
 
 ## Conditional arguments
-outcome = "rf"
+# outcome = "rf"
+outcome = "bart"
 # save_figures = true
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-    @warn "'outcome' not defined, must be either 'raw', 'bio' or 'rf'"
-elseif !(outcome in ["raw", "bio", "rf"])
-    @warn "'outcome' invalid, must be either 'raw', 'bio' or 'rf'"
+    @warn "'outcome' not defined, must be either 'raw', 'bio', 'rf', or 'bart'"
+elseif !(outcome in ["raw", "bio", "rf", "bart"])
+    @warn "'outcome' invalid, must be either 'raw', 'bio', 'rf', or 'bart'"
 else
     @info "'outcome' currently set to '$(outcome)'"
 end
