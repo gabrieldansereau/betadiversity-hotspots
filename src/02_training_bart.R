@@ -17,8 +17,8 @@ source("src/lib/R/bart.R")
 
 # Conditional evaluations
 # subset_qc <- TRUE # subset to QC data (optional)
-create_models <- TRUE # train models
-save_models <- TRUE # save & overwrite models
+# create_models <- TRUE # train models
+# save_models <- TRUE # save & overwrite models
 
 
 ## 1. Load data ####
@@ -115,7 +115,7 @@ for (gp in seq_along(spe_groups)) {
 
     message(paste0("Training multi-species group (", gp, "/", length(spe_groups)), ")")
 
-    create_models <- TRUE
+    # create_models <- TRUE
     if (exists("create_models") && isTRUE(create_models)){
         set.seed(42)
         system.time(
@@ -238,6 +238,18 @@ for (gp in seq_along(spe_groups)) {
     pres_df_global[spe_splits[[gp]]] <- pres_df
 }
 )
+
+# Export to CSV
+# save_predictions <- TRUE
+if (exists("save_predictions") && isTRUE(save_predictions)) {
+    write_tsv(results_global, "data/proc/bart_summaries.csv")
+    write_tsv(varimps_global, "data/proc/bart_varimps.csv")
+    write_tsv(pred_df_global, "data/proc/bart_predictions_prob.csv")
+    write_tsv(lower_df_global, "data/proc/bart_predictions_lower.csv")
+    write_tsv(upper_df_global, "data/proc/bart_predictions_upper.csv")
+    write_tsv(pres_df_global, "data/proc/bart_predictions_pres.csv")
+}
+
 ## 5. Visualize results ####
 
 # Empty canvas
