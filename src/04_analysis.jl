@@ -78,7 +78,7 @@ lcbdtr_qplot = plotSDM(quantiles(lcbd), c=:viridis,
 # Plot relationship as histogram2d
 rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
                          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                         xlim = (1, 45), ylim = (0.0, 1.0), # dpi = 150
+                         xlim = (1, Inf), ylim = (0.0, 1.0), # dpi = 150
                          )
 
 
@@ -86,11 +86,11 @@ rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relat
 
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
-    @info "Figures saved ($(outcome)"
-    savefig(Yobs_plot,     joinpath("fig", outcome, "04-1_$(outcome)_Yobs.png"))
-    savefig(richness_plot, joinpath("fig", outcome, "04-2_$(outcome)_richness.png"))
-    savefig(lcbdtr_plot,   joinpath("fig", outcome, "04-3_$(outcome)_lcbd-transf.png"))
-    savefig(rel2d_plot,    joinpath("fig", outcome, "04-4_$(outcome)_relationship2d-transf.png"))
+    @info "Figures saved ($(outcome))"
+    savefig(plot(Yobs_plot, dpi = 300),     joinpath("fig", outcome, "04-1_$(outcome)_Yobs.png"))
+    savefig(plot(richness_plot, dpi = 300), joinpath("fig", outcome, "04-2_$(outcome)_richness.png"))
+    savefig(plot(lcbdtr_plot, dpi = 300),   joinpath("fig", outcome, "04-3_$(outcome)_lcbd-transf.png"))
+    savefig(plot(rel2d_plot, dpi = 300),    joinpath("fig", outcome, "04-4_$(outcome)_relationship2d-transf.png"))
 else
     @info "Figures not saved ($(outcome))"
 end
@@ -98,8 +98,8 @@ end
 # save_quantile_figures = true # should quantile figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Quantile figures saved ($(outcome))"
-    savefig(richness_qplot, joinpath("fig", "quantiles", "04-2_$(outcome)_richness_quantiles.png"))
-    savefig(lcbdtr_qplot,   joinpath("fig", "quantiles", "04-3_$(outcome)_lcbd-transf_quantiles.png"))
+    savefig(plot(richness_qplot, dpi = 300), joinpath("fig", "quantiles", "04-2_$(outcome)_richness_quantiles.png"))
+    savefig(plot(lcbdtr_qplot, dpi = 300),   joinpath("fig", "quantiles", "04-3_$(outcome)_lcbd-transf_quantiles.png"))
 else
     @info "Quantile figures not saved ($(outcome) richness)"
 end
