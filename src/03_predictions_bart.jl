@@ -26,6 +26,7 @@ using Distributed
 # save_data = true
 
 ## Perform BARTs
+#=
 @time begin
     R"""
     create_models <- FALSE
@@ -35,6 +36,16 @@ using Distributed
     """
 end
 @rget pred_df lower_df upper_df pres_df results
+=#
+
+# Load predictions from CSV
+results  = CSV.read(joinpath("data", "proc", "bart_summaries.csv"))
+varimps  = CSV.read(joinpath("data", "proc", "bart_varimps.csv"))
+pred_df  = CSV.read(joinpath("data", "proc", "bart_predictions_prob.csv"), missingstrings = ["NA"])
+lower_df = CSV.read(joinpath("data", "proc", "bart_predictions_lower.csv"), missingstrings = ["NA"])
+upper_df = CSV.read(joinpath("data", "proc", "bart_predictions_upper.csv"), missingstrings = ["NA"])
+pres_df  = CSV.read(joinpath("data", "proc", "bart_predictions_pres.csv"), missingstrings = ["NA"])
+
 
 ## Create Y matrices
 
