@@ -16,8 +16,9 @@ conflict_prefer("select", "dplyr")
 source("src/lib/R/bart.R")
 
 # Conditional evaluations
-subset_qc <- TRUE # subset to QC data (optional)
-# save_models <- TRUE # save & overwrite models
+# subset_qc <- TRUE # subset to QC data (optional)
+create_models <- TRUE # train models
+save_models <- TRUE # save & overwrite models
 
 
 ## 1. Load data ####
@@ -60,7 +61,8 @@ plot(vars_stack)
 message("Training multi-species models")
 
 # Split species in groups
-max_procs <- availableCores() - 1
+# max_procs <- availableCores() - 1
+max_procs <- 7
 spe_num <- 1:ncol(spe)
 spe_splits <- split(spe_num, ceiling(spe_num/max_procs))
 spe_groups <- map(spe_splits, ~ select(spe, all_of(.)))
@@ -130,7 +132,7 @@ for (gp in seq_along(spe_groups)) {
 
     # Export results
     # save_models <- TRUE
-    filepath <- paste0("data/proc/bart_models_qc", gp, ".RData")
+    filepath <- paste0("data/proc/bart_models", gp, ".RData")
     if (exists("save_models") && isTRUE(save_models)) {
         message("Saving models to RData")
         save(sdms, file = filepath)
@@ -226,8 +228,8 @@ for (gp in seq_along(spe_groups)) {
     pres_df
 
     # Export group results
-    sdms_list[[gp]] <- sdms
-    predictions_list[[gp]] <- predictions
+    # sdms_list[[gp]] <- sdms
+    # predictions_list[[gp]] <- predictions
     results_global[spe_splits[[gp]],] <- results
     varimps_global[spe_splits[[gp]]+1] <- varimps[,-1]
     pred_df_global[spe_splits[[gp]]] <- pred_df
