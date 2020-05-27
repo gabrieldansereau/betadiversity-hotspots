@@ -117,7 +117,7 @@ psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(window_full, joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_full.png"))
+    savefig(window_full, joinpath("fig", outcome, "06-0_$(outcome)_moving-windows_full.png"))
     savefig(psubareas,   joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"))
 end
 
