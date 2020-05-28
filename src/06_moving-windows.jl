@@ -4,14 +4,15 @@ using Distributed
 @time include("required.jl")
 
 ## Conditional arguments
-outcome = "rf"
+# outcome = "rf"
+outcome = "bart"
 # save_figures = true
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-    @warn "'outcome' not defined, must be either 'raw', 'bio' or 'rf'"
-elseif !(outcome in ["raw", "bio", "rf"])
-    @warn "'outcome' invalid, must be either 'raw', 'bio' or 'rf'"
+    @warn "'outcome' not defined, must be either 'raw', 'bio', 'rf', or 'bart'"
+elseif !(outcome in ["raw", "bio", "rf", "bart"])
+    @warn "'outcome' invalid, must be either 'raw', 'bio', 'rf', or 'bart'"
 else
     @info "'outcome' currently set to '$(outcome)'"
 end
@@ -116,7 +117,7 @@ psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(window_full, joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_full.png"))
+    savefig(window_full, joinpath("fig", outcome, "06-0_$(outcome)_moving-windows_full.png"))
     savefig(psubareas,   joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"))
 end
 

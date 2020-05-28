@@ -4,14 +4,15 @@ using Distributed
 @time include("required.jl")
 
 ## Conditional arguments
-outcome = "rf"
+# outcome = "rf"
+outcome = "bart"
 # save_figures = true
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
-    @warn "'outcome' not defined, must be either 'raw', 'bio' or 'rf'"
-elseif !(outcome in ["raw", "bio", "rf"])
-    @warn "'outcome' invalid, must be either 'raw', 'bio' or 'rf'"
+    @warn "'outcome' not defined, must be either 'raw', 'bio', 'rf', or 'bart'"
+elseif !(outcome in ["raw", "bio", "rf", "bart"])
+    @warn "'outcome' invalid, must be either 'raw', 'bio', 'rf', or 'bart'"
 else
     @info "'outcome' currently set to '$(outcome)'"
 end
@@ -58,16 +59,16 @@ function plot_lcbd_richness(richness, lcbd; title = "", kw...)
     return p
 end
 
-resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE, dpi = 150,
+resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE,
             title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
-resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW, dpi = 150,
+resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(resNEtr, joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
-    savefig(resSWtr, joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
+    savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
+    savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
 end
 
 #### Repeat for different subareas
