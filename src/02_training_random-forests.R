@@ -92,12 +92,14 @@ system.time(
 ranger_models
 
 # Combine results in dataframe
-rf_res <- tibble(
-    species = colnames(spe_train),
-    OOB = map_dbl(ranger_models, "prediction.error"),
-    error_rate_0 = map_dbl(ranger_models, ~ .x$confusion.matrix[3]/sum(.x$confusion.matrix[c(1,3)])),
-    error_rate_1 = map_dbl(ranger_models, ~ .x$confusion.matrix[2]/sum(.x$confusion.matrix[c(2,4)]))
-)
+rf_res <- ranger_models %>% {
+    tibble(
+        species = names(.),
+        OOB = map_dbl(., "prediction.error"),
+        error_rate_0 = map_dbl(., ~ .x$confusion.matrix[3]/sum(.x$confusion.matrix[c(1,3)])),
+        error_rate_1 = map_dbl(., ~ .x$confusion.matrix[2]/sum(.x$confusion.matrix[c(2,4)]))
+    )
+}
 rf_res
 
 # Plot results
@@ -126,12 +128,14 @@ ranger_confusion <- map2(
         positive = "1"
     )
 )
-rf_test_res <- tibble(
-    species = colnames(spe_test),
-    test_OOB = map_dbl(ranger_confusion, ~ 1 - .x$overall["Accuracy"]),
-    test_error_rate_0 = map_dbl(ranger_confusion, ~ 1 - .x$byClass["Specificity"]),
-    test_error_rate_1 = map_dbl(ranger_confusion, ~ 1 - .x$byClass["Sensitivity"])
-)
+rf_test_res <- ranger_confusion %>% {
+    tibble(
+        species = names(.),
+        OOB = 1 - map_dbl(., ~ .x$overall["Accuracy"]),
+        error_rate_0 = 1 - map_dbl(., ~ .x$byClass["Specificity"]),
+        error_rate_1 = 1 - map_dbl(., ~ .x$byClass["Sensitivity"])
+    )
+}
 rf_test_res
 
 # Compare training & validation errors
