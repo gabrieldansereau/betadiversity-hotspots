@@ -10,39 +10,63 @@ using Distributed
 using RCall
 begin
     R"""
+    ## 0. Load packages ####
+    library(conflicted)
+    library(tidyverse)
     library(ranger)
+    library(caret)
     library(pbapply)
 
-    ## Predict distributions for full range
-    env_full <- read.csv("data/proc/distributions_env_full.csv", header = TRUE, sep = "\t")
-    spa_full <- read.csv("data/proc/distributions_spa_full.csv", header = TRUE, sep = "\t")
+    # Resolve conflicts
+    conflict_prefer("filter", "dplyr")
+    conflict_prefer("intersect", "dplyr")
 
-    # Remove site column
-    env_full <- subset(env_full, select = -site)
-    spa_full <- subset(spa_full, select = -site)
+    # Conditional evaluations
+    # subset_qc <- TRUE # subset to QC data (optional)
+    # create_models <- TRUE # train models
+    # save_models <- TRUE # save & overwrite models
 
-    # Combine variables
-    vars_full <- cbind(env_full, spa_full)
-    head(vars_full)
+    ## 1. Load data ####
+
+    message("Loading & preparing data")
+
+    # Load data
+    spa_full <- read_tsv("data/proc/distributions_spa_full.csv")
+    env_full <- read_tsv("data/proc/distributions_env_full.csv")
+    spe      <- read_tsv("data/proc/distributions_spe_full.csv") 
+
+    # Load QC data (optional)
+    spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
+
+    # Prepare data
+    # subset_qc <- TRUE # subset to QC data (optional)
+    source("src/02_training_data-preparation.R")
 
     # Remove sites with NA values
-    inds_na <- sapply(env_full, function(x) which(is.na(x)))
+    inds_na <- map(env_full, ~ which(is.na(.x)))
     (inds_na <- sort(unique(unlist(inds_na))))
     vars_nona <- vars_full[-inds_na,]
 
     # Load model
     load("data/proc/rf_models.RData")
 
-    # Make predictions
-    system.time(rf_pred <- pblapply(ranger_models, function(x) predict(x, vars_nona)))
+    # Make prediction
+    system.time(
+        rf_pred <- pblapply(ranger_models, function(x) predict(x, vars_nona))
+    )
 
     # Extract predictions
-    predictions <- sapply(rf_pred, function(x) as.numeric(levels(x$predictions))[x$predictions])
+    predictions <- map(rf_pred, "predictions") %>% 
+        map_df(~ as.numeric(levels(.x))[.x])
 
     # Add sites with NAs
-    predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = length(ranger_models))
+    predictions_full <- matrix(
+        NA, 
+        nrow = nrow(vars_full), 
+        ncol = ncol(predictions)
+    )
     colnames(predictions_full) <- colnames(predictions)
-    predictions_full[-inds_na,] <- predictions
+    predictions_full[-inds_na,] <- as.matrix(predictions)
     """
 end
 @rget predictions predictions_full inds_na
