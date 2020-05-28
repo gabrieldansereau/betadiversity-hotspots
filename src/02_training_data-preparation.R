@@ -31,7 +31,7 @@ spe_full <- as_tibble(
 spe_full[inds_obs,] <- spe
 
 # Remove site with NAs for landcover variables
-(inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
+(inds_withNAs <- unique(unlist(map(env, ~ which(is.na(.x))))))
 if (length(inds_withNAs) > 0) {
     spe <- spe[-inds_withNAs,]
     spa <- spa[-inds_withNAs,]
@@ -48,8 +48,8 @@ spa  <- dplyr::select(spa, -site)
 vars <- dplyr::select(vars, -site)
 
 # Remove species without observations
-(inds_withoutobs <- c(which(sapply(spe, sum) == 0)))
-if (length(inds_withoutobs > 0)) {
-    spe <- subset(spe, select = -inds_withoutobs)
-    spe_full <- subset(spe_full, select = -inds_withoutobs)
+(spe_withoutobs <- names(which(colSums(spe) == 0)))
+if (length(spe_withoutobs > 0)) {
+    spe <- dplyr::select(spe, -all_of(spe_withoutobs))
+    spe_full <- dplyr::select(spe_full, -all_of(spe_withoutobs))
 }
