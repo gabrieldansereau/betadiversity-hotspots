@@ -93,19 +93,14 @@ results_global <- tibble(
     type_I = NaN,
     type_II = NaN
 )
-varimps_global <- matrix(
-    NaN,
-    nrow = length(xnames), ncol = ncol(spe),
-    dimnames = list(NULL, names(spe))
-) %>% 
-    as_tibble() %>% 
+varimps_global <- spe_full %>%
+    slice(seq_along(xnames)) %>% 
+    mutate_all(~ replace(.x, !is.nan(.), NaN)) %>% 
     mutate(vars = xnames) %>% 
-    select(vars, everything())
-pred_df_global <- matrix(
-    NaN,
-    nrow = nrow(vars_full), ncol = ncol(spe),
-    dimnames = list(NULL, names(spe))
-) %>% as_tibble()
+    select(vars, everything(), -site)
+pred_df_global <- spe_full %>% 
+    select(-site) %>% 
+    mutate_all(~ replace(.x, !is.nan(.), NaN))
 lower_df_global <- pred_df_global
 upper_df_global <- pred_df_global
 pres_df_global <- pred_df_global
@@ -147,14 +142,10 @@ for (gp in seq_along(spe_groups)) {
     summaries <-  future_map(sdms, summary_inner)
 
     # Organize as tibble
-    results <- tibble(
-        spe = names(summaries),
-        auc = map_dbl(summaries, "auc"),
-        threshold = map_dbl(summaries, "threshold"),
-        tss = map_dbl(summaries, "tss"),
-        type_I = map_dbl(summaries, "type_I"),
-        type_II = map_dbl(summaries, "type_II")
-    )
+    results <- summaries %>% 
+        map_df(`[`, c("auc", "threshold", "tss", "type_I", "type_II")) %>% 
+        mutate(spe = names(summaries)) %>% 
+        select(spe, everything())
     print(results, n = Inf)
     summary(results)
 
@@ -168,9 +159,10 @@ for (gp in seq_along(spe_groups)) {
         pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
         pivot_wider(spe, names_from = "vars", values_from = "varimp")
     varimps %>% 
-        pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
-        group_by(vars) %>% 
-        summarize(mean = mean(varimp)) %>% 
+        transmute(
+            vars = vars,
+            mean = rowMeans(select(., -vars))
+        ) %>% 
         arrange(desc(mean))
 
 

@@ -65,7 +65,7 @@ xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:
 sp_layer <- df_to_layer(x = sp_full[[1]], lons = vars_full$lon, lats = vars_full$lat)
 vars_layers <- map(
     vars_full[,xnames], 
-    function(x) df_to_layer(x, lons = vars_full$lon, lats = vars_full$lat)
+    ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
 )
 wc_layer <- vars_layers$wc1
 

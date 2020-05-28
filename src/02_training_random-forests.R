@@ -10,7 +10,7 @@ conflict_prefer("filter", "dplyr")
 conflict_prefer("intersect", "dplyr")
 
 # Conditional evaluations
-subset_qc <- TRUE # subset to QC data (optional)
+# subset_qc <- TRUE # subset to QC data (optional)
 # create_models <- TRUE # train models
 # save_models <- TRUE # save & overwrite models
 
