@@ -47,7 +47,7 @@ message("Creating layers")
 # Create raster layers
 vars_layers <- map(
     vars_full[,xnames], 
-    function(x) df_to_layer(x, lons = vars_full$lon, lats = vars_full$lat)
+    ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
 )
 wc_layer <- vars_layers$wc1
 
@@ -85,12 +85,14 @@ bart_parallel <- function(x.train, y.train, ...) {
 # Prepare global sets
 sdms_list <- list()
 predictions_list <- list()
-results_global <- matrix(
-    NaN, 
-    nrow = ncol(spe), ncol = 6, 
-    dimnames = list(NULL, c("spe", "auc", "treshold", "tss", "type_I", "type_II"))
-) %>% as_tibble()
-results_global$spe <- names(spe)
+results_global <- tibble(
+    spe = names(spe),
+    auc = NaN,
+    threshold = NaN,
+    tss = NaN,
+    type_I = NaN,
+    type_II = NaN
+)
 varimps_global <- matrix(
     NaN,
     nrow = length(xnames), ncol = ncol(spe),
@@ -121,8 +123,8 @@ for (gp in seq_along(spe_groups)) {
         system.time(
             sdms <- future_map(
                 spe_groups[[gp]],
-                function(x) bart_parallel(
-                    y.train = x,
+                ~ bart_parallel(
+                    y.train = .x,
                     x.train = vars[,xnames]
                 ),
                 .progress = TRUE
@@ -146,19 +148,19 @@ for (gp in seq_along(spe_groups)) {
 
     # Organize as tibble
     results <- tibble(
-        spe = names(sdms),
-        auc = map_dbl(summaries, function(x) x$auc),
-        threshold = map_dbl(summaries, function(x) x$threshold),
-        tss = map_dbl(summaries, function(x) x$tss),
-        type_I = map_dbl(summaries, function(x) x$type_I),
-        type_II = map_dbl(summaries, function(x) x$type_II)
+        spe = names(summaries),
+        auc = map_dbl(summaries, "auc"),
+        threshold = map_dbl(summaries, "threshold"),
+        tss = map_dbl(summaries, "tss"),
+        type_I = map_dbl(summaries, "type_I"),
+        type_II = map_dbl(summaries, "type_II")
     )
     print(results, n = Inf)
     summary(results)
 
     # Extract variable importance
     varimps <- map(sdms, varimp) %>% 
-        map_df(~ .$varimps) %>% 
+        map_df("varimps") %>% 
         mutate(vars = xnames) %>% 
         select(vars, everything())
     varimps
@@ -194,7 +196,7 @@ for (gp in seq_along(spe_groups)) {
 
     # Predictions
     pred_df <- predictions %>% 
-        map(~ .$layer.1) %>% 
+        map(~ .x$layer.1) %>% 
         stack() %>% 
         as.data.frame(xy = TRUE) %>% 
         as_tibble() %>% 
@@ -203,7 +205,7 @@ for (gp in seq_along(spe_groups)) {
     pred_df
     # Lower quantiles
     lower_df <- predictions %>% 
-        map(~ .$layer.2) %>% 
+        map(~ .x$layer.2) %>% 
         stack() %>% 
         as.data.frame(xy = TRUE) %>% 
         as_tibble() %>% 
@@ -212,7 +214,7 @@ for (gp in seq_along(spe_groups)) {
     lower_df
     # Upper quantiles
     upper_df <- predictions %>% 
-        map(~ .$layer.3) %>%
+        map(~ .x$layer.3) %>%
         stack() %>% 
         as.data.frame(xy = TRUE) %>%  
         as_tibble() %>% 
