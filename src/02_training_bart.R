@@ -1,7 +1,8 @@
 ## 0. Load packages ####
 library(conflicted)
-library(embarcadero)
 library(tidyverse)
+library(here)
+library(embarcadero)
 library(viridis)
 library(furrr)
 plan(multiprocess)
@@ -13,7 +14,7 @@ conflict_prefer("intersect", "dplyr")
 conflict_prefer("select", "dplyr")
 
 # Custom functions
-source("src/lib/R/bart.R")
+source(here("src", "lib", "R", "bart.R"))
 
 # Conditional evaluations
 # subset_qc <- TRUE # subset to QC data (optional)
@@ -26,16 +27,16 @@ source("src/lib/R/bart.R")
 message("Loading & preparing data")
 
 # Load data
-spa_full <- read_tsv("data/proc/distributions_spa_full.csv")
-env_full <- read_tsv("data/proc/distributions_env_full.csv")
-spe      <- read_tsv("data/proc/distributions_spe_full.csv") 
+spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
+env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
+spe      <- read_tsv(here("data", "proc", "distributions_spe_full.csv"))
 
 # Load QC data (optional)
-spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
+spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
 
 # Prepare data
 # subset_qc <- TRUE # subset to QC data (optional)
-source("src/02_training_data-preparation.R")
+source(here("src", "02_training_data-preparation.R"))
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
@@ -129,7 +130,7 @@ for (gp in seq_along(spe_groups)) {
 
     # Export results
     # save_models <- TRUE
-    filepath <- paste0("data/proc/bart_models", gp, ".RData")
+    filepath <- here("data", "proc", paste0("bart_models", gp, ".RData"))
     if (exists("save_models") && isTRUE(save_models)) {
         message("Saving models to RData")
         save(sdms, file = filepath)
@@ -236,12 +237,12 @@ for (gp in seq_along(spe_groups)) {
 # Export to CSV
 # save_predictions <- TRUE
 if (exists("save_predictions") && isTRUE(save_predictions)) {
-    write_tsv(results_global, "data/proc/bart_summaries.csv")
-    write_tsv(varimps_global, "data/proc/bart_varimps.csv")
-    write_tsv(pred_df_global, "data/proc/bart_predictions_prob.csv")
-    write_tsv(lower_df_global, "data/proc/bart_predictions_lower.csv")
-    write_tsv(upper_df_global, "data/proc/bart_predictions_upper.csv")
-    write_tsv(pres_df_global, "data/proc/bart_predictions_pres.csv")
+    write_tsv(results_global,  here("data", "proc", "bart_summaries.csv"))
+    write_tsv(varimps_global,  here("data", "proc", "bart_varimps.csv"))
+    write_tsv(pred_df_global,  here("data", "proc", "bart_predictions_prob.csv"))
+    write_tsv(lower_df_global, here("data", "proc", "bart_predictions_lower.csv"))
+    write_tsv(upper_df_global, here("data", "proc", "bart_predictions_upper.csv"))
+    write_tsv(pres_df_global,  here("data", "proc", "bart_predictions_pres.csv"))
 }
 
 ## 5. Visualize results ####

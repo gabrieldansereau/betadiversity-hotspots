@@ -13,6 +13,7 @@ begin
     ## 0. Load packages ####
     library(conflicted)
     library(tidyverse)
+    library(here)
     library(ranger)
     library(caret)
     library(pbapply)
@@ -31,16 +32,16 @@ begin
     message("Loading & preparing data")
 
     # Load data
-    spa_full <- read_tsv("data/proc/distributions_spa_full.csv")
-    env_full <- read_tsv("data/proc/distributions_env_full.csv")
-    spe      <- read_tsv("data/proc/distributions_spe_full.csv") 
+    spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
+    env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
+    spe      <- read_tsv(here("data", "proc", "distributions_spe_full.csv")) 
 
     # Load QC data (optional)
-    spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
+    spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
 
     # Prepare data
     # subset_qc <- TRUE # subset to QC data (optional)
-    source("src/02_training_data-preparation.R")
+    source(here("src", "02_training_data-preparation.R"))
 
     # Remove sites with NA values
     inds_na <- map(env_full, ~ which(is.na(.x)))
@@ -48,7 +49,7 @@ begin
     vars_nona <- vars_full[-inds_na,]
 
     # Load model
-    load("data/proc/rf_models.RData")
+    load(here("data", "proc", "rf_models.RData"))
 
     # Make prediction
     system.time(

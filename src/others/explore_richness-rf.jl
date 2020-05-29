@@ -1,7 +1,7 @@
 import Pkg
 Pkg.activate(".")
 using Distributed
-@time include("required.jl")
+@time include(joinpath("..", "required.jl"))
 
 ## Conditional arguments
 # save_figures = true
@@ -24,12 +24,15 @@ richness_values = Int64.(richness_raw.grid[inds_obs])
 @rput richness_values inds_obs
 begin
     R"""
+    library(conflicted)
+    library(tidyverse)
+    library(here)
     library(ranger)
-    spa <- read.csv("data/proc/distributions_spa.csv", header=TRUE, sep="\t")
-    env <- read.csv("data/proc/distributions_env.csv", header=TRUE, sep="\t")
+    spa <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
+    env <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
 
     # Remove site with NAs for landcover variables
-    (inds_withNAs <- unique(unlist(sapply(env, function(x) which(is.na(x))))))
+    (inds_withNAs <- unique(unlist(map(env, ~ which(is.na(.x))))))
     if (length(inds_withNAs) > 0) {
         richness_values <- richness_values[-inds_withNAs]
         spa <- spa[-inds_withNAs,]
@@ -37,7 +40,7 @@ begin
     }
 
     # Combine environmental variables
-    vars <- cbind(env, spa)
+    vars <- left_join(spa, env, by = "site")
 
     # Separate into training/testing datasets
     set.seed(42)
@@ -93,13 +96,13 @@ histogram(filter(!isnan, richness_diff.grid), bins = 20)
 begin
     R"""
     ## Predict distributions for full range
-    env_full <- read.csv("data/proc/distributions_env_full.csv", header = TRUE, sep = "\t")
-    spa_full <- read.csv("data/proc/distributions_spa_full.csv", header = TRUE, sep = "\t")
-    vars_full <- cbind(env_full, spa_full)
+    env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
+    spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
+    vars_full <- left_join(env_full, spa_full, by = "site")
     head(vars_full)
 
     # Remove sites with NA values
-    inds_na <- sapply(env_full, function(x) which(is.na(x)))
+    inds_na <- map(env_full, ~ which(is.na(.x)))
     (inds_na <- sort(unique(unlist(inds_na))))
     vars_nona <- vars_full[-inds_na,]
 

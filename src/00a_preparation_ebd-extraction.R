@@ -1,14 +1,17 @@
 #### Explore eBird Dataset ####
 # Mostly following tutorial from http://strimas.com/ebird-best-practices/
 
+library(conflicted)
 library(auk)
 library(lubridate)
 library(sf)
 library(gridExtra)
 library(tidyverse)
+library(here)
 
 # resolve namespace conflicts
-select <- dplyr::select
+conflict_prefer("filter", "dplyr")
+conflict_prefer("select", "dplyr")
 
 # Set ebd path
 # auk::auk_set_ebd_path("~/github/data/ebd/raw/")
@@ -17,11 +20,11 @@ select <- dplyr::select
 #### 1. Explore EBD Sample ####
 
 # Load data
-ebd_sample <- read.csv("../data/ebd/raw/ebd_sample.txt", header=T, sep="\t")
+ebd_sample <- read_tsv(here("..", "data", "ebd", "raw", "ebd_sample.txt"))
 
-# # Fix names format
-# names(ebd_sample) = gsub("\\.", "_", names(ebd_sample))
-# names(ebd_sample)
+# Fix names format
+names(ebd_sample) = gsub(" ", ".", names(ebd_sample))
+names(ebd_sample)
 
 # Check data
 head(ebd_sample)
@@ -59,11 +62,12 @@ ebd_filters
 # [1:97], [98:110], [14:110] all work
 
 # Export filtered data
-f_ebd <- "../data/ebd/processed/ebd_sample_test.csv"
+f_ebd <- here("..", "data", "ebd", "processed", "ebd_sample_test.csv")
 auk_filter(ebd_filters, file = f_ebd, overwrite = T)
 
 # Test exported file
-test <- read.csv("../data/ebd/processed/ebd_sample_test.csv", header = T, sep = "\t")
+test <- read_tsv(f_ebd)
+names(test) = gsub(" ", ".", names(test))
 head(test)
 table(test$SCIENTIFIC.NAME)
 table(test$PROTOCOL.TYPE)
@@ -102,8 +106,8 @@ ebd_sampling_filters <- ebd_sampling %>%
     auk_complete()
 ebd_sampling_filters
 # Export filtered data !!! SEVERAL HOURS !!!!
-f_ebd <- "../data/ebd/processed/ebd_warblers.csv"
-f_sampling <- "../data/ebd/processed/ebd_warblers_sampling.csv"
+f_ebd <- here("..", "data", "ebd", "processed", "ebd_warblers.csv")
+f_sampling <- here("..", "data", "ebd", "processed", "ebd_warblers_sampling.csv")
 auk_filter(ebd_filters, file = f_ebd, file_sampling = f_sampling)
 auk_filter(ebd_sampling_filters, file = f_sampling)
 # File is too big, needs to cut in terminal
@@ -127,7 +131,7 @@ bash_command_test
 # Run command
 system(bash_command_test)
 # Check result
-bash_test <- read.csv("../data/ebd/processed/rbashtest.csv", header = T, sep="\t")
+bash_test <- read_tsv(here("..", "data", "ebd", "processed", "rbashtest.csv"))
 head(bash_test)
 
 ## Run for full dataset
@@ -140,9 +144,11 @@ system(bash_command)
 proc.time() - ptm
 
 #### 5. Test exported file ####
-warblers <- read.csv("../data/ebd/processed/ebd_warblers_cut.csv", header = T, sep="\t")
+warblers <- read_tsv(here("..", "data", "ebd", "processed", "ebd_warblers_cut.csv"))
+names(warblers) = gsub(" ", ".", names(warblers))
 head(warblers)
-warblers_sampling <- read.csv("../data/ebd/processed/ebd_warblers_sampling.csv", header = T, sep = "\t")
+warblers_sampling <- read_tsv(here("..", "data", "ebd", "processed", "ebd_warblers_sampling.csv"))
+names(warblers_sampling) = gsub(" ", ".", names(warblers_sampling))
 head(warblers_sampling)
 
 # Check summary
@@ -207,8 +213,8 @@ warblers %>%
 
 #### 6. Zero-filling ####
 # library(auk)
-f_ebd <- "../data/ebd/processed/ebd_warblers_cut.csv"
-f_sampling <- "../data/ebd/processed/ebd_warblers_sampling.csv"
+f_ebd <- here("..", "data", "ebd", "processed", "ebd_warblers_cut.csv")
+f_sampling <- here("..", "data", "ebd", "processed", "ebd_warblers_sampling.csv")
 ebd_zf <- auk_zerofill(f_ebd, f_sampling, collapse = TRUE)
 
 ## Useful transformations
@@ -256,4 +262,4 @@ ebird <- ebd_zf_filtered %>%
            number_observers)
 
 ## Save to csv
-write_csv(ebird, "../data/ebd/processed/ebd_warblers_zf.csv", na = "")
+write_tsv(ebird, here("..", "data", "ebd", "processed", "ebd_warblers_zf.csv"), na = "")

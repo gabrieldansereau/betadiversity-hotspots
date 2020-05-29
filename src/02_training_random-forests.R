@@ -1,6 +1,7 @@
 ## 0. Load packages ####
 library(conflicted)
 library(tidyverse)
+library(here)
 library(ranger)
 library(caret)
 library(pbapply)
@@ -19,16 +20,16 @@ conflict_prefer("intersect", "dplyr")
 message("Loading & preparing data")
 
 # Load data
-spa_full <- read_tsv("data/proc/distributions_spa_full.csv")
-env_full <- read_tsv("data/proc/distributions_env_full.csv")
-spe      <- read_tsv("data/proc/distributions_spe_full.csv") 
+spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
+env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
+spe      <- read_tsv(here("data", "proc", "distributions_spe_full.csv")) 
 
 # Load QC data (optional)
-spa_qc <- read_tsv("data/proc/distributions_spa_qc.csv")
+spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
 
 # Prepare data
 # subset_qc <- TRUE # subset to QC data (optional)
-source("src/02_training_data-preparation.R")
+source(here("src", "02_training_data-preparation.R"))
 
 # Separate into training/testing datasets
 set.seed(42)
@@ -112,7 +113,7 @@ barplot(rf_res$error_rate_0, names.arg = rf_res$species)
 barplot(rf_res$error_rate_1, names.arg = rf_res$species)
 
 ## Export model
-save(ranger_models, file = "data/proc/rf_models.RData")
+save(ranger_models, file = here("data", "proc", "rf_models.RData"))
 
 ## Test ranger predictions
 # Make predictions
