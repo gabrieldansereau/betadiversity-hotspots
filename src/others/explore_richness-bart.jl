@@ -230,70 +230,36 @@ lcbd_plot = plotSDM(lcbd_bart, c = :viridis,
                     clim = (0,1),
                     )
 
-
-# Map richness difference
-richness_diff = similar(richness_raw)
-richness_diff.grid = abs.(richness_bart.grid .- richness_raw.grid)
-diff_plot = plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf),
-                    title = "Predicted richness - BART vs raw",
-                    colorbar_title = "Difference in predicted richness (absolute)",
-                    )
-histogram(filter(!isnan, richness_diff.grid), bins = 20)
-
-## Predictions for full range
-begin
-    R"""
-    # Remove sites with NA values
-    inds_na <- map(env_full, ~ which(is.na(.x)))
-    (inds_na <- sort(unique(unlist(inds_na))))
-    vars_nona <- vars_full[-inds_na,]
-
-    # Make predictions
-    predictions_full_scale <- predict(classif_model, vars_nona)$predictions
-
-    # Add sites with NAs
-    predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = 1)
-    colnames(predictions_full) <- colnames(predictions_full_scale)
-    predictions_full[-inds_na,] <- predictions_full_scale
-
-    """
-end
-
-@rget predictions_full
-
-# Arrange as layer
-replace!(predictions_full, missing => NaN)
-predictions_full = reshape(predictions_full, size(richness_raw.grid)) |> Array{Float64}
-richness_rf_full = similar(richness_raw)
-richness_rf_full.grid = predictions_full
-
-# Visualize result
-richness_plot_full = plotSDM(richness_rf_full, c = :viridis,
-                             title = "Richness RF predictions- All sites",
-                             colorbar_title = "Predicted number of species",
-                             )
-
-# Get comparison
-@load joinpath("data/", "jld2", "rf-distributions.jld2") distributions
+## Get full-scale comparison
+@load joinpath("data/", "jld2", "bart-distributions.jld2") distributions
 Ysdm = calculate_Y(distributions)
 richness_sdm = calculate_richness(Ysdm, distributions[1])
-plotSDM(richness_sdm, c = :viridis)
+lcbd_sdm = calculate_lcbd(Ysdm, distributions[1])
 
 # Map richness difference
-richness_diff_full = similar(richness_rf_full)
-richness_diff_full.grid = abs.(richness_rf_full.grid .- richness_sdm.grid)
-diff_plot_full = plotSDM(richness_diff_full, c = :inferno, clim = (-Inf, Inf),
-                         title = "Predicted richness - RF vs SDM",
+richness_diff = similar(richness_bart)
+richness_diff.grid = abs.(richness_bart.grid .- richness_sdm.grid)
+richness_diff_plot = plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf),
+                         title = "Predicted richness - BART vs SDM",
                          colorbar_title = "Difference in predicted richness (absolute)",
                          )
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
 
-## Export figures
-# save_figures = true
-if (@isdefined save_figures) && save_figures == true
-    savefig(plot(richness_plot, dpi = 150),      joinpath("fig", "raw", "x_raw_richness-rf.png"))
-    savefig(plot(richness_plot_full, dpi = 150), joinpath("fig", "rf",  "x_rf_richness-rf.png"))
+# Map LCBD difference
+lcbd_diff = similar(lcbd_bart)
+lcbd_diff.grid = abs.(lcbd_bart.grid .- lcbd_sdm.grid)
+lcbd_diff_plot = plotSDM(lcbd_diff, c = :inferno, clim = (-Inf, Inf),
+                         title = "Predicted LCBD - BART vs SDM",
+                         colorbar_title = "Difference in predicted LCBD (absolute)",
+                         )
+histogram(filter(!isnan, lcbd_diff.grid), bins = 20)
 
-    savefig(plot(diff_plot, dpi = 150),      joinpath("fig", "raw", "x_raw_richness-diff.png"))
-    savefig(plot(diff_plot_full, dpi = 150), joinpath("fig", "rf",  "x_rf_richness-diff.png"))
+## Export figures
+save_figures = true
+if (@isdefined save_figures) && save_figures == true
+    savefig(plot(richness_plot, dpi = 150), joinpath("fig", "bart", "x_bart_richness-bart.png"))
+    savefig(plot(lcbd_plot, dpi = 150),     joinpath("fig", "bart", "x_bart_lcbd-bart.png"))
+
+    savefig(plot(richness_diff_plot, dpi = 150), joinpath("fig", "bart", "x_bart_richness-diff.png"))
+    savefig(plot(lcbd_diff_plot, dpi = 150),     joinpath("fig", "bart", "x_bart_lcbd-diff.png"))
 end
