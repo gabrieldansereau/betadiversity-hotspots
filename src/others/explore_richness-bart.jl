@@ -1,13 +1,41 @@
 import Pkg
 Pkg.activate(".")
+using RCall
+begin
+    R"""
+    library(conflicted)
+    library(tidyverse)
+    library(here)
+    library(embarcadero)
+    library(viridis)
+    library(furrr)
+    plan(multiprocess)
+
+    # Resolve conflicts
+    conflict_prefer("filter", "dplyr")
+    conflict_prefer("intersect", "dplyr")
+    conflict_prefer("select", "dplyr")
+
+    # Custom functions
+    source(here("src", "lib", "R", "bart.R"))
+    """
+end
 using Distributed
 @time include(joinpath("..", "required.jl"))
 
 ## Conditional arguments
 # save_figures = true
+subset_qc = true
 
 ## Load distribution data for all species
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
+
+# Subset to QC data (optional)
+coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
+if (@isdefined subset_qc)
+    distributions = [d[coords_qc] for d in distributions]
+    @rput subset_qc
+end
 
 ## Richness
 Y = calculate_Y(distributions)
@@ -20,24 +48,10 @@ plotSDM(richness_raw, c = :viridis)
 inds_obs = _indsobs(Y)
 richness_values = Int64.(richness_raw.grid[inds_obs])
 
-## Train Random Forest
+## Train BART
 @rput richness_values inds_obs
 begin
     R"""
-    library(conflicted)
-    library(tidyverse)
-    library(here)
-    library(ranger)
-
-    # Resolve conflicts
-    conflict_prefer("filter", "dplyr")
-    conflict_prefer("intersect", "dplyr")
-
-    # Conditional evaluations
-    # subset_qc <- TRUE # subset to QC data (optional)
-    # create_models <- TRUE # train models
-    # save_models <- TRUE # save & overwrite models
-
     ## 1. Load data ####
 
     message("Loading & preparing data")
@@ -59,41 +73,68 @@ begin
         richness_values <- richness_values[-inds_withNAs]
     }
 
-    # Separate into training/testing datasets
-    set.seed(42)
-    inds_train <- sample(nrow(vars), 0.7*nrow(vars), replace = FALSE)
+    # Select variables
+    xnames <- select(vars, -c(lat, lon)) %>% names()
 
-    richness_train <- richness_values[inds_train]
-    vars_train <- vars[inds_train,]
+    ## 2. Create layers ####
 
-    richness_test <- richness_values[-inds_train]
-    vars_test <- vars[-inds_train,]
+    message("Creating layers")
+
+    # Create raster layers
+    vars_layers <- map(
+        vars_full[,xnames], 
+        ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
+    )
+    wc_layer <- vars_layers$wc1
+
+    # Stack variables layers
+    vars_stack <- stack(vars_layers, names = xnames)
+
+
+    ## 3. Model training ####
 
     # Train model
+    set.seed(42)
     system.time(
-        regress_model <- ranger(
-            richness_train ~ ., 
-            data = vars_train, 
-            importance = "impurity", 
-            seed = 42
+        model <- bart(
+            y.train = richness_values,
+            x.train = vars[,xnames],
+            keeptrees = TRUE
         )
-    )
+    ) # 90 sec.
+    invisible(model$fit$state)
+    summary(model)
+    varimp(model, plot = TRUE)
+
+
+    ## 4. Predictions ####
     system.time(
-        classif_model <- ranger(
-            richness_train ~ ., 
-            data = vars_train, 
-            classification = TRUE, 
-            importance = "impurity", 
-            seed = 42
+        predictions <- predict2.bart(
+            model,
+            vars_stack,
+            quantiles = c(0.025, 0.0975),
+            splitby = 20
         )
+    ) # 2 min.
+
+    # Plot results
+    plot(
+        predictions[[1]], 
+        main = 'Probability predictions - Posterior mean', 
+        col = viridis(255),
+        # zlim = c(0, 1),
+        legend.args=list(text='Probability', side=2, line=1.3),
+        box = FALSE, axes = FALSE
     )
-
-    regress_pred <- predict(regress_model, vars_test)$predictions
-    sum(round(regress_pred) == richness_test)/length(richness_test)
-
-    classif_pred <- predict(classif_model, vars_test)$predictions
-    sum(classif_pred == richness_test)/length(richness_test)
-
+    
+    plot(
+        predictions[[1]] < 1, 
+        main = 'Probability predictions - Posterior mean', 
+        col = viridis(255),
+        # zlim = c(0, 1),
+        legend.args=list(text='Probability', side=2, line=1.3),
+        box = FALSE, axes = FALSE
+    )
     """
 end
 
