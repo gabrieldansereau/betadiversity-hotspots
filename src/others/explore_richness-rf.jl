@@ -28,19 +28,36 @@ begin
     library(tidyverse)
     library(here)
     library(ranger)
-    spa <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
-    env <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
+
+    # Resolve conflicts
+    conflict_prefer("filter", "dplyr")
+    conflict_prefer("intersect", "dplyr")
+
+    # Conditional evaluations
+    # subset_qc <- TRUE # subset to QC data (optional)
+    # create_models <- TRUE # train models
+    # save_models <- TRUE # save & overwrite models
+
+    ## 1. Load data ####
+
+    message("Loading & preparing data")
+
+    # Load data
+    spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
+    env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
+    spe      <- read_tsv(here("data", "proc", "distributions_spe_full.csv"))
+
+    # Load QC data (optional)
+    spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
+
+    # Prepare data
+    # subset_qc <- TRUE # subset to QC data (optional)
+    source(here("src", "02_training_data-preparation.R"))
 
     # Remove site with NAs for landcover variables
-    (inds_withNAs <- unique(unlist(map(env, ~ which(is.na(.x))))))
     if (length(inds_withNAs) > 0) {
         richness_values <- richness_values[-inds_withNAs]
-        spa <- spa[-inds_withNAs,]
-        env <- env[-inds_withNAs,]
     }
-
-    # Combine environmental variables
-    vars <- left_join(spa, env, by = "site")
 
     # Separate into training/testing datasets
     set.seed(42)
@@ -53,8 +70,23 @@ begin
     vars_test <- vars[-inds_train,]
 
     # Train model
-    system.time(regress_model <- ranger(richness_train ~ ., data = vars_train, importance = "impurity", seed = 42))
-    system.time(classif_model <- ranger(as.factor(richness_train) ~ ., data = vars_train, importance = "impurity", seed = 42))
+    system.time(
+        regress_model <- ranger(
+            richness_train ~ ., 
+            data = vars_train, 
+            importance = "impurity", 
+            seed = 42
+        )
+    )
+    system.time(
+        classif_model <- ranger(
+            richness_train ~ ., 
+            data = vars_train, 
+            classification = TRUE, 
+            importance = "impurity", 
+            seed = 42
+        )
+    )
 
     regress_pred <- predict(regress_model, vars_test)$predictions
     sum(round(regress_pred) == richness_test)/length(richness_test)
@@ -69,7 +101,6 @@ end
 begin
     R"""
     predictions <- predict(classif_model, vars)$predictions
-    predictions <- as.numeric(levels(predictions))[predictions]
     """
 end
 @rget predictions inds_withNAs
@@ -81,7 +112,7 @@ richness_rf.grid[inds_obs[Not(inds_withNAs)]] = predictions
 richness_plot = plotSDM(richness_rf, c = :viridis,
                         title = "Richness RF predictions - Observed sites",
                         colorbar_title = "Predicted number of species",
-                        dpi = 150)
+                        )
 
 # Map richness difference
 richness_diff = similar(richness_raw)
@@ -89,31 +120,24 @@ richness_diff.grid = abs.(richness_rf.grid .- richness_raw.grid)
 diff_plot = plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf),
                     title = "Predicted richness - RF vs raw",
                     colorbar_title = "Difference in predicted richness (absolute)",
-                    dpi = 150)
+                    )
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
 
 ## Predictions for full range
 begin
     R"""
-    ## Predict distributions for full range
-    env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
-    spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
-    vars_full <- left_join(env_full, spa_full, by = "site")
-    head(vars_full)
-
     # Remove sites with NA values
     inds_na <- map(env_full, ~ which(is.na(.x)))
     (inds_na <- sort(unique(unlist(inds_na))))
     vars_nona <- vars_full[-inds_na,]
 
     # Make predictions
-    predictions <- predict(classif_model, vars_nona)$predictions
-    predictions <- as.numeric(levels(predictions))[predictions]
+    predictions_full_scale <- predict(classif_model, vars_nona)$predictions
 
     # Add sites with NAs
     predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = 1)
-    colnames(predictions_full) <- colnames(predictions)
-    predictions_full[-inds_na,] <- predictions
+    colnames(predictions_full) <- colnames(predictions_full_scale)
+    predictions_full[-inds_na,] <- predictions_full_scale
 
     """
 end
@@ -130,12 +154,12 @@ richness_rf_full.grid = predictions_full
 richness_plot_full = plotSDM(richness_rf_full, c = :viridis,
                              title = "Richness RF predictions- All sites",
                              colorbar_title = "Predicted number of species",
-                             dpi = 150)
+                             )
 
 # Get comparison
 @load joinpath("data/", "jld2", "rf-distributions.jld2") distributions
-sdm = calculate_Y(distributions)
-richness_sdm = calculate_richness(Y, distributions[1])
+Ysdm = calculate_Y(distributions)
+richness_sdm = calculate_richness(Ysdm, distributions[1])
 plotSDM(richness_sdm, c = :viridis)
 
 # Map richness difference
@@ -144,15 +168,15 @@ richness_diff_full.grid = abs.(richness_rf_full.grid .- richness_sdm.grid)
 diff_plot_full = plotSDM(richness_diff_full, c = :inferno, clim = (-Inf, Inf),
                          title = "Predicted richness - RF vs SDM",
                          colorbar_title = "Difference in predicted richness (absolute)",
-                         dpi = 150)
+                         )
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
 
 ## Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(richness_plot, joinpath("fig", "raw", "10_raw_richness-rf.png"))
-    savefig(richness_plot_full, joinpath("fig", "rf", "10_rf_richness-rf.png"))
+    savefig(plot(richness_plot, dpi = 150),      joinpath("fig", "raw", "x_raw_richness-rf.png"))
+    savefig(plot(richness_plot_full, dpi = 150), joinpath("fig", "rf",  "x_rf_richness-rf.png"))
 
-    savefig(diff_plot, joinpath("fig", "raw", "10_raw_richness-diff.png"))
-    savefig(diff_plot_full, joinpath("fig", "rf", "10_rf_richness-diff.png"))
+    savefig(plot(diff_plot, dpi = 150),      joinpath("fig", "raw", "x_raw_richness-diff.png"))
+    savefig(plot(diff_plot_full, dpi = 150), joinpath("fig", "rf",  "x_rf_richness-diff.png"))
 end
