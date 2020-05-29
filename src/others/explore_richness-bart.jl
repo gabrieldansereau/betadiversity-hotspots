@@ -40,16 +40,20 @@ end
 ## Richness
 Y = calculate_Y(distributions)
 richness_raw = calculate_richness(Y, distributions[1])
+lcbd_raw = calculate_lcbd(Y, distributions[1])
 
 # Visualize
 plotSDM(richness_raw, c = :viridis)
+plotSDM(lcbd_raw, c = :viridis)
+histogram2d(richness_raw, lcbd_raw, c = :viridis, bin = 40, ylim = (0.0, 1.0))
 
 ## Extract values for model
 inds_obs = _indsobs(Y)
 richness_values = Int64.(richness_raw.grid[inds_obs])
+lcbd_values = lcbd_raw.grid[inds_obs]
 
 ## Train BART
-@rput richness_values inds_obs
+@rput richness_values lcbd_values inds_obs
 begin
     R"""
     ## 1. Load data ####
@@ -71,6 +75,7 @@ begin
     # Remove site with NAs for landcover variables
     if (length(inds_withNAs) > 0) {
         richness_values <- richness_values[-inds_withNAs]
+        lcbd_values <- lcbd_values[-inds_withNAs]
     }
 
     # Select variables
@@ -93,45 +98,82 @@ begin
 
     ## 3. Model training ####
 
+    # Group richness & lcbd
+    values_df <- tibble(
+        richness = richness_values,
+        lcbd = lcbd_values
+    )
+    
+    # Function to run BART in parallel
+    bart_parallel <- function(...) {
+        # BART model
+        model <- bart(...)
+        # Touch state so that saving will work
+        invisible(model$fit$state)
+        return(model)
+    }
+
     # Train model
     set.seed(42)
     system.time(
-        model <- bart(
-            y.train = richness_values,
-            x.train = vars[,xnames],
-            keeptrees = TRUE
+        models <- future_map(
+            values_df,
+            ~ bart_parallel(
+                y.train = .x,
+                x.train = vars[,xnames],
+                keeptrees = TRUE
+            )
         )
     ) # 90 sec.
-    invisible(model$fit$state)
-    summary(model)
-    varimp(model, plot = TRUE)
+    summary(models[[1]]) # not working for regression models
+    varimp(models[[1]], plot = TRUE)
+    varimps <-  map_dfr(models, varimp, .id = "value") %>% 
+        rename(vars = names)
+    varimps %>% 
+        pivot_wider(names_from = "value", values_from = "varimps") %>% 
+        mutate(diff = richness - lcbd)
+    ggplot(varimps, aes(vars)) + 
+        geom_bar(aes(weight = varimps, fill = value)) #, position = "dodge2")
 
+    ggplot(varimps, aes(vars, varimps)) + 
+        geom_boxplot(aes(colour = value))
 
     ## 4. Predictions ####
     system.time(
-        predictions <- predict2.bart(
-            model,
-            vars_stack,
-            quantiles = c(0.025, 0.0975),
-            splitby = 20
+        predictions <- future_map(
+            models,
+            ~ predict2.bart(
+                .x,
+                vars_stack,
+                quantiles = c(0.025, 0.0975),
+                splitby = 20
+            )
         )
     ) # 2 min.
 
-    # Plot results
+    # Plot richness
     plot(
-        predictions[[1]], 
+        predictions$richness[[1]], 
         main = 'Probability predictions - Posterior mean', 
         col = viridis(255),
         # zlim = c(0, 1),
         legend.args=list(text='Probability', side=2, line=1.3),
         box = FALSE, axes = FALSE
     )
-    
+    # Negative richness??
     plot(
-        predictions[[1]] < 1, 
+        predictions$richness[[1]] < 1, 
         main = 'Probability predictions - Posterior mean', 
         col = viridis(255),
         # zlim = c(0, 1),
+        legend.args=list(text='Probability', side=2, line=1.3),
+        box = FALSE, axes = FALSE
+    )
+    plot(
+        predictions$lcbd[[1]], 
+        main = 'Probability predictions - Posterior mean', 
+        col = viridis(255),
+        zlim = c(0, 1),
         legend.args=list(text='Probability', side=2, line=1.3),
         box = FALSE, axes = FALSE
     )
