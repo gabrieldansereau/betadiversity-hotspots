@@ -25,7 +25,7 @@ using Distributed
 
 ## Conditional arguments
 # save_figures = true
-subset_qc = true
+# subset_qc = true
 
 ## Load distribution data for all species
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
@@ -125,7 +125,6 @@ begin
             )
         )
     ) # 90 sec.
-    summary(models[[1]]) # not working for regression models
     varimp(models[[1]], plot = TRUE)
     varimps <-  map_dfr(models, varimp, .id = "value") %>% 
         rename(vars = names)
@@ -177,31 +176,66 @@ begin
         legend.args=list(text='Probability', side=2, line=1.3),
         box = FALSE, axes = FALSE
     )
-    """
-end
 
-## Extract Random Forest predictions for observed sites
-begin
-    R"""
-    predictions <- predict(classif_model, vars)$predictions
+    # Predictions
+    pred_df <- predictions %>% 
+        map(~ .x$layer.1) %>% 
+        stack() %>% 
+        as.data.frame(xy = TRUE) %>% 
+        as_tibble() %>% 
+        arrange(x, y) %>% 
+        select(-c(x, y))
+    pred_df
+    # Lower quantiles
+    lower_df <- predictions %>% 
+        map(~ .x$layer.2) %>% 
+        stack() %>% 
+        as.data.frame(xy = TRUE) %>% 
+        as_tibble() %>% 
+        arrange(x, y) %>% 
+        select(-c(x, y))
+    lower_df
+    # Upper quantiles
+    upper_df <- predictions %>% 
+        map(~ .x$layer.3) %>%
+        stack() %>% 
+        as.data.frame(xy = TRUE) %>%  
+        as_tibble() %>% 
+        arrange(x, y) %>% 
+        select(-c(x, y))
+    upper_df
     """
 end
-@rget predictions inds_withNAs
+@rget pred_df lower_df upper_df
+
+# Fix missing values
+predictions = replace(Array(pred_df), missing => NaN)
+lower = replace(Array(pred_df), missing => NaN)
+upper = replace(Array(pred_df), missing => NaN)
 
 ## Plot predicted richness
-richness_rf = similar(richness_raw)
-richness_rf.grid[inds_obs[Not(inds_withNAs)]] = predictions
-
-richness_plot = plotSDM(richness_rf, c = :viridis,
-                        title = "Richness RF predictions - Observed sites",
+richness_bart = similar(richness_raw)
+richness_bart.grid[:] = predictions[:, 1]
+richness_plot = plotSDM(richness_bart, c = :viridis,
+                        title = "Richness BART predictions",
                         colorbar_title = "Predicted number of species",
                         )
 
+## Plot predicted LCBD
+lcbd_bart = similar(lcbd_raw)
+lcbd_bart.grid[:] = predictions[:, 2]
+lcbd_plot = plotSDM(lcbd_bart, c = :viridis,
+                    title = "LCBD BART predictions",
+                    colorbar_title = "LCBD scores",
+                    clim = (0,1),
+                    )
+
+
 # Map richness difference
 richness_diff = similar(richness_raw)
-richness_diff.grid = abs.(richness_rf.grid .- richness_raw.grid)
+richness_diff.grid = abs.(richness_bart.grid .- richness_raw.grid)
 diff_plot = plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf),
-                    title = "Predicted richness - RF vs raw",
+                    title = "Predicted richness - BART vs raw",
                     colorbar_title = "Difference in predicted richness (absolute)",
                     )
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
