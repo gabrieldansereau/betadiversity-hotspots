@@ -21,7 +21,7 @@ spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
 
 # Prepare data
 # subset_qc <- TRUE # subset to QC data (optional)
-source(here("src", "02_training_data-preparation.R"))
+source(here("src", "02a_training_data-preparation.R"))
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))

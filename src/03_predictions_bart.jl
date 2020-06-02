@@ -19,7 +19,7 @@ using Distributed
     create_models <- FALSE
     save_models <- FALSE
 
-    source(here("src", "02_training_bart.R"))
+    source(here("src", "02c_training_bart.R"))
     """
 end
 @rget pred_df lower_df upper_df pres_df results

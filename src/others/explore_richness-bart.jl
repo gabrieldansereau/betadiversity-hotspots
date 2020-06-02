@@ -3,21 +3,7 @@ Pkg.activate(".")
 using RCall
 begin
     R"""
-    library(conflicted)
-    library(tidyverse)
-    library(here)
-    library(embarcadero)
-    library(viridis)
-    library(furrr)
-    plan(multiprocess)
-
-    # Resolve conflicts
-    conflict_prefer("filter", "dplyr")
-    conflict_prefer("intersect", "dplyr")
-    conflict_prefer("select", "dplyr")
-
-    # Custom functions
-    source(here("src", "lib", "R", "bart.R"))
+    source(file.path("src", "required.R"))
     """
 end
 using Distributed
@@ -70,7 +56,7 @@ begin
 
     # Prepare data
     # subset_qc <- TRUE # subset to QC data (optional)
-    source(here("src", "02_training_data-preparation.R"))
+    source(here("src", "02a_training_data-preparation.R"))
 
     # Remove site with NAs for landcover variables
     if (length(inds_withNAs) > 0) {

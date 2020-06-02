@@ -46,7 +46,7 @@ begin
 
     # Prepare data
     # subset_qc <- TRUE # subset to QC data (optional)
-    source(here("src", "02_training_data-preparation.R"))
+    source(here("src", "02a_training_data-preparation.R"))
 
     # Remove site with NAs for landcover variables
     if (length(inds_withNAs) > 0) {

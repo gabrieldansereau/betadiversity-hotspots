@@ -32,7 +32,7 @@ begin
 
     # Prepare data
     # subset_qc <- TRUE # subset to QC data (optional)
-    source(here("src", "02_training_data-preparation.R"))
+    source(here("src", "02a_training_data-preparation.R"))
 
     # Remove sites with NA values
     inds_na <- map(env_full, ~ which(is.na(.x)))

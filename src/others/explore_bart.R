@@ -18,7 +18,7 @@ spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
 
 # Prepare data
 # subset_qc <- TRUE # subset to QC data (optional)
-source(here("src", "02_training_data-preparation.R"))
+source(here("src", "02a_training_data-preparation.R"))
 
 # Check prepared data
 spa_full
