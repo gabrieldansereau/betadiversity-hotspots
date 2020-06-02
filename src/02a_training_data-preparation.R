@@ -1,4 +1,21 @@
-## Data preparation ####
+#### Data preparation ####
+
+message("Loading & preparing data")
+
+# subset_qc <- TRUE
+
+## 1. Load data ####
+
+# Load full range data
+spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
+env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
+spe      <- read_tsv(here("data", "proc", "distributions_spe_full.csv"))
+
+# Load QC data (optional)
+spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
+
+
+## 2. Prepare data ####
 
 # Select observed sites only
 sites_obs <- spe$site
