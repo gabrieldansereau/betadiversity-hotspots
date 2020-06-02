@@ -47,11 +47,11 @@ lcbd_pred.grid[:] = predictions[:, 2]
 
 ## Plot predictions
 richness_plot = plotSDM(richness_pred, c = :viridis,
-                        title = "Richness $(uppercase(outcome)) predictions",
+                        title = "Direct richness predictions ($(uppercase(outcome)))",
                         colorbar_title = "Predicted number of species",
                         )
 lcbd_plot = plotSDM(lcbd_pred, c = :viridis,
-                    title = "LCBD $(uppercase(outcome)) predictions",
+                    title = "Direct LCBD predictions ($(uppercase(outcome)))",
                     colorbar_title = "LCBD scores",
                     clim = (0,1),
                     )
@@ -59,27 +59,27 @@ lcbd_plot = plotSDM(lcbd_pred, c = :viridis,
 ## Map richness difference
 richness_diff = similar(richness_pred)
 richness_diff.grid = abs.(richness_pred.grid .- richness_sdm.grid)
+histogram(filter(!isnan, richness_diff.grid), bins = 20)
 richness_diff_plot = plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf),
-                         title = "Predicted richness - $(uppercase(outcome)) vs SDM",
+                         title = "Direct richness predictions difference ($(uppercase(outcome)))",
                          colorbar_title = "Difference in predicted richness (absolute)",
                          )
-histogram(filter(!isnan, richness_diff.grid), bins = 20)
 
 ## Map LCBD difference
 lcbd_diff = similar(lcbd_pred)
 lcbd_diff.grid = abs.(lcbd_pred.grid .- lcbd_sdm.grid)
+histogram(filter(!isnan, lcbd_diff.grid), bins = 20)
 lcbd_diff_plot = plotSDM(lcbd_diff, c = :inferno, clim = (-Inf, Inf),
-                         title = "Predicted LCBD - $(uppercase(outcome)) vs SDM",
+                         title = "Direct richness predictions difference ($(uppercase(outcome)))",
                          colorbar_title = "Difference in predicted LCBD (absolute)",
                          )
-histogram(filter(!isnan, lcbd_diff.grid), bins = 20)
 
 ## Export figures
-save_figures = true
+# save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(plot(richness_plot, dpi = 150), joinpath("fig", "bart", "x_$(outcome)_richness-bart.png"))
-    savefig(plot(lcbd_plot, dpi = 150),     joinpath("fig", "bart", "x_$(outcome)_lcbd-bart.png"))
+    savefig(plot(richness_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_direct-richness.png"))
+    savefig(plot(lcbd_plot, dpi = 150),     joinpath("fig", outcome, "x_$(outcome)_direct-lcbd.png"))
 
-    savefig(plot(richness_diff_plot, dpi = 150), joinpath("fig", "bart", "x_$(outcome)_richness-diff.png"))
-    savefig(plot(lcbd_diff_plot, dpi = 150),     joinpath("fig", "bart", "x_$(outcome)_lcbd-diff.png"))
+    savefig(plot(richness_diff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness.png"))
+    savefig(plot(lcbd_diff_plot, dpi = 150),     joinpath("fig", outcome, "x_$(outcome)_diff-lcbd.png"))
 end
