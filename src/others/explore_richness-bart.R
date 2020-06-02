@@ -12,6 +12,9 @@ subset_qc <- TRUE # subset to QC data (optional)
 # Load data
 source(here("src", "02a_training_data-preparation.R"))
 
+# Get richness values
+richness_values <- rowSums(spe)
+
 # Remove site with NAs for landcover variables
 if (length(inds_withNAs) > 0) {
     richness_values <- richness_values[-inds_withNAs]

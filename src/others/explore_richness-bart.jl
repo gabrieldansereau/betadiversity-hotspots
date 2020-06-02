@@ -52,6 +52,29 @@ begin
         richness_values <- richness_values[-inds_withNAs]
         lcbd_values <- lcbd_values[-inds_withNAs]
     }
+    
+    # Get richness values
+    richness_values <- rowSums(spe)
+    
+    # Get LCBD values
+    library(vegan)
+    spe_transf <- decostand(spe, "hel")
+    # S -> squared deviations from column mean
+    S <- (spe_transf - colMeans(spe_transf))^2
+    sp <- spe_transf[1:3,]
+    sp - colMeans(sp)
+    S <- map_df(spe_transf, ~ (.x - mean(.x))^2)
+    # SStotal -> total sum of squares
+    SStotal <- sum(S)
+    # SSi -> sum of squares for site i
+    SSi <- rowSums(S)
+    # LCBD -> local contribution to beta diversity (site i, relative)
+    lcbd_values_R <- SSi/SStotal
+    lcbd_values_R <- lcbd_values_R/max(lcbd_values_R)
+
+    length(lcbd_values_R) == length(lcbd_values)
+    sum(round(lcbd_values_R, 3) == round(lcbd_values, 3))
+    
 
     # Select variables
     xnames <- select(vars, -c(lat, lon)) %>% names()
