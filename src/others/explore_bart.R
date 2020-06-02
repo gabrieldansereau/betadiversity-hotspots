@@ -1,20 +1,5 @@
 ## 0. Load packages ####
-library(conflicted)
-library(tidyverse)
-library(here)
-library(embarcadero)
-library(viridis)
-library(furrr)
-plan(multiprocess)
-
-# Resolve conflicts
-conflict_scout()
-conflict_prefer("filter", "dplyr")
-conflict_prefer("intersect", "dplyr")
-conflict_prefer("select", "dplyr")
-
-# Custom functions
-source(here("src", "lib", "R", "bart.R"))
+source(file.path("src", "required.R"))
 
 # Conditional evaluations
 # subset_qc <- TRUE # subset to QC data (optional)

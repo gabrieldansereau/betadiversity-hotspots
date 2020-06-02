@@ -24,14 +24,8 @@ richness_values = Int64.(richness_raw.grid[inds_obs])
 @rput richness_values inds_obs
 begin
     R"""
-    library(conflicted)
-    library(tidyverse)
-    library(here)
-    library(ranger)
-
-    # Resolve conflicts
-    conflict_prefer("filter", "dplyr")
-    conflict_prefer("intersect", "dplyr")
+    ## Load packages
+    source(file.path("src", "required.R"))
 
     # Conditional evaluations
     # subset_qc <- TRUE # subset to QC data (optional)

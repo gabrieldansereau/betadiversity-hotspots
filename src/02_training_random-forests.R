@@ -1,14 +1,5 @@
 ## 0. Load packages ####
-library(conflicted)
-library(tidyverse)
-library(here)
-library(ranger)
-library(caret)
-library(pbapply)
-
-# Resolve conflicts
-conflict_prefer("filter", "dplyr")
-conflict_prefer("intersect", "dplyr")
+source(file.path("src", "required.R"))
 
 # Conditional evaluations
 # subset_qc <- TRUE # subset to QC data (optional)

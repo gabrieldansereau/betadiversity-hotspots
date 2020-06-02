@@ -1,16 +1,11 @@
-library(conflicted)
-library(tidyverse)
-library(here)
-library(embarcadero)
-library(viridis)
-library(furrr)
-plan(multiprocess)
-# Resolve conflicts
-conflict_prefer("filter", "dplyr")
-conflict_prefer("intersect", "dplyr")
-conflict_prefer("select", "dplyr")
-# Custom functions
-source(here("src", "lib", "R", "bart.R"))
+#### Species richness BART model ####
+
+## 0. Load packages ####
+source(file.path("src", "required.R"))
+
+# Conditional evaluations
+subset_qc <- TRUE # subset to QC data (optional)
+# save_models <- TRUE # save & overwrite models
 
 ## 1. Load data ####
 
@@ -27,6 +22,8 @@ spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
 # Prepare data
 # subset_qc <- TRUE # subset to QC data (optional)
 source(here("src", "02_training_data-preparation.R"))
+
+
 
 # Remove site with NAs for landcover variables
 if (length(inds_withNAs) > 0) {
