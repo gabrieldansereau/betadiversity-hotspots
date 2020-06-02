@@ -160,3 +160,6 @@ upper_df <- predictions %>%
     arrange(x, y) %>% 
     select(-c(x, y))
 upper_df
+
+# Combine results in list
+results <- list(predictions = pred_df, lower = lower_df, upper = upper_df)

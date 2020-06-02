@@ -63,9 +63,12 @@ inds_na <- map(env_full, ~ which(is.na(.x)))
 vars_nona <- vars_full[-inds_na,]
 
 # Make predictions
-predictions_full_scale <- predict(classif_model, vars_nona)$predictions
+predictions_nona <- predict(classif_model, vars_nona)$predictions
 
 # Add sites with NAs
-predictions_full <- matrix(NA, nrow = nrow(vars_full), ncol = 1)
-colnames(predictions_full) <- colnames(predictions_full_scale)
-predictions_full[-inds_na,] <- predictions_full_scale
+predictions <- matrix(NA, nrow = nrow(vars_full), ncol = 1)
+colnames(predictions) <- colnames(predictions_nona)
+predictions[-inds_na,] <- predictions_nona
+
+# Put final result in list
+results <- list(predictions = predictions)

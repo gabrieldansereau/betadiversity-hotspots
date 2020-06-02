@@ -20,12 +20,10 @@ end
     source(here("src", "others", "explore_richness-bart.R"))
     """
 end
-@rget pred_df lower_df upper_df
+@rget results
 
 ## Fix missing values
-predictions = replace(Array(pred_df), missing => NaN)
-lower = replace(Array(pred_df), missing => NaN)
-upper = replace(Array(pred_df), missing => NaN)
+predictions = replace(Array(results[:predictions]), missing => NaN)
 
 ## Get full-scale comparisons
 @load joinpath("data", "jld2", "bart-distributions.jld2") distributions
