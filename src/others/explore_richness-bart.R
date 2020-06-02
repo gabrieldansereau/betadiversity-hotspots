@@ -7,7 +7,7 @@ source(file.path("src", "required.R"))
 subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
-## 1. Load data ####
+## 1. Prepare data ####
 
 # Load data
 source(here("src", "02a_training_data-preparation.R"))
@@ -15,14 +15,27 @@ source(here("src", "02a_training_data-preparation.R"))
 # Get richness values
 richness_values <- rowSums(spe)
 
-# Remove site with NAs for landcover variables
+# Get LCBD values
+# Apply Hellinger transformation
+spe_transf <- vegan::decostand(spe_full[inds_obs,-1], "hel")
+# S -> squared deviations from column mean
+S <- map_df(spe_transf, ~ (.x - mean(.x))^2)
+# SStotal -> total sum of squares
+SStotal <- sum(S)
+# SSi -> sum of squares for site i
+SSi <- rowSums(S)
+# LCBD -> local contribution to beta diversity (site i, relative)
+lcbd_values <- SSi/SStotal
+# Set values relative to maximum
+lcbd_values <- lcbd_values/max(lcbd_values)
+# Remove sites with NaN for landcover variables
 if (length(inds_withNAs) > 0) {
-    richness_values <- richness_values[-inds_withNAs]
     lcbd_values <- lcbd_values[-inds_withNAs]
 }
 
 # Select variables
 xnames <- select(vars, -c(lat, lon)) %>% names()
+
 
 ## 2. Create layers ####
 
