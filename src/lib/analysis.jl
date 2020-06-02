@@ -50,8 +50,7 @@ function _Ytransf(Yobs)
     @rput Yobs
     begin
         R"""
-            library(vegan)
-            Ytransf <- decostand(Yobs, "hel")
+            Ytransf <- vegan::decostand(Yobs, "hel")
         """
     end
     @rget Ytransf
