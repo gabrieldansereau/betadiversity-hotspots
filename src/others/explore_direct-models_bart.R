@@ -4,7 +4,7 @@
 source(file.path("src", "required.R"))
 
 # Conditional evaluations
-subset_qc <- TRUE # subset to QC data (optional)
+# subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
 ## 1. Prepare data ####

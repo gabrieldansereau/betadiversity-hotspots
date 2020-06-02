@@ -4,7 +4,7 @@
 source(file.path("src", "required.R"))
 
 # Conditional evaluations
-subset_qc <- TRUE # subset to QC data (optional)
+# subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
 
@@ -67,7 +67,7 @@ system.time(
 
 # Check accuracy
 pred_test <- map_df(models, ~ predict(.x, vars_test)$predictions)
-sum(round(regress_pred) == richness_test)/length(richness_test)
+sum(round(pred_test$richness) == values_test$richness)/length(values_test$richness)
 
 
 ## 3. Full-scale predictions ####
