@@ -61,7 +61,6 @@ vars_full <- left_join(spa_full, env_full, by = "site")
 # Remove site column
 spe  <- dplyr::select(spe, -site)
 env  <- dplyr::select(env, -site)
-spa  <- dplyr::select(spa, -site)
 vars <- dplyr::select(vars, -site)
 
 # Remove species without observations
