@@ -4,7 +4,7 @@
 source(file.path("src", "required.R"))
 
 # Conditional evaluations
-# subset_qc <- TRUE # subset to QC data (optional)
+subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
 ## 1. Prepare data ####
@@ -35,6 +35,7 @@ if (length(inds_withNAs) > 0) {
 
 # Select variables
 xnames <- select(vars, -c(lat, lon)) %>% names()
+xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:10)))
 
 
 ## 2. Create layers ####
@@ -92,6 +93,68 @@ ggplot(varimps, aes(vars)) +
 
 ggplot(varimps, aes(vars, varimps)) + 
     geom_boxplot(aes(colour = value))
+
+
+## x. Variable selection ####
+
+# Stepwise variable reduction
+set.seed(42)
+system.time(
+    step_vars <- variable.step(
+        y.data = values_df[[1]], 
+        x.data = env[xnames], 
+        iter = 20
+    )
+) # 3.5 min with 20 trees
+step_xvars20_qc <- c("wc1", "wc2", "wc5", "wc6", "wc15", "lc2", "lc3", "lc8")
+
+# Train new model
+set.seed(42)
+sdm_step <- bart(y.train = values_df[[1]], x.train = env[step_vars], keeptrees = TRUE)
+summary(sdm_step)
+summary(sdm)
+
+# One step selection
+set.seed(42)
+system.time(
+    full_step <- bart.step(
+        y.data = values_df[[1]], 
+        x.data = env[xnames],
+        iter.step = 10,
+        full = FALSE
+    )
+) # Error with ROCR on regression model
+
+# Custom function
+bart.step_custom <- function(x.data, y.data, iter = 50, ...) {
+    # Variable selection
+    step_vars <- variable.step(y.data = y.data, x.data = x.data, iter = iter)
+    # Model on selected variables
+    step_model <- bart(y.train = y.data, x.train = x.data[step_vars], keeptrees = TRUE, ...)
+    # Touch state so that saving will work
+    invisible(step_model$fit$state)
+    return(step_model)
+}
+set.seed(42)
+system.time(
+    full_step <- bart.step_custom(
+        y.data = values_df[[1]], 
+        x.data = env[xnames], 
+        iter = 10
+    )
+)
+set.seed(42)
+system.time(
+    step_models <- future_map(
+        values_df,
+        ~ bart.step_custom(
+            y.data = .x, 
+            x.data = env[xnames], 
+            iter = 10
+        )
+    )
+)
+step_vars <- attr(step_models[[1]]$fit$data@x, "term.labels")
 
 ## 4. Predictions ####
 system.time(
