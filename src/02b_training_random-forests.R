@@ -1,14 +1,5 @@
 ## 0. Load packages ####
-library(conflicted)
-library(tidyverse)
-library(here)
-library(ranger)
-library(caret)
-library(pbapply)
-
-# Resolve conflicts
-conflict_prefer("filter", "dplyr")
-conflict_prefer("intersect", "dplyr")
+source(file.path("src", "required.R"))
 
 # Conditional evaluations
 # subset_qc <- TRUE # subset to QC data (optional)
@@ -17,19 +8,8 @@ conflict_prefer("intersect", "dplyr")
 
 ## 1. Load data ####
 
-message("Loading & preparing data")
-
 # Load data
-spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
-env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
-spe      <- read_tsv(here("data", "proc", "distributions_spe_full.csv")) 
-
-# Load QC data (optional)
-spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
-
-# Prepare data
-# subset_qc <- TRUE # subset to QC data (optional)
-source(here("src", "02_training_data-preparation.R"))
+source(here("src", "02a_training_data-preparation.R"))
 
 # Separate into training/testing datasets
 set.seed(42)

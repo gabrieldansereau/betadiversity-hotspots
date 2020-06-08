@@ -1,25 +1,8 @@
+#### 03c - BART predictions ####
 import Pkg
 Pkg.activate(".")
 using RCall
-begin
-    R"""
-    library(conflicted)
-    library(tidyverse)
-    library(here)
-    library(embarcadero)
-    library(viridis)
-    library(furrr)
-    plan(multiprocess)
-
-    # Resolve conflicts
-    conflict_prefer("filter", "dplyr")
-    conflict_prefer("intersect", "dplyr")
-    conflict_prefer("select", "dplyr")
-
-    # Custom functions
-    source(here("src", "lib", "R", "bart.R"))
-    """
-end
+R"source(file.path('src', 'required.R'))"; # bug with `velox` if not called here
 using Distributed
 @time include("required.jl")
 
@@ -33,7 +16,7 @@ using Distributed
     create_models <- FALSE
     save_models <- FALSE
 
-    source(here("src", "02_training_bart.R"))
+    source(here("src", "02c_training_bart.R"))
     """
 end
 @rget pred_df lower_df upper_df pres_df results

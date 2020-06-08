@@ -1,20 +1,5 @@
 ## 0. Load packages ####
-library(conflicted)
-library(tidyverse)
-library(here)
-library(embarcadero)
-library(viridis)
-library(furrr)
-plan(multiprocess)
-
-# Resolve conflicts
-conflict_scout()
-conflict_prefer("filter", "dplyr")
-conflict_prefer("intersect", "dplyr")
-conflict_prefer("select", "dplyr")
-
-# Custom functions
-source(here("src", "lib", "R", "bart.R"))
+source(file.path("src", "required.R"))
 
 # Conditional evaluations
 # subset_qc <- TRUE # subset to QC data (optional)
@@ -24,19 +9,8 @@ source(here("src", "lib", "R", "bart.R"))
 
 ## 1. Load data ####
 
-message("Loading & preparing data")
-
 # Load data
-spa_full <- read_tsv(here("data", "proc", "distributions_spa_full.csv"))
-env_full <- read_tsv(here("data", "proc", "distributions_env_full.csv"))
-spe      <- read_tsv(here("data", "proc", "distributions_spe_full.csv"))
-
-# Load QC data (optional)
-spa_qc <- read_tsv(here("data", "proc", "distributions_spa_qc.csv"))
-
-# Prepare data
-# subset_qc <- TRUE # subset to QC data (optional)
-source(here("src", "02_training_data-preparation.R"))
+source(here("src", "02a_training_data-preparation.R"))
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
