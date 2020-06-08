@@ -95,69 +95,6 @@ ggplot(varimps, aes(vars, varimps)) +
     geom_boxplot(aes(colour = value))
 
 
-## x. Variable selection ####
-
-# Stepwise variable reduction
-set.seed(42)
-system.time(
-    step_vars <- variable.step(
-        y.data = values_df[[1]], 
-        x.data = env[xnames], 
-        iter = 50
-    )
-) # 3.5 min with 20 trees
-step_xvars20_qc <- c("wc1", "wc2", "wc5", "wc6", "wc15", "lc2", "lc3", "lc8")
-step_xvars50_full <- c("wc5", "wc6", "wc15")
-step_xvars50_full_alternative <- c("wc1", "wc2", "wc5", "wc6", "wc15", "lc3", "lc8", "lc7")
-
-# Train new model
-set.seed(42)
-sdm_step <- bart(y.train = values_df[[1]], x.train = env[step_vars], keeptrees = TRUE)
-summary(sdm_step)
-summary(sdm)
-
-# One step selection
-set.seed(42)
-system.time(
-    full_step <- bart.step(
-        y.data = values_df[[1]], 
-        x.data = env[xnames],
-        iter.step = 10,
-        full = FALSE
-    )
-) # Error with ROCR on regression model
-
-# Custom function
-bart.step_custom <- function(x.data, y.data, iter = 50, ...) {
-    # Variable selection
-    step_vars <- variable.step(y.data = y.data, x.data = x.data, iter = iter)
-    # Model on selected variables
-    step_model <- bart(y.train = y.data, x.train = x.data[step_vars], keeptrees = TRUE, ...)
-    # Touch state so that saving will work
-    invisible(step_model$fit$state)
-    return(step_model)
-}
-set.seed(42)
-system.time(
-    full_step <- bart.step_custom(
-        y.data = values_df[[1]], 
-        x.data = env[xnames], 
-        iter = 10
-    )
-)
-set.seed(42)
-system.time(
-    step_models <- future_map(
-        values_df,
-        ~ bart.step_custom(
-            y.data = .x, 
-            x.data = env[xnames], 
-            iter = 10
-        )
-    )
-)
-step_vars <- attr(step_models[[1]]$fit$data@x, "term.labels")
-
 ## 4. Predictions ####
 system.time(
     predictions <- future_map(
@@ -228,3 +165,67 @@ upper_df
 
 # Combine results in list
 results <- list(predictions = pred_df, lower = lower_df, upper = upper_df)
+
+
+## x. Variable selection ####
+
+# Stepwise variable reduction
+set.seed(42)
+system.time(
+    step_vars <- variable.step(
+        y.data = values_df[[1]], 
+        x.data = env[xnames], 
+        iter = 50
+    )
+) # 3.5 min with 20 trees
+step_xvars20_qc <- c("wc1", "wc2", "wc5", "wc6", "wc15", "lc2", "lc3", "lc8")
+step_xvars50_full <- c("wc5", "wc6", "wc15")
+step_xvars50_full_alternative <- c("wc1", "wc2", "wc5", "wc6", "wc15", "lc3", "lc8", "lc7")
+
+# Train new model
+set.seed(42)
+sdm_step <- bart(y.train = values_df[[1]], x.train = env[step_vars], keeptrees = TRUE)
+summary(sdm_step)
+summary(sdm)
+
+# One step selection
+set.seed(42)
+system.time(
+    full_step <- bart.step(
+        y.data = values_df[[1]], 
+        x.data = env[xnames],
+        iter.step = 10,
+        full = FALSE
+    )
+) # Error with ROCR on regression model
+
+# Custom function
+bart.step_custom <- function(x.data, y.data, iter = 50, ...) {
+    # Variable selection
+    step_vars <- variable.step(y.data = y.data, x.data = x.data, iter = iter)
+    # Model on selected variables
+    step_model <- bart(y.train = y.data, x.train = x.data[step_vars], keeptrees = TRUE, ...)
+    # Touch state so that saving will work
+    invisible(step_model$fit$state)
+    return(step_model)
+}
+set.seed(42)
+system.time(
+    full_step <- bart.step_custom(
+        y.data = values_df[[1]], 
+        x.data = env[xnames], 
+        iter = 10
+    )
+)
+set.seed(42)
+system.time(
+    step_models <- future_map(
+        values_df,
+        ~ bart.step_custom(
+            y.data = .x, 
+            x.data = env[xnames], 
+            iter = 10
+        )
+    )
+)
+step_vars <- attr(step_models[[1]]$fit$data@x, "term.labels")
