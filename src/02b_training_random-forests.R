@@ -93,7 +93,7 @@ barplot(rf_res$error_rate_0, names.arg = rf_res$species)
 barplot(rf_res$error_rate_1, names.arg = rf_res$species)
 
 ## Export model
-save(ranger_models, file = here("data", "proc", "rf_models.RData"))
+save(ranger_models, file = here("data", "rdata", "rf_models.RData"))
 
 ## Test ranger predictions
 # Make predictions

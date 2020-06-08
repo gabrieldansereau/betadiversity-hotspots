@@ -104,7 +104,7 @@ for (gp in seq_along(spe_groups)) {
 
     # Export results
     # save_models <- TRUE
-    filepath <- here("data", "proc", paste0("bart_models", gp, ".RData"))
+    filepath <- here("data", "rdata", paste0("bart_models", gp, ".RData"))
     if (exists("save_models") && isTRUE(save_models)) {
         message("Saving models to RData")
         save(sdms, file = filepath)

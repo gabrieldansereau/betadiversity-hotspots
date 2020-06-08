@@ -30,7 +30,7 @@ begin
     vars_nona <- vars_full[-inds_na,]
 
     # Load model
-    load(here("data", "proc", "rf_models.RData"))
+    load(here("data", "rdata", "rf_models.RData"))
 
     # Make prediction
     system.time(
