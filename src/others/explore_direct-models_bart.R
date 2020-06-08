@@ -4,7 +4,7 @@
 source(file.path("src", "required.R"))
 
 # Conditional evaluations
-subset_qc <- TRUE # subset to QC data (optional)
+# subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
 ## 1. Prepare data ####
@@ -103,10 +103,12 @@ system.time(
     step_vars <- variable.step(
         y.data = values_df[[1]], 
         x.data = env[xnames], 
-        iter = 20
+        iter = 50
     )
 ) # 3.5 min with 20 trees
 step_xvars20_qc <- c("wc1", "wc2", "wc5", "wc6", "wc15", "lc2", "lc3", "lc8")
+step_xvars50_full <- c("wc5", "wc6", "wc15")
+step_xvars50_full_alternative <- c("wc1", "wc2", "wc5", "wc6", "wc15", "lc3", "lc8", "lc7")
 
 # Train new model
 set.seed(42)
