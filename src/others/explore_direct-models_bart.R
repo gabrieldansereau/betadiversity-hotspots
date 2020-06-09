@@ -229,3 +229,36 @@ system.time(
     )
 )
 step_vars <- attr(step_models[[1]]$fit$data@x, "term.labels")
+
+
+## x. Partial dependence plots ####
+
+embarcadero::partial(models$richness, x.vars = "wc1", trace = FALSE)
+# Not working with continuous data ??
+embarcadero::partial(models$lcbd, x.vars = "wc1", trace = FALSE)
+# Ok, works only for values between 0-1 ?? Is there a way to change y-axis ??
+system.time(
+    partdep <- future_map(
+        names(select(env, all_of(xnames), -lc6)),
+        ~ embarcadero::partial(
+            models$lcbd, 
+            x.vars = .x,
+            equal = TRUE,
+            smooth = 1, # less smoothing is faster
+            ci = TRUE,
+            trace = FALSE # bugs if not set to FALSE in my case
+        ),
+        .progress = TRUE
+    )
+) # 2.5 min for QC data, peak at 25 GB Ram...
+names(partdep) <- names(select(env, all_of(xnames), -lc6))
+partdep[[11]]
+par(mfrow = c(2,2))
+partdep[[1]]
+# How to plot these side by side ??
+plot(predictions[[1]]$layer.1)
+# Oh now it's working ??
+par(mfrow = c(1,1))
+
+spartdep <- spartial(models$lcbd, vars_stack[[xnames]], x.vars="wc1", equal=TRUE)
+plot(spartdep)
