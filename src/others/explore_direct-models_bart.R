@@ -253,13 +253,18 @@ system.time(
     )
 ) # 2.5 min for QC data, peak at 25 GB Ram...
 names(partdep) <- xnames_valid
-partdep[[11]]
-par(mfrow = c(2,2))
-partdep[[1]]
-# How to plot these side by side ??
-plot(predictions[[1]]$layer.1)
-# Oh now it's working ??
-par(mfrow = c(1,1))
+# Why is it a list of lists? Let's have a list of plots
+partdep <- map(partdep, 1)
+partdep$wc1
+
+# Combine 2 plots
+gridExtra::grid.arrange(partdep_nolist$wc1, partdep_nolist$wc12, ncol = 2)
+cowplot::plot_grid(partdep$wc1, partdep$wc12)
+partdep$wc1 + partdep$wc12
+# Combine all plots
+gridExtra::grid.arrange(plotlist = partdep) # not working
+cowplot::plot_grid(plotlist = partdep)
+patchwork::wrap_plots(plotlist = partdep)
 
 # Spartial dependence plots
 spartdep <- future_map(
