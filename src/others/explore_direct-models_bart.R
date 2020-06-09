@@ -4,7 +4,7 @@
 source(file.path("src", "required.R"))
 
 # Conditional evaluations
-# subset_qc <- TRUE # subset to QC data (optional)
+subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
 ## 1. Prepare data ####
@@ -237,9 +237,10 @@ embarcadero::partial(models$richness, x.vars = "wc1", trace = FALSE)
 # Not working with continuous data ??
 embarcadero::partial(models$lcbd, x.vars = "wc1", trace = FALSE)
 # Ok, works only for values between 0-1 ?? Is there a way to change y-axis ??
+xnames_valid <- names(select(env, all_of(xnames), -lc6))
 system.time(
     partdep <- future_map(
-        names(select(env, all_of(xnames), -lc6)),
+        xnames_valid,
         ~ embarcadero::partial(
             models$lcbd, 
             x.vars = .x,
@@ -251,7 +252,7 @@ system.time(
         .progress = TRUE
     )
 ) # 2.5 min for QC data, peak at 25 GB Ram...
-names(partdep) <- names(select(env, all_of(xnames), -lc6))
+names(partdep) <- xnames_valid
 partdep[[11]]
 par(mfrow = c(2,2))
 partdep[[1]]
@@ -260,5 +261,13 @@ plot(predictions[[1]]$layer.1)
 # Oh now it's working ??
 par(mfrow = c(1,1))
 
-spartdep <- spartial(models$lcbd, vars_stack[[xnames]], x.vars="wc1", equal=TRUE)
-plot(spartdep)
+# Spartial dependence plots
+spartdep <- future_map(
+    xnames_valid,
+    ~ spartial(models$lcbd, vars_stack[[xnames]], x.vars=.x, equal=TRUE),
+    .progress = TRUE
+)
+names(spartdep) <- xnames_valid
+spartdep_stack <- stack(spartdep)
+plot(spartdep_stack)
+plot(spartdep[[1]])
