@@ -57,10 +57,19 @@ lcbd_plot = plotSDM(lcbd_pred, c = :viridis,
                     )
 
 ## Map richness difference
+# Difference
 richness_diff = similar(richness_pred)
-richness_diff.grid = abs.(richness_pred.grid .- richness_sdm.grid)
+richness_diff.grid = richness_pred.grid .- richness_sdm.grid
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
-richness_diff_plot = plotSDM(richness_diff, c = :inferno, clim = (-Inf, Inf),
+richness_diff_plot = plotSDM(richness_diff, c = :diverging, clim = (-30, 30),
+                             title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                             colorbar_title = "Difference in predicted richness",
+                             )
+# Absolute difference
+richness_absdiff = copy(richness_diff)
+replace!(x -> !isnan(x) ? abs(x) : x, richness_absdiff.grid)
+histogram(filter(!isnan, richness_absdiff.grid), bins = 20)
+richness_absdiff_plot = plotSDM(richness_absdiff, c = :inferno, clim = (-Inf, Inf),
                          title = "Direct richness predictions difference ($(uppercase(outcome)))",
                          colorbar_title = "Difference in predicted richness (absolute)",
                          )
@@ -81,5 +90,6 @@ if (@isdefined save_figures) && save_figures == true
     savefig(plot(lcbd_plot, dpi = 150),     joinpath("fig", outcome, "x_$(outcome)_direct-lcbd.png"))
 
     savefig(plot(richness_diff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness.png"))
-    savefig(plot(lcbd_diff_plot, dpi = 150),     joinpath("fig", outcome, "x_$(outcome)_diff-lcbd.png"))
+    savefig(plot(richness_absdiff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness-abs.png"))
+    savefig(plot(lcbd_diff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-lcbd.png"))
 end
