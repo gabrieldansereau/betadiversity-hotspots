@@ -29,21 +29,23 @@ end
 ## Fix missing values
 predictions = replace(Array(results[:predictions]), missing => NaN)
 
-## Get full-scale comparisons
+## Get comparison layers
+@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
+raw_distributions = distributions
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
+sdm_distributions = distributions
 if (@isdefined subset_qc) && subset_qc == true
     coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
-    distributions = [d[coords_qc] for d in distributions]
+    raw_distributions = [d[coords_qc] for d in raw_distributions]
+    sdm_distributions = [d[coords_qc] for d in sdm_distributions]
 end
-Ysdm = calculate_Y(distributions)
-richness_sdm = calculate_richness(Ysdm, distributions[1])
-lcbd_sdm = calculate_lcbd(Ysdm, distributions[1])
 
 ## Arrange predictions as layers
-richness_pred = similar(richness_sdm)
+richness_pred = similar(sdm.richness)
 richness_pred.grid[:] = predictions[:, 1]
-lcbd_pred = similar(lcbd_sdm)
+lcbd_pred = similar(sdm.lcbd)
 lcbd_pred.grid[:] = predictions[:, 2]
+pred = (richness = richness_pred, lcbd = lcbd_pred)
 
 ## Plot predictions
 richness_plot = plotSDM(richness_pred, c = :viridis,
@@ -58,46 +60,47 @@ lcbd_plot = plotSDM(lcbd_pred, c = :viridis,
 
 ## Plot differences
 
+# Get comparisons richness & lcbd
+Yraw = calculate_Y(raw_distributions)
+Ysdm = calculate_Y(sdm_distributions)
+raw, sdm = [(richness = calculate_richness(Y, raw_distributions[1]),
+             lcbd = calculate_lcbd(Y, raw_distributions[1])) for Y in (Yraw, Ysdm)]
+
 # Custom function
-function plot_difference(prediction, comparison; absolute = false, hist = false, kw...)
+function difference(prediction, comparison; absolute = false)
     # Calculate difference
-    difference = similar(prediction)
-    difference.grid = prediction.grid .- comparison.grid
+    diff_layer = similar(prediction)
+    diff_layer.grid = prediction.grid .- comparison.grid
     # Get absolute values (optional)
     if absolute
-        replace!(x -> !isnan(x) ? abs(x) : x, difference.grid)
+        replace!(x -> !isnan(x) ? abs(x) : x, diff_layer.grid)
     end
-
-    # Plot difference
-    if hist # as a histogram (optional)
-        diff_hist = histogram(filter(!isnan, difference.grid); kw...)
-        return diff_hist
-    else # as a heatmap (default)
-        diff_plot = plotSDM(difference; kw...)
-        return diff_plot
-    end
+    return diff_layer
 end
 
 # Richness difference
-richness_diff = plot_difference(richness_pred, richness_sdm;
-                            c = :diverging, clim = (-30, 30),
-                            title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                            colorbar_title = "Difference from SDM-predicted richness",
-                            )
-richness_absdiff = plot_difference(richness_pred, richness_sdm;
-                               absolute = true,
-                               c = :inferno, clim = (-Inf, Inf),
-                               title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                               colorbar_title = "Difference from SDM-predicted richness (absolute)",
-                               )
+richness_diff = plotSDM(difference(pred.richness, raw.richness),
+                        c = :diverging, clim = (-30, 30),
+                        title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                        colorbar_title = "Difference from raw richness",
+                        )
+richness_diff = plotSDM(difference(pred.richness, sdm.richness),
+                        c = :diverging, clim = (-30, 30),
+                        title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                        colorbar_title = "Difference from SDM-predicted richness",
+                        )
+richness_absdiff = plotSDM(difference(pred.richness, sdm.richness; absolute = true),
+                           c = :inferno, clim = (-Inf, Inf),
+                           title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                           colorbar_title = "Difference from SDM-predicted richness (absolute)",
+                           )
 
 # LCBD difference
-lcbd_diff = plot_difference(lcbd_pred, lcbd_sdm,
-                            absolute = true,
-                            c = :inferno, clim = (-Inf, Inf),
-                            title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                            colorbar_title = "Difference in predicted LCBD (absolute)",
-                            )
+lcbd_diff = plotSDM(difference(pred.lcbd, sdm.lcbd; absolute = true),
+                    c = :inferno, clim = (-Inf, Inf),
+                    title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                    colorbar_title = "Difference in predicted LCBD (absolute)",
+                    )
 
 ## Export figures
 # save_figures = true
