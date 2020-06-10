@@ -63,7 +63,7 @@ richness_diff.grid = richness_pred.grid .- richness_sdm.grid
 histogram(filter(!isnan, richness_diff.grid), bins = 20)
 richness_diff_plot = plotSDM(richness_diff, c = :diverging, clim = (-30, 30),
                              title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                             colorbar_title = "Difference in predicted richness",
+                             colorbar_title = "Difference from SDM-predicted richness",
                              )
 # Absolute difference
 richness_absdiff = copy(richness_diff)
@@ -71,7 +71,7 @@ replace!(x -> !isnan(x) ? abs(x) : x, richness_absdiff.grid)
 histogram(filter(!isnan, richness_absdiff.grid), bins = 20)
 richness_absdiff_plot = plotSDM(richness_absdiff, c = :inferno, clim = (-Inf, Inf),
                          title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                         colorbar_title = "Difference in predicted richness (absolute)",
+                         colorbar_title = "Difference from SDM-predicted richness (absolute)",
                          )
 
 ## Map LCBD difference
