@@ -56,32 +56,48 @@ lcbd_plot = plotSDM(lcbd_pred, c = :viridis,
                     clim = (0,1),
                     )
 
-## Map richness difference
-# Difference
-richness_diff = similar(richness_pred)
-richness_diff.grid = richness_pred.grid .- richness_sdm.grid
-histogram(filter(!isnan, richness_diff.grid), bins = 20)
-richness_diff_plot = plotSDM(richness_diff, c = :diverging, clim = (-30, 30),
-                             title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                             colorbar_title = "Difference from SDM-predicted richness",
-                             )
-# Absolute difference
-richness_absdiff = copy(richness_diff)
-replace!(x -> !isnan(x) ? abs(x) : x, richness_absdiff.grid)
-histogram(filter(!isnan, richness_absdiff.grid), bins = 20)
-richness_absdiff_plot = plotSDM(richness_absdiff, c = :inferno, clim = (-Inf, Inf),
-                         title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                         colorbar_title = "Difference from SDM-predicted richness (absolute)",
-                         )
+## Plot differences
 
-## Map LCBD difference
-lcbd_diff = similar(lcbd_pred)
-lcbd_diff.grid = abs.(lcbd_pred.grid .- lcbd_sdm.grid)
-histogram(filter(!isnan, lcbd_diff.grid), bins = 20)
-lcbd_diff_plot = plotSDM(lcbd_diff, c = :inferno, clim = (-Inf, Inf),
-                         title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                         colorbar_title = "Difference in predicted LCBD (absolute)",
-                         )
+# Custom function
+function plot_difference(prediction, comparison; absolute = false, hist = false, kw...)
+    # Calculate difference
+    difference = similar(prediction)
+    difference.grid = prediction.grid .- comparison.grid
+    # Get absolute values (optional)
+    if absolute
+        replace!(x -> !isnan(x) ? abs(x) : x, difference.grid)
+    end
+
+    # Plot difference
+    if hist # as a histogram (optional)
+        diff_hist = histogram(filter(!isnan, difference.grid); kw...)
+        return diff_hist
+    else # as a heatmap (default)
+        diff_plot = plotSDM(difference; kw...)
+        return diff_plot
+    end
+end
+
+# Richness difference
+richness_diff = plot_difference(richness_pred, richness_sdm;
+                            c = :diverging, clim = (-30, 30),
+                            title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                            colorbar_title = "Difference from SDM-predicted richness",
+                            )
+richness_absdiff = plot_difference(richness_pred, richness_sdm;
+                               absolute = true,
+                               c = :inferno, clim = (-Inf, Inf),
+                               title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                               colorbar_title = "Difference from SDM-predicted richness (absolute)",
+                               )
+
+# LCBD difference
+lcbd_diff = plot_difference(lcbd_pred, lcbd_sdm,
+                            absolute = true,
+                            c = :inferno, clim = (-Inf, Inf),
+                            title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                            colorbar_title = "Difference in predicted LCBD (absolute)",
+                            )
 
 ## Export figures
 # save_figures = true
