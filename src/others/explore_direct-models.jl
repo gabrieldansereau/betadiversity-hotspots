@@ -41,18 +41,18 @@ if (@isdefined subset_qc) && subset_qc == true
 end
 
 ## Arrange predictions as layers
-richness_pred = similar(sdm.richness)
+richness_pred = copy(raw_distributions[1])
 richness_pred.grid[:] = predictions[:, 1]
-lcbd_pred = similar(sdm.lcbd)
+lcbd_pred = copy(raw_distributions[1])
 lcbd_pred.grid[:] = predictions[:, 2]
 pred = (richness = richness_pred, lcbd = lcbd_pred)
 
 ## Plot predictions
-richness_plot = plotSDM(richness_pred, c = :viridis,
+richness_plot = plotSDM2(richness_pred, c = :viridis,
                         title = "Direct richness predictions ($(uppercase(outcome)))",
                         colorbar_title = "Predicted number of species",
                         )
-lcbd_plot = plotSDM(lcbd_pred, c = :viridis,
+lcbd_plot = plotSDM2(lcbd_pred, c = :viridis,
                     title = "Direct LCBD predictions ($(uppercase(outcome)))",
                     colorbar_title = "LCBD scores",
                     clim = (0,1),
@@ -78,17 +78,43 @@ function difference(prediction, comparison; absolute = false)
     return diff_layer
 end
 
-# Richness difference
-richness_diff = plotSDM(difference(pred.richness, raw.richness),
-                        c = :diverging, clim = (-30, 30),
+# Calculate differences
+diff_pred_raw = difference(pred.richness, raw.richness)
+diff_pred_sdm = difference(pred.richness, sdm.richness)
+diff_sdm_raw  = difference(sdm.richness,  raw.richness)
+diffs = [diff_pred_raw, diff_pred_sdm, diff_sdm_raw]
+map(x -> extrema(filter(!isnan, x.grid)), diffs)
+maxlim = 30
+
+# Richness difference (pred-raw)
+richness_diff = plotSDM2(diff_pred_raw,
+                        c = :diverging, clim = (-maxlim, maxlim),
                         title = "Direct richness predictions difference ($(uppercase(outcome)))",
                         colorbar_title = "Difference from raw richness",
                         )
-richness_diff = plotSDM(difference(pred.richness, sdm.richness),
+richness_hist = histogram(filter(!isnan, diff_pred_raw.grid), xlim = (-maxlim, maxlim))
+plot(richness_diff, richness_hist, size = (800, 400), layout = @layout [a{0.6w} b{0.3w}])
+
+# Richness difference (pred-sdm)
+richness_diff = plotSDM2(diff_pred_sdm,
                         c = :diverging, clim = (-30, 30),
                         title = "Direct richness predictions difference ($(uppercase(outcome)))",
                         colorbar_title = "Difference from SDM-predicted richness",
                         )
+richness_hist = histogram(filter(!isnan, diff_pred_sdm.grid))
+
+# Richness difference (sdm-raw)
+richness_diff = plotSDM2(diff_sdm_raw,
+                        c = :diverging, clim = (-30, 30),
+                        title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                        colorbar_title = "Difference from SDM-predicted richness",
+                        )
+richness_hist = histogram(filter(!isnan, diff_sdm_raw.grid))
+
+
+## Extras
+
+# Absolute richness difference
 richness_absdiff = plotSDM(difference(pred.richness, sdm.richness; absolute = true),
                            c = :inferno, clim = (-Inf, Inf),
                            title = "Direct richness predictions difference ($(uppercase(outcome)))",
