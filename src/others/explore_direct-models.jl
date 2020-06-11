@@ -93,9 +93,11 @@ function difference_plot(layer, lim; title = "")
                         c = :diverging, clim = limrange,
                         title = "Richness difference",
                         colorbar_title = "Difference")
-    diff_hist = histogram(filter(!isnan, layer.grid), 
-                          xlim = maxrange, xlabel = "Difference", legend = :none,
-                          title = "Distribution of difference values", bins = 50)
+    diff_hist = histogram([filter(x -> x > 0, layer.grid), filter(x -> x <= 0, layer.grid)],
+                          bins = :rice, c = [:diverging_r :diverging], legend = :none,
+                          ylim = maxrange, # xlabel = "Difference",
+                          title = "Distribution of difference values", 
+                          orientation = :horizontal)
     diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
     l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
     diff_plot = plot(diff_title, diff_map, diff_hist, 
