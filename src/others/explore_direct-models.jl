@@ -133,13 +133,13 @@ lcbd_diff = plotSDM2(difference(pred.lcbd, sdm.lcbd; absolute = true),
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     savefig(plot(richness_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_direct-richness.png"))
-    savefig(plot(plot_pred_sdm, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness_pred-sdm.png"))
-    savefig(plot(plot_pred_raw, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness_pred-raw.png"))
-    savefig(plot(plot_sdm_raw,  dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness_sdm-raw.png"))    
+    savefig(plot(plot_pred_sdm, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_direct-richness_diff-pred-sdm.png"))
+    savefig(plot(plot_pred_raw, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_direct-richness_diff-pred-raw.png"))
+    savefig(plot(plot_sdm_raw,  dpi = 150), joinpath("fig", outcome, "x_$(outcome)_direct-richness_diff-sdm-raw.png"))    
 end
 # save_extras = true
 if (@isdefined save_extras) && save_extras == true
-    savefig(plot(richness_absdiff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness-abs.png"))
-    savefig(plot(lcbd_plot, dpi = 150),     joinpath("fig", outcome, "x_$(outcome)_direct-lcbd.png"))
-    savefig(plot(lcbd_diff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-lcbd.png"))
+    savefig(plot(richness_absdiff_plot, dpi = 150), joinpath("archive", "fig", outcome, "x_$(outcome)_diff-richness-abs.png"))
+    savefig(plot(lcbd_plot, dpi = 150),     joinpath("archive", "fig", outcome, "x_$(outcome)_direct-lcbd.png"))
+    savefig(plot(lcbd_diff_plot, dpi = 150), joinpath("archive", "fig", outcome, "x_$(outcome)_diff-lcbd.png"))
 end
