@@ -17,7 +17,7 @@ if (@isdefined subset_qc) && subset_qc == true
 end
 
 ## Train & apply models (RF or BART)
-model_script = joinpath("src", "others", "explore_direct-models_$(outcome).R")
+model_script = joinpath("src", "others", "x_direct-models_$(outcome).R")
 @rput model_script
 @time begin
     R"""

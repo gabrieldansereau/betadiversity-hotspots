@@ -1,4 +1,4 @@
-source(file.path("src", "others", "explore_direct-models_bart.R"))
+source(file.path("src", "others", "x_direct-models_bart.R"))
 
 ## x. Variable selection ####
 
