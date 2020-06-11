@@ -50,13 +50,7 @@ pred = (richness = richness_pred, lcbd = lcbd_pred)
 ## Plot predictions
 richness_plot = plotSDM2(richness_pred, c = :viridis,
                         title = "Direct richness predictions ($(uppercase(outcome)))",
-                        colorbar_title = "Predicted number of species",
-                        )
-lcbd_plot = plotSDM2(lcbd_pred, c = :viridis,
-                    title = "Direct LCBD predictions ($(uppercase(outcome)))",
-                    colorbar_title = "LCBD scores",
-                    clim = (0,1),
-                    )
+                        colorbar_title = "Predicted number of species")
 
 ## Plot differences
 
@@ -107,35 +101,45 @@ end
 
 # Plot differences
 plot_pred_sdm = difference_plot(diff_pred_sdm, maxlim, 
-                                title = "Direct richness $(outcome) vs SDM richness")
+                                title = "Direct richness $(uppercase(outcome)) vs SDM richness")
 plot_pred_raw = difference_plot(diff_pred_raw, maxlim, 
-                                title = "Direct richness $(outcome) vs raw richness")
+                                title = "Direct richness $(uppercase(outcome)) vs raw richness")
 plot_sdm_raw  = difference_plot(diff_sdm_raw, maxlim, 
                                 title = "SDM richness vs raw richness")
 
 ## Extras
 
 # Absolute richness difference
-richness_absdiff = plotSDM(difference(pred.richness, sdm.richness; absolute = true),
-                           c = :inferno, clim = (-Inf, Inf),
-                           title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                           colorbar_title = "Difference from SDM-predicted richness (absolute)",
-                           )
+richness_absdiff = plotSDM2(difference(pred.richness, sdm.richness; absolute = true),
+                            c = :inferno, # clim = (-Inf, Inf),
+                            title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                            colorbar_title = "Difference from SDM-predicted richness (absolute)")
+
+# LCBD predictions
+lcbd_plot = plotSDM2(lcbd_pred, c = :viridis,
+                    title = "Direct LCBD predictions ($(uppercase(outcome)))",
+                    colorbar_title = "LCBD scores",
+                    clim = (0,1),
+                    )
 
 # LCBD difference
-lcbd_diff = plotSDM(difference(pred.lcbd, sdm.lcbd; absolute = true),
-                    c = :inferno, clim = (-Inf, Inf),
-                    title = "Direct richness predictions difference ($(uppercase(outcome)))",
-                    colorbar_title = "Difference in predicted LCBD (absolute)",
-                    )
+lcbd_diff = plotSDM2(difference(pred.lcbd, sdm.lcbd; absolute = true),
+                     c = :inferno, # clim = (-Inf, Inf),
+                     title = "Direct richness predictions difference ($(uppercase(outcome)))",
+                     colorbar_title = "Difference in predicted LCBD (absolute)",
+                     )
 
 ## Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     savefig(plot(richness_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_direct-richness.png"))
-    savefig(plot(lcbd_plot, dpi = 150),     joinpath("fig", outcome, "x_$(outcome)_direct-lcbd.png"))
-
-    savefig(plot(richness_diff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness.png"))
+    savefig(plot(plot_pred_sdm, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness_pred-sdm.png"))
+    savefig(plot(plot_pred_raw, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness_pred-raw.png"))
+    savefig(plot(plot_sdm_raw,  dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness_sdm-raw.png"))    
+end
+# save_extras = true
+if (@isdefined save_extras) && save_extras == true
     savefig(plot(richness_absdiff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-richness-abs.png"))
+    savefig(plot(lcbd_plot, dpi = 150),     joinpath("fig", outcome, "x_$(outcome)_direct-lcbd.png"))
     savefig(plot(lcbd_diff_plot, dpi = 150), joinpath("fig", outcome, "x_$(outcome)_diff-lcbd.png"))
 end
