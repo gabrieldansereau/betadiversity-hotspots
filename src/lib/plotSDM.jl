@@ -77,8 +77,8 @@ function plotSDM2(layer::SimpleSDMLayer; kw...)
         sdm_plot,
         longitudes(layer), latitudes(layer), # layer range
         layer.grid, # layer values
-        aspectratio=92.60/60.75, # aspect ratio
-        clim=(0.0, maximum(filter(!isnan, layer.grid))); # colorbar limits
+        aspectratio = 92.60/60.75, # aspect ratio
+        clim = extrema(filter(!isnan, layer.grid)); # colorbar limits
         kw... # additional keyword arguments
     )
 
