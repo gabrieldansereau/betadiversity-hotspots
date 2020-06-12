@@ -28,7 +28,7 @@ for op in ops_math
         function $op(layer1::SimpleSDMLayer, layer2::SimpleSDMLayer)
             SimpleSDMLayers._layers_are_compatible(layer1, layer2)
             newlayer = copy(layer1)
-            newlayer.grid = $op(layer1.grid, layer2.grid)
+            newlayer.grid = broadcast($op, layer1.grid, layer2.grid)
             return newlayer
         end
     end)
@@ -58,4 +58,21 @@ plotSDM2(reduce(mean, uncertainty))
 
 grids = map(x -> x.grid, uncertainty)
 heatmap(mean(grids))
+
+layer1.grid .* layer2.grid
+layer1.grid * layer2.grid
+.*(layer1.grid, layer2.grid)
+broadcast(*, layer1.grid, layer2.grid)
+@which broadcast(*, layer1.grid, layer2.grid)
+plotSDM2(reduce(*, prob_distrib))
+
+layer1.grid ./ layer2.grid
+layer1.grid / layer2.grid
+./(layer1.grid, layer2.grid)
+
+
+
 ##
+
+
+
