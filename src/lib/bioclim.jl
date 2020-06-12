@@ -47,7 +47,7 @@ function bioclim(occ, layers; training_layers=layers, binary=true, threshold::Fl
     # Apply 1st part of BIOCLIM on each environmental variable
     predictions = [_bioclim_layer(occ, layers[i], training_layer = training_layers[i]) for i in eachindex(layers)];
     # Reduce to single layer with minimum values
-    prediction = reduce(minimum, predictions);
+    prediction = reduce(min, predictions);
     # Apply threshold (if specified)
     if threshold > 0.0
         # Select non-NaN values only
