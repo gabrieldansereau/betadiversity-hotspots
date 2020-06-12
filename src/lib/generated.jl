@@ -74,7 +74,24 @@ layer1.grid / layer2.grid # no idea what this is
 layer1.grid ./ layer2.grid # elementwise division
 ./(layer1.grid, layer2.grid)
 
+# Extend broadcast
+# broadcast(f::Tf, As...) where Tf in Base.Broadcast
+import Base.Broadcast: broadcast
+function broadcast(f, layer::SimpleSDMLayer, As...)
+    newlayer = copy(layer)
+    newlayer.grid = broadcast(f, layer.grid, As...)
+    return newlayer
+end  
 
+# Test extended broadcast
+broadcast(+, layer1, 1)
+layer1 + 1
+layer1.grid .+ 1
+@which broadcast(+, layer1.grid, 1)
+broadcast(+, layer1, 1).grid
+layer1 .+ 1
+broadcast(+, layer1, layer2)
+layer1 + layer2
 
 ##
 
