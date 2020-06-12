@@ -1,28 +1,14 @@
 #### 03c - BART predictions ####
 import Pkg
 Pkg.activate(".")
-using RCall
-R"source(file.path('src', 'required.R'))"; # bug with `velox` if not called here
 using Distributed
 @time include("required.jl")
 
 ## Conditional arguments
 # save_data = true
 
-## Perform BARTs
-#=
-@time begin
-    R"""
-    create_models <- FALSE
-    save_models <- FALSE
 
-    source(here("src", "02c_training_bart.R"))
-    """
-end
-@rget pred_df lower_df upper_df pres_df results
-=#
-
-# Load predictions from CSV
+## Load predictions from CSV
 results  = CSV.read(joinpath("data", "proc", "bart_summaries.csv"))
 varimps  = CSV.read(joinpath("data", "proc", "bart_varimps.csv"))
 pred_df  = CSV.read(joinpath("data", "proc", "bart_predictions_prob.csv"), missingstrings = ["NA"])
