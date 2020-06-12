@@ -74,12 +74,3 @@ function clip(p::SimpleSDMLayer, r::Union{GBIFRecords,DataFrame})
     lons = longitudes(r)
     return p[(minimum(lons)-1.0, maximum(lons)+1.0), (minimum(lats)-1.0, maximum(lats)+1.0)]
 end
-
-# Get minimum value between layers of same dimension
-function Base.minimum(p1::SimpleSDMLayer, p2::SimpleSDMLayer)
-    n1 = copy(p1.grid)
-    for i in eachindex(p1.grid)
-        n1[i] = min(p1.grid[i], p2.grid[i])
-    end
-    return SimpleSDMResponse(n1, p1.left, p1.right, p1.bottom, p1.top)
-end
