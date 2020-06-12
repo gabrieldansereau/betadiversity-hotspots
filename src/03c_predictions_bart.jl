@@ -80,3 +80,24 @@ end
 
 richness = calculate_richness(Y, distributions[1])
 lcbd = calculate_lcbd(Y, distributions[1])
+
+## Map uncertainty
+
+plotSDM2(upper_distrib[1], c = :viridis, clim = (0, 1))
+upper_distrib[1] - lower_distrib[1]
+
+upper_distrib[1].grid - lower_distrib[1].grid
+
+ldgrids = [ld.grid for ld in lower_distrib]
+udgrids = [ud.grid for ud in upper_distrib]
+
+ldgrids[1] - udgrids[1]
+ldgrids - udgrids
+
+coords(upper_distrib[1])
+Statistics.mean(upper_distrib[1])
+
+
+
+
+##
