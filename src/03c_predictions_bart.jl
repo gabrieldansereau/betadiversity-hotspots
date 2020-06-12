@@ -74,16 +74,12 @@ upper_distrib[1] - lower_distrib[1]
 
 upper_distrib[1].grid - lower_distrib[1].grid
 
-ldgrids = [ld.grid for ld in lower_distrib]
-udgrids = [ud.grid for ud in upper_distrib]
+uncertainty = upper_distrib .- lower_distrib
+plotSDM2(uncertainty[1], c = :viridis)
 
-ldgrids[1] - udgrids[1]
-ldgrids - udgrids
-
-coords(upper_distrib[1])
-Statistics.mean(upper_distrib[1])
-
-
-
+uncertainty_sum = sum(uncertainty)
+plotSDM2(uncertainty_sum, c = :viridis)
+uncertainty_mean = mean(uncertainty)
+plotSDM2(uncertainty_mean, c = :viridis)
 
 ##
