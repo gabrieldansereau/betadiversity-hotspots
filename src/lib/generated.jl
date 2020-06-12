@@ -124,4 +124,26 @@ end
 @time reduce(min, layers);
 @time reduce(minimum, layers);
 
+# Test mean
+reduce(mean, grids) # interesting, mean doesn't work with reduce
+mean(grid1, grid2) # not working
+mean.(grid1, grid2) # not working either
+mean([grid1, grid2]) # works
+mean(grids) # nice!
+@which mean(grids) # huh, what method is that??
+cat(grids..., dims = 3) |> x -> mean(x, dims = 3)
+
+import Base: mean, std
+for op in (:mean, :std)
+    eval(quote
+        function $op(layers::Array{T}) where {T <: SimpleSDMLayer}
+            newlayer = copy(layers[1])
+            newlayer.grid = $op(map(x -> x.grid, layers))
+            return newlayer
+        end
+    end)
+end
+
+mean(layers)
+plot(mean(layers))
 ##
