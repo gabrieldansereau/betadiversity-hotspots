@@ -35,8 +35,9 @@ for op in ops_math
 end
 
 # Test layers
-layer1 = prob_distrib[1]
-layer2 = prob_distrib[2]
+layers = copy(prob_distrib)
+layer1 = layers[1]
+layer2 = layers[2]
 
 # Test addition
 +(layer1.grid, layer2.grid)
@@ -45,8 +46,8 @@ layer2 = prob_distrib[2]
 layer1 + worldclim(1)
 
 # Test on array of layers
-prob_distrib[1] + prob_distrib[2] + prob_distrib[3]
-tmp = reduce(+, prob_distrib)
+layers[1] + layers[2] + layers[3]
+tmp = reduce(+, layers)
 plotSDM2(tmp, c = :viridis)
 histogram(tmp)
 sort(unique(tmp.grid))
@@ -57,9 +58,12 @@ plotSDM2(reduce(+, upper_distrib), c = :viridis)
 uncertainty = upper_distrib .- lower_distrib
 plotSDM2(reduce(+, uncertainty))
 plotSDM2(reduce(mean, uncertainty)) # not working
+plotSDM2(reduce(mean, layers)) # not working either
 
-grids = map(x -> x.grid, uncertainty)
-heatmap(mean(grids)) # yeah ok, need to implement elementwise mean
+grids = map(x -> x.grid, layers)
+grid1 = grids[1]
+grid2 = grids[2]
+heatmap(mean(grids), c = :viridis) # yeah ok, need to implement elementwise mean
 
 # Test multiplication
 layer1.grid * layer2.grid # matrix product, not working
@@ -89,11 +93,35 @@ layer1 + 1
 layer1.grid .+ 1
 @which broadcast(+, layer1.grid, 1)
 broadcast(+, layer1, 1).grid
-layer1 .+ 1
+@which .+(layer1, 1)
 broadcast(+, layer1, layer2)
 layer1 + layer2
 
+# Test min
+reduce(min, grids) # not working
+min.(grid1, grid2) # works
+@time min.(grids...) # sooo long
+@time reduce((x,y) -> min.(x,y), grids) # sooo fast
+@time reduce((x,y) -> broadcast(min, x, y), grids) # sooo fast
+
+@time min.(layer1.grid, layer2.grid)
+
+import Base: min, max
+for op in (:min, :max)
+    eval(quote
+        function $op(layer1::SimpleSDMLayer, layer2::SimpleSDMLayer)
+            SimpleSDMLayers._layers_are_compatible(layer1, layer2)
+            newlayer = copy(layer1)
+            for i in eachindex(newlayer)
+                newlayer[i] = $op(layer1[i], layer2[i])
+            end
+            return newlayer
+        end
+    end)
+end
+
+@time min(layer1, layer2)
+@time reduce(min, layers);
+@time reduce(minimum, layers);
+
 ##
-
-
-
