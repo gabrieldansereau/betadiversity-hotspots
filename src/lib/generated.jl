@@ -1,4 +1,4 @@
-import Base: maximum, minimum, sum
+import Base: maximum, minimum, sum, +, -, *, /
 import Statistics: mean, median, std
 
 ops = Symbol.((
@@ -20,3 +20,42 @@ for op in ops, ty in (:SimpleSDMResponse, :SimpleSDMPredictor)
         end
     end)
 end
+
+ops_math = Symbol.(("+", "-", "*", "/"))
+
+for op in ops_math
+    eval(quote
+        function $op(layer1::SimpleSDMLayer, layer2::SimpleSDMLayer)
+            SimpleSDMLayers._layers_are_compatible(layer1, layer2)
+            newlayer = copy(layer1)
+            newlayer.grid = $op(layer1.grid, layer2.grid)
+            return newlayer
+        end
+    end)
+end
+
+layer1 = prob_distrib[1]
+layer2 = prob_distrib[2]
+
++(layer1.grid, layer2.grid)
++(layer1, layer2)
++(layer1, layer2).grid
+
+layer1 + worldclim(1)
+
+prob_distrib[1] + prob_distrib[2] + prob_distrib[3]
+tmp = reduce(+, prob_distrib)
+plotSDM2(tmp, c = :viridis)
+histogram(tmp)
+sort(unique(tmp.grid))
+
+plotSDM2(reduce(+, lower_distrib), c = :viridis)
+plotSDM2(reduce(+, upper_distrib), c = :viridis)
+
+uncertainty = upper_distrib .- lower_distrib
+plotSDM2(reduce(+, uncertainty))
+plotSDM2(reduce(mean, uncertainty))
+
+grids = map(x -> x.grid, uncertainty)
+heatmap(mean(grids))
+##
