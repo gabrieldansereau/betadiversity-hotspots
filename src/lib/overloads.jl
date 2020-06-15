@@ -68,6 +68,7 @@ end
 # Extend broadcast on grid values, returning layer
 function broadcast(f, layer::SimpleSDMLayer, As...)
     newlayer = copy(layer)
+    newlayer = convert(SimpleSDMResponse, newlayer)
     newlayer.grid = broadcast(f, layer.grid, As...)
     return newlayer
 end
@@ -81,6 +82,7 @@ for op in ops_math
         function $op(layer1::SimpleSDMLayer, layer2::SimpleSDMLayer)
             SimpleSDMLayers._layers_are_compatible(layer1, layer2)
             newlayer = copy(layer1)
+            newlayer = convert(SimpleSDMResponse, newlayer)
             newlayer.grid = broadcast($op, layer1.grid, layer2.grid)
             return newlayer
         end
@@ -93,6 +95,7 @@ for op in (:min, :max)
         function $op(layer1::SimpleSDMLayer, layer2::SimpleSDMLayer)
             SimpleSDMLayers._layers_are_compatible(layer1, layer2)
             newlayer = copy(layer1)
+            newlayer = convert(SimpleSDMResponse, newlayer)
             for i in eachindex(newlayer)
                 newlayer[i] = $op(layer1[i], layer2[i])
             end
@@ -106,6 +109,7 @@ for op in (:mean, :std)
     eval(quote
         function $op(layers::Array{T}) where {T <: SimpleSDMLayer}
             newlayer = copy(layers[1])
+            newlayer = convert(SimpleSDMResponse, newlayer)
             newlayer.grid = $op(map(x -> x.grid, layers))
             return newlayer
         end
