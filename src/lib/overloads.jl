@@ -72,12 +72,6 @@ function broadcast(f, layer::SimpleSDMLayer, As...)
     return newlayer
 end
 
-# Extend dotted operations, but returning array (how to return layer??)
-Base.broadcastable(x::SimpleSDMLayer) = collect(x.grid)
-wc = convert(SimpleSDMResponse, worldclim(1))
-floor.(wc) # returns array
-broadcast(floor, wc) # returns layer
-
 ## Overloads for multiple layers
 
 # Math operations
