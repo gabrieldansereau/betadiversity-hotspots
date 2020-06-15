@@ -1,14 +1,13 @@
 ## Overloads to existing functions (support for additional types & arguments)
 
-import Base: maximum, minimum, sum, +, -, *, /, min, max
+import Base: getindex, maximum, minimum, sum, +, -, *, /, min, max, broadcast, broadcast!
 import Statistics: mean, median, std
-import SimpleSDMLayers: longitudes
-import SimpleSDMLayers: latitudes
+import SimpleSDMLayers: longitudes, latitudes
 
 ## DataFrame overloads
 
 # Extract layer values from DataFrame (with longitude & latitude columns)
-function Base.getindex(layer::SimpleSDMLayer, d::DataFrame)
+function getindex(layer::SimpleSDMLayer, d::DataFrame)
     observations = eltype(layer.grid)[]
     for i in 1:nrow(d)
         push!(observations, layer[d.longitude[i], d.latitude[i]])
@@ -45,6 +44,7 @@ end
 
 ## Overloads for single layers
 
+# Basic operations
 ops = Symbol.((
     "sum", "maximum", "minimum",
     "mean", "median", "std"
@@ -63,6 +63,13 @@ for op in ops, ty in (:SimpleSDMResponse, :SimpleSDMPredictor)
             return $op(filter(!isnan, l.grid))
         end
     end)
+end
+
+# Extend broadcast on grid values, returning layer
+function broadcast(f, layer::SimpleSDMLayer, As...)
+    newlayer = copy(layer)
+    newlayer.grid = broadcast(f, layer.grid, As...)
+    return newlayer
 end
 
 ## Overloads for multiple layers
