@@ -244,21 +244,24 @@ spe_sel <- c("sp1", "sp17", "sp9")
 vars_sel <- map(spe_sel, ~ NULL)
 names(vars_sel) <- spe_sel
 # Run variable selection
+tictoc::tic("total")
 for(sp in spe_sel){
+    tictoc::tic(sp)
     set.seed(42)
     message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
     # Save plot to png
     png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
     step_vars <- variable.step(
         y.data = spe[[sp]], 
-        x.data = env[xnames], 
-        n.trees = 10, # should always be low (10 or 20)
-        iter = 10 # should be higher to reduce variance (default = 50), low in this case to make it run faster
+        x.data = env[xnames],
+        iter = 50
     )
     dev.off()
     # Save variables to list
     vars_sel[[sp]] <- step_vars
+    tictoc::toc()
 }
+tictoc::toc()
 vars_sel
 
 # $sp1
