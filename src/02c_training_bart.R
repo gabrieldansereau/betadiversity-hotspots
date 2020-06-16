@@ -234,3 +234,36 @@ pred_plot + geom_raster(aes(fill = lower_df_global[[sp_no]])) + ggtitle("Lower C
 pred_plot + geom_raster(aes(fill = upper_df_global[[sp_no]])) + ggtitle("Upper CI")
 pred_plot + geom_raster(aes(fill = upper_df_global[[sp_no]] - lower_df_global[[sp_no]])) + ggtitle("CI difference")
 pred_plot + geom_raster(aes(fill = pres_df_global[[sp_no]])) + ggtitle("Presence-absence")
+
+
+## Variable selection
+
+# Select species
+sort(colSums(spe)/nrow(spe), decreasing = TRUE)
+spe_sel <- c("sp1", "sp17", "sp9")
+vars_sel <- map(spe_sel, ~ NULL)
+names(vars_sel) <- spe_sel
+# Run variable selection
+for(sp in spe_sel){
+    set.seed(42)
+    message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
+    # Save plot to png
+    png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
+    step_vars <- variable.step(
+        y.data = spe[[sp]], 
+        x.data = env[xnames], 
+        n.trees = 10, # should always be low (10 or 20)
+        iter = 10 # should be higher to reduce variance (default = 50), low in this case to make it run faster
+    )
+    dev.off()
+    # Save variables to list
+    vars_sel[[sp]] <- step_vars
+}
+vars_sel
+
+# $sp1
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc12" "wc13" "wc15" "lc1"  "lc2"  "lc3"  "lc5"  "lc8" 
+# $sp17
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc8" 
+# $sp9
+# [1] "wc1"  "wc5"  "wc6"  "wc15" "lc3"  "lc8"  "lc10"
