@@ -240,7 +240,7 @@ pred_plot + geom_raster(aes(fill = pres_df_global[[sp_no]])) + ggtitle("Presence
 
 # Select species
 sort(colSums(spe)/nrow(spe), decreasing = TRUE)
-spe_sel <- c("sp1", "sp17", "sp9")
+spe_sel <- c("sp1", "sp6", "sp17")
 vars_sel <- map(spe_sel, ~ NULL)
 names(vars_sel) <- spe_sel
 # Run variable selection
@@ -264,9 +264,18 @@ for(sp in spe_sel){
 tictoc::toc()
 vars_sel
 
+## 3 species QC scale
 # $sp1
 #  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc12" "wc13" "wc15" "lc1"  "lc2"  "lc3"  "lc5"  "lc8" 
 # $sp17
 #  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc8" 
 # $sp9
 # [1] "wc1"  "wc5"  "wc6"  "wc15" "lc3"  "lc8"  "lc10"
+
+## 3 species full scale
+# $sp1
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc13" "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc7"  "lc8"  "lc9" 
+# $sp6
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc12" "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc7"  "lc8"  "lc9" 
+# $sp17
+# [1] "wc1"  "wc5"  "wc6"  "wc12" "wc14" "wc15" "lc7"  "lc8"  "lc9"
