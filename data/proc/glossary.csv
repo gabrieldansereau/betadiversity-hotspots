@@ -1,0 +1,93 @@
+variable,type,value
+lc1,landcover,bare
+lc2,landcover,crops
+lc3,landcover,grass
+lc4,landcover,moss
+lc5,landcover,shrub
+lc6,landcover,snow
+lc7,landcover,tree
+lc8,landcover,urban
+lc9,landcover,water-permanent
+lc10,landcover,water-seasonal
+wc1,climate,Annual Mean Temperature
+wc2,climate,Mean Diurnal Range (Mean of monthly (max temp - min temp))
+wc3,climate,Isothermality (BIO2/BIO7) (* 100)
+wc4,climate,Temperature Seasonality (standard deviation *100)
+wc5,climate,Max Temperature of Warmest Month
+wc6,climate,Min Temperature of Coldest Month
+wc7,climate,Temperature Annual Range (BIO5-BIO6)
+wc8,climate,Mean Temperature of Wettest Quarter
+wc9,climate,Mean Temperature of Driest Quarter
+wc10,climate,Mean Temperature of Warmest Quarter
+wc11,climate,Mean Temperature of Coldest Quarter
+wc12,climate,Annual Precipitation
+wc13,climate,Precipitation of Wettest Month
+wc14,climate,Precipitation of Driest Month
+wc15,climate,Precipitation Seasonality (Coefficient of Variation)
+wc16,climate,Precipitation of Wettest Quarter
+wc17,climate,Precipitation of Driest Quarter
+wc18,climate,Precipitation of Warmest Quarter
+wc19,climate,Precipitation of Coldest Quarter
+sp1,species,Setophaga_coronata
+sp2,species,Geothlypis_trichas
+sp3,species,Setophaga_petechia
+sp4,species,Setophaga_ruticilla
+sp5,species,Mniotilta_varia
+sp6,species,Oreothlypis_celata
+sp7,species,Seiurus_aurocapilla
+sp8,species,Setophaga_palmarum
+sp9,species,Setophaga_pinus
+sp10,species,Setophaga_americana
+sp11,species,Setophaga_virens
+sp12,species,Cardellina_pusilla
+sp13,species,Setophaga_magnolia
+sp14,species,Oreothlypis_ruficapilla
+sp15,species,Setophaga_pensylvanica
+sp16,species,Oreothlypis_peregrina
+sp17,species,Setophaga_caerulescens
+sp18,species,Parkesia_noveboracensis
+sp19,species,Setophaga_striata
+sp20,species,Setophaga_fusca
+sp21,species,Setophaga_dominica
+sp22,species,Setophaga_discolor
+sp23,species,Setophaga_citrina
+sp24,species,Setophaga_townsendi
+sp25,species,Vermivora_cyanoptera
+sp26,species,Parkesia_motacilla
+sp27,species,Protonotaria_citrea
+sp28,species,Setophaga_tigrina
+sp29,species,Setophaga_nigrescens
+sp30,species,Cardellina_canadensis
+sp31,species,Setophaga_castanea
+sp32,species,Geothlypis_tolmiei
+sp33,species,Helmitheros_vermivorum
+sp34,species,Geothlypis_philadelphia
+sp35,species,Geothlypis_formosa
+sp36,species,Oreothlypis_luciae
+sp37,species,Setophaga_cerulea
+sp38,species,Vermivora_chrysoptera
+sp39,species,Setophaga_occidentalis
+sp40,species,Myioborus_pictus
+sp41,species,Oreothlypis_virginiae
+sp42,species,Setophaga_graciae
+sp43,species,Limnothlypis_swainsonii
+sp44,species,Oporornis_agilis
+sp45,species,Basileuterus_rufifrons
+sp46,species,Cardellina_rubrifrons
+sp47,species,Setophaga_chrysoparia
+sp48,species,Myioborus_miniatus
+sp49,species,Setophaga_pitiayumi
+sp50,species,Basileuterus_culicivorus
+sp51,species,Oreothlypis_superciliosa
+sp52,species,Geothlypis_poliocephala
+sp53,species,Setophaga_kirtlandii
+sp54,species,Basileuterus_belli
+sp55,species,Cardellina_rubra
+sp56,species,Basileuterus_lachrymosus
+sp57,species,Oreothlypis_crissalis
+sp58,species,Geothlypis_beldingi
+sp59,species,Geothlypis_nelsoni
+sp60,species,Cardellina_versicolor
+sp61,species,Geothlypis_speciosa
+sp62,species,Geothlypis_flavovelata
+sp63,species,Vermivora_bachmanii
