@@ -1,6 +1,6 @@
 ## Overloads to existing functions (support for additional types & arguments)
 
-import Base: getindex, maximum, minimum, sum, +, -, *, /, min, max, broadcast, broadcast!
+import Base: getindex, maximum, minimum, extrema, sum, +, -, *, /, min, max, broadcast, broadcast!
 import Statistics: mean, median, std
 import SimpleSDMLayers: longitudes, latitudes
 
@@ -46,7 +46,7 @@ end
 
 # Basic operations
 ops = Symbol.((
-    "sum", "maximum", "minimum",
+    "sum", "maximum", "minimum", "extrema",
     "mean", "median", "std"
     ))
 
