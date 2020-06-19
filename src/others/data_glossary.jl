@@ -46,12 +46,13 @@ wcdf = DataFrame(variable = wcgloss[:,1],
                  description = wcgloss[:,3])
 
 # Species data
-@load joinpath("data", "jld2", "raw-distributions.jld2") spenames
+@load joinpath("data", "jld2", "raw-distributions.jld2") spenames specommon
 spenames
+specommon
 spdf = DataFrame(variable = string.("sp", eachindex(spenames)),
                  type = "species",
                  full_name = spenames,
-                 description = replace.(spenames, "_" => " "))
+                 description = specommon)
 
 # Create glossary
 glossdf = vcat(lcdf, wcdf, spdf)
