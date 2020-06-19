@@ -97,7 +97,7 @@ if (@isdefined save_data) && save_data == true
 else
     # Load data
     @info "Data imported from file ($(outcome) distributions data)"
-    @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
+    @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames specommon speindex
 end
 
 ## Count sites with presence per species
