@@ -43,17 +43,46 @@ wc_vars = map(x -> worldclim(x, resolution = "10")[coords], 1:19);
 
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)
-wc_plot = plotSDM(wc_vars[1], clim=extrema(filter(!isnan,wc_vars[1].grid)),
-                  colorbar_title="Annual Mean Temperature (°C)", dpi=300)
+wc_plot = plotSDM2(wc_vars[1], colorbar_title = "Annual Mean Temperature (°C)")
 # Plot lcvars2 (urban)
-lc_plot = plotSDM(lc_vars[2], colorbar_title="Crops land cover (%)", dpi=300)
+lc_plot = plotSDM(lc_vars[2], colorbar_title = "Crops land cover (%)")
+
+# Get variable info
+glossary = CSV.read(joinpath("data", "proc", "glossary.csv"))
+lcdf, wcdf, spdf = groupby(glossary, :type)
+
+# Clim variables
+heatplots = [plotSDM2(wc_vars[i], 
+                      c = :OrRd, 
+                      title = uppercasefirst(replace(wcdf.full_name[i], "_" => " ")), 
+                      colorbar_title = wcdf.description[i])
+            for i in (1,2,5,6)]
+heatplot = plot(heatplots..., size = (900, 900))
+precplots = [plotSDM2(wc_vars[i], 
+                      c = :PuBu, 
+                      title = uppercasefirst(replace(wcdf.full_name[i], "_" => " ")), 
+                      colorbar_title = wcdf.description[i])
+            for i in (12,13,14,15)]
+precplot = plot(precplots..., size = (900, 900))
+
+# Landcover variables
+landplots = [plotSDM2(lc_vars[i],
+                     c = :BuGn,
+                     title = uppercasefirst(replace(lcdf.full_name[i], "_" => " ")), 
+                     colorbar_title = lcdf.description[i])
+             for i in (1:5..., 7:10...)]
+landplot = plot(landplots..., size = (1200, 900))
+
 
 ## Export figures
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved (environmental variables)"
-    savefig(wc_plot, joinpath("fig", "00c_wc1-temperature.png"))
-    savefig(lc_plot, joinpath("fig", "00c_lc2-crops.png"))
+    savefig(plot(wc_plot, dpi = 300), joinpath("fig", "00c_wc1-temperature.png"))
+    savefig(plot(lc_plot, dpi = 300), joinpath("fig", "00c_lc2-crops.png"))
+    savefig(plot(heatplot, dpi = 300), joinpath("fig", "00c_wc-temperatures.png"))
+    savefig(plot(precplot, dpi = 300), joinpath("fig", "00c_wc-precipitations.png"))
+    savefig(plot(landplot, dpi = 300), joinpath("fig", "00c_lc-landcovers.png"))
 else
     @info "Figures not saved (environmental variables)"
 end
