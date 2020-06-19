@@ -13,25 +13,25 @@ lcdf = DataFrame(variable = string.("lc", eachindex(lcnames)),
                  value = lcnames)
 
 # Climate data
-wcnames = ["Annual Mean Temperature"
-           "Mean Diurnal Range (Mean of monthly (max temp - min temp))"
-           "Isothermality (BIO2/BIO7) (* 100)"
-           "Temperature Seasonality (standard deviation *100)"
-           "Max Temperature of Warmest Month"
-           "Min Temperature of Coldest Month"
-           "Temperature Annual Range (BIO5-BIO6)"
-           "Mean Temperature of Wettest Quarter"
-           "Mean Temperature of Driest Quarter"
-           "Mean Temperature of Warmest Quarter"
-           "Mean Temperature of Coldest Quarter"
-           "Annual Precipitation"
-           "Precipitation of Wettest Month"
-           "Precipitation of Driest Month"
-           "Precipitation Seasonality (Coefficient of Variation)"
-           "Precipitation of Wettest Quarter"
-           "Precipitation of Driest Quarter"
-           "Precipitation of Warmest Quarter"
-           "Precipitation of Coldest Quarter"]
+wcnames = ["Annual Mean Temperature (°C)"
+           "Mean Diurnal Range (Mean of monthly (max temp - min temp)) (°C)"
+           "Isothermality (BIO2/BIO7) (* 100) (°C)"
+           "Temperature Seasonality (standard deviation *100) (°C)"
+           "Max Temperature of Warmest Month (°C)"
+           "Min Temperature of Coldest Month (°C)"
+           "Temperature Annual Range (BIO5-BIO6) (°C)"
+           "Mean Temperature of Wettest Quarter (°C)"
+           "Mean Temperature of Driest Quarter (°C)"
+           "Mean Temperature of Warmest Quarter (°C)"
+           "Mean Temperature of Coldest Quarter (°C)"
+           "Annual Precipitation (mm)"
+           "Precipitation of Wettest Month (mm)"
+           "Precipitation of Driest Month (mm)"
+           "Precipitation Seasonality (Coefficient of Variation) (mm)"
+           "Precipitation of Wettest Quarter (mm)"
+           "Precipitation of Driest Quarter (mm)"
+           "Precipitation of Warmest Quarter (mm)"
+           "Precipitation of Coldest Quarter (mm)"]
 wcdf = DataFrame(variable = string.("wc", eachindex(wcnames)),
                  type = "climate",
                  value = wcnames)
