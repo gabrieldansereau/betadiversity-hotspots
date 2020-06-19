@@ -9,21 +9,21 @@ using Distributed
 ## EBD data preparation
 
 # Load data from CSV files (from file cut with terminal)
-@time df = CSV.read(joinpath("data", "raw", "ebd_warblers_cut.csv"), header=true, delim="\t")
+@time df = CSV.read(joinpath("data", "raw", "ebd_warblers_cut.csv"), header=true, delim="\t", copycols = true)
 
 # Prepare data (arrange values & columns)
-df = prepare_ebd_data(df)
-
-# Remove duplicates (BUT not ok for counts, so-so for dates, see group-observation.jl in src/test/)
-df_nogroups = filter(x -> ismissing(x[:groupIdentifier]), df)
-df_groups = dropmissing(df, :groupIdentifier)
-df_groups_unique = unique(df_groups, [:species, :groupIdentifier])
-newdf = vcat(df_nogroups, df_groups_unique)
+@time prepare_ebd_data!(df)
 
 # Select subset with specific columns
-select!(newdf, [:species, :year, :latitude, :longitude, :groupIdentifier])
+newdf = select(df, [:species, :year, :latitude, :longitude, :groupIdentifier])
 # Remove 1 Aleutian Islands observation with positive longitude
 filter!(x -> x.longitude < 0, newdf)
+
+# Remove duplicates (BUT not ok for counts, so-so for dates, see group-observation.jl in src/test/)
+df_nogroups = filter(x -> ismissing(x[:groupIdentifier]), newdf)
+df_groups = dropmissing(newdf, :groupIdentifier)
+df_groups_unique = unique(df_groups, [:species, :groupIdentifier])
+newdf = vcat(df_nogroups, df_groups_unique)
 
 ## Export prepared data
 # save_prepdata = true # should prepared data be overwritten (optional)
