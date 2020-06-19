@@ -15,7 +15,7 @@ using Distributed
 @time prepare_ebd_data!(df)
 
 # Select subset with specific columns
-newdf = select(df, [:species, :year, :latitude, :longitude, :groupIdentifier])
+newdf = select(df, [:species, :commonName, :year, :latitude, :longitude, :groupIdentifier])
 # Remove 1 Aleutian Islands observation with positive longitude
 filter!(x -> x.longitude < 0, newdf)
 

@@ -29,6 +29,7 @@ warblers = [df[df.species .== u,:] for u in unique(df.species)]
 sort!(warblers, by = x -> nrow(x), rev = true)
 # Extract species names
 spenames = [w.species[1] for w in warblers]
+specommon = [w.commonName[1] for w in warblers]
 # Create index Dict for species names
 speindex = indexmap(spenames)
 
@@ -73,7 +74,7 @@ if (@isdefined save_data) && save_data == true
     ## Export to JLD2
     # Export data to JLD2
     @info "Exporting data to JLD2 file ($(outcome) distributions data)"
-    @save joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames speindex
+    @save joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames specommon speindex
     # Export to ZIP archive
     @info "Exporting data from JLD2 to ZIP archive ($(outcome) distributions data)"
     _zip_jld2(joinpath("data", "jld2", "$(outcome)-distributions.zip"),

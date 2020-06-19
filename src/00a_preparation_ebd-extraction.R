@@ -124,7 +124,7 @@ inds
 
 ## Test command with smaller dataset
 # Desired command
-# cut -f4,6,8,9,14,26,27,28,32,35,36,38,39,42 processed/ebd_warblers.csv > ebd_warblers_cut.csv
+# cut -f1,4,5,6,8,9,14,26,27,28,30,31,32,35,36,38,39,40,42 data/raw/ebd_warblers.csv > data/raw/ebd_warblers_cut.csv
 # Create command
 bash_command_test <- paste("cut -f", paste(inds, collapse=","), " ../data/ebd/processed/ebd_sample_test.csv > ../data/ebd/processed/rbashtest.csv", sep="")
 bash_command_test
