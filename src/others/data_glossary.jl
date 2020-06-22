@@ -26,7 +26,7 @@ wcgloss = ["wc1"     "temperature_annual_mean"             "Annual Mean Temperat
            "wc3"     "temperature_isothermality"           "Isothermality (BIO2/BIO7) (* 100) (°C)"
            "wc4"     "temperature_seasonality"             "Temperature Seasonality (standard deviation *100) (°C)"
            "wc5"     "temperature_max_warmest_month"       "Max Temperature of Warmest Month (°C)"
-           "wc6"     "temperature_min_warmest_month"       "Min Temperature of Coldest Month (°C)"
+           "wc6"     "temperature_min_coldest_month"       "Min Temperature of Coldest Month (°C)"
            "wc7"     "temperature_annual_range"            "Temperature Annual Range (BIO5-BIO6) (°C)"
            "wc8"     "temperature_mean_wettest_quarter"    "Mean Temperature of Wettest Quarter (°C)"
            "wc9"     "temperature_mean_driest_quarter"     "Mean Temperature of Driest Quarter (°C)"
