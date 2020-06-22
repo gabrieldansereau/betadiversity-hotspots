@@ -27,3 +27,17 @@ We also show that SDMs return relevant LCBD predictions displaying the same
 relationship as the one obtained with observation data only.
 Hence, our method could prove useful to identify beta diversity hotspots in
 unsampled locations, which could be important targets for conservation purposes.
+
+## Figures
+
+![Species richness](../../fig/bart/04-2_bart_richness.png)
+
+![LCBD values](../../fig/bart/04-3_bart_lcbd-transf.png)
+
+![Relationship](../../fig/bart/04-4_bart_relationship2d-transf.png)
+
+![NE subareas](../../fig/bart/05-1_bart_subareas_NEtr.png)
+
+![SW subareas](../../fig/bart/05-1_bart_subareas_SWtr.png)
+
+![3 scales](../../fig/bart/05-2_bart_subareas_3scales.png)
