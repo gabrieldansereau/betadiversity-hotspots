@@ -35,36 +35,36 @@ unsampled locations, which could be important targets for conservation purposes.
     <img src="../../fig/bart/04-2_bart_richness.png" width="49%" />
 </p>
 
-Distribution of species richness in North America, defined as the number of 
-Warblers species per site. 
+Figure: Distribution of species richness in North America, defined as the number
+of Warblers species per site. 
 The raw occurrence observations from eBird (left) and the SDM
 predictions from the BIOCLIM model (right) were both transformed
 into presence-absence data per species before calculating richness.
 
 ![LCBD values](../../fig/bart/04-3_bart_lcbd-transf.png)
 
-Distribution of the LCBD values in North America, calculated from the variance 
-of the community matrix Y and scaled to the maximum value observed. 
+Figure: Distribution of the LCBD values in North America, calculated from the
+variance of the community matrix Y and scaled to the maximum value observed. 
 SDM predictions were converted into presence-absence data, then the Hellinger
 transformation was applied before computing the LCBD indices.
 
 ![Relationship](../../fig/bart/04-4_bart_relationship2d-transf.png)
 
-Relationship between the species richness and the LCBD value of the each site 
-based on the SDM predictions. 
+Figure: Relationship between the species richness and the LCBD value of the each
+site based on the SDM predictions. 
 LCBD values were scaled to the maximum value observed after applying Hellinger
 transformation. 
 
 ![NE subareas](../../fig/bart/05-1_bart_subareas_NEtr.png)
 
-Comparison between a species-rich region (Northeast) and a species-poor one
-(Southwest) at a given scale, based on the SDM predictions. 
+Figure: Comparison between a species-rich region (Northeast) and a species-poor
+one (Southwest) at a given scale, based on the SDM predictions. 
 
 ![SW subareas](../../fig/bart/05-1_bart_subareas_SWtr.png)
 
 ![3 scales](../../fig/bart/05-2_bart_subareas_3scales.png)
 
-Effect of scaling and full region extent size on the relationship between site
-richness and LCBD value.
+Figure: Effect of scaling and full region extent size on the relationship
+between site richness and LCBD value.
 LCBD values are re-calculated at each scale based on the sites in this region
 only.
