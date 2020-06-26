@@ -32,7 +32,7 @@ unsampled locations, which could be important targets for conservation purposes.
 
 <p align="center">
     <img src="../../fig/raw/04-2_raw_richness.png" width="49%" /> 
-    <img src="../../fig/bart/04-2_bart_richness.png" width="49%" />
+    <img src="fig/richness.png" width="49%" />
 </p>
 
 Figure: Distribution of species richness in North America, defined as the number
@@ -41,14 +41,14 @@ The raw occurrence observations from eBird (left) and the SDM
 predictions from the BIOCLIM model (right) were both transformed
 into presence-absence data per species before calculating richness.
 
-![LCBD values](../../fig/bart/04-3_bart_lcbd-transf.png)
+![LCBD values](fig/lcbd.png)
 
 Figure: Distribution of the LCBD values in North America, calculated from the
 variance of the community matrix Y and scaled to the maximum value observed. 
 SDM predictions were converted into presence-absence data, then the Hellinger
 transformation was applied before computing the LCBD indices.
 
-![Relationship](../../fig/bart/04-4_bart_relationship2d-transf.png)
+![Relationship](fig/relationship.png)
 
 Figure: Relationship between the species richness and the LCBD value of the each
 site based on the SDM predictions. 
