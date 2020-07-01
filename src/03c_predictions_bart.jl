@@ -56,10 +56,20 @@ distributions
 ## Export results
 # save_data = true
 if (@isdefined save_data) && save_data == true
-    @save joinpath("data", "jld2", "bart-distributions.jld2") distributions prob_distrib lower_distrib upper_distrib
-    _zip_jld2(joinpath("data", "jld2", "bart-distributions.zip"),
-              joinpath("data", "jld2", "bart-distributions.jld2"))
-    touch(joinpath("data", "jld2", "bart-distributions.jld2"))
+    # Distributions only
+    jld_path = joinpath("data", "jld2", "bart-distributions.jld2")
+    @save jld_path distributions
+    _zip_jld2(replace(jld_path, ".jld2" => ".zip"), jld_path)
+    touch(jld_path)
+    # Extras
+    xtras = (prob_distrib, lower_distrib, upper_distrib)
+    xnames = ("prob", "lower", "upper")
+    for (xtra, xname) in zip(xtras, xnames)
+        jld_path = joinpath("data", "jld2", "bart-distributions_$(xname).jld2")
+        @save jld_path xtra
+        # _zip_jld2(replace(jldpath, ".jld2" => ".zip"), jld_path)
+        # touch(jld_path)
+    end
 end
 
 ## Get richness & LCBD
