@@ -15,6 +15,7 @@ using ArchGDAL
 using RCall
 using ZipFile
 
+using Revise
 if nprocs() == 1
     include("BetadiversityHotspots.jl")
 else
