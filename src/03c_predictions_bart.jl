@@ -68,6 +68,13 @@ if (@isdefined save_data) && save_data == true
     touch(jld_path)
 end
 
+test = copy(prob_distrib)
+grids = [d.grid for d in prob_distrib]
+roundgrids = [round.(d.grid, digits = 5) for d in prob_distrib]
+
+@save "data/jld2/test1.jld2" grids
+@save "data/jld2/test2.jld2" roundgrids
+
 ## Get richness & LCBD
 
 richness = calculate_richness(Y, distributions[1])
