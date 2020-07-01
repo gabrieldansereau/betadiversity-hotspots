@@ -11,7 +11,7 @@ region of interest,
 To this day, LCBD indices have mostly been used on regional, smaller scales with
 relatively few sites.
 Furthermore, as beta diversity implies a comparison among the sites of a given
-region, their use is typically restricted to stricly sampled sites with known 
+region, their use is typically restricted to strictly sampled sites with known 
 species composition, hence to discontinuous spatial scales.
 Here, we investigate the variation of LCBD indices on extended spatial scales 
 including both species poor and species rich regions, and investigate their
@@ -31,7 +31,7 @@ unsampled locations, which could be important targets for conservation purposes.
 ## Figures
 
 <p align="center">
-    <img src="../../fig/raw/04-2_raw_richness.png" width="49%" /> 
+    <img src="fig/richness-raw.png" width="49%" /> 
     <img src="fig/richness.png" width="49%" />
 </p>
 
