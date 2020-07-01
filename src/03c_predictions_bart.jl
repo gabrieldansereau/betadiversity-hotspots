@@ -62,14 +62,10 @@ if (@isdefined save_data) && save_data == true
     _zip_jld2(replace(jld_path, ".jld2" => ".zip"), jld_path)
     touch(jld_path)
     # Extras
-    xtras = (prob_distrib, lower_distrib, upper_distrib)
-    xnames = ("prob", "lower", "upper")
-    for (xtra, xname) in zip(xtras, xnames)
-        jld_path = joinpath("data", "jld2", "bart-distributions_$(xname).jld2")
-        @save jld_path xtra
-        # _zip_jld2(replace(jldpath, ".jld2" => ".zip"), jld_path)
-        # touch(jld_path)
-    end
+    jld_path = joinpath("data", "jld2", "bart-distributions_xtras.jld2")
+    @save jld_path prob_distrib lower_distrib upper_distrib
+    _zip_jld2(replace(jldpath, ".jld2" => ".zip"), jld_path)
+    touch(jld_path)
 end
 
 ## Get richness & LCBD
