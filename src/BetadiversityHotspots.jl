@@ -37,7 +37,7 @@ include(joinpath("lib", "overloads.jl"))
 export getindex, longitudes, latitudes, clip, minimum
 
 include(joinpath("lib", "plotSDM.jl"))
-export plotSDM, plot
+export BetadiversityHotspots.plotSDM, plot
 
 include(joinpath("lib", "presence-absence.jl"))
 export presence_absence

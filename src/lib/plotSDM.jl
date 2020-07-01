@@ -1,7 +1,7 @@
 ## Functions to plot SimpleSDMLayer elements more easily
 
 # Plot layer as a heatmap with worldmap background
-function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
+function BetadiversityHotspots.plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
     ## Arguments
     # layer: SimpleSDMLayer to plot
     # scatter: add observations as points in scatter plot, requires to define occ
@@ -57,7 +57,7 @@ function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
 
     return sdm_plot
 end
-plotSDM(layer::SimpleSDMLayer) = print("LOL XD")
+# BetadiversityHotspots.plotSDM(layer::SimpleSDMLayer) = print("LOL XD")
 
 function plotSDM2(layer::SimpleSDMLayer; kw...)
     ## Arguments
