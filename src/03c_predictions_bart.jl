@@ -69,17 +69,38 @@ lcbd = calculate_lcbd(Y, distributions[1])
 
 ## Map uncertainty
 
-plotSDM2(upper_distrib[1], c = :viridis, clim = (0, 1))
-upper_distrib[1] - lower_distrib[1]
-
-upper_distrib[1].grid - lower_distrib[1].grid
-
+# Get uncertainty per species
 uncertainty = upper_distrib .- lower_distrib
 plotSDM2(uncertainty[1], c = :viridis)
 
+# Uncertainty sum
 uncertainty_sum = sum(uncertainty)
 plotSDM2(uncertainty_sum, c = :viridis)
+# Uncertainty mean
 uncertainty_mean = mean(uncertainty)
 plotSDM2(uncertainty_mean, c = :viridis)
+histogram(uncertainty_mean)
 
-##
+# Plot uncertainty & histogram
+function uncertainty_plot(layer; title = "")
+    unc_map = plotSDM2(layer,
+                        c = :viridis, clim = extrema(layer),
+                        title = "Uncertainty",
+                        colorbar_title = "Uncertainty mean")
+    unc_hist = histogram(layer,
+                          legend = :none,
+                          # ylim = maxrange, # xlabel = "Difference",
+                          title = "Distribution of uncertainty values",
+                          orientation = :horizontal)
+    unc_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
+    l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    unc_plot = plot(unc_title, unc_map, unc_hist,
+                     size = (800, 400), layout = l)
+    return unc_plot
+end
+unc_plot = uncertainty_plot(uncertainty_mean, title = "Uncertainty mean (BART SDMs)")
+
+# Export uncertainty plot
+if (@isdefined save_figures) && save_figures == true
+    savefig(plot(unc_plot, dpi = 150), joinpath("fig", "bart", "x_bart_uncertainty.png"))
+end
