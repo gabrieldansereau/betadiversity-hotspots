@@ -57,6 +57,7 @@ function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
 
     return sdm_plot
 end
+# plotSDM(layer::SimpleSDMLayer) = print("LOL XD")
 
 function plotSDM2(layer::SimpleSDMLayer; kw...)
     ## Arguments
