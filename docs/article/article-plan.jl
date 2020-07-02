@@ -1,7 +1,7 @@
-import Pkg
-Pkg.activate(".")
-using Distributed
-@time include(joinpath("..", "..", "src", "required.jl"))
+if !(@isdefined BetadiversityHotspots)
+    import Pkg; Pkg.activate(".")
+    @time include(joinpath("..", "..", "src", "required.jl"))
+end
 
 # Run analyses
 outcome = "raw"

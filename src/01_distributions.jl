@@ -1,9 +1,9 @@
-import Pkg 
-Pkg.activate(".")
-using Distributed
-@time include("required.jl")
-addprocs(9)
-@time @everywhere include(joinpath("src", "required.jl"))
+if !(@isdefined BetadiversityHotspots)
+    import Pkg; Pkg.activate(".")
+    using Distributed
+    addprocs(9)
+    @time include("required.jl")
+end
 
 ## Conditional arguments
 outcome = "raw" # desired outcome (required)
