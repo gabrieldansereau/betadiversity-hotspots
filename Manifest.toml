@@ -55,12 +55,6 @@ git-tree-sha1 = "a6c17353ee38ddab30e73dcfaa1107752de724ec"
 uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 version = "0.8.1"
 
-[[CodeTracking]]
-deps = ["InteractiveUtils", "UUIDs"]
-git-tree-sha1 = "cab4da992adc0a64f63fa30d2db2fd8bec40cab4"
-uuid = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
-version = "0.5.11"
-
 [[CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "ded953804d019afa9a3f98981d99b33e3db7b6da"
@@ -212,9 +206,6 @@ git-tree-sha1 = "430f22b2fc3363296cf1af2dbbe6c8b96402a969"
 uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
 version = "0.9.4"
 
-[[FileWatching]]
-uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
-
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays"]
 git-tree-sha1 = "bf726ba7ce99e00d10bf63c031285fb9ab3676ae"
@@ -357,12 +348,6 @@ git-tree-sha1 = "b007cedc10bb017cdae3af0062fe4dd29b483c70"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "2.0.1+0"
 
-[[JuliaInterpreter]]
-deps = ["CodeTracking", "InteractiveUtils", "Random", "UUIDs"]
-git-tree-sha1 = "39f9712eea6bb1de783cfc9d9b1687d6272694d8"
-uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
-version = "0.7.23"
-
 [[LAME_jll]]
 deps = ["Libdl", "Pkg"]
 git-tree-sha1 = "221cc8998b9060677448cbb6375f00032554c4fd"
@@ -440,12 +425,6 @@ deps = ["LearnBase", "Markdown", "RecipesBase", "SparseArrays", "StatsBase"]
 git-tree-sha1 = "3cd347266e394a066ca7f17bd8ff589ff5ce1d35"
 uuid = "30fc2ffe-d236-52d8-8643-a9d8f7c094a7"
 version = "0.6.2"
-
-[[LoweredCodeUtils]]
-deps = ["JuliaInterpreter"]
-git-tree-sha1 = "1b632dc108106101a9909db7be8f8b32ed8d02f7"
-uuid = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
-version = "0.4.6"
 
 [[MLJ]]
 deps = ["CategoricalArrays", "ComputationalResources", "Distributed", "Distributions", "LinearAlgebra", "MLJBase", "MLJModels", "MLJScientificTypes", "MLJTuning", "Pkg", "ProgressMeter", "Random", "Statistics", "StatsBase", "Tables"]
@@ -693,12 +672,6 @@ deps = ["UUIDs"]
 git-tree-sha1 = "d37400976e98018ee840e0ca4f9d20baa231dc6b"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.0.1"
-
-[[Revise]]
-deps = ["CodeTracking", "Distributed", "FileWatching", "JuliaInterpreter", "LibGit2", "LoweredCodeUtils", "OrderedCollections", "Pkg", "REPL", "UUIDs", "Unicode"]
-git-tree-sha1 = "0992d4643e27b2deb9f2e4ec7a56b7033813a027"
-uuid = "295af30f-e4ad-537b-8983-00126c2a3abe"
-version = "2.7.3"
 
 [[Rmath]]
 deps = ["Random", "Rmath_jll"]
