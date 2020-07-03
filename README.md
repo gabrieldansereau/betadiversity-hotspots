@@ -1,7 +1,7 @@
 # Beta Diversity Hotspots
 
 <p align="center">
-  <img align = "center" src="fig/rf/04-2_rf_richness.png" width="75%"
+  <img align = "center" src="docs/article/fig/lcbd.png" width="75%"
        title = "Species richness">
 </p>
 
