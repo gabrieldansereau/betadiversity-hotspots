@@ -15,7 +15,12 @@ outcome = "bart"
 plot!(richness_rawplot, title = "")
 plot!(richness_plot, title = "")
 plot!(lcbdtr_plot, title = "", clim = (-Inf, Inf), cbartitle = "Relative LCBD value")
-plot!(rel2d_plot, title = "")
+plot!(rel2d_plot, title = "", 
+      size = (900, 400),
+      ratio = 40,
+      tickfontsize = 8,
+      # left_margin = 0.0Plots.PlotMeasures.mm, right_margin = 0.0Plots.PlotMeasures.mm,
+      )
 
 # Export figures
 savefig(plot(richness_rawplot, dpi = 150), joinpath("docs", "article", "fig", "richness-raw.png"))
