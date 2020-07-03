@@ -22,7 +22,7 @@ end
 
 ## Get & prepare data
 # Load data from CSV files
-@time df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t")
+@time df = DataFrame!(CSV.File(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t"))
 # Separate species
 warblers = [df[df.species .== u,:] for u in unique(df.species)]
 # Reorder species by frequency
