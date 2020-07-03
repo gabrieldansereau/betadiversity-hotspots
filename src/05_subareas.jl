@@ -63,6 +63,25 @@ resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE,
             title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
 resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
+# Combine subareas
+pcomb1 = plot(resNEtr[2][1][:plot_object], title = "")
+pcomb2 = plot(resNEtr[3][1][:plot_object], title = "")
+pcomb3 = plot(resNEtr[4][1][:plot_object], title = "")
+pcomb4 = plot(resSWtr[2][1][:plot_object], title = "")
+pcomb5 = plot(resSWtr[3][1][:plot_object], title = "")
+pcomb6 = plot(resSWtr[4][1][:plot_object], title = "")
+ptitle = plot(annotation = (0.5, 0.5, "Subareas"), framestyle = :none)
+psubt1 = plot(annotation = (0.5, 0.5, "Richness"), framestyle = :none)
+psubt2 = plot(annotation = (0.5, 0.5, "LCBD"), framestyle = :none)
+psubt3 = plot(annotation = (0.5, 0.5, "Relationship"), framestyle = :none)
+l = @layout [t{.01h}; 
+             st1{.01h} st2 st3; 
+             grid(2,3){0.98h}]
+p = plot(ptitle, 
+         psubt1, psubt2, psubt3,
+         pcomb1, pcomb2, pcomb3, 
+         pcomb4, pcomb5, pcomb6, 
+         layout = l)
 
 # Export figures
 # save_figures = true
