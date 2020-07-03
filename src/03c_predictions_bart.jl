@@ -64,7 +64,7 @@ if (@isdefined save_data) && save_data == true
     # Extras
     jld_path = joinpath("data", "jld2", "bart-distributions_xtras.jld2")
     @save jld_path prob_distrib lower_distrib upper_distrib
-    _zip_jld2(replace(jldpath, ".jld2" => ".zip"), jld_path)
+    _zip_jld2(replace(jld_path, ".jld2" => ".zip"), jld_path)
     touch(jld_path)
 end
 
