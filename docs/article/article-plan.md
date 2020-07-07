@@ -17,7 +17,7 @@ Here, we investigate the variation of LCBD indices on extended spatial scales
 including both species-poor and species-rich regions, and investigate their
 applicability for continuous scales and unsampled sites through the use of
 species distribution models (SDMs).
-To this aim, we used bayesian additive regression trees (BARTs) to model species
+To this aim, we used Bayesian additive regression trees (BARTs) to model species
 composition on continuous scales based on observation data from the eBird
 database.
 Our results highlight a changing relationship between site richness and LCBD
@@ -36,7 +36,7 @@ unsampled locations, which could be important targets for conservation purposes.
 </p>
 
 Figure: Distribution of species richness in North America, defined as the number
-of Warblers species per site (10 arc-minutes pixel).
+of Warblers species per site (10 arc-minutes pixels).
 The raw occurrence observations from eBird (left) and the SDM
 predictions from the BART models (right) were both transformed
 into presence-absence data per species before calculating richness.
@@ -51,7 +51,7 @@ transformation was applied before computing the LCBD indices.
 
 ![Relationship](fig/relationship.png)
 
-Figure: Relationship between the species richness and the LCBD value of the each
+Figure: Relationship between the species richness and the LCBD value of each
 site based on the SDM predictions.
 LCBD values were scaled to the maximum value observed after applying Hellinger
 transformation.
