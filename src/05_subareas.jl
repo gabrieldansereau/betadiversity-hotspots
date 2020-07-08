@@ -190,10 +190,10 @@ for p in subarea_plots[[1, mid_ind, end]]
 end
 
 # Combine 3 scales
-l1 = @layout [a{0.6w} b;
-              c{0.6w} d;
-              e{0.6w} f]
-p = plot(ps..., layout = l1, size = (1000,800))
+l1 = @layout [a b;
+              c d;
+              e f]
+p = plot(ps..., layout = l1, size = (900, 900))
 
 # Export figures
 # save_figures = true
