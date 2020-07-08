@@ -141,6 +141,7 @@ coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 # Relative LCBD values
 p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
 # Non-relative values
+asp_ratio = 92.60/60.75
 p = plot_subareas(coords_subarea, distributions;
                   relative = false,
                   clim = [() (0.0,Inf) () ()],
