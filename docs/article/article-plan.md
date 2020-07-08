@@ -38,21 +38,29 @@ unsampled locations, which could be important targets for conservation purposes.
 Figure: Distribution of species richness in North America, defined as the number
 of Warblers species per site (10 arc-minutes pixels).
 The raw occurrence observations from eBird (left) and the SDM
-predictions from the BART models (right) were both transformed
+predictions from the single-species BART models (right) were both transformed
 into presence-absence data per species before calculating richness.
 
-![LCBD values](fig/lcbd-bart.png)
+<p align="center">
+    <img src="fig/lcbd-raw.png" width="49%" />
+    <img src="fig/lcbd-bart.png" width="49%" />
+</p>
 
 Figure: Distribution of the LCBD values in North America, calculated from the
 variance of the site-by-species community matrix Y and scaled to the maximum
 value observed.
-SDM predictions were converted into presence-absence data, then the Hellinger
-transformation was applied before computing the LCBD indices.
+Occurrence observations from eBird (left) and single-species SDM predictions
+(right) were converted into presence-absence data per species, then the
+Hellinger transformation was applied before computing the LCBD indices.
 
-![Relationship](fig/relationship-bart.png)
+<p align="center">
+    <img src="fig/relationship-raw.png" width="49%" />
+    <img src="fig/relationship-bart.png" width="49%" />
+</p>
 
 Figure: Relationship between the species richness and the LCBD value of each
-site based on the SDM predictions.
+site based on the occurrence observations from eBird (left) and the SDM
+predictions (right).
 LCBD values were scaled to the maximum value observed after applying Hellinger
 transformation.
 
