@@ -83,18 +83,42 @@ function plot_combined_subareas(subarea_plot1, subarea_plot2; kw...)
              pcomb1, pcomb2, pcomb3, 
              pcomb4, pcomb5, pcomb6, 
              layout = l,
-             size = (1300, 550)
+             size = (1300, 550);
+             kw...
              )
     return p
 end
 combined_plot = plot_combined_subareas(resNEtr, resSWtr)
+# Combine without richness
+function plot_combined_subareas2(subarea_plot1, subarea_plot2; kw...)
+    pcomb2 = plot(subarea_plot1[3][1][:plot_object], title = "")
+    pcomb3 = plot(subarea_plot1[4][1][:plot_object], title = "")
+    pcomb5 = plot(subarea_plot2[3][1][:plot_object], title = "")
+    pcomb6 = plot(subarea_plot2[4][1][:plot_object], title = "")
+    ptitle_NE = plot(annotation = (0.5, 0.5, "Northeast subarea", 16), framestyle = :none)
+    ptitle_SW = plot(annotation = (0.5, 0.5, "Southwest subarea", 16), framestyle = :none)
+    l = @layout [t1{.01h}; 
+                 pcomb2 pcomb3;
+                 t2{.01h}; 
+                 pcomb5 pcomb6]
+    psubareas = plot(ptitle_NE, 
+                     pcomb2, pcomb3,
+                     ptitle_SW,
+                     pcomb5, pcomb6,
+                     layout = l,
+                     size = (900,600)
+                     )
+    return psubareas
+end
+combined_plot2 = plot_combined_subareas2(resNEtr, resSWtr)
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
     savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
-    savefig(plot(combined_plot, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
+    savefig(plot(combined_plot, dpi = 150),  joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
+    savefig(plot(combined_plot2, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined2.png"))
 end
 
 #### Repeat for different subareas
