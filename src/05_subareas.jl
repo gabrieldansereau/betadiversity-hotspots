@@ -191,13 +191,9 @@ for p in subarea_plots[[1, mid_ind, end]]
 end
 
 # Combine 3 scales
-l1 = @layout [a b;
-              c d;
-              e f]
-p = plot(ps[1], ps[2],
-         plot(ps[3], title = ""), plot(ps[4], title = ""),
-         plot(ps[5], title = ""), plot(ps[6], title = ""),
-         layout = l1, size = (900, 900))
+p = plot(ps..., 
+         title = ["LCBD" "Relationship" "" "" "" ""],
+         layout = (3, 2), size = (900, 900))
 
 # Export figures
 # save_figures = true
