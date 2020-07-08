@@ -64,12 +64,10 @@ predictions (right).
 LCBD values were scaled to the maximum value observed after applying Hellinger
 transformation.
 
-![NE subareas](../../fig/bart/05-1_bart_subareas_NEtr.png)
+![NE subareas](../../fig/bart/05-1_bart_subareas_combined2.png)
 
 Figure: Comparison between a species-rich region (Northeast) and a species-poor
 one (Southwest) at a given scale, based on the SDM predictions.
-
-![SW subareas](../../fig/bart/05-1_bart_subareas_SWtr.png)
 
 ![3 scales](../../fig/bart/05-2_bart_subareas_3scales.png)
 
