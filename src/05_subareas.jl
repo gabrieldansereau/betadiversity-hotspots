@@ -64,30 +64,37 @@ resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE,
 resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
 # Combine subareas
-pcomb1 = plot(resNEtr[2][1][:plot_object], title = "")
-pcomb2 = plot(resNEtr[3][1][:plot_object], title = "")
-pcomb3 = plot(resNEtr[4][1][:plot_object], title = "")
-pcomb4 = plot(resSWtr[2][1][:plot_object], title = "")
-pcomb5 = plot(resSWtr[3][1][:plot_object], title = "")
-pcomb6 = plot(resSWtr[4][1][:plot_object], title = "")
-ptitle = plot(annotation = (0.5, 0.5, "Subareas"), framestyle = :none)
-psubt1 = plot(annotation = (0.5, 0.5, "Richness"), framestyle = :none)
-psubt2 = plot(annotation = (0.5, 0.5, "LCBD"), framestyle = :none)
-psubt3 = plot(annotation = (0.5, 0.5, "Relationship"), framestyle = :none)
-l = @layout [t{.01h}; 
-             st1{.01h} st2 st3; 
-             grid(2,3){0.98h}]
-p = plot(ptitle, 
-         psubt1, psubt2, psubt3,
-         pcomb1, pcomb2, pcomb3, 
-         pcomb4, pcomb5, pcomb6, 
-         layout = l)
+function plot_combined_subareas(subarea_plot1, subarea_plot2; kw...)
+    pcomb1 = plot(subarea_plot1[2][1][:plot_object], title = "")
+    pcomb2 = plot(subarea_plot1[3][1][:plot_object], title = "")
+    pcomb3 = plot(subarea_plot1[4][1][:plot_object], title = "")
+    pcomb4 = plot(subarea_plot2[2][1][:plot_object], title = "")
+    pcomb5 = plot(subarea_plot2[3][1][:plot_object], title = "")
+    pcomb6 = plot(subarea_plot2[4][1][:plot_object], title = "")
+    ptitle = plot(annotation = (0.5, 0.5, "Subareas"), framestyle = :none)
+    psubt1 = plot(annotation = (0.5, 0.5, "Richness"), framestyle = :none)
+    psubt2 = plot(annotation = (0.5, 0.5, "LCBD"), framestyle = :none)
+    psubt3 = plot(annotation = (0.5, 0.5, "Relationship"), framestyle = :none)
+    l = @layout [t{.01h}; 
+                 st1{.01h} st2 st3; 
+                 grid(2,3){0.98h}]
+    p = plot(ptitle, 
+             psubt1, psubt2, psubt3,
+             pcomb1, pcomb2, pcomb3, 
+             pcomb4, pcomb5, pcomb6, 
+             layout = l,
+             size = (1300, 550)
+             )
+    return p
+end
+combined_plot = plot_combined_subareas(resNEtr, resSWtr)
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
     savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
+    savefig(plot(combined_plot, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
 end
 
 #### Repeat for different subareas
