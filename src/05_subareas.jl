@@ -65,12 +65,12 @@ resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
 # Combine subareas
 function plot_combined_subareas(subarea_plot1, subarea_plot2; kw...)
-    pcomb1 = plot(subarea_plot1[2][1][:plot_object], title = "")
-    pcomb2 = plot(subarea_plot1[3][1][:plot_object], title = "")
-    pcomb3 = plot(subarea_plot1[4][1][:plot_object], title = "")
-    pcomb4 = plot(subarea_plot2[2][1][:plot_object], title = "")
-    pcomb5 = plot(subarea_plot2[3][1][:plot_object], title = "")
-    pcomb6 = plot(subarea_plot2[4][1][:plot_object], title = "")
+    p1_rich = plot(subarea_plot1[2][1][:plot_object], title = "")
+    p1_lcbd = plot(subarea_plot1[3][1][:plot_object], title = "")
+    p1_rela = plot(subarea_plot1[4][1][:plot_object], title = "")
+    p2_rich = plot(subarea_plot2[2][1][:plot_object], title = "")
+    p2_lcbd = plot(subarea_plot2[3][1][:plot_object], title = "")
+    p2_rela = plot(subarea_plot2[4][1][:plot_object], title = "")
     ptitle = plot(annotation = (0.5, 0.5, "Subareas"), framestyle = :none)
     psubt1 = plot(annotation = (0.5, 0.5, "Richness"), framestyle = :none)
     psubt2 = plot(annotation = (0.5, 0.5, "LCBD"), framestyle = :none)
@@ -80,8 +80,8 @@ function plot_combined_subareas(subarea_plot1, subarea_plot2; kw...)
                  grid(2,3){0.98h}]
     p = plot(ptitle, 
              psubt1, psubt2, psubt3,
-             pcomb1, pcomb2, pcomb3, 
-             pcomb4, pcomb5, pcomb6, 
+             p1_rich, p1_lcbd, p1_rela, 
+             p2_rich, p2_lcbd, p2_rela, 
              layout = l,
              size = (1300, 550);
              kw...
@@ -91,20 +91,20 @@ end
 combined_plot = plot_combined_subareas(resNEtr, resSWtr)
 # Combine without richness
 function plot_combined_subareas2(subarea_plot1, subarea_plot2; kw...)
-    pcomb2 = plot(subarea_plot1[3][1][:plot_object], title = "")
-    pcomb3 = plot(subarea_plot1[4][1][:plot_object], title = "")
-    pcomb5 = plot(subarea_plot2[3][1][:plot_object], title = "")
-    pcomb6 = plot(subarea_plot2[4][1][:plot_object], title = "")
-    ptitle_NE = plot(annotation = (0.5, 0.5, "Northeast subarea", 16), framestyle = :none)
-    ptitle_SW = plot(annotation = (0.5, 0.5, "Southwest subarea", 16), framestyle = :none)
-    l = @layout [t1{.01h}; 
-                 pcomb2 pcomb3;
-                 t2{.01h}; 
-                 pcomb5 pcomb6]
-    psubareas = plot(ptitle_NE, 
-                     pcomb2, pcomb3,
-                     ptitle_SW,
-                     pcomb5, pcomb6,
+    lcbd_p1 = plot(subarea_plot1[3][1][:plot_object], title = "")
+    rela_p1 = plot(subarea_plot1[4][1][:plot_object], title = "")
+    lcbd_p2 = plot(subarea_plot2[3][1][:plot_object], title = "")
+    rela_p2 = plot(subarea_plot2[4][1][:plot_object], title = "")
+    subt_p1 = plot(annotation = (0.5, 0.5, "Northeast subarea", 16), framestyle = :none)
+    subt_p2 = plot(annotation = (0.5, 0.5, "Southwest subarea", 16), framestyle = :none)
+    l = @layout [s1{.01h}; 
+                 p1 p2;
+                 s2{.01h}; 
+                 p3 p4]
+    psubareas = plot(subt_p1, 
+                     lcbd_p1, rela_p1,
+                     subt_p2,
+                     lcbd_p2, rela_p2,
                      layout = l,
                      size = (900,600)
                      )
