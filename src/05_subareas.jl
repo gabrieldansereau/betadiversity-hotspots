@@ -184,19 +184,19 @@ end
 ps = []
 mid_ind = median(1:length(subarea_plots)) |> round |> Int64
 for p in subarea_plots[[1, mid_ind, end]]
-    p_lcbd = plot(p[2][1][:plot_object], title = "")
-    p_rel = plot(p[3][1][:plot_object], title = "")
+    p_lcbd = p[2][1][:plot_object]
+    p_rel = p[3][1][:plot_object]
     push!(ps, p_lcbd, p_rel)
 end
 
 # Combine 3 scales
-psubtitle_lcbd = plot(annotation = (0.5, 0.5, "LCBD", 16), framestyle = :none)
-psubtitle_rel  = plot(annotation = (0.5, 0.5, "Relationship", 16), framestyle = :none)
-l1 = @layout [sub1{0.01h} sub2{0.01h};
-              a b;
+l1 = @layout [a b;
               c d;
               e f]
-p = plot(psubtitle_lcbd, psubtitle_rel, ps..., layout = l1, size = (900, 900))
+p = plot(ps[1], ps[2],
+         plot(ps[3], title = ""), plot(ps[4], title = ""),
+         plot(ps[5], title = ""), plot(ps[6], title = ""),
+         layout = l1, size = (900, 900))
 
 # Export figures
 # save_figures = true
