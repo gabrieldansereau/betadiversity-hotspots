@@ -16,7 +16,38 @@ distribution modeling
 - species richness
 - spatial scales
 
-## Abstracts
+## Outline
+
+- Introduction
+  - LCBD as useful measure for ecological uniqueness
+  - Restriction to small scales & few sites, unlike BD itself
+  - Restriction to known composition
+  - Potential to fill-in gaps through SDMs
+  - Poses question of applicability on large, continuous scales
+  - Potential varying relationship between richness-LCBD, given dependence of BD
+    on scale
+- Methods
+  - eBird & transformation to presence-absence
+  - WorldClim & Copernicus, variable selection
+  - BARTs with `embarcadero`
+  - Richness, LCBD with hellinger transformation, relationship
+  - Subareas (rich & poor)
+  - 3 scales
+- Results
+  - SDMs results are similar to raw observations for richness, LCBD, and
+    relationship
+  - Relationship is different for species-rich & species-poor sites
+  - Relationship varies according to scale, being well defined at smaller scales
+    and becoming increasingly vague on larger extents
+- Discussion
+  - Same results with SDMS mean they could reliably be used to fill-in for
+    knowledge gaps, potentially for conservation too
+  - Difference between species-poor & species-rich sites: shows ways to be
+    unique differ, to link with considerations beta diversity itself
+  - Scales difference: aggregating too many different sites possibly masks
+    patterns of uniqueness?
+
+## Abstract
 
 Beta diversity is an essential measure to describe the organization of
 biodiversity in space.
