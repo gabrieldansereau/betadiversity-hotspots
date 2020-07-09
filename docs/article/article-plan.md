@@ -1,7 +1,22 @@
 <div style="text-align: justify">
 
+## Title
 
-## Abstract
+Assessing ecological uniqueness on extended continuous scales through species
+distribution modeling
+- ~~Assessing~~ Predicting? Evaluating?
+- ~~ecological uniqueness~~ local contributions to beta diversity?
+
+## Keywords
+
+- beta diversity
+- local contributions to beta diversity
+- ecological uniqueness
+- species distribution modeling
+- species richness
+- spatial scales
+
+## Abstracts
 
 Beta diversity is an essential measure to describe the organization of
 biodiversity in space.
