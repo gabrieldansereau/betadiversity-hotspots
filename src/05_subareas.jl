@@ -115,8 +115,8 @@ combined_plot2 = plot_combined_subareas2(resNEtr, resSWtr)
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
-    savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
+    # savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
+    # savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
     savefig(plot(combined_plot, dpi = 150),  joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
     savefig(plot(combined_plot2, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined2.png"))
 end
