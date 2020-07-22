@@ -89,36 +89,36 @@ end;
 plot(LCBDwindow, c = :viridis)
 
 ## Visualize result
-function plot_lcbd_windows(richness, lcbd; title = "", kw...)
+function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
     p1 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
     p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
                 xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                xlim = (1, 45), ylim = (0.0, 1.0))
-    if title != ""
+                xlim = (1, 45), ylim = (0.0, 1.0),
+                bottommargin = 3.0mm)
+    if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
-        ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
-        p = plot(ptitle, p1, p2, layout = l; kw...)
+        ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
+        p = plot(ptitle, p1, p2, layout = l, size = (900, 300); kw...)
     else
         l = @layout [a b]
-        p = plot(p1, p2, layout = l; kw...)
+        p = plot(p1, p2, layout = l, size = (900, 300); kw...)
     end
     return p
 end
-window_full = plot_lcbd_windows(richness, LCBDwindow, dpi = 150, size = (900,300))
-window_NE = plot_lcbd_windows(richness[coords_NE], LCBDwindow[coords_NE], dpi = 150, size = (900,300))
-window_SW = plot_lcbd_windows(richness[coords_SW], LCBDwindow[coords_SW], dpi = 150, size = (900,300))
-ptitle_NE = plot(annotation = (0.5, 0.5, "Northeast subarea", 16), framestyle = :none)
-ptitle_SW = plot(annotation = (0.5, 0.5, "Southwest subarea", 16), framestyle = :none)
-l = @layout [t1{.01h}; p1;
-             t2{.01h}; p2]
-psubareas = plot(ptitle_NE, window_NE, ptitle_SW, window_SW, layout = l,
-                 size = (900,600), dpi = 150)
+window_full = plot_lcbd_relationship(richness, LCBDwindow)
+window_NE = plot_lcbd_relationship(richness[coords_NE], LCBDwindow[coords_NE],
+                                   maintitle = "Northeast subarea")
+window_SW = plot_lcbd_relationship(richness[coords_SW], LCBDwindow[coords_SW],
+                                   maintitle = "Southwest subarea")
+psubareas = plot(window_NE, window_SW, layout = grid(2,1), 
+                 size = (900, 600), bottommargin = 0.0mm,
+                 title = ["" "" "" ""])
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(window_full, joinpath("fig", outcome, "06-0_$(outcome)_moving-windows_full.png"))
-    savefig(psubareas,   joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"))
+    savefig(plot(window_full, dpi = 150), joinpath("fig", outcome, "06-0_$(outcome)_moving-windows_full.png"))
+    savefig(plot(psubareas, dpi = 150),   joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"))
 end
 
 ## GIF
@@ -133,10 +133,9 @@ nplots = 0
     global left -= asp_ratio
     global bottom -= asp_ratio * dim_ratio
     coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-    p = plot_lcbd_windows(richness[coords_subarea], LCBDwindow[coords_subarea],
+    p = plot_lcbd_relationship(richness[coords_subarea], LCBDwindow[coords_subarea],
                             formatter = f -> "$(round(f, digits = 1))",
-                            aspect_ratio = [asp_ratio :auto],
-                            dpi = 150, size = (900,300))
+                            dpi = 150)
     push!(subarea_plots, p)
 end
 anim = @animate for p in subarea_plots[Not(1)]
@@ -147,22 +146,15 @@ if (@isdefined save_figures) && save_figures == true
     gif(anim, joinpath("fig", outcome, "06-3_$(outcome)_moving-windows.gif"), fps = 3)
 end
 
-## 3 scales comparison
+#### 3 scales comparison
 
 # Extract LCBD & relationship subplots for first, middle, last GIF plots
-ps = []
 mid_ind = median(1:length(subarea_plots)) |> round |> Int64
-for p in subarea_plots[[1, mid_ind, end]]
-    p_lcbd = p[1][1][:plot_object]
-    p_rel = p[2][1][:plot_object]
-    push!(ps, p_lcbd, p_rel)
-end
+ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
-l1 = @layout [a{0.6w} b;
-              c{0.6w} d;
-              e{0.6w} f]
-p = plot(ps..., layout = l1, size = (1000,800))
+p = plot(ps..., dpi = 100, layout = (3,1), size = (900, 900),
+         title = ["LCBD" "Relationship" "" "" "" ""])
 
 # Export figures
 # save_figures = true
