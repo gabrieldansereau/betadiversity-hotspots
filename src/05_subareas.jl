@@ -87,7 +87,7 @@ function plot_subareas(coords, initial_distributions; display_coords = coords, t
         richness = richness[display_coords]
         lcbd = [l[display_coords] for l in lcbd]
     end
-    p = plot_lcbd_richness(richness, lcbd; kw...)
+    p = plot_lcbd_relationship(richness, lcbd; kw...)
 end
 
 # Initial subarea
@@ -99,11 +99,11 @@ p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, di
 asp_ratio = 92.60/60.75
 p = plot_subareas(coords_subarea, distributions;
                   relative = false,
-                  clim = [() (0.0,Inf) () ()],
-                  ylim = [() () (0.0,Inf) ()],
-                  colorbar_title = ["Number of sites" "LCBD score" "Number of sites" "LCBD score" "Number of sites" "LCBD score"],
+                  clim = [(0.0, Inf) (-Inf, Inf)],
+                  ylim = [(-Inf, Inf) (0.0, Inf)],
+                  colorbar_title = ["LCBD score" "Number of sites"],
                   formatter = :plain,
-                  aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio]
+                  aspect_ratio = [asp_ratio :auto]
                   )
 
 ## Expanding GIF
@@ -120,7 +120,6 @@ nplots = 0
     coords_subarea = (left = left, right = right, bottom = bottom, top = top)
     p = plot_subareas(coords_subarea, distributions;
                       formatter = f -> "$(round(f, digits = 1))",
-                      aspect_ratio = [asp_ratio asp_ratio :auto asp_ratio],
                       dpi = 150)
     push!(subarea_plots, p)
 end
@@ -137,18 +136,12 @@ end
 #### 3 scales comparison
 
 # Extract LCBD & relationship subplots for first, middle, last GIF plots
-ps = []
 mid_ind = median(1:length(subarea_plots)) |> round |> Int64
-for p in subarea_plots[[1, mid_ind, end]]
-    p_lcbd = p[2][1][:plot_object]
-    p_rel = p[3][1][:plot_object]
-    push!(ps, p_lcbd, p_rel)
-end
+ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
-p = plot(ps..., 
-         title = ["LCBD" "Relationship" "" "" "" ""],
-         layout = (3, 2), size = (900, 900))
+p = plot(ps..., dpi = 100, layout = (3,1), size = (900, 900),
+         title = ["LCBD" "Relationship" "" "" "" ""])
 
 # Export figures
 # save_figures = true
