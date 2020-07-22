@@ -1,3 +1,4 @@
+using Distributed
 using JLD2
 using Plots
 using Shapefile
@@ -21,3 +22,5 @@ else
     @everywhere include(joinpath("src", "BetadiversityHotspots.jl"))
 end
 using .BetadiversityHotspots
+
+verify_jld2_data(joinpath("data", "jld2"))

@@ -25,19 +25,19 @@ include(joinpath("lib", "beta-div.jl"))
 export BD
 
 include(joinpath("lib", "bioclim.jl"))
-export _bcscore, _bioclim_layer, bioclim
+export bioclim
 
 include(joinpath("lib", "csvdata.jl"))
-export prepare_gbif_data, prepare_ebd_data
+export prepare_ebd_data, prepare_ebd_data!
 
 include(joinpath("lib", "landcover.jl"))
 export landcover
 
 include(joinpath("lib", "overloads.jl"))
-export getindex, longitudes, latitudes, clip, minimum
+export clip
 
 include(joinpath("lib", "plotSDM.jl"))
-export plotSDM, plot
+export plotSDM, plotSDM2, plot
 
 include(joinpath("lib", "presence-absence.jl"))
 export presence_absence
@@ -50,9 +50,5 @@ include(joinpath("lib", "shapefiles.jl"))
 
 include(joinpath("lib", "zipfile.jl"))
 export verify_jld2_data, _unzip_jld2, _zip_jld2
-
-
-verify_jld2_data(joinpath("data", "jld2"))
-# verify_jld2_data(joinpath("data", "jld2"); extract_recent = true)
 
 end

@@ -1,7 +1,7 @@
-import Pkg
-Pkg.activate(".")
-using Distributed
-@time include("required.jl")
+if !(@isdefined BetadiversityHotspots)
+    import Pkg; Pkg.activate(".")
+    @time include("required.jl")
+end
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
@@ -43,14 +43,14 @@ Yobs_plot = heatmap(Ysort,
 richness = calculate_richness(Y, distributions[1])
 
 # Plot richness
-richness_plot = plotSDM(richness; c=:viridis,
+richness_plot = plotSDM2(richness; c=:viridis,
                         title = "Richness ($outcome distributions)",
-                        clim=(0.0, Inf),
+                        clim = (0.0, maximum(richness)),
                         colorbar_title = "Number of species per site",
                         # dpi=300
                         )
 # Plot richness quantiles
-richness_qplot = plotSDM(quantiles(richness), c=:viridis,
+richness_qplot = plotSDM2(quantiles(richness), c=:viridis,
                          title = "Richness quantiles ($outcome distributions)",
                          colorbar_title = "Number of species per site (quantiles)",
                          # dpi=300
@@ -62,13 +62,13 @@ richness_qplot = plotSDM(quantiles(richness), c=:viridis,
 lcbd = calculate_lcbd(Y, distributions[1]; transform = true, relative = true)
 
 # Plot relative values
-lcbdtr_plot = plotSDM(lcbd, c=:viridis,
+lcbdtr_plot = plotSDM2(lcbd, c=:viridis,
                       title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
                       colorbar_title = "LCBD value (relative to maximum)", # dpi=300
                       )
 
 # Plot quantile scores
-lcbdtr_qplot = plotSDM(quantiles(lcbd), c=:viridis,
+lcbdtr_qplot = plotSDM2(quantiles(lcbd), c=:viridis,
                        title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
                        colorbar_title = "LCBD quantile score", # dpi=300
                        )
@@ -78,7 +78,7 @@ lcbdtr_qplot = plotSDM(quantiles(lcbd), c=:viridis,
 # Plot relationship as histogram2d
 rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
                          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                         xlim = (1, Inf), ylim = (0.0, 1.0), # dpi = 150
+                         xlim = (1.0, Inf), ylim = (0.0, 1.0), # dpi = 150
                          )
 
 

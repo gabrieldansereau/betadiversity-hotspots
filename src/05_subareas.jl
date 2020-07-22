@@ -1,7 +1,7 @@
-import Pkg
-Pkg.activate(".")
-using Distributed
-@time include("required.jl")
+if !(@isdefined BetadiversityHotspots)
+    import Pkg; Pkg.activate(".")
+    @time include("required.jl")
+end
 
 ## Conditional arguments
 # outcome = "rf"
@@ -63,12 +63,62 @@ resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE,
             title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
 resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW,
             title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
+# Combine subareas
+function plot_combined_subareas(subarea_plot1, subarea_plot2; kw...)
+    p1_rich = plot(subarea_plot1[2][1][:plot_object], title = "")
+    p1_lcbd = plot(subarea_plot1[3][1][:plot_object], title = "")
+    p1_rela = plot(subarea_plot1[4][1][:plot_object], title = "")
+    p2_rich = plot(subarea_plot2[2][1][:plot_object], title = "")
+    p2_lcbd = plot(subarea_plot2[3][1][:plot_object], title = "")
+    p2_rela = plot(subarea_plot2[4][1][:plot_object], title = "")
+    ptitle = plot(annotation = (0.5, 0.5, "Subareas"), framestyle = :none)
+    psubt1 = plot(annotation = (0.5, 0.5, "Richness"), framestyle = :none)
+    psubt2 = plot(annotation = (0.5, 0.5, "LCBD"), framestyle = :none)
+    psubt3 = plot(annotation = (0.5, 0.5, "Relationship"), framestyle = :none)
+    l = @layout [t{.01h}; 
+                 st1{.01h} st2 st3; 
+                 grid(2,3){0.98h}]
+    p = plot(ptitle, 
+             psubt1, psubt2, psubt3,
+             p1_rich, p1_lcbd, p1_rela, 
+             p2_rich, p2_lcbd, p2_rela, 
+             layout = l,
+             size = (1300, 550);
+             kw...
+             )
+    return p
+end
+combined_plot = plot_combined_subareas(resNEtr, resSWtr)
+# Combine without richness
+function plot_combined_subareas2(subarea_plot1, subarea_plot2; kw...)
+    lcbd_p1 = plot(subarea_plot1[3][1][:plot_object], title = "")
+    rela_p1 = plot(subarea_plot1[4][1][:plot_object], title = "")
+    lcbd_p2 = plot(subarea_plot2[3][1][:plot_object], title = "")
+    rela_p2 = plot(subarea_plot2[4][1][:plot_object], title = "")
+    subt_p1 = plot(annotation = (0.5, 0.5, "Northeast subarea", 16), framestyle = :none)
+    subt_p2 = plot(annotation = (0.5, 0.5, "Southwest subarea", 16), framestyle = :none)
+    l = @layout [s1{.01h}; 
+                 p1 p2;
+                 s2{.01h}; 
+                 p3 p4]
+    psubareas = plot(subt_p1, 
+                     lcbd_p1, rela_p1,
+                     subt_p2,
+                     lcbd_p2, rela_p2,
+                     layout = l,
+                     size = (900,600)
+                     )
+    return psubareas
+end
+combined_plot2 = plot_combined_subareas2(resNEtr, resSWtr)
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
-    savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
+    # savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
+    # savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
+    savefig(plot(combined_plot, dpi = 150),  joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
+    savefig(plot(combined_plot2, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined2.png"))
 end
 
 #### Repeat for different subareas
@@ -91,6 +141,7 @@ coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 # Relative LCBD values
 p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
 # Non-relative values
+asp_ratio = 92.60/60.75
 p = plot_subareas(coords_subarea, distributions;
                   relative = false,
                   clim = [() (0.0,Inf) () ()],
@@ -140,10 +191,9 @@ for p in subarea_plots[[1, mid_ind, end]]
 end
 
 # Combine 3 scales
-l1 = @layout [a{0.6w} b;
-              c{0.6w} d;
-              e{0.6w} f]
-p = plot(ps..., layout = l1, size = (1000,800))
+p = plot(ps..., 
+         title = ["LCBD" "Relationship" "" "" "" ""],
+         layout = (3, 2), size = (900, 900))
 
 # Export figures
 # save_figures = true

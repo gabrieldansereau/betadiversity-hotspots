@@ -1,7 +1,7 @@
-import Pkg
-Pkg.activate(".")
-using Distributed
-@time include("required.jl")
+if !(@isdefined BetadiversityHotspots)
+    import Pkg; Pkg.activate(".")
+    @time include("required.jl")
+end
 
 ## Conditional arguments
 # save_prepdata = true # should preparation data be overwritten (optional)
@@ -48,7 +48,7 @@ wc_plot = plotSDM2(wc_vars[1], colorbar_title = "Annual Mean Temperature (°C)")
 lc_plot = plotSDM(lc_vars[2], colorbar_title = "Crops land cover (%)")
 
 # Get variable info
-glossary = CSV.read(joinpath("data", "proc", "glossary.csv"))
+glossary = DataFrame!(CSV.File(joinpath("data", "proc", "glossary.csv")))
 lcdf, wcdf, spdf = groupby(glossary, :type)
 
 # Clim variables
@@ -117,8 +117,8 @@ end
 
 # Test load
 #=
-testspa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t")
-testenv = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), header=true, delim="\t")
+testspa = DataFrame!(CSV.File(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t"))
+testenv = DataFrame!(CSV.File(joinpath("data", "proc", "distributions_env_full.csv"), header=true, delim="\t"))
 testjoin = join(testspa, testenv, on = :site, kind = :inner)
 =#
 

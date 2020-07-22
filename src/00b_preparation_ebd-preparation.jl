@@ -1,7 +1,7 @@
-import Pkg
-Pkg.activate(".")
-using Distributed
-@time include("required.jl")
+if !(@isdefined BetadiversityHotspots)
+    import Pkg; Pkg.activate(".")
+    @time include("required.jl")
+end
 
 ## Conditional arguments
 # save_prepdata = true # should prepared data be overwritten (optional)
@@ -9,7 +9,7 @@ using Distributed
 ## EBD data preparation
 
 # Load data from CSV files (from file cut with terminal)
-@time df = CSV.read(joinpath("data", "raw", "ebd_warblers_cut.csv"), header=true, delim="\t", copycols = true)
+@time df = DataFrame!(CSV.File(joinpath("data", "raw", "ebd_warblers_cut.csv"), header=true, delim="\t", copycols = true))
 
 # Prepare data (arrange values & columns)
 @time prepare_ebd_data!(df)

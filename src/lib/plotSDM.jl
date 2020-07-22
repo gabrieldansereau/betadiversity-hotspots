@@ -103,8 +103,8 @@ end
         aspect_ratio --> 92.60/60.75
         xlims --> (minimum(longitudes(layer)),maximum(longitudes(layer)))
         ylims --> (minimum(latitudes(layer)),maximum(latitudes(layer)))
-        xlabel --> "Longitude"
-        ylabel --> "Latitude"
+        xguide --> "Longitude"
+        yguide --> "Latitude"
         longitudes(layer), latitudes(layer), layer.grid
     elseif get(plotattributes, :seriestype, :histogram) in [:histogram, :density]
         filter(!isnan, layer.grid)

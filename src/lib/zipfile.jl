@@ -32,7 +32,7 @@ function verify_jld2_data(path::AbstractString; extract_recent::Bool = false)
     if any(more_recent)
         @warn """
               \n One (or more) ZIP archive is more recent than its corresponding JLD2 file.
-              \n Run `verify_jld2_data(path; extract_recent = true)` to extract newer version.
+              \n Run `verify_jld2_data("$(path)"; extract_recent = true)` to extract newer version.
               """
         # Extract JLD2 file from more recent archive, if specified
         if extract_recent
