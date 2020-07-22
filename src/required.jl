@@ -1,6 +1,7 @@
 using Distributed
 using JLD2
 using Plots
+using Plots.PlotMeasures
 using Shapefile
 using GBIF
 using StatsBase
