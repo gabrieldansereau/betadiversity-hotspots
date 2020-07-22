@@ -89,8 +89,13 @@ end;
 plot(LCBDwindow, c = :viridis)
 
 ## Visualize result
+if outcome == "raw"
+    plotfct = :plotSDM2
+else
+    plotfct = :plot
+end
 function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
-    p1 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
+    p1 = eval(plotfct)(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
     p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
                 xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
                 xlim = (1, 45), ylim = (0.0, 1.0),
