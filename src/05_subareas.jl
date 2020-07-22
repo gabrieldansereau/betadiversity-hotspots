@@ -43,22 +43,21 @@ lcbd_SW = calculate_lcbd(Y_SW, distributions_SW[1])
 
 ## Combine figures
 function plot_lcbd_richness(richness, lcbd; title = "", kw...)
-    p1 = plot(richness, c = :viridis, title = "Richness", colorbar_title = "Number of species")
-    p2 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
-    p3 = plot(quantiles(lcbd), c = :viridis, title = "LCBD quantiles", colorbar_title = "Quantile rank", clim = (0,1))
-    p4 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
-                     xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                     xlim = (1, 45), ylim = (0.0, 1.0))
+    p1 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
+    p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
+                xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
+                xlim = (1, 45), ylim = (0.0, 1.0),
+                bottommargin = 3.0mm)
     if title != ""
-        l = @layout [t{.01h}; grid(2,2)]
+        l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
-        p = plot(ptitle, p1, p2, p4, p3, layout = l; kw...)
+        p = plot(ptitle, p1, p2, layout = l, size = (900, 300); kw...)
     else
-        p = plot(p1, p2, p4, p3; kw...)
+        l = @layout [a b]
+        p = plot(p1, p2, layout = l, size = (900, 300); kw...)
     end
     return p
 end
-
 resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE,
             title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
 resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW,
