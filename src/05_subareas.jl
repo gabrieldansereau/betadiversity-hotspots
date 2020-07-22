@@ -41,16 +41,16 @@ richness_SW = calculate_richness(Y_SW, distributions_SW[1])
 lcbd_NE = calculate_lcbd(Y_NE, distributions_NE[1])
 lcbd_SW = calculate_lcbd(Y_SW, distributions_SW[1])
 
-## Combine figures
-function plot_lcbd_richness(richness, lcbd; title = "", kw...)
+## Subarea figures
+function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
     p1 = plot(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
     p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
                 xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
                 xlim = (1, 45), ylim = (0.0, 1.0),
                 bottommargin = 3.0mm)
-    if title != ""
+    if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
-        ptitle = plot(annotation = (0.5, 0.5, "$title"), framestyle = :none)
+        ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
         p = plot(ptitle, p1, p2, layout = l, size = (900, 300); kw...)
     else
         l = @layout [a b]
@@ -58,66 +58,22 @@ function plot_lcbd_richness(richness, lcbd; title = "", kw...)
     end
     return p
 end
-resNEtr = plot_lcbd_richness(richness_NE, lcbd_NE,
-            title = "NE subarea - $(uppercase(outcome)) results (hell.transf)")
-resSWtr = plot_lcbd_richness(richness_SW, lcbd_SW,
-            title = "SW subarea - $(uppercase(outcome)) results (hell.transf)")
-# Combine subareas
-function plot_combined_subareas(subarea_plot1, subarea_plot2; kw...)
-    p1_rich = plot(subarea_plot1[2][1][:plot_object], title = "")
-    p1_lcbd = plot(subarea_plot1[3][1][:plot_object], title = "")
-    p1_rela = plot(subarea_plot1[4][1][:plot_object], title = "")
-    p2_rich = plot(subarea_plot2[2][1][:plot_object], title = "")
-    p2_lcbd = plot(subarea_plot2[3][1][:plot_object], title = "")
-    p2_rela = plot(subarea_plot2[4][1][:plot_object], title = "")
-    ptitle = plot(annotation = (0.5, 0.5, "Subareas"), framestyle = :none)
-    psubt1 = plot(annotation = (0.5, 0.5, "Richness"), framestyle = :none)
-    psubt2 = plot(annotation = (0.5, 0.5, "LCBD"), framestyle = :none)
-    psubt3 = plot(annotation = (0.5, 0.5, "Relationship"), framestyle = :none)
-    l = @layout [t{.01h}; 
-                 st1{.01h} st2 st3; 
-                 grid(2,3){0.98h}]
-    p = plot(ptitle, 
-             psubt1, psubt2, psubt3,
-             p1_rich, p1_lcbd, p1_rela, 
-             p2_rich, p2_lcbd, p2_rela, 
-             layout = l,
-             size = (1300, 550);
-             kw...
-             )
-    return p
-end
-combined_plot = plot_combined_subareas(resNEtr, resSWtr)
-# Combine without richness
-function plot_combined_subareas2(subarea_plot1, subarea_plot2; kw...)
-    lcbd_p1 = plot(subarea_plot1[3][1][:plot_object], title = "")
-    rela_p1 = plot(subarea_plot1[4][1][:plot_object], title = "")
-    lcbd_p2 = plot(subarea_plot2[3][1][:plot_object], title = "")
-    rela_p2 = plot(subarea_plot2[4][1][:plot_object], title = "")
-    subt_p1 = plot(annotation = (0.5, 0.5, "Northeast subarea", 16), framestyle = :none)
-    subt_p2 = plot(annotation = (0.5, 0.5, "Southwest subarea", 16), framestyle = :none)
-    l = @layout [s1{.01h}; 
-                 p1 p2;
-                 s2{.01h}; 
-                 p3 p4]
-    psubareas = plot(subt_p1, 
-                     lcbd_p1, rela_p1,
-                     subt_p2,
-                     lcbd_p2, rela_p2,
-                     layout = l,
-                     size = (900,600)
-                     )
-    return psubareas
-end
-combined_plot2 = plot_combined_subareas2(resNEtr, resSWtr)
+resNEtr = plot_lcbd_relationship(richness_NE, lcbd_NE,
+            maintitle = "Northeast subarea")
+resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW,
+            maintitle = "Southwest subarea")
+
+# Combine figures
+combined_plot = plot(resNEtr, resSWtr, layout = grid(2,1), 
+                     size = (900, 600), bottommargin = 0.0mm,
+                     title = ["" "" "" ""])
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     # savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
     # savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
-    savefig(plot(combined_plot, dpi = 150),  joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
-    savefig(plot(combined_plot2, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined2.png"))
+    savefig(plot(combined_plot, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
 end
 
 #### Repeat for different subareas
