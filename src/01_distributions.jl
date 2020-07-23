@@ -21,8 +21,13 @@ else
 end
 
 ## Get & prepare data
+# Define coordinates range
+coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 # Load data from CSV files
-@time df = DataFrame!(CSV.File(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t"))
+df = DataFrame!(CSV.File(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t"))
+# Filter observations outside coordinates range
+filter!(x -> coords.left < x.longitude < coords.right, df)
+filter!(x -> coords.bottom < x.latitude < coords.top, df)
 # Separate species
 # warblers = [df[df.species .== u,:] for u in unique(df.species)]
 warblers = groupby(df, :species)
@@ -38,8 +43,6 @@ specommon = [w.commonName[1] for w in warblers]
 # Create index Dict for species names
 speindex = indexmap(spenames)
 
-# Define coordinates range
-coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 # Observed coordinates range
 coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
               bottom = minimum(df.latitude), top = maximum(df.latitude))

@@ -9,11 +9,6 @@ function presence_absence(species::AbstractDataFrame, copy_layer::SimpleSDMLayer
 
     # Extract coordinates
     coords = (left = copy_layer.left, right = copy_layer.right, bottom = copy_layer.bottom, top = copy_layer.top)
-    # Filter observations to range of interest (default)
-    if full_range == false
-        filter!(x -> coords.left < x[:longitude] < coords.right, species)
-        filter!(x -> coords.bottom < x[:latitude] < coords.top, species)
-    end
     # Create empty grid for presence-absence data (with NaN)
     distribution_grid = copy(copy_layer.grid)
     replace!(x -> !isnothing(x) ? 0.0 : NaN, distribution_grid)
@@ -31,6 +26,9 @@ function presence_absence(species::AbstractDataFrame, copy_layer::SimpleSDMLayer
     if binary == true
         replace!(x -> x > 1.0 ? 1.0 : x, distribution_grid)
     end
+    # Replace zeros (absences) by NaN
+    replace!(distribution_grid, 0.0 => nothing)
+    replace!(distribution_grid, NaN => nothing)
     # Create SimpleSDMLayer
     distribution_layer = SimpleSDMResponse(distribution_grid, copy_layer)
     return distribution_layer
