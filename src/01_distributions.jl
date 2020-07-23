@@ -24,9 +24,14 @@ end
 # Load data from CSV files
 @time df = DataFrame!(CSV.File(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t"))
 # Separate species
-warblers = [df[df.species .== u,:] for u in unique(df.species)]
+# warblers = [df[df.species .== u,:] for u in unique(df.species)]
+warblers = groupby(df, :species)
 # Reorder species by frequency
-sort!(warblers, by = x -> nrow(x), rev = true)
+# sort!(warblers, by = x -> nrow(x), rev = true)
+warblers = warblers |> 
+    x -> combine(nrow, x) |>
+    x -> sortperm(x, :nrow, rev = true) |>
+    x -> warblers[x]
 # Extract species names
 spenames = [w.species[1] for w in warblers]
 specommon = [w.commonName[1] for w in warblers]
