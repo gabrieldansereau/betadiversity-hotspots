@@ -1,4 +1,6 @@
 tags
 assets/landcover/landcover_copernicus_global_100m*
+assets/bioclim*
+assets/wc*
 .Rproj.user
 .vscode
