@@ -76,7 +76,7 @@ function plotSDM2(layer::SimpleSDMLayer; kw...)
     # Add SDM output as heatmap
     heatmap!(sdm_plot, layer,
              legend = true,
-             clim = extrema(layer)); # colorbar limits
+             clim = extrema(layer); # colorbar limits
              kw... # additional keyword arguments
             )
 
