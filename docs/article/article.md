@@ -75,4 +75,11 @@ variables we used were different measures of temperature and precipitation
 0.86 respectively) [@FickHijm17]. 
 We chose to use the coarser 10 arc-minutes resolution in our preliminary
 analyses, as we believed it was sufficient for proof of concept of our method.
+We also collected land cover data from the Copernicus Global land service
+[@BuchSmet19]. 
+These data consisted of 10 variables for the main land cover classes, each
+represented by their percentage of cover fraction. 
+The Copernicus data is available at a 100m spatial resolution, finer than for
+the WorldClim data, hence we coarsened it it to the same resolution by averaging
+the cover fraction values.
 
