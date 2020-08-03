@@ -1,3 +1,7 @@
+---
+bibliography: [article.bib]
+---
+
 ## Pre-methods
 
 - Introduction
