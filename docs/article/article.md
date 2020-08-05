@@ -2,6 +2,8 @@
 bibliography: [article.bib]
 ---
 
+<div style="text-align: justify">
+
 ## Pre-methods
 
 - Introduction
