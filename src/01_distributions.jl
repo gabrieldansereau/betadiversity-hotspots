@@ -39,6 +39,7 @@ warblers = warblers |>
     x -> combine(nrow, x) |>
     x -> sortperm(x, :nrow, rev = true) |>
     x -> warblers[x]
+warblers = [w for w in warblers]
 # Extract species names
 spenames = [w.species[1] for w in warblers]
 specommon = [w.commonName[1] for w in warblers]
