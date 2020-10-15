@@ -34,12 +34,12 @@ end
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 
 # Test loading variables
-lc_vars = landcover(1:10, resolution = "5")
-lc_vars = landcover(1:10, resolution = "10")
-lc_vars = map(x -> landcover(x, resolution = "10")[coords], 1:10)
+lc_vars = landcover(1:10, resolution = 5.0)
+lc_vars = landcover(1:10, resolution = 10.0)
+lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10)
 
 # Load worldclim variables to compare
-wc_vars = map(x -> worldclim(x, resolution = "10")[coords], 1:19);
+wc_vars = map(x -> worldclim(x, resolution = 10.0)[coords], 1:19);
 
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)

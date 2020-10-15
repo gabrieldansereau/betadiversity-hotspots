@@ -1,12 +1,12 @@
 ## Landcover variables loading functions
 
 # Landcover variables loading
-function landcover(layers::Vector{Int64}; resolution::AbstractString="10", path::AbstractString=joinpath("assets", "landcover/"))
+function landcover(layers::Vector{Int64}; resolution::AbstractFloat="10", path::AbstractString=joinpath("assets", "landcover/"))
     ## Get file paths
     # List files in path
     lc_files = readdir("$(path)")
     # Filter for selected resolution
-    filter!(x -> occursin.("$(resolution)m.tif", x), lc_files)
+    filter!(x -> occursin.("$(Int(resolution))m.tif", x), lc_files)
     # Create paths for selected layers only
     paths = joinpath.(path, lc_files)[layers]
 

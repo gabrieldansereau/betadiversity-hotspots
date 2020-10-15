@@ -3,7 +3,7 @@ using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Get the worldclim data
-@time wc_vars = pmap(x -> worldclim(x, resolution = "5"), 1:19);
+@time wc_vars = pmap(x -> worldclim(x, resolution = 5.0), 1:19);
 temp = wc_vars[1]
 
 ## Load predictions
