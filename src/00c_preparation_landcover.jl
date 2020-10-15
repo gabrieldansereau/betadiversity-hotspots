@@ -45,7 +45,7 @@ wc_vars = map(x -> worldclim(x, resolution = "10")[coords], 1:19);
 # Plot wcvars1 (temperature)
 wc_plot = plotSDM2(wc_vars[1], colorbar_title = "Annual Mean Temperature (°C)")
 # Plot lcvars2 (urban)
-lc_plot = plotSDM(lc_vars[2], colorbar_title = "Crops land cover (%)")
+lc_plot = plotSDM2(lc_vars[2], colorbar_title = "Crops land cover (%)")
 
 # Get variable info
 glossary = DataFrame!(CSV.File(joinpath("data", "proc", "glossary.csv")))
@@ -93,6 +93,7 @@ end
 env_vars = [wc_vars; lc_vars]
 # Create env matrix
 env_mat = mapreduce(x -> vec(x.grid), hcat, env_vars)
+replace!(x -> isnothing(x) ? NaN : x, env_mat)
 # Create env dataframe
 env_df = DataFrame(env_mat)
 rename!(env_df, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
