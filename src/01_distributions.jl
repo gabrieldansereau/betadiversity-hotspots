@@ -25,6 +25,8 @@ end
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 # Load data from CSV files
 df = DataFrame!(CSV.File(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t"))
+# Remove groupIdentifier column (causing bug)
+select!(df, Not(:groupIdentifier))
 # Filter observations outside coordinates range
 filter!(x -> coords.left < x.longitude < coords.right, df)
 filter!(x -> coords.bottom < x.latitude < coords.top, df)
