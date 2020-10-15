@@ -9,7 +9,7 @@ end
 ## EBD data preparation
 
 # Load data from CSV files (from file cut with terminal)
-@time df = DataFrame!(CSV.File(joinpath("data", "raw", "ebd_warblers_cut.csv"), header=true, delim="\t", copycols = true))
+@time df = DataFrame!(CSV.File(joinpath("data", "raw", "ebd_warblers_cut.csv"), header=true, delim="\t"))
 
 # Prepare data (arrange values & columns)
 @time prepare_ebd_data!(df)
