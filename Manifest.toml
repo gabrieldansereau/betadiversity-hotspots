@@ -729,9 +729,7 @@ version = "0.3.2"
 
 [[SimpleSDMLayers]]
 deps = ["ArchGDAL", "HTTP", "RecipesBase", "Requires", "Statistics", "ZipFile"]
-git-tree-sha1 = "a3327a0bbf104e834d0e72a00f7c0ebfc4f92e82"
-repo-rev = "master"
-repo-url = "https://github.com/EcoJulia/SimpleSDMLayers.jl.git"
+path = "/home/gdansereau/github/SimpleSDMLayers.jl"
 uuid = "2c645270-77db-11e9-22c3-0f302a89c64c"
 version = "0.3.0"
 
