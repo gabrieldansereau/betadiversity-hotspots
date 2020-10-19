@@ -1,7 +1,7 @@
 ## Landcover variables loading functions
 
 # Landcover variables loading
-function landcover(layers::Vector{Int64}; resolution::AbstractFloat="10", path::AbstractString=joinpath("assets", "landcover/"))
+function landcover(layers::Vector{Int64}; resolution::AbstractFloat=10.0, path::AbstractString=joinpath("assets", "landcover/"))
     ## Get file paths
     # List files in path
     lc_files = readdir("$(path)")
