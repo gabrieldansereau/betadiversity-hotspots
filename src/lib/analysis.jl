@@ -46,7 +46,9 @@ end
 _Yobs(Y) = _Yobs(Y, _indsobs(Y))
 
 function _Ytransf(Yobs)
-    ## Apply Hellinger transformation (using vegan in R)
+    # Remove type Nothing from Array (weird effects with RCall)
+    Yobs = Array{Float32}(Yobs)
+    # Apply Hellinger transformation (using vegan in R)
     @rput Yobs
     begin
         R"""
