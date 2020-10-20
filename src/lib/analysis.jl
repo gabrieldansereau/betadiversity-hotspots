@@ -8,7 +8,7 @@ function calculate_Y(distributions; transform = false)
 
     # Get indices of sites with observations
     inds_obs = _indsobs(Y)
-    # Create matrix Yobs with observed sites only, replace NaNs by zeros
+    # Create matrix Yobs with observed sites only, replace nothings by zeros
     Yobs = _Yobs(Y, inds_obs)
     # Apply Hellinger transformation (using vegan in R)
     if transform
@@ -22,7 +22,7 @@ end
 
 function _indsobs(Y)
     # Verify if sites have observations
-    sites_obs = [any(y .> 0.0) for y in eachrow(Y)];
+    sites_obs = [any(y -> !isnothing(y) && y > 0, yrow) for yrow in eachrow(Y)];
     # Get indices of sites with observations
     inds_obs = findall(sites_obs);
     return inds_obs
@@ -30,7 +30,7 @@ end
 
 function _indsnotobs(Y)
     # Verify if sites have observations
-    sites_obs = [any(y .> 0.0) for y in eachrow(Y)];
+    sites_obs = [any(y -> !isnothing(y) && y > 0, yrow) for yrow in eachrow(Y)];
     # Get indices of sites without observations
     inds_notobs = findall(.!sites_obs);
     return inds_notobs
@@ -40,7 +40,7 @@ function _Yobs(Y, inds_obs)
     # Create matrix Yobs with observed sites only
     Yobs = Y[inds_obs,:];
     # Replace NaNs by zeros for observed sites (~true absences)
-    replace!(Yobs, NaN => 0.0);
+    replace!(Yobs, nothing => 0.0);
     return Yobs
 end
 _Yobs(Y) = _Yobs(Y, _indsobs(Y))
