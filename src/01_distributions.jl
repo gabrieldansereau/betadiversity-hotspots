@@ -112,24 +112,24 @@ else
 end
 
 ## Count sites with presence per species
-pres_counts = [length(filter(x -> x > 0.0, species.grid)) for species in distributions]
+pres_counts = [length(filter(x -> !isnothing(x) && x > 0.0, species.grid)) for species in distributions]
 sort(pres_counts)
 
 ## Plot result
 # Species 1
 sp1 = "Setophaga_townsendi"
-map_sp1 = plotSDM(distributions[speindex[sp1]], c=:BuPu,
-                  title = "$(sp1) distribution ($(outcome))",
-                  colorbar=:none, dpi=300)
-scatter!(map_sp1, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
-                        legend=:bottomright, legendfontsize=5)
+map_sp1 = plotSDM2(distributions[speindex[sp1]], c = reverse(cgrad(:BuPu)),
+                   title = "$(sp1) distribution ($(outcome))",
+                   colorbar = :none)
+scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
+                        legend = :bottomright, legendfontsize = 5)
 # Species 2
 sp2 = "Setophaga_petechia"
-map_sp2 = plotSDM(distributions[speindex[sp2]], c=:BuPu,
-                  title = "$(sp2) distribution ($(outcome))",
-                  colorbar=:none, dpi=300)
-scatter!(map_sp2, [NaN], label="Occurrence", color=:purple, markershape=:rect, markersize=2,
-                        legend=:bottomright, legendfontsize=5)
+map_sp2 = plotSDM2(distributions[speindex[sp2]], c = reverse(cgrad(:BuPu)),
+                   title = "$(sp2) distribution ($(outcome))",
+                   colorbar = :none)
+scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
+                        legend = :bottomright, legendfontsize = 5)
 
 ## Export figures
 # save_figures = true # should figures be overwritten (optional)
