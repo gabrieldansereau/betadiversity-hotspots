@@ -87,8 +87,12 @@ for (gp in seq_along(spe_groups)) {
 
     message(paste0("Training multi-species group (", gp, "/", length(spe_groups)), ")")
 
+    ## Create BART models
     # create_models <- TRUE
+    filepath <- here("data", "rdata", paste0("bart_models", gp, ".RData"))
     if (exists("create_models") && isTRUE(create_models)){
+        # Run models
+        message("Creating models in parallel")
         set.seed(42)
         system.time(
             sdms <- future_map(
@@ -100,15 +104,15 @@ for (gp in seq_along(spe_groups)) {
                 .progress = TRUE
             )
         ) # ~ 4 min in parallel
-    }
-
-    # Export results
-    # save_models <- TRUE
-    filepath <- here("data", "rdata", paste0("bart_models", gp, ".RData"))
-    if (exists("save_models") && isTRUE(save_models)) {
-        message("Saving models to RData")
-        save(sdms, file = filepath)
+        
+        # Export results
+        # save_models <- TRUE
+        if (exists("save_models") && isTRUE(save_models)) {
+            message("Saving models to RData")
+            save(sdms, file = filepath)
+        }
     } else {
+        # Load models from files
         message("Loading models from RData")
         load(filepath)
     }
