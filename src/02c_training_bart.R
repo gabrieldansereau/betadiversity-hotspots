@@ -93,7 +93,7 @@ for (gp in seq_along(spe_groups)) {
     filepath <- here("data", "rdata", modelname)
     if (exists("create_models") && isTRUE(create_models)){
         # Run models
-        message("Creating models in parallel")
+        message("Creating models in parallel: ", modelname)
         set.seed(42)
         system.time(
             sdms <- future_map(
@@ -109,12 +109,12 @@ for (gp in seq_along(spe_groups)) {
         # Export results
         # save_models <- TRUE
         if (exists("save_models") && isTRUE(save_models)) {
-            message("Saving models to RData")
+            message("Saving models to RData: ", modelname)
             save(sdms, file = filepath)
         }
     } else {
         # Load models from files
-        message("Loading models from RData")
+        message("Loading models from RData: ", modelname)
         load(filepath)
     }
 
@@ -148,7 +148,7 @@ for (gp in seq_along(spe_groups)) {
 
     ## 4. Multi-species predictions ####
 
-    message("Predicting species distributions")
+    message("Predicting species distributions: ", message)
 
     # Quantile Predictions
     system.time(
