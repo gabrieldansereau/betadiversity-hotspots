@@ -148,7 +148,7 @@ for (gp in seq_along(spe_groups)) {
 
     ## 4. Multi-species predictions ####
 
-    message("Predicting species distributions: ", message)
+    message("Predicting species distributions: ", modelname)
 
     # Quantile Predictions
     system.time(
