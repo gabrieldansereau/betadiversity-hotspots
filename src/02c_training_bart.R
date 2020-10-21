@@ -213,6 +213,14 @@ for (gp in seq_along(spe_groups)) {
 }
 )
 
+# Check results
+results_global
+varimps_global
+pred_df_global
+lower_df_global
+upper_df_global
+pres_df_global
+
 # Export to CSV
 # save_predictions <- TRUE
 if (exists("save_predictions") && isTRUE(save_predictions)) {
