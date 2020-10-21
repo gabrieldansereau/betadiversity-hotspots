@@ -24,15 +24,15 @@ end
 
 # Convert SimpleSDMLayer values to quantile scores
 function quantiles(layer::SimpleSDMLayer)
-    qfinder = ecdf(filter(!isnan, layer.grid))
-    qgrid = replace(x -> !isnan(x) ? qfinder(x) : x, layer.grid)
-    qlayer = SimpleSDMResponse(qgrid, layer.left, layer.right, layer.bottom, layer.top)
+    qfinder = ecdf(Float32.(filter(!isnothing, layer.grid)))
+    qgrid = replace(x -> isnothing(x) ? x : qfinder(x), layer.grid)
+    qlayer = SimpleSDMResponse(qgrid, layer)
     return qlayer
 end
 
 # Convert & mutate SimpleSDMLayer values to quantile scores
 function quantiles!(layer::SimpleSDMLayer)
-    qfinder = ecdf(filter(!isnan, layer.grid))
-    replace!(x -> !isnan(x) ? qfinder(x) : x, layer.grid)
+    qfinder = ecdf(Float32.(filter(!isnothing, layer.grid)))
+    replace!(x -> isnothing(x) ? x : qfinder(x), layer.grid)
     return layer
 end
