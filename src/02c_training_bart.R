@@ -89,7 +89,7 @@ for (gp in seq_along(spe_groups)) {
 
     ## Create BART models
     # create_models <- TRUE
-    modelname <- ifelse(subset_qc, paste0("bart_models_qc", gp, ".RData"), paste0("bart_models_qc", gp, ".RData"))
+    modelname <- ifelse(exists("subset_qc") && isTrue(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
     filepath <- here("data", "rdata", modelname)
     if (exists("create_models") && isTRUE(create_models)){
         # Run models
