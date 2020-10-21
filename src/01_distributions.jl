@@ -23,13 +23,16 @@ end
 ## Get & prepare data
 # Define coordinates range
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
+copy_layer = worldclim(1)[coords]
+coords_bbox = (left = copy_layer.left, right = copy_layer.right, 
+               bottom = copy_layer.bottom, top = coords.top)
 # Load data from CSV files
 df = DataFrame!(CSV.File(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t"))
 # Remove groupIdentifier column (causing bug)
 select!(df, Not(:groupIdentifier))
 # Filter observations outside coordinates range
-filter!(x -> coords.left < x.longitude < coords.right, df)
-filter!(x -> coords.bottom < x.latitude < coords.top, df)
+filter!(x -> coords_bbox.left < x.longitude < coords_bbox.right, df)
+filter!(x -> coords_bbox.bottom < x.latitude < coords_bbox.top, df)
 # Separate species
 # warblers = [df[df.species .== u,:] for u in unique(df.species)]
 warblers = groupby(df, :species)
@@ -71,7 +74,7 @@ if (@isdefined create_distributions) && create_distributions == true
     # Select function to run given desired outcome
     if outcome == "raw"
         # Get raw distributions
-        @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers)
+        @time distributions = @showprogress map(x -> presence_absence(x, env_vars[1]), warblers)
         # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers)
     elseif outcome == "bio"
         # Get sdm distributions (with different training resolutions)
