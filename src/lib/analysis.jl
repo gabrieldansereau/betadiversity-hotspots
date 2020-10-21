@@ -60,21 +60,28 @@ function _Ytransf(Yobs)
 end
 
 ## Richness
-function calculate_richness(Y, inds_notobs, layer)
-    ## Get number of species per site
-    sums = map(x -> Float64(sum(x)), eachrow(Y))
-    # Add NaN for non predicted sites
-    sums[inds_notobs] .= NaN
+function calculate_richness(Y, layer)
+    # Create necessary Y elements
+    inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    # Create empty empty vector
+    sums = fill(nothing, size(Y, 1)) |> Array{Union{Nothing, Float32}}
+    # Get number of species per observed site
+    sums_obs = map(sum, eachrow(Yobs))
+    sums[inds_obs] = sums_obs
     # Reshape to grid format
-    sums = reshape(sums, size(layer))
+    sums = reshape(sums, size(layer)) |> Array
     ## Create SimpleSDMLayer
     richness = SimpleSDMResponse(sums, layer.left, layer.right, layer.bottom, layer.top)
 end
-calculate_richness(Y, layer) = calculate_richness(Y, _indsnotobs(Y), layer)
 
 ## LCBD
 # Load functions
-function calculate_lcbd(Yobs, inds_obs, layer; transform = true, relative = true)
+function calculate_lcbd(Y, layer; transform = true, relative = true)
+    # Create necessary Y elements
+    inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    
     # Apply hellinger transformation
     if transform
         Yobs = _Ytransf(Yobs)
@@ -90,19 +97,11 @@ function calculate_lcbd(Yobs, inds_obs, layer; transform = true, relative = true
     end
 
     # Create empty grid
-    LCBDgrid = fill(NaN, size(layer))
+    LCBDgrid = fill(nothing, size(layer)) |> Array{Union{Nothing, Float32}}
     # Fill-in grid
     LCBDgrid[inds_obs] = LCBDvals
     # Create SimpleSDMLayer with LCBD values
     LCBDlayer = SimpleSDMResponse(LCBDgrid, layer.left, layer.right,
                                     layer.bottom, layer.top)
     return LCBDlayer
-end
-
-function calculate_lcbd(Y, layer; kw...)
-    # Create necessary Y elements
-    inds_obs = _indsobs(Y)
-    Yobs = _Yobs(Y, inds_obs)
-    # Compute LCBD indices
-    calculate_lcbd(Yobs, inds_obs, layer; kw...)
 end
