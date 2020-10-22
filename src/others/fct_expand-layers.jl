@@ -47,7 +47,7 @@ function expand_layers(layers::Array{SimpleSDMLayer,1})
         m_lat = findmin(abs.(layers[i].bottom+grid_size_lats .- lats_newlayers))[2]
         M_lat = findmin(abs.(layers[i].top-grid_size_lats .- lats_newlayers))[2]
         # Create new grid
-        newgrid = fill(NaN, length(lats_newlayers), length(lons_newlayers))
+        newgrid = fill(nothing, length(lats_newlayers), length(lons_newlayers)) |> Array{Union{Nothing, Float32}}
         # Fill in original values
         newgrid[(m_lat:M_lat), (m_lon:M_lon)] .= layers[i].grid
         # Convert to SimpleSDMLayer
@@ -75,7 +75,7 @@ heatmap!(
     longitudes(newlayers[2]), latitudes(newlayers[2]), # layer range
     newlayers[2].grid, # evenness values
     c=:viridis, # ~color palette
-    clim=(0.0, maximum(filter(!isnan, newlayers[2].grid))) # colorbar limits
+    clim=(0.0, maximum(filter(!isnothing, newlayers[2].grid))) # colorbar limits
 )
 plot!(
     sdm_plot,

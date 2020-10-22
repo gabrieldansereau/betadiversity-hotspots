@@ -27,7 +27,7 @@ end
 @rget results
 
 ## Fix missing values
-predictions = replace(Array(results[:predictions]), missing => NaN)
+predictions = replace(Array(results[:predictions]), missing => nothing) |> Array{Union{Nothing, Float32}}
 
 ## Get comparison layers
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
@@ -63,11 +63,10 @@ raw, sdm = [(richness = calculate_richness(Y, raw_distributions[1]),
 # Custom calculation function
 function difference(prediction, comparison; absolute = false)
     # Calculate difference
-    diff_layer = similar(prediction)
-    diff_layer.grid = prediction.grid .- comparison.grid
+    diff_layer = prediction - comparison
     # Get absolute values (optional)
     if absolute
-        replace!(x -> !isnan(x) ? abs(x) : x, diff_layer.grid)
+        replace!(x -> !isnothing(x) ? abs(x) : x, diff_layer.grid)
     end
     return diff_layer
 end
@@ -77,7 +76,7 @@ diff_pred_raw = difference(pred.richness, raw.richness)
 diff_pred_sdm = difference(pred.richness, sdm.richness)
 diff_sdm_raw  = difference(sdm.richness,  raw.richness)
 diffs = [diff_pred_raw, diff_pred_sdm, diff_sdm_raw]
-map(x -> extrema(filter(!isnan, x.grid)), diffs)
+map(x -> extrema(filter(!isnothing, x.grid)), diffs)
 maxlim = 30
 
 # Custom plot function
@@ -87,7 +86,8 @@ function difference_plot(layer, lim; title = "")
                         c = :diverging, clim = limrange,
                         title = "Richness difference",
                         colorbar_title = "Difference")
-    diff_hist = histogram([filter(x -> x > 0, layer.grid), filter(x -> x <= 0, layer.grid)],
+    diff_hist = histogram([filter(x -> !isnothing(x) && x > 0, layer.grid), 
+                           filter(x -> !isnothing(x) && x <= 0, layer.grid)],
                           bins = :rice, c = [:diverging_r :diverging], legend = :none,
                           ylim = maxrange, # xlabel = "Difference",
                           title = "Distribution of difference values", 
