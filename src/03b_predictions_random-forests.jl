@@ -56,10 +56,10 @@ end
 ## Create Y matrices
 
 # Get matrix Y
-Y = replace(predictions_full, missing => NaN)
-# Set values to NaN if no species present
-inds_zeros = findall(map(x -> all(iszero.(x)), eachrow(Y)))
-Y[inds_zeros,:] .= NaN
+Y = replace(predictions_full, missing => nothing) |> Array{Union{Nothing, Float32}}
+# Set values to nothing if no species present
+inds_zeros = _indsnotobs(Y)
+Y[inds_zeros, :] .= nothing
 
 ## Create distributions
 
@@ -72,9 +72,9 @@ lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
         bottom = raw_distributions[1].bottom, top = raw_distributions[1].top)
 
 # Create RF distribution layers
-Ydistrib = replace(Y, 0.0 => NaN)
+Ydistrib = replace(Y, 0.0 => nothing)
 Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib,2)]
-Ygrids = reshape.(Ygrids, dims...)
+Ygrids = reshape.(Ygrids, dims...) .|> Array
 distributions = SimpleSDMResponse.(Ygrids, lims...)
 
 ## Export results
