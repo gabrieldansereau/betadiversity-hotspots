@@ -31,7 +31,7 @@ function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
         longitudes(layer), latitudes(layer), # layer range
         layer.grid, # layer values
         aspectratio=92.60/60.75, # aspect ratio
-        clim=(0.0, maximum(filter(!isnan, layer.grid))); # colorbar limits
+        clim=(0.0, maximum(filter(!isnothing, layer.grid))); # colorbar limits
         kw... # additional keyword arguments
     )
 
@@ -57,7 +57,6 @@ function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
 
     return sdm_plot
 end
-# plotSDM(layer::SimpleSDMLayer) = print("LOL XD")
 
 function plotSDM2(layer::SimpleSDMLayer; kw...)
     ## Arguments
@@ -74,14 +73,11 @@ function plotSDM2(layer::SimpleSDMLayer; kw...)
     sdm_plot = heatmap(baselayer, c = :lightgrey, lab="", msw=0.0, ms=0.0, frame=:box)
 
     # Add SDM output as heatmap
-    heatmap!(
-        sdm_plot,
-        longitudes(layer), latitudes(layer), # layer range
-        layer.grid, # layer values
-        aspectratio = 92.60/60.75, # aspect ratio
-        clim = extrema(layer); # colorbar limits
-        kw... # additional keyword arguments
-    )
+    heatmap!(sdm_plot, layer,
+             legend = true,
+             clim = extrema(layer); # colorbar limits
+             kw... # additional keyword arguments
+            )
 
     # Load & clip worldmap background to SimpleSDMLayer (from shp in /assets folder)
     worldmap = clip(worldshape(50), layer)
@@ -98,15 +94,16 @@ end
 
 @recipe function plot(layer::T) where {T <: SimpleSDMLayer}
     seriestype --> :heatmap
-    @assert eltype(layer) <: Number
     if get(plotattributes, :seriestype, :heatmap) in [:heatmap, :contour]
         aspect_ratio --> 92.60/60.75
         xlims --> (minimum(longitudes(layer)),maximum(longitudes(layer)))
         ylims --> (minimum(latitudes(layer)),maximum(latitudes(layer)))
         xguide --> "Longitude"
         yguide --> "Latitude"
-        longitudes(layer), latitudes(layer), layer.grid
+        lg = copy(layer.grid)
+        lg[lg.==nothing] .= NaN
+        longitudes(layer), latitudes(layer), lg
     elseif get(plotattributes, :seriestype, :histogram) in [:histogram, :density]
-        filter(!isnan, layer.grid)
+       filter(!isnothing, layer.grid)
     end
-end
+ end

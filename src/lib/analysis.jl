@@ -8,7 +8,7 @@ function calculate_Y(distributions; transform = false)
 
     # Get indices of sites with observations
     inds_obs = _indsobs(Y)
-    # Create matrix Yobs with observed sites only, replace NaNs by zeros
+    # Create matrix Yobs with observed sites only, replace nothings by zeros
     Yobs = _Yobs(Y, inds_obs)
     # Apply Hellinger transformation (using vegan in R)
     if transform
@@ -22,7 +22,7 @@ end
 
 function _indsobs(Y)
     # Verify if sites have observations
-    sites_obs = [any(y .> 0.0) for y in eachrow(Y)];
+    sites_obs = [any(y -> !isnothing(y) && y > 0, yrow) for yrow in eachrow(Y)];
     # Get indices of sites with observations
     inds_obs = findall(sites_obs);
     return inds_obs
@@ -30,7 +30,7 @@ end
 
 function _indsnotobs(Y)
     # Verify if sites have observations
-    sites_obs = [any(y .> 0.0) for y in eachrow(Y)];
+    sites_obs = [any(y -> !isnothing(y) && y > 0, yrow) for yrow in eachrow(Y)];
     # Get indices of sites without observations
     inds_notobs = findall(.!sites_obs);
     return inds_notobs
@@ -39,14 +39,16 @@ end
 function _Yobs(Y, inds_obs)
     # Create matrix Yobs with observed sites only
     Yobs = Y[inds_obs,:];
-    # Replace NaNs by zeros for observed sites (~true absences)
-    replace!(Yobs, NaN => 0.0);
+    # Replace nothings by zeros for observed sites (~true absences)
+    replace!(Yobs, nothing => 0.0);
     return Yobs
 end
 _Yobs(Y) = _Yobs(Y, _indsobs(Y))
 
 function _Ytransf(Yobs)
-    ## Apply Hellinger transformation (using vegan in R)
+    # Remove type Nothing from Array (weird effects with RCall)
+    Yobs = Array{Float32}(Yobs)
+    # Apply Hellinger transformation (using vegan in R)
     @rput Yobs
     begin
         R"""
@@ -58,21 +60,28 @@ function _Ytransf(Yobs)
 end
 
 ## Richness
-function calculate_richness(Y, inds_notobs, layer)
-    ## Get number of species per site
-    sums = map(x -> Float64(sum(x)), eachrow(Y))
-    # Add NaN for non predicted sites
-    sums[inds_notobs] .= NaN
+function calculate_richness(Y, layer)
+    # Create necessary Y elements
+    inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    # Create empty empty vector
+    sums = fill(nothing, size(Y, 1)) |> Array{Union{Nothing, Float32}}
+    # Get number of species per observed site
+    sums_obs = map(sum, eachrow(Yobs))
+    sums[inds_obs] = sums_obs
     # Reshape to grid format
-    sums = reshape(sums, size(layer))
+    sums = reshape(sums, size(layer)) |> Array
     ## Create SimpleSDMLayer
     richness = SimpleSDMResponse(sums, layer.left, layer.right, layer.bottom, layer.top)
 end
-calculate_richness(Y, layer) = calculate_richness(Y, _indsnotobs(Y), layer)
 
 ## LCBD
 # Load functions
-function calculate_lcbd(Yobs, inds_obs, layer; transform = true, relative = true)
+function calculate_lcbd(Y, layer; transform = true, relative = true)
+    # Create necessary Y elements
+    inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    
     # Apply hellinger transformation
     if transform
         Yobs = _Ytransf(Yobs)
@@ -88,19 +97,11 @@ function calculate_lcbd(Yobs, inds_obs, layer; transform = true, relative = true
     end
 
     # Create empty grid
-    LCBDgrid = fill(NaN, size(layer))
+    LCBDgrid = fill(nothing, size(layer)) |> Array{Union{Nothing, Float32}}
     # Fill-in grid
     LCBDgrid[inds_obs] = LCBDvals
     # Create SimpleSDMLayer with LCBD values
     LCBDlayer = SimpleSDMResponse(LCBDgrid, layer.left, layer.right,
                                     layer.bottom, layer.top)
     return LCBDlayer
-end
-
-function calculate_lcbd(Y, layer; kw...)
-    # Create necessary Y elements
-    inds_obs = _indsobs(Y)
-    Yobs = _Yobs(Y, inds_obs)
-    # Compute LCBD indices
-    calculate_lcbd(Yobs, inds_obs, layer; kw...)
 end

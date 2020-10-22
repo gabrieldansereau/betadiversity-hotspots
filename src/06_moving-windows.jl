@@ -62,9 +62,9 @@ get_windows_indices(index_mat, wsize, steps::Int64) = get_windows_indices(index_
     # Extract windows from Y
     Ywindows = [Y[vec(winds),:] for winds in windows_inds]
     # Remove ones without observation
-    allnan = map(x -> all(isnan, x), Ywindows)
-    deleteat!(windows_inds, allnan)
-    deleteat!(Ywindows, allnan)
+    allnothing = map(x -> all(isnothing, x), Ywindows)
+    deleteat!(windows_inds, allnothing)
+    deleteat!(Ywindows, allnothing)
     # Calculate LCBD values for Ywindows
     LCBDwindows = @showprogress [calculate_lcbd(Yobs, distributions_NE[1];
                                                 transform = true, relative = true)
@@ -73,17 +73,17 @@ get_windows_indices(index_mat, wsize, steps::Int64) = get_windows_indices(index_
     # Expand LCBD windows to match full extent
     LCBDbatch = []
     for i in eachindex(LCBDwindows)
-        mat = fill(NaN, size(distributions[1]))
+        mat = fill(nothing, size(distributions[1])) |> Array{Union{Nothing, Float32}}
         mat[windows_inds[i]] = LCBDwindows[i].grid
         push!(LCBDbatch, mat)
     end
     # Stack windows in single matrix
     LCBDmat = reduce(hcat, map(vec, LCBDbatch));
     # Get mean LCBD value per site
-    LCBDmean = map(x -> mean(filter(!isnan, x)), eachrow(LCBDmat))
+    LCBDmean = map(x -> filter(!isnothing, x), eachrow(LCBDmat))
+    LCBDmean = map(x -> isempty(x) ? nothing : mean(x), LCBDmean)
     # Arrange mean values as layer
     LCBDwindow = similar(distributions[1])
-    LCBDwindow.grid .= NaN
     LCBDwindow.grid = reshape(LCBDmean, size(LCBDwindow.grid))
 end;
 plot(LCBDwindow, c = :viridis)

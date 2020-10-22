@@ -20,13 +20,13 @@ pres_df  = DataFrame!(CSV.File(joinpath("data", "proc", "bart_predictions_pres.c
 ## Create Y matrices
 
 # Get matrix Y
-Y = replace(Array(pres_df), missing => NaN)
-Yprob  = replace(Array(pred_df),  missing => NaN)
-Ylower = replace(Array(lower_df), missing => NaN)
-Yupper = replace(Array(upper_df), missing => NaN)
-# Set values to NaN if no species present
-inds_zeros = findall(map(x -> all(iszero.(x)), eachrow(Y)))
-Y[inds_zeros,:] .= NaN
+Y = replace(Array(pres_df), missing => nothing) |> Array{Union{Nothing, Float32}}
+Yprob  = replace(Array(pred_df),  missing => nothing) |> Array{Union{Nothing, Float32}}
+Ylower = replace(Array(lower_df), missing => nothing) |> Array{Union{Nothing, Float32}}
+Yupper = replace(Array(upper_df), missing => nothing) |> Array{Union{Nothing, Float32}}
+# Set values to nothing if no species present
+inds_zeros = _indsnotobs(Y)
+Y[inds_zeros,:] .= nothing
 
 ## Create distributions
 
@@ -44,9 +44,9 @@ lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
 # Create distribution layers
 layers = []
 for Y in (Y, Yprob, Ylower, Yupper)
-    Ydistrib = replace(Y, 0.0 => NaN)
+    Ydistrib = replace(Y, 0.0 => nothing)
     Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib,2)]
-    Ygrids = reshape.(Ygrids, dims...)
+    Ygrids = reshape.(Ygrids, dims...) .|> Array
     distributions = SimpleSDMResponse.(Ygrids, lims...)
     push!(layers, distributions)
 end

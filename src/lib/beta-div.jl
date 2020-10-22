@@ -51,7 +51,7 @@ function BDperm(Y; nperm=999, distributed=true)
         # Standardize counts
         p_LCBD = nGE_L./(nperm+1)
     else
-        p_LCBD = NaN
+        p_LCBD = nothing
     end
     # Combine results in tuple
     res_perm = (res..., pLCBD = p_LCBD)

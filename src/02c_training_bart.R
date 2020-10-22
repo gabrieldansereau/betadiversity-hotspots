@@ -87,8 +87,13 @@ for (gp in seq_along(spe_groups)) {
 
     message(paste0("Training multi-species group (", gp, "/", length(spe_groups)), ")")
 
+    ## Create BART models
     # create_models <- TRUE
+    modelname <- ifelse(exists("subset_qc") && isTrue(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
+    filepath <- here("data", "rdata", modelname)
     if (exists("create_models") && isTRUE(create_models)){
+        # Run models
+        message("Creating models in parallel: ", modelname)
         set.seed(42)
         system.time(
             sdms <- future_map(
@@ -100,16 +105,16 @@ for (gp in seq_along(spe_groups)) {
                 .progress = TRUE
             )
         ) # ~ 4 min in parallel
-    }
-
-    # Export results
-    # save_models <- TRUE
-    filepath <- here("data", "rdata", paste0("bart_models", gp, ".RData"))
-    if (exists("save_models") && isTRUE(save_models)) {
-        message("Saving models to RData")
-        save(sdms, file = filepath)
+        
+        # Export results
+        # save_models <- TRUE
+        if (exists("save_models") && isTRUE(save_models)) {
+            message("Saving models to RData: ", modelname)
+            save(sdms, file = filepath)
+        }
     } else {
-        message("Loading models from RData")
+        # Load models from files
+        message("Loading models from RData: ", modelname)
         load(filepath)
     }
 
@@ -143,7 +148,7 @@ for (gp in seq_along(spe_groups)) {
 
     ## 4. Multi-species predictions ####
 
-    message("Predicting species distributions")
+    message("Predicting species distributions: ", modelname)
 
     # Quantile Predictions
     system.time(
@@ -208,6 +213,14 @@ for (gp in seq_along(spe_groups)) {
 }
 )
 
+# Check results
+results_global
+varimps_global
+pred_df_global
+lower_df_global
+upper_df_global
+pres_df_global
+
 # Export to CSV
 # save_predictions <- TRUE
 if (exists("save_predictions") && isTRUE(save_predictions)) {
@@ -244,25 +257,28 @@ spe_sel <- c("sp1", "sp6", "sp17")
 vars_sel <- map(spe_sel, ~ NULL)
 names(vars_sel) <- spe_sel
 # Run variable selection
-tictoc::tic("total")
-for(sp in spe_sel){
-    tictoc::tic(sp)
-    set.seed(42)
-    message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
-    # Save plot to png
-    png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
-    step_vars <- variable.step(
-        y.data = spe[[sp]], 
-        x.data = env[xnames],
-        iter = 50
-    )
-    dev.off()
-    # Save variables to list
-    vars_sel[[sp]] <- step_vars
+# variable_selection <- TRUE
+if (exists("variable_selection") && isTRUE(variable_selection)) {
+    tictoc::tic("total")
+    for(sp in spe_sel){
+        tictoc::tic(sp)
+        set.seed(42)
+        message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
+        # Save plot to png
+        png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
+        step_vars <- variable.step(
+            y.data = spe[[sp]], 
+            x.data = env[xnames],
+            iter = 50
+        )
+        dev.off()
+        # Save variables to list
+        vars_sel[[sp]] <- step_vars
+        tictoc::toc()
+    }
     tictoc::toc()
+    vars_sel
 }
-tictoc::toc()
-vars_sel
 
 ## 3 species QC scale
 # $sp1

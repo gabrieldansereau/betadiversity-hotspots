@@ -23,12 +23,12 @@ coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
 
 ## Get environmental data (with different training resolutions)
 # WorldClim data
-wc_vars = map(x -> worldclim(x, resolution = "10")[coords], [1,12]);
+wc_vars = map(x -> worldclim(x, resolution = 10.0)[coords], [1,12]);
 # Landcover data
-lc_vars = map(x -> landcover(x, resolution = "10")[coords], 1:10);
+lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10);
 # Training data with finer resolution
-wc_vars_train = map(x -> worldclim(x, resolution = "5")[coords_obs], [1,12]);
-lc_vars_train = map(x -> landcover(x, resolution = "5")[coords_obs], 1:10);
+wc_vars_train = map(x -> worldclim(x, resolution = 5.0)[coords_obs], [1,12]);
+lc_vars_train = map(x -> landcover(x, resolution = 5.0)[coords_obs], 1:10);
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
