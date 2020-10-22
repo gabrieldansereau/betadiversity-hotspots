@@ -26,7 +26,7 @@ function presence_absence(species::AbstractDataFrame, copy_layer::SimpleSDMLayer
     if binary == true
         replace!(x -> x > 1.0 ? 1.0 : x, distribution_grid)
     end
-    # Replace zeros (absences) by NaN
+    # Replace zeros (absences) by nothing
     replace!(distribution_grid, 0.0 => nothing)
     replace!(distribution_grid, NaN => nothing)
     # Create SimpleSDMLayer

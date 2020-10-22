@@ -31,7 +31,7 @@ function plotSDM(layer::SimpleSDMLayer; scatter::Bool=false, occ=nothing, kw...)
         longitudes(layer), latitudes(layer), # layer range
         layer.grid, # layer values
         aspectratio=92.60/60.75, # aspect ratio
-        clim=(0.0, maximum(filter(!isnan, layer.grid))); # colorbar limits
+        clim=(0.0, maximum(filter(!isnothing, layer.grid))); # colorbar limits
         kw... # additional keyword arguments
     )
 

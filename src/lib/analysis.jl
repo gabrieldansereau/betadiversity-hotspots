@@ -39,7 +39,7 @@ end
 function _Yobs(Y, inds_obs)
     # Create matrix Yobs with observed sites only
     Yobs = Y[inds_obs,:];
-    # Replace NaNs by zeros for observed sites (~true absences)
+    # Replace nothings by zeros for observed sites (~true absences)
     replace!(Yobs, nothing => 0.0);
     return Yobs
 end

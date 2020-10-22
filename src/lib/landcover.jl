@@ -21,17 +21,17 @@ function landcover(layers::Vector{Int64}; resolution::AbstractFloat=10.0, path::
     ## Preliminary manipulations
     # Reverse rows and permute dimensions
     landcover_mat = [permutedims(v[:,end:-1:1]) for v in values_int]
-    # Replace 255 (default no data values) by NaN
+    # Replace 255 (default no data values) by nothing
     landcover_mat = convert.(Array{Union{Float32, Nothing}}, landcover_mat)
     [replace!(l, 255 => nothing) for l in landcover_mat]
 
-    # Fill missing latitudes with NaNs (latitude extent is only (-60,80) for landcover data)
+    # Fill missing latitudes with nothing (latitude extent is only (-60,80) for landcover data)
     nlat, nlon = size(landcover_mat[1])
     slim, nlim = abs(-60), 80
     res = Int64(nlat/(nlim+slim))
-    south_nans = fill(nothing, ((90-slim)*res, nlon))
-    north_nans = fill(nothing, ((90-nlim)*res, nlon))
-    landcover_grids = [vcat(south_nans, l, north_nans) for l in landcover_mat]
+    south_nothings = fill(nothing, ((90-slim)*res, nlon))
+    north_nothings = fill(nothing, ((90-nlim)*res, nlon))
+    landcover_grids = [vcat(south_nothings, l, north_nothings) for l in landcover_mat]
 
     # Convert to SimpleSDMLayers
     landcover_layers = SimpleSDMPredictor.(landcover_grids, -180.0, 180.0, -90.0, 90.0)

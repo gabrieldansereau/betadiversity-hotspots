@@ -1,8 +1,8 @@
 # Convert vector values to quantile scores
-function quantiles(vec::Array{Float64,1}; ignorenan::Bool=true)
-    if ignorenan == true
-        qfinder = ecdf(filter(!isnan, vec))
-        qvec = replace(x -> !isnan(x) ? qfinder(x) : x, vec)
+function quantiles(vec::Array; ignorenothing::Bool=true)
+    if ignorenothing == true
+        qfinder = ecdf(filter(!isnothing, vec))
+        qvec = replace(x -> !isnothing(x) ? qfinder(x) : x, vec)
     else
         qfinder = ecdf(vec)
         qvec = qfinder(vec)
@@ -11,10 +11,10 @@ function quantiles(vec::Array{Float64,1}; ignorenan::Bool=true)
 end
 
 # Convert & mutate vector values to quantile scores
-function quantiles!(vec::Array{Float64,1}; ignorenan::Bool=true)
-    if ignorenan == true
-        qfinder = ecdf(filter(!isnan, vec))
-        replace!(x -> !isnan(x) ? qfinder(x) : x, vec)
+function quantiles!(vec::Array; ignorenothing::Bool=true)
+    if ignorenothing == true
+        qfinder = ecdf(filter(!isnothing, vec))
+        replace!(x -> !isnothing(x) ? qfinder(x) : x, vec)
     else
         qfinder = ecdf(vec)
         replace!(x -> qfinder(x), vec)
