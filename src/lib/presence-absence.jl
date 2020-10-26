@@ -15,10 +15,12 @@ function presence_absence(species::AbstractDataFrame, copy_layer::SimpleSDMLayer
     # Get unique sites/coordinates
     unique_sites = unique(species, [:longitude, :latitude])
     # Loop for all sites
-    for site in eachrow(unique_sites)
+    lon_all = collect(longitudes(copy_layer))
+    lat_all = collect(latitudes(copy_layer))
+    for (lon, lat) in zip(unique_sites.longitude, unique_sites.latitude)
         # Get grid position for each site
-        i_lon = findmin(abs.(site.longitude .- longitudes(copy_layer)))[2]
-        j_lat = findmin(abs.(site.latitude .- latitudes(copy_layer)))[2]
+        i_lon = findmin(abs.(lon .- lon_all))[2]
+        j_lat = findmin(abs.(lat .- lat_all))[2]
         # Add 1 per species presence
         distribution_grid[j_lat, i_lon] += 1.0
     end
