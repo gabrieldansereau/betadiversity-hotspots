@@ -15,7 +15,7 @@ function presence_absence(species::AbstractDataFrame, copy_layer::SimpleSDMLayer
     # Get unique sites/coordinates
     unique_sites = unique(species, [:longitude, :latitude])
     # Loop for all sites
-    @time for site in eachrow(unique_sites)
+    for site in eachrow(unique_sites)
         # Get grid position for each site
         i_lon = findmin(abs.(site.longitude .- longitudes(copy_layer)))[2]
         j_lat = findmin(abs.(site.latitude .- latitudes(copy_layer)))[2]
