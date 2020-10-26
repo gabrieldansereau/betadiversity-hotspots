@@ -1,8 +1,7 @@
-using Distributed
-addprocs(5)
-@everywhere import Pkg;
-@everywhere Pkg.activate(".");
-@time @everywhere include(joinpath(@__DIR__, "required.jl"));
+if !(@isdefined BetadiversityHotspots)
+    import Pkg; Pkg.activate(".")
+    @time include("required.jl")
+end
 
 ## Conditional arguments
 outcome = "raw" # desired outcome (required)
@@ -73,11 +72,10 @@ if (@isdefined create_distributions) && create_distributions == true
     # Select function to run given desired outcome
     if outcome == "raw"
         # Get raw distributions
-        @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars[1]), warblers)
-        # @time distributions = @showprogress pmap(x -> presence_absence(x, env_vars_train[1], full_range = true, binary = false), warblers)
+        @time distributions = @showprogress map(x -> presence_absence(x, env_vars[1]), warblers)
     elseif outcome == "bio"
         # Get sdm distributions (with different training resolutions)
-        @time distributions = @showprogress pmap(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
+        @time distributions = @showprogress map(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
     end
 end
 
