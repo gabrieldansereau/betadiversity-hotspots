@@ -90,27 +90,27 @@ Else, the general workflow of the analyses is as follows:
 ### Species richness
 
 <p align="center">
-  <img align = "center" src="fig/rf/04-2_rf_richness.png" width="75%"
+  <img align = "center" src="fig/bart/04-2_bart_richness.png" width="75%"
        title = "Species richness">
 </p>
 
 ### LCBD & relationship to richness
 
-![LCBD & relationship - Random Forests][rf_moving-windows]
+![LCBD & relationship - BARTs][bart_moving-windows]
 
-[rf_moving-windows]: fig/rf/06-0_rf_moving-windows_full.png
+[bart_moving-windows]: fig/bart/06-0_bart_moving-windows_full.png
 
 ### Subareas
 
-![Subareas - Random Forests][rf_subareas]
+![Subareas - BARTs][bart_subareas]
 
-[rf_subareas]: fig/rf/06-1_rf_moving-windows_subareas.png
+[bart_subareas]: fig/bart/06-1_bart_moving-windows_subareas.png
 
 ### Effect of scaling
 
-![Effect of scaling - Random Forests][rf_scaling]
+![Effect of scaling - BARTs][bart_scaling]
 
-[rf_scaling]: fig/rf/06-3_rf_moving-windows.gif
+[bart_scaling]: fig/rf/06-3_rf_moving-windows.gif
 
 ## Details on library scripts
 
