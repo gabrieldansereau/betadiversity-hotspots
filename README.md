@@ -90,8 +90,8 @@ Else, the general workflow of the analyses is as follows:
 ### Species richness
 
 <p align="center">
-  <img align = "center" src="fig/bart/04-2_bart_richness.png" width="75%"
-       title = "Species richness">
+    <img src="fig/raw/04-2_raw_richness.png" width="49%" />
+    <img src="fig/bart/04-2_bart_richness.png" width="49%" />
 </p>
 
 ### LCBD & relationship to richness
