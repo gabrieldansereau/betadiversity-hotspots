@@ -96,21 +96,24 @@ Else, the general workflow of the analyses is as follows:
 
 ### LCBD & relationship to richness
 
-![LCBD & relationship - BARTs][bart_moving-windows]
-
 [bart_moving-windows]: fig/bart/06-0_bart_moving-windows_full.png
+
+<p align="center">
+    <img src="fig/bart/04-3_bart_lcbd-transf.png" width="49%" />
+    <img src="fig/bart/04-4_bart_relationship2d-transf.png" width="49%" />
+</p>
 
 ### Subareas
 
 ![Subareas - BARTs][bart_subareas]
 
-[bart_subareas]: fig/bart/06-1_bart_moving-windows_subareas.png
+[bart_subareas]: fig/bart/05-1_bart_subareas_combined.png
 
 ### Effect of scaling
 
 ![Effect of scaling - BARTs][bart_scaling]
 
-[bart_scaling]: fig/rf/06-3_rf_moving-windows.gif
+[bart_scaling]: fig/bart//05-3_bart_subareas.gif
 
 ## Details on library scripts
 
