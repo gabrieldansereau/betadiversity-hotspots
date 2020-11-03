@@ -49,36 +49,38 @@ We collected all occurrence data available in the eBird database, which
 represented roughly 30 million observations. 
 Global citizen-contributed databases often present additional challenges
 compared to conventional datasets due to their lack of structure, as well as
-spatial and taxonomic biases [@JohnHoch19], which could be seen in our data
-(@tbl:ebird).
+spatial and taxonomic biases [@Johnston2019BesPra], which could be seen in our
+data (@tbl:ebird).
 However, eBird offers two advantages over other large scale datasets
-[@JohnHoch19]\: 1) the data is structured as checklists and users can explicitly
-specify their observations as “complete checklists” when all detected species
-were reported, which allows to infer information on species absences, and 2) the
-dataset is semi-structured and checklists are associated with metadata
-describing sampling effort, such as duration of search, distance travelled and
-number of observers, which can be used as controls in the analyses. 
+[@Johnston2019BesPra]\: 1) the data is structured as checklists and users can
+explicitly specify their observations as “complete checklists” when all detected
+species were reported, which allows to infer information on species absences,
+and 2) the dataset is semi-structured and checklists are associated with
+metadata describing sampling effort, such as duration of search, distance
+travelled and number of observers, which can be used as controls in the
+analyses. 
 Hence, model performance can be improved by inferring absences and subsampling
 checklists, while spatial bias can be compensated by including effort covariates
-in the model [@JohnHoch19]. 
+in the model [@Johnston2019BesPra]. 
 Therefore, we believe the dataset can be appropriately used
 to achieve our objective of expanding measures of exceptional biodiversity
 through space. 
 
-We collected the data available in the WorldClim 2 database [@FickHijm17] for
+We collected the data available in the WorldClim 2 database [@Fick2017Wor2N] for
 North America, to which we decided to restrict our analyses.
 The WorldClim data consists of spatially interpolated monthly climate data for
 global areas, available for resolutions from 10 arc-minutes to 30 arc-seconds
 (around 18 km² and 1 km² at the equator).
-Since the release of the first version of the database in 2005 [@HijmCame05], it
-became the most common source of climate data for SDM studies [@BootNix14]. The
-variables we used were different measures of temperature and precipitation
+Since the release of the first version of the database in 2005
+[@Hijmans2005VerHig], it became the most common source of climate data for SDM
+studies [@Booth2014BioFir].
+The variables we used were different measures of temperature and precipitation
 (@tbl:wc_vars), which very high global cross-validation coefficients (> 0.99 and
-0.86 respectively) [@FickHijm17]. 
+0.86 respectively) [@Fick2017Wor2N]. 
 We chose to use the coarser 10 arc-minutes resolution in our preliminary
 analyses, as we believed it was sufficient for proof of concept of our method.
 We also collected land cover data from the Copernicus Global land service
-[@BuchSmet19]. 
+[@Buchhorn2019CopGlo]. 
 These data consisted of 10 variables for the main land cover classes, each
 represented by their percentage of cover fraction. 
 The Copernicus data is available at a 100m spatial resolution, finer than for
