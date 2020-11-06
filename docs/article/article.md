@@ -87,3 +87,52 @@ The Copernicus data is available at a 100m spatial resolution, finer than for
 the WorldClim data, hence we coarsened it it to the same resolution by averaging
 the cover fraction values.
 
+## Figures
+
+<p align="center">
+    <img src="fig/richness-raw.png" width="49%" />
+    <img src="fig/richness-bart.png" width="49%" />
+</p>
+
+Figure: Distribution of species richness in North America, defined as the number
+of Warblers species per site (10 arc-minutes pixels).
+The raw occurrence observations from eBird (left) and the SDM
+predictions from the single-species BART models (right) were both transformed
+into presence-absence data per species before calculating richness.
+
+<p align="center">
+    <img src="fig/lcbd-raw.png" width="49%" />
+    <img src="fig/lcbd-bart.png" width="49%" />
+</p>
+
+Figure: Distribution of the LCBD values in North America, calculated from the
+variance of the site-by-species community matrix Y and scaled to the maximum
+value observed.
+Occurrence observations from eBird (left) and single-species SDM predictions
+(right) were converted into presence-absence data per species, then the
+Hellinger transformation was applied before computing the LCBD indices.
+
+<p align="center">
+    <img src="fig/relationship-raw.png" width="49%" />
+    <img src="fig/relationship-bart.png" width="49%" />
+</p>
+
+Figure: Relationship between the species richness and the LCBD value of each
+site based on the occurrence observations from eBird (left) and the SDM
+predictions (right).
+LCBD values were scaled to the maximum value observed after applying Hellinger
+transformation.
+
+![NE subareas](../../fig/bart/05-1_bart_subareas_combined.png)
+
+Figure: Comparison between a species-rich region (Northeast) and a species-poor
+one (Southwest) at a given scale, based on the SDM predictions.
+
+![3 scales](../../fig/bart/05-2_bart_subareas_3scales.png)
+
+Figure: Effect of scaling and full region extent size on the relationship
+between site richness and LCBD value.
+LCBD values are re-calculated at each scale based on the sites in this region
+only.
+
+
