@@ -82,7 +82,7 @@ distributions = SimpleSDMResponse.(Ygrids, lims...)
 
 ## Export results
 # save_data = true
-if @isdefined save_data && save_data == true
+if (@isdefined save_data) && save_data == true
     @save joinpath("data", "jld2", "rf-distributions.jld2") distributions
     _zip_jld2(joinpath("data", "jld2", "rf-distributions.zip"),
               joinpath("data", "jld2", "rf-distributions.jld2"))
