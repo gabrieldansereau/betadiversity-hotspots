@@ -9,13 +9,12 @@ end
 
 
 ## Load predictions from CSV
-results  = DataFrame!(CSV.File(joinpath("data", "proc", "bart_summaries.csv")))
-varimps  = DataFrame!(CSV.File(joinpath("data", "proc", "bart_varimps.csv")))
-pred_df  = DataFrame!(CSV.File(joinpath("data", "proc", "bart_predictions_prob.csv"), missingstrings = ["NA"]))
-lower_df = DataFrame!(CSV.File(joinpath("data", "proc", "bart_predictions_lower.csv"), missingstrings = ["NA"]))
-upper_df = DataFrame!(CSV.File(joinpath("data", "proc", "bart_predictions_upper.csv"), missingstrings = ["NA"]))
-pres_df  = DataFrame!(CSV.File(joinpath("data", "proc", "bart_predictions_pres.csv"), missingstrings = ["NA"]))
-
+results  = DataFrame(CSV.File(joinpath("data", "proc", "bart_summaries.csv")))
+varimps  = DataFrame(CSV.File(joinpath("data", "proc", "bart_varimps.csv")))
+pred_df  = DataFrame(CSV.File(joinpath("data", "proc", "bart_predictions_prob.csv"), missingstrings = ["NA"]))
+lower_df = DataFrame(CSV.File(joinpath("data", "proc", "bart_predictions_lower.csv"), missingstrings = ["NA"]))
+upper_df = DataFrame(CSV.File(joinpath("data", "proc", "bart_predictions_upper.csv"), missingstrings = ["NA"]))
+pres_df  = DataFrame(CSV.File(joinpath("data", "proc", "bart_predictions_pres.csv"), missingstrings = ["NA"]))
 
 ## Create Y matrices
 
