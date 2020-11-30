@@ -166,9 +166,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[Distributions]]
 deps = ["FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SparseArrays", "SpecialFunctions", "StaticArrays", "Statistics", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "4474f7b2d475fbdb028faab4fdbd88d8d7a50e62"
+git-tree-sha1 = "6493eec6bfb1e578cff879b66844807e3625c83c"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.24.3"
+version = "0.24.4"
 
 [[EarCut_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -253,9 +253,9 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[GBIF]]
 deps = ["Dates", "HTTP", "JSON", "Requires"]
-git-tree-sha1 = "3d8fbdc69b17072895d9c5e78211b025e16fccb0"
+git-tree-sha1 = "072e6f986ee8eb131c4125ed1689e0356d6bbfab"
 uuid = "ee291a33-5a6c-5552-a3c8-0f29a1181037"
-version = "0.3.1"
+version = "0.3.2"
 
 [[GDAL]]
 deps = ["CEnum", "GDAL_jll", "MozillaCACerts_jll", "PROJ_jll"]
@@ -265,9 +265,9 @@ version = "1.1.5"
 
 [[GDAL_jll]]
 deps = ["Artifacts", "Expat_jll", "GEOS_jll", "JLLWrappers", "LibCURL_jll", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "OpenJpeg_jll", "PROJ_jll", "Pkg", "SQLite_jll", "Zlib_jll", "Zstd_jll", "libwebp_jll", "nghttp2_jll"]
-git-tree-sha1 = "7a2561bca66ff0bdfeecf1f65c90c725ecc7d326"
+git-tree-sha1 = "02cb174bf3c7e5d4ba94cb6e5ac4360210558c70"
 uuid = "a7073274-a066-55f0-b90d-d619367d196c"
-version = "3.0.4+3"
+version = "3.0.4+7"
 
 [[GEOS_jll]]
 deps = ["Libdl", "Pkg"]
@@ -528,9 +528,9 @@ version = "0.14.1"
 
 [[MLJBase]]
 deps = ["CategoricalArrays", "ComputationalResources", "Dates", "DelimitedFiles", "Distributed", "Distributions", "HTTP", "InteractiveUtils", "InvertedIndices", "JLSO", "JSON", "LinearAlgebra", "LossFunctions", "MLJModelInterface", "MLJScientificTypes", "Missings", "OrderedCollections", "Parameters", "PrettyTables", "ProgressMeter", "Random", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "2266c7818f819cd670d1485fc5d5328961caf6ea"
+git-tree-sha1 = "6e2df9c981584c48e199177dc71c0eb48c4ceaf6"
 uuid = "a7f614a8-145f-11e9-1d2a-a57a1082229d"
-version = "0.15.6"
+version = "0.15.7"
 
 [[MLJModelInterface]]
 deps = ["Random", "ScientificTypes"]
@@ -546,15 +546,15 @@ version = "0.12.11"
 
 [[MLJScientificTypes]]
 deps = ["CategoricalArrays", "ColorTypes", "Dates", "PersistenceDiagramsBase", "PrettyTables", "ScientificTypes", "Tables"]
-git-tree-sha1 = "f865c0ef0da749aa9aa240faae0f7f30eb226f39"
+git-tree-sha1 = "89509fd1e4da66c8f80c6d1143b4e2fca5e5dc7d"
 uuid = "2e2323e0-db8b-457b-ae0d-bdfb3bc63afd"
-version = "0.3.3"
+version = "0.3.2"
 
 [[MLJTuning]]
 deps = ["ComputationalResources", "Distributed", "Distributions", "LatinHypercubeSampling", "MLJBase", "MLJModelInterface", "ProgressMeter", "Random", "RecipesBase"]
-git-tree-sha1 = "75bc22ddfe45d497179c42a685ca95e5a6651352"
+git-tree-sha1 = "80add143a3f6417176cc4913316c21f70ae6e1f4"
 uuid = "03970b2e-30c4-11ea-3135-d1576263f10f"
-version = "0.5.3"
+version = "0.5.5"
 
 [[MacroTools]]
 deps = ["Markdown", "Random"]
@@ -585,9 +585,9 @@ version = "0.3.1"
 
 [[Memento]]
 deps = ["Dates", "Distributed", "JSON", "Serialization", "Sockets", "Syslogs", "Test", "TimeZones", "UUIDs"]
-git-tree-sha1 = "f0cb39c822ed893a504aaa701743a097b2022f5e"
+git-tree-sha1 = "d6dfb54d7e8a9b4a2b1773acf7275a4f607906b2"
 uuid = "f28f55f0-a522-5efc-85c2-fe41dfb9b2d9"
-version = "1.1.1"
+version = "1.1.2"
 
 [[Missings]]
 deps = ["DataAPI"]
@@ -611,9 +611,9 @@ uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2020.10.14+0"
 
 [[NaNMath]]
-git-tree-sha1 = "c84c576296d0e2fbb3fc134d3e09086b3ea617cd"
+git-tree-sha1 = "bfe47e760d60b82b66b61d2d44128b62e3a369fb"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
-version = "0.3.4"
+version = "0.3.5"
 
 [[Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -688,9 +688,9 @@ version = "0.1.0"
 
 [[Pixman_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "392d85fe2fd2c613442f9694dd566c0d5641d58c"
+git-tree-sha1 = "6a20a83c1ae86416f0a5de605eaea08a552844a3"
 uuid = "30392449-352a-5448-841d-b1acce4e97dc"
-version = "0.38.4+5"
+version = "0.40.0+0"
 
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
@@ -743,10 +743,10 @@ uuid = "784f63db-0788-585a-bace-daefebcd302b"
 version = "2019.1.0+2"
 
 [[Qt_jll]]
-deps = ["Fontconfig_jll", "Glib_jll", "Libdl", "Pkg", "Xorg_libXext_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "xkbcommon_jll"]
-git-tree-sha1 = "b3979580c712b167a131bd1a4152a840d6df89cb"
+deps = ["Artifacts", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Pkg", "Xorg_libXext_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "xkbcommon_jll"]
+git-tree-sha1 = "72244a8e084251aea25968c61bbf5c001aaa7d5a"
 uuid = "ede63266-ebff-546c-83e0-1c6fb6d0efc8"
-version = "5.15.0+3"
+version = "5.15.1+0"
 
 [[QuadGK]]
 deps = ["DataStructures", "LinearAlgebra"]
@@ -787,9 +787,9 @@ version = "0.2.0"
 
 [[Requires]]
 deps = ["UUIDs"]
-git-tree-sha1 = "28faf1c963ca1dc3ec87f166d92982e3c4a1f66d"
+git-tree-sha1 = "e05c53ebc86933601d36212a93b39144a2733493"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
-version = "1.1.0"
+version = "1.1.1"
 
 [[Rmath]]
 deps = ["Random", "Rmath_jll"]
@@ -807,10 +807,10 @@ version = "0.2.2+1"
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[SQLite_jll]]
-deps = ["Libdl", "Pkg", "Zlib_jll"]
-git-tree-sha1 = "831a1e74959c7e60bf9e354976ee84d79cfc6403"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Zlib_jll"]
+git-tree-sha1 = "6c8ea46d310cbbf10c935f4a21b00f9c104eafb9"
 uuid = "76ed43ae-9a5d-5a62-8c75-30186b810ce8"
-version = "3.32.3+0"
+version = "3.33.0+0"
 
 [[ScientificTypes]]
 git-tree-sha1 = "1d3f5f8bdf5dd0c9951eb9c595ee08a728aec331"
@@ -855,9 +855,9 @@ version = "0.3.2"
 
 [[SimpleSDMLayers]]
 deps = ["ArchGDAL", "HTTP", "RecipesBase", "Requires", "Statistics", "ZipFile"]
-git-tree-sha1 = "098bab538a969cd4d326dc4b8c2eeb8ce0ec8f67"
+git-tree-sha1 = "55a47ccf1e6dc496efb5df3095c6ef5c6788df9e"
 uuid = "2c645270-77db-11e9-22c3-0f302a89c64c"
-version = "0.3.1"
+version = "0.3.2"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
@@ -874,9 +874,9 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SpecialFunctions]]
 deps = ["OpenSpecFun_jll"]
-git-tree-sha1 = "d8d8b8a9f4119829410ecd706da4cc8594a1e020"
+git-tree-sha1 = "bf68b90f72f81dd1519b289b7403c591cfdd6a88"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "0.10.3"
+version = "1.0.0"
 
 [[StableRNGs]]
 deps = ["Random", "Test"]
@@ -902,9 +902,9 @@ version = "0.33.2"
 
 [[StatsFuns]]
 deps = ["Rmath", "SpecialFunctions"]
-git-tree-sha1 = "04a5a8e6ab87966b43f247920eab053fd5fdc925"
+git-tree-sha1 = "3b9f665c70712af3264b61c27a7e1d62055dafd1"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "0.9.5"
+version = "0.9.6"
 
 [[StatsModels]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Printf", "ShiftedArrays", "SparseArrays", "StatsBase", "StatsFuns", "Tables"]
@@ -952,9 +952,9 @@ uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[TimeZones]]
 deps = ["Dates", "EzXML", "Mocking", "Pkg", "Printf", "RecipesBase", "Serialization", "Unicode"]
-git-tree-sha1 = "e863e6524c2a8d703bbd59e7592c97537c94579f"
+git-tree-sha1 = "e8a5ab7e56d23bf147585001d33d969c655d4091"
 uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"
-version = "1.5.0"
+version = "1.5.2"
 
 [[TranscodingStreams]]
 deps = ["Random", "Test"]
@@ -1094,34 +1094,34 @@ uuid = "cc61e674-0454-545c-8b26-ed2c68acab7a"
 version = "1.1.0+4"
 
 [[Xorg_xcb_util_image_jll]]
-deps = ["Libdl", "Pkg", "Xorg_xcb_util_jll"]
-git-tree-sha1 = "16eb9a5aa027fb877207bf9915686366c2d5c064"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_xcb_util_jll"]
+git-tree-sha1 = "0fab0a40349ba1cba2c1da699243396ff8e94b97"
 uuid = "12413925-8142-5f55-bb0e-6d7ca50bb09b"
-version = "0.4.0+0"
+version = "0.4.0+1"
 
 [[Xorg_xcb_util_jll]]
-deps = ["Libdl", "Pkg", "Xorg_libxcb_jll"]
-git-tree-sha1 = "6b47a94261a67078fe3d3922363bd9fd83b6eb1d"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libxcb_jll"]
+git-tree-sha1 = "e7fd7b2881fa2eaa72717420894d3938177862d1"
 uuid = "2def613f-5ad1-5310-b15b-b15d46f528f5"
-version = "0.4.0+0"
+version = "0.4.0+1"
 
 [[Xorg_xcb_util_keysyms_jll]]
-deps = ["Libdl", "Pkg", "Xorg_xcb_util_jll"]
-git-tree-sha1 = "40771f688e17baa121136b649e631e1868a6678e"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_xcb_util_jll"]
+git-tree-sha1 = "d1151e2c45a544f32441a567d1690e701ec89b00"
 uuid = "975044d2-76e6-5fbe-bf08-97ce7c6574c7"
-version = "0.4.0+0"
+version = "0.4.0+1"
 
 [[Xorg_xcb_util_renderutil_jll]]
-deps = ["Libdl", "Pkg", "Xorg_xcb_util_jll"]
-git-tree-sha1 = "72c9b59211a97f763a9ca82351d37ebc04a6858a"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_xcb_util_jll"]
+git-tree-sha1 = "dfd7a8f38d4613b6a575253b3174dd991ca6183e"
 uuid = "0d47668e-0667-5a69-a72c-f761630bfb7e"
-version = "0.3.9+0"
+version = "0.3.9+1"
 
 [[Xorg_xcb_util_wm_jll]]
-deps = ["Libdl", "Pkg", "Xorg_xcb_util_jll"]
-git-tree-sha1 = "6ed52e9bfb2421f01ee62e1a5a30eba5f3f29c74"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_xcb_util_jll"]
+git-tree-sha1 = "e78d10aab01a4a154142c5006ed44fd9e8e31b67"
 uuid = "c22f9ab0-d5fe-5066-847c-f4bb1cd4e361"
-version = "0.4.1+0"
+version = "0.4.1+1"
 
 [[Xorg_xkbcomp_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libxkbfile_jll"]
