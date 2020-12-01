@@ -25,7 +25,7 @@ copy_layer = worldclim(1)[coords]
 coords_bbox = (left = copy_layer.left, right = copy_layer.right, 
                bottom = copy_layer.bottom, top = coords.top)
 # Load data from CSV files
-df = DataFrame!(CSV.File(joinpath("data", "proc", "ebd_warblers_prep.csv"), header=true, delim="\t"))
+@time df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t");
 # Remove groupIdentifier column (causing bug)
 select!(df, Not(:groupIdentifier))
 # Filter observations outside coordinates range

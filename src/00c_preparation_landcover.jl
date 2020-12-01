@@ -48,7 +48,7 @@ wc_plot = plotSDM2(wc_vars[1], colorbar_title = "Annual Mean Temperature (°C)")
 lc_plot = plotSDM2(lc_vars[2], colorbar_title = "Crops land cover (%)")
 
 # Get variable info
-glossary = DataFrame!(CSV.File(joinpath("data", "proc", "glossary.csv")))
+glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 lcdf, wcdf, spdf = groupby(glossary, :type)
 
 # Clim variables
@@ -118,8 +118,8 @@ end
 
 # Test load
 #=
-testspa = DataFrame!(CSV.File(joinpath("data", "proc", "distributions_spa_full.csv"), header=true, delim="\t"))
-testenv = DataFrame!(CSV.File(joinpath("data", "proc", "distributions_env_full.csv"), header=true, delim="\t"))
+testspa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), DataFrame, header=true, delim="\t")
+testenv = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), DataFrame, header=true, delim="\t")
 testjoin = join(testspa, testenv, on = :site, kind = :inner)
 =#
 
