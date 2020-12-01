@@ -95,9 +95,9 @@ env_vars = [wc_vars; lc_vars]
 env_mat = mapreduce(x -> vec(x.grid), hcat, env_vars)
 replace!(x -> isnothing(x) ? NaN : x, env_mat)
 # Create env dataframe
-env_df = DataFrame(env_mat)
+env_df = DataFrame(env_mat, :auto)
 rename!(env_df, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
-insertcols!(env_df, 1, site = 1:nrow(env_df))
+insertcols!(env_df, 1, :site => 1:nrow(env_df))
 
 # Get sites latitudes
 lats = repeat(collect(latitudes(wc_vars[1])), outer=size(wc_vars[1].grid, 2))
@@ -120,7 +120,7 @@ end
 #=
 testspa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), DataFrame, header=true, delim="\t")
 testenv = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), DataFrame, header=true, delim="\t")
-testjoin = join(testspa, testenv, on = :site, kind = :inner)
+testjoin = innerjoin(testspa, testenv, on = :site)
 =#
 
 ## Export QC sites coordinates (for smaller scale analyses)
