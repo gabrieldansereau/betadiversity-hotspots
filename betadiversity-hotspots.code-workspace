@@ -11,9 +11,6 @@
 		"files.exclude": {
 			".Rproj.user/": true,
 			".vscode/": true
-		},	
-		"julia.additionalArgs": [
-			"--depwarn=error"
-		]
+		},
 	}
 }
