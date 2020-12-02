@@ -27,5 +27,5 @@ plot!(
       bg = :transparent,
       )
 
-savefig(plot(testplot, dpi = 200), "./fig/testplot.png")
-savefig(plot(testplot, dpi = 200), "./fig/testplot2.png")
+savefig(plot(testplot, dpi = 200), "./docs/qcbs/2020/fig/testplot.png")
+savefig(plot(testplot, dpi = 200), "./docs/qcbs/2020/fig/testplot2.png")
