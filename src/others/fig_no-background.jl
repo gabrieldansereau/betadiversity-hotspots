@@ -14,6 +14,11 @@ testplot = plot(temp5)
 testplot = plot(temp, c = :lightgrey) |> x -> plot!(richness, c = :viridis, clim = extrema(richness))
 testplot = plot(lcbd, c = :viridis)
 
+plot!(testplot,
+      bg_outside = :transparent,
+      # fg = :white
+      )
+
 plot!(
       frame = :origin,
       grid = :none,
@@ -23,3 +28,4 @@ plot!(
       )
 
 savefig(plot(testplot, dpi = 200), "./fig/testplot.png")
+savefig(plot(testplot, dpi = 200), "./fig/testplot2.png")
