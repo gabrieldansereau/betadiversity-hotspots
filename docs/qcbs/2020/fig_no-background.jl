@@ -52,3 +52,30 @@ savefig(plot(testplot2, dpi = 200), "./docs/qcbs/2020/fig/testplot2.png")
 bgmap = plot(temp5, c = :lightgrey)
 removebackground!(bgmap)
 savefig(plot(bgmap, dpi = 200), "./docs/qcbs/2020/fig/background-map.png")
+
+## Draw rectangle over subareas
+# Get coordinates
+coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
+coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
+
+# Rectangle coordinates
+function rectangle_from_coords(xb,yb,xt,yt)
+    [
+        xb  yb
+        xt  yb
+        xt  yt
+        xb  yt
+        xb  yb
+        NaN NaN
+    ]
+end
+rect_NE = rectangle_from_coords(coords_NE.left,  coords_NE.bottom,
+                                coords_NE.right, coords_NE.top)
+rect_SW = rectangle_from_coords(coords_SW.left,  coords_SW.bottom,
+                                coords_SW.right, coords_SW.top)
+
+# Plot subarea rectangles
+rectplot = plot(temp, c = :lightgrey, cb = :none)
+plot!(rectplot, rect_NE[:, 1], rect_NE[:, 2], label = "NE subarea")
+plot!(rectplot, rect_SW[:, 1], rect_SW[:, 2], label = "SW subarea")
+savefig(plot(rectplot, dpi = 200), "./docs/qcbs/2020/fig/subarea-map.png")
