@@ -23,13 +23,13 @@ testplot = plotSDM2(temp, c = :lightgrey)
 # Custom function
 function removebackground!(p; kw...)
     plot!(p,
-      frame = :origin,
-      colorbar = :none,
-      guides = "",
+          frame = :origin,
+          colorbar = :none,
+          guides = "",
           grid = :none,
           bg = :transparent;
           kw...
-      )
+          )
     return p
 end
 
@@ -47,3 +47,8 @@ testplot2 = plot(testplot,
                  )
 # Save result
 savefig(plot(testplot2, dpi = 200), "./docs/qcbs/2020/fig/testplot2.png")
+
+## Create background map
+bgmap = plot(temp5, c = :lightgrey)
+removebackground!(bgmap)
+savefig(plot(bgmap, dpi = 200), "./docs/qcbs/2020/fig/background-map.png")
