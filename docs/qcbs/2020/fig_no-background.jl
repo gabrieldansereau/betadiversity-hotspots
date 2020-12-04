@@ -10,15 +10,15 @@ temp = worldclim(1)[coords]
 
 # Clip to QC
 coords_qc = (left = -82.5, right = -51.0,
-             bottom = 41.5, top = 65.0)
+             bottom = 41.0, top = 71.0)
 temp_qc = temp[coords_qc]
 plot(temp[coords_qc])
 # Set Greenland values to nothing
 size(temp_qc)
 xmin = SimpleSDMLayers._match_longitude(temp_qc, -55.0)
-xmax = SimpleSDMLayers._match_longitude(temp_qc, -51.0)
+xmax = SimpleSDMLayers._match_longitude(temp_qc, coords_qc.right)
 ymin = SimpleSDMLayers._match_latitude(temp_qc, 60.0)
-ymax = SimpleSDMLayers._match_latitude(temp_qc, 65.0)
+ymax = SimpleSDMLayers._match_latitude(temp_qc, coords_qc.top)
 temp_qc.grid[ymin:ymax, xmin:xmax] .= nothing
 plot(temp_qc)
 # Default to QC values
