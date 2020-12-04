@@ -68,7 +68,7 @@ savefig(plot(empty_plot, dpi = 200), "./docs/qcbs/2020/fig/empty_no-bg.png")
 savefig(plot(empty_plot, dpi = 200, bg_inside = :white), "./docs/qcbs/2020/fig/empty_white.png")
 # No background white
 empty_plot_white = removebackground!(plot(temp, c = :white))
-savefig(plot(empty_plot, dpi = 200), "./docs/qcbs/2020/fig/empty_no-bg_white.png")
+savefig(plot(empty_plot_white, dpi = 200), "./docs/qcbs/2020/fig/empty_no-bg_white.png")
 
 
 ## Draw rectangle over subareas
