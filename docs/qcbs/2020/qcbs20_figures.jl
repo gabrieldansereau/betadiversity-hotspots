@@ -50,10 +50,11 @@ removebackground!(qc_viridis)
 removebackground!(qc_white)
 
 # Save results
-savefig(plot(qc_inferno,   dpi = 200), "./docs/qcbs/2020/fig/qc_no-bg_inferno.png")
-savefig(plot(qc_lightgrey, dpi = 200), "./docs/qcbs/2020/fig/qc_no-bg_lightgrey.png")
-savefig(plot(qc_viridis,   dpi = 200), "./docs/qcbs/2020/fig/qc_no-bg_viridis.png")
-savefig(plot(qc_white,     dpi = 200), "./docs/qcbs/2020/fig/qc_no-bg_white.png")
+figdir = joinpath("docs", "qcbs", "2020", "fig")
+savefig(plot(qc_inferno,   dpi = 200), joinpath(figdir, "qc_no-bg_inferno.png"))
+savefig(plot(qc_lightgrey, dpi = 200), joinpath(figdir, "qc_no-bg_lightgrey.png"))
+savefig(plot(qc_viridis,   dpi = 200), joinpath(figdir, "qc_no-bg_viridis.png"))
+savefig(plot(qc_white,     dpi = 200), joinpath(figdir, "qc_no-bg_white.png"))
 
 # Paint it white
 plot!(qc_inferno, bg_inside = :white)
@@ -61,9 +62,9 @@ plot!(qc_lightgrey, bg_inside = :white)
 plot!(qc_viridis, bg_inside = :white)
 
 # Save results
-savefig(plot(qc_inferno,   dpi = 200), "./docs/qcbs/2020/fig/qc_inside-bg_inferno.png")
-savefig(plot(qc_lightgrey, dpi = 200), "./docs/qcbs/2020/fig/qc_inside-bg_lightgrey.png")
-savefig(plot(qc_viridis,   dpi = 200), "./docs/qcbs/2020/fig/qc_inside-bg_viridis.png")
+savefig(plot(qc_inferno,   dpi = 200), joinpath(figdir, "qc_inside-bg_inferno.png"))
+savefig(plot(qc_lightgrey, dpi = 200), joinpath(figdir, "qc_inside-bg_lightgrey.png"))
+savefig(plot(qc_viridis,   dpi = 200), joinpath(figdir, "qc_inside-bg_viridis.png"))
 
 ## Draw rectangle over subareas
 # Get coordinates
@@ -90,4 +91,20 @@ rect_SW = rectangle_from_coords(coords_SW.left,  coords_SW.bottom,
 rectplot = plot(temp_full, c = :lightgrey, cb = :none)
 plot!(rectplot, rect_NE[:, 1], rect_NE[:, 2], label = "NE subarea")
 plot!(rectplot, rect_SW[:, 1], rect_SW[:, 2], label = "SW subarea")
-savefig(plot(rectplot, dpi = 200), "./docs/qcbs/2020/fig/subarea-map.png")
+savefig(plot(rectplot, dpi = 200), joinpath(figdir, "subarea-map.png"))
+
+## Remove background on analysis figures
+# Predefine desired outcome
+outcome = "bart"
+# Load analysis script
+include(joinpath("..", "..", "..", "src", "04_analysis.jl"))
+
+# Remove backgrounds
+plot!(richness_plot, bg_outside = :transparent, title = "")
+plot!(lcbdtr_plot, bg_outside = :transparent, title = "")
+plot!(rel2d_plot, bg_outside = :transparent, title = "")
+
+# Save results
+savefig(plot(richness_plot, dpi = 200), joinpath(figdir, "res_richness.png"))
+savefig(plot(lcbdtr_plot, dpi = 200), joinpath(figdir, "res_lcbd.png"))
+savefig(plot(rel2d_plot, dpi = 200), joinpath(figdir, "res_relationship.png"))
