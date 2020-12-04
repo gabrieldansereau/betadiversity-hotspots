@@ -57,15 +57,19 @@ savefig(plot(temp_white, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in.png")
 # Viridis colorpalette
 temp_viridis = removebackground!(plot(temp, c = :viridis))
 savefig(plot(temp_viridis, dpi = 200), "./docs/qcbs/2020/fig/temp_no-bg_viridis.png")
+# White inside
 temp_viridis_white = removebackground!(plot(temp, c = :viridis), bg_inside = :white)
 savefig(plot(temp_viridis_white, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in_viridis.png")
-# Save results
 
 ## Create empty background map
 empty_plot = plot(temp, c = :lightgrey)
 removebackground!(empty_plot)
 savefig(plot(empty_plot, dpi = 200), "./docs/qcbs/2020/fig/empty_no-bg.png")
 savefig(plot(empty_plot, dpi = 200, bg_inside = :white), "./docs/qcbs/2020/fig/empty_white.png")
+# No background white
+empty_plot_white = removebackground!(plot(temp, c = :white))
+savefig(plot(empty_plot, dpi = 200), "./docs/qcbs/2020/fig/empty_no-bg_white.png")
+
 
 ## Draw rectangle over subareas
 # Get coordinates
