@@ -27,7 +27,6 @@ temp = temp_qc
 
 # Temperature map
 temp_plot = plot(temp)
-temp_plotSDM2 = plotSDM2(temp)
 
 ## Remove background
 # Custom function
@@ -45,26 +44,20 @@ end
 
 # Remove background
 removebackground!(temp_plot)
-removebackground!(temp_plotSDM2)
 # Save results
 savefig(plot(temp_plot, dpi = 200), "./docs/qcbs/2020/fig/temp_no-bg.png")
-savefig(plot(temp_plotSDM2, dpi = 200), "./docs/qcbs/2020/fig/temp_no-bg_SDM2.png")
 
 ## Paint it white
 # White inside background
 temp_white = removebackground!(plot(temp), bg_inside = :white)
-temp_white_SDM2 = removebackground!(plotSDM2(temp), bg_inside = :white)
 # Save results
 savefig(plot(temp_white, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in.png")
-savefig(plot(temp_white_SDM2, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in_SDM2.png")
 
 ## Paint it viridis
 # Viridis colorpalette
 temp_viridis = removebackground!(plot(temp, c = :viridis), bg_inside = :white)
-temp_viridis_SDM2 = removebackground!(plotSDM2(temp, c = :viridis), bg_inside = :white)
 # Save results
 savefig(plot(temp_viridis, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in_viridis.png")
-savefig(plot(temp_viridis_SDM2, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in_viridis_SDM2.png")
 
 ## Create empty background map
 empty_plot = plot(temp, c = :lightgrey)
