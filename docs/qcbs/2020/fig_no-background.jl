@@ -6,18 +6,11 @@ include(joinpath(pwd(), "src", "04_analysis.jl"))
 # Load temperature
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 temp = worldclim(1)[coords]
-temp5 = worldclim(1, resolution = 5.0)[coords]
+# temp5 = worldclim(1, resolution = 5.0)[coords]
 
-# Testing plots
-testplot = plotSDM2(lcbd, c = :viridis)
-testplot = plotSDM2(richness, c = :viridis)
-testplot = plotSDM2(temp)
-testplot = plotSDM2(temp5)
-testplot = plot(temp5)
-testplot = plot(temp, c = :lightgrey) |> x ->
-    plot!(richness, c = :viridis, clim = extrema(richness))
-testplot = plot(lcbd, c = :viridis)
-testplot = plotSDM2(temp, c = :lightgrey)
+# Temperature map
+temp_plot = plot(temp)
+temp_plotSDM2 = plotSDM2(temp)
 
 ## Remove background
 # Custom function
@@ -34,24 +27,33 @@ function removebackground!(p; kw...)
 end
 
 # Remove background
-removebackground!(testplot)
+removebackground!(temp_plot)
+removebackground!(temp_plotSDM2)
+# Save results
+savefig(plot(temp_plot, dpi = 200), "./docs/qcbs/2020/fig/temp_no-bg.png")
+savefig(plot(temp_plotSDM2, dpi = 200), "./docs/qcbs/2020/fig/temp_no-bg_SDM2.png")
 
-# Save result
-savefig(plot(testplot, dpi = 200), "./docs/qcbs/2020/fig/testplot.png")
+## Paint it white
+# White inside background
+temp_white = removebackground!(plot(temp), bg_inside = :white)
+temp_white_SDM2 = removebackground!(plotSDM2(temp), bg_inside = :white)
+# Save results
+savefig(plot(temp_white, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in.png")
+savefig(plot(temp_white_SDM2, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in_SDM2.png")
 
-## Keep inside background white
-testplot2 = plot(testplot,
-                 bg_inside = :white,
-                 # bg_outside = :transparent,
-                 # fg = :white
-                 )
-# Save result
-savefig(plot(testplot2, dpi = 200), "./docs/qcbs/2020/fig/testplot2.png")
+## Paint it viridis
+# Viridis colorpalette
+temp_viridis = removebackground!(plot(temp, c = :viridis), bg_inside = :white)
+temp_viridis_SDM2 = removebackground!(plotSDM2(temp, c = :viridis), bg_inside = :white)
+# Save results
+savefig(plot(temp_viridis, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in_viridis.png")
+savefig(plot(temp_viridis_SDM2, dpi = 200), "./docs/qcbs/2020/fig/temp_white-in_viridis_SDM2.png")
 
-## Create background map
-bgmap = plot(temp5, c = :lightgrey)
-removebackground!(bgmap)
-savefig(plot(bgmap, dpi = 200), "./docs/qcbs/2020/fig/background-map.png")
+## Create empty background map
+empty_plot = plot(temp, c = :lightgrey)
+removebackground!(empty_plot)
+savefig(plot(empty_plot, dpi = 200), "./docs/qcbs/2020/fig/empty_no-bg.png")
+savefig(plot(empty_plot, dpi = 200, bg_inside = :white), "./docs/qcbs/2020/fig/empty_white.png")
 
 ## Draw rectangle over subareas
 # Get coordinates
