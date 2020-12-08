@@ -91,6 +91,7 @@ rect_SW = rectangle_from_coords(coords_SW.left,  coords_SW.bottom,
 rectplot = plot(temp_full, c = :lightgrey, cb = :none)
 plot!(rectplot, rect_NE[:, 1], rect_NE[:, 2], label = "NE subarea")
 plot!(rectplot, rect_SW[:, 1], rect_SW[:, 2], label = "SW subarea")
+plot!(rectplot, bg_outside = :transparent)
 savefig(plot(rectplot, dpi = 200), joinpath(figdir, "subarea-map.png"))
 
 ## Remove background on analysis figures
