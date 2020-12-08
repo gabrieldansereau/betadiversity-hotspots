@@ -108,3 +108,17 @@ plot!(rel2d_plot, bg_outside = :transparent, title = "")
 savefig(plot(richness_plot, dpi = 200), joinpath(figdir, "res_richness.png"))
 savefig(plot(lcbdtr_plot, dpi = 200), joinpath(figdir, "res_lcbd.png"))
 savefig(plot(rel2d_plot, dpi = 200), joinpath(figdir, "res_relationship.png"))
+
+## Distribution figures
+# Single species distributions
+spplot1 = plotSDM2(distributions[1][coords_qc], c = :BuPu)
+spplot2 = plotSDM2(distributions[17][coords_qc], c = :BuPu)
+spplot3 = plotSDM2(distributions[22][coords_qc], c = :BuPu)
+# Remove backgrounds
+removebackground!(spplot1)
+removebackground!(spplot2)
+removebackground!(spplot3)
+# Save
+savefig(plot(spplot1, dpi = 200), joinpath(figdir, "sp_bart_1.png"))
+savefig(plot(spplot2, dpi = 200), joinpath(figdir, "sp_bart_2.png"))
+savefig(plot(spplot3, dpi = 200), joinpath(figdir, "sp_bart_3.png"))
