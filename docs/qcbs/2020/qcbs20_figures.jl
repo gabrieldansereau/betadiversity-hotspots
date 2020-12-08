@@ -92,7 +92,7 @@ rectplot = plot(temp_full, c = :lightgrey, cb = :none)
 plot!(rectplot, rect_NE[:, 1], rect_NE[:, 2], label = "NE subarea")
 plot!(rectplot, rect_SW[:, 1], rect_SW[:, 2], label = "SW subarea")
 plot!(rectplot, bg_outside = :transparent)
-savefig(plot(rectplot, dpi = 200), joinpath(figdir, "subarea-map.png"))
+savefig(plot(rectplot, dpi = 200), joinpath(figdir, "subarea_map.png"))
 
 ## Remove background on analysis figures
 # Predefine desired outcome
@@ -142,3 +142,8 @@ removebackground!(spplot3_raw)
 savefig(plot(spplot1_raw, dpi = 200), joinpath(figdir, "sp_raw_1.png"))
 savefig(plot(spplot2_raw, dpi = 200), joinpath(figdir, "sp_raw_2.png"))
 savefig(plot(spplot3_raw, dpi = 200), joinpath(figdir, "sp_raw_3.png"))
+
+## Subarea comparison figure
+include(joinpath("..", "..", "..", "src", "05_subareas.jl"))
+plot!(combined_plot, bg_outside = :transparent)
+savefig(plot(combined_plot, dpi = 200), joinpath(figdir, "subarea_comparison.png"))
