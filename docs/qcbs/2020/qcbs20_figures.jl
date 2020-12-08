@@ -123,3 +123,22 @@ removebackground!(spplot3)
 savefig(plot(spplot1, dpi = 200), joinpath(figdir, "sp_bart_1.png"))
 savefig(plot(spplot2, dpi = 200), joinpath(figdir, "sp_bart_2.png"))
 savefig(plot(spplot3, dpi = 200), joinpath(figdir, "sp_bart_3.png"))
+
+## Raw distribution figures
+# Load data
+distributions_bart = copy(distributions)
+@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
+distributions_raw = copy(distributions)
+distributions = distributions_bart
+# Plot
+spplot1_raw = plotSDM2(distributions_raw[1][coords_qc], c = :BuPu)
+spplot2_raw = plotSDM2(distributions_raw[17][coords_qc], c = :BuPu)
+spplot3_raw = plotSDM2(distributions_raw[22][coords_qc], c = :BuPu)
+# Remove backgrounds
+removebackground!(spplot1_raw)
+removebackground!(spplot2_raw)
+removebackground!(spplot3_raw)
+# Save
+savefig(plot(spplot1_raw, dpi = 200), joinpath(figdir, "sp_raw_1.png"))
+savefig(plot(spplot2_raw, dpi = 200), joinpath(figdir, "sp_raw_2.png"))
+savefig(plot(spplot3_raw, dpi = 200), joinpath(figdir, "sp_raw_3.png"))
