@@ -2,6 +2,7 @@
 import Pkg
 Pkg.activate(".")
 @time include(joinpath("..", "..", "..", "src", "required.jl")) # best way for Intellisense
+figdir = joinpath("docs", "qcbs", "2020", "fig")
 
 # Load temperature
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
@@ -50,7 +51,6 @@ removebackground!(qc_viridis)
 removebackground!(qc_white)
 
 # Save results
-figdir = joinpath("docs", "qcbs", "2020", "fig")
 savefig(plot(qc_inferno,   dpi = 200), joinpath(figdir, "qc_no-bg_inferno.png"))
 savefig(plot(qc_lightgrey, dpi = 200), joinpath(figdir, "qc_no-bg_lightgrey.png"))
 savefig(plot(qc_viridis,   dpi = 200), joinpath(figdir, "qc_no-bg_viridis.png"))
@@ -147,3 +147,28 @@ savefig(plot(spplot3_raw, dpi = 200), joinpath(figdir, "sp_raw_3.png"))
 include(joinpath("..", "..", "..", "src", "05_subareas.jl"))
 plot!(combined_plot, bg_outside = :transparent)
 savefig(plot(combined_plot, dpi = 200), joinpath(figdir, "subarea_comparison.png"))
+
+## Relationship plot
+@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
+outcome = "raw"
+include(joinpath("..", "..", "..", "src", "04_analysis.jl"))
+plot(richness, lcbd, colour = :transparent, smooth = true)
+
+# Arrange data
+resdf = DataFrame([richness, lcbd])
+rename!(resdf, :x1 => :richness, :x2 => :lcbd)
+filter!(x -> !isnothing(x.richness) && !isnothing(x.lcbd), resdf)
+resdf.richness = Array{Float64}(resdf.richness)
+resdf.lcbd = Array{Float64}(resdf.lcbd)
+
+# Fit loess model
+using Loess
+function loess_vals(x, y; kw...)
+    model = loess(x, y; kw...)
+    xloess = range(extrema(x)...; step = 0.1)
+    yloess = Loess.predict(model, xloess)
+    return xloess, yloess
+end
+# Plot
+xs, ys = loess_vals(resdf.richness, resdf.lcbd)
+plot(xs, ys)
