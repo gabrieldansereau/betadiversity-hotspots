@@ -172,3 +172,25 @@ end
 # Plot
 xs, ys = loess_vals(resdf.richness, resdf.lcbd)
 plot(xs, ys)
+
+# Blank relationship plot
+x = 0:0.1:10.0
+y = @__dot__ 0.001*x^2 - 0.041*x - 3.394 # Heino 2017
+y = @__dot__ 0.002*x^2 - 0.041*x - 3.394 # Heino 2017
+y = @__dot__ 0.025*x^2 - 0.442*x - 2.690 # Silva 2018
+relplot = plot(x, y,
+               c = :black,
+               legend = false,
+               ylabel = "LCBD",
+               xlabel = "Richness",
+               )
+plot!(labelfontsize = 16,
+      ylim = (-3.62, Inf),
+      ticks = false,
+      thickness_scaling = 2)
+# plot!(xlim = (-0.25, 10.0),
+#       ylim = (-4.75, Inf), 
+#       aspect_ratio = 4.5
+#       ) # for Silva 2018
+savefig(plot(relplot, dpi = 50, bg = :transparent), 
+        joinpath(figdir, "relationship-plot.png"))
