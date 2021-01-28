@@ -1,5 +1,15 @@
 ---
+geometry: "left=1in,right=1in,top=1in,bottom=1in"
+fontfamily: kpfonts
+fontsize: 11pt
+output: pdf_document
 bibliography: [article.bib]
+link-citations: true
+header-includes:
+    - \usepackage{setspace}
+    - \doublespacing
+    - \usepackage{lineno}
+    - \linenumbers
 ---
 
 <div style="text-align: justify">
