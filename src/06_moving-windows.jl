@@ -122,8 +122,8 @@ psubareas = plot(window_NE, window_SW, layout = grid(2,1),
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(plot(window_full, dpi = 150), joinpath("fig", outcome, "06-0_$(outcome)_moving-windows_full.png"))
-    savefig(plot(psubareas, dpi = 150),   joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"))
+    savefig(plot(window_full, dpi = 200), joinpath("fig", outcome, "06-0_$(outcome)_moving-windows_full.png"))
+    savefig(plot(psubareas, dpi = 200),   joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"))
 end
 
 ## GIF
@@ -140,7 +140,7 @@ nplots = 0
     coords_subarea = (left = left, right = right, bottom = bottom, top = top)
     p = plot_lcbd_relationship(richness[coords_subarea], LCBDwindow[coords_subarea],
                             formatter = f -> "$(round(f, digits = 1))",
-                            dpi = 150)
+                            dpi = 200)
     push!(subarea_plots, p)
 end
 anim = @animate for p in subarea_plots[Not(1)]
@@ -158,7 +158,7 @@ mid_ind = median(1:length(subarea_plots)) |> round |> Int64
 ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
-p = plot(ps..., dpi = 100, layout = (3,1), size = (900, 900),
+p = plot(ps..., dpi = 200, layout = (3,1), size = (900, 900),
          title = ["LCBD" "Relationship" "" "" "" ""])
 
 # Export figures

@@ -76,9 +76,7 @@ combined_plot = plot(resNEtr, resSWtr, layout = grid(2,1),
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    # savefig(plot(resNEtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_NEtr.png"))
-    # savefig(plot(resSWtr, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_SWtr.png"))
-    savefig(plot(combined_plot, dpi = 150), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
+    savefig(plot(combined_plot, dpi = 200), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
 end
 
 #### Repeat for different subareas
@@ -125,7 +123,7 @@ nplots = 0
     coords_subarea = (left = left, right = right, bottom = bottom, top = top)
     p = plot_subareas(coords_subarea, distributions;
                       formatter = f -> "$(round(f, digits = 1))",
-                      dpi = 150)
+                      dpi = 200)
     push!(subarea_plots, p)
 end
 
@@ -145,7 +143,7 @@ mid_ind = median(1:length(subarea_plots)) |> round |> Int64
 ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
-p = plot(ps..., dpi = 100, layout = (3,1), size = (900, 900),
+p = plot(ps..., dpi = 200, layout = (3,1), size = (900, 900),
          title = ["LCBD" "Relationship" "" "" "" ""])
 
 # Export figures
