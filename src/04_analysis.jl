@@ -33,7 +33,7 @@ Ysort = sortslices(Yobs, dims = 1, by = sum) |> y ->
             sortslices(y, dims = 2, by = sum, rev = true)
 # Heatmap of Yobs
 Yobs_plot = heatmap(Ysort,
-                    title = "$(titlecase(outcome)) matrix Y (sorted by row and column sum)",
+                    # title = "$(titlecase(outcome)) matrix Y (sorted by row and column sum)",
                     ylabel = "Sites", yticks = :none, xlabel = "Species number"
                     )
 
@@ -44,13 +44,13 @@ richness = calculate_richness(Y, distributions[1])
 
 # Plot richness
 richness_plot = plotSDM2(richness; c=:viridis,
-                        title = "Richness ($outcome distributions)",
+                        # title = "Richness ($outcome distributions)",
                         clim = (0.0, maximum(richness)),
                         colorbar_title = "Number of species per site"
                         )
 # Plot richness quantiles
 richness_qplot = plotSDM2(quantiles(richness), c=:viridis,
-                         title = "Richness quantiles ($outcome distributions)",
+                         # title = "Richness quantiles ($outcome distributions)",
                          colorbar_title = "Number of species per site (quantiles)"
                          )
 
@@ -61,20 +61,20 @@ lcbd = calculate_lcbd(Y, distributions[1]; transform = true, relative = true)
 
 # Plot relative values
 lcbdtr_plot = plotSDM2(lcbd, c=:viridis,
-                      title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
+                      # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
                       colorbar_title = "LCBD value (relative to maximum)"
                       )
 
 # Plot quantile scores
 lcbdtr_qplot = plotSDM2(quantiles(lcbd), c=:viridis,
-                       title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
+                       # title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
                        colorbar_title = "LCBD quantile score"
                        )
 
 ## Relationship
 
 # Plot relationship as histogram2d
-rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
+rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, # title = "Relationship",
                          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
                          xlim = (1.0, Inf), ylim = (0.0, 1.0)
                          )
