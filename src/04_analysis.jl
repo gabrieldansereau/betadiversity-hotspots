@@ -62,7 +62,7 @@ lcbd = calculate_lcbd(Y, distributions[1]; transform = true, relative = true)
 # Plot relative values
 lcbdtr_plot = plotSDM2(lcbd, c=:viridis,
                       # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
-                      colorbar_title = "LCBD value (relative to maximum)"
+                      colorbar_title = "Relative LCBD value"
                       )
 
 # Plot quantile scores
