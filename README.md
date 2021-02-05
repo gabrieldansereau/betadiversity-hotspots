@@ -21,6 +21,8 @@ focused on all warblers species (*Parulidae* family) in North America (CA, US, M
 Note however that neither the data is not hosted in this remote repository, due to size
 limitations. More details below.
 
+The manuscript is in development in [this repo](https://github.com/gabrieldansereau/ms_betadiversity_hotspots).
+
 ## Repository structure
 
 The repository is organized has follows:
