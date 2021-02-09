@@ -843,9 +843,9 @@ version = "0.3.2"
 
 [[SimpleSDMLayers]]
 deps = ["ArchGDAL", "HTTP", "RecipesBase", "Requires", "Statistics", "ZipFile"]
-git-tree-sha1 = "3f7105dd263aca9c5cceeb74aa3cf24e4719c598"
+path = "/home/gdansereau/github/SimpleSDMLayers.jl"
 uuid = "2c645270-77db-11e9-22c3-0f302a89c64c"
-version = "0.3.5"
+version = "0.3.6"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
