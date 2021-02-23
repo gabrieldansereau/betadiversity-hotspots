@@ -76,7 +76,11 @@ lcbdtr_qplot = plotSDM2(quantiles(lcbd), c=:viridis,
 # Plot relationship as histogram2d
 rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, # title = "Relationship",
                          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                         xlim = (1.0, Inf), ylim = (0.0, 1.0)
+                         xlim = (1.0, Inf), ylim = (0.0, 1.0),
+                         # right_margin = 3.0mm,
+                         # colorbar_titlefonthalign = :left,
+                         size = (650, 400),
+                         aspect_ratio = 40
                          )
 
 
