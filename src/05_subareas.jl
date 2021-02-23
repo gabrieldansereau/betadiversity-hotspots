@@ -101,6 +101,7 @@ coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 # Relative LCBD values
 p = plot_subareas(coords_subarea, distributions; 
                   formatter = f -> "$(round(f, digits = 1))",
+                  clim = [(0.0, 1.0) :auto],
                   leftmargin = 4.0mm,
                   )
 # Non-relative values
@@ -128,6 +129,7 @@ nplots = 0
     coords_subarea = (left = left, right = right, bottom = bottom, top = top)
     p = plot_subareas(coords_subarea, distributions;
                       formatter = f -> "$(round(f, digits = 1))",
+                      clim = [(0.0, 1.0) :auto],
                       leftmargin = 4.0mm,
                       dpi = 200)
     push!(subarea_plots, p)
