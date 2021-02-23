@@ -51,8 +51,9 @@ function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
     p1 = eval(plotfct)(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
     p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
                 xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                xlim = (1, 45), ylim = (0.0, 1.0), clim = (1, 450),
-                bottommargin = 3.0mm)
+                xlim = (1, 50), ylim = (0.0, 1.0), clim = (1, 450),
+                bottommargin = 4.0mm
+                )
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
@@ -70,7 +71,8 @@ resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW,
 
 # Combine figures
 combined_plot = plot(resNEtr, resSWtr, layout = grid(2,1), 
-                     size = (900, 600), bottommargin = 1.0mm,
+                     size = (900, 600), 
+                     bottommargin = 1.0mm,
                      title = ["" "" "" ""])
 
 # Export figures
@@ -94,10 +96,13 @@ function plot_subareas(coords, initial_distributions; display_coords = coords, t
 end
 
 # Initial subarea
-left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
+left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 # Relative LCBD values
-p = plot_subareas(coords_subarea, distributions; formatter = f -> "$(round(f, digits = 1))")
+p = plot_subareas(coords_subarea, distributions; 
+                  formatter = f -> "$(round(f, digits = 1))",
+                  leftmargin = 4.0mm,
+                  )
 # Non-relative values
 asp_ratio = 92.60/60.75
 p = plot_subareas(coords_subarea, distributions;
@@ -110,7 +115,7 @@ p = plot_subareas(coords_subarea, distributions;
                   )
 
 ## Expanding GIF
-left = -71.0; right = -64.0; bottom = 46.5; top = 50.0;
+left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
 dim_ratio = (top-bottom)/(right-left)
 asp_ratio = 92.60/60.75
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
@@ -123,6 +128,7 @@ nplots = 0
     coords_subarea = (left = left, right = right, bottom = bottom, top = top)
     p = plot_subareas(coords_subarea, distributions;
                       formatter = f -> "$(round(f, digits = 1))",
+                      leftmargin = 4.0mm,
                       dpi = 200)
     push!(subarea_plots, p)
 end
@@ -144,7 +150,9 @@ ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
 p = plot(ps..., dpi = 200, layout = (3,1), size = (900, 900),
-         title = ["LCBD" "Relationship" "" "" "" ""])
+         title = ["LCBD" "Relationship" "" "" "" ""],
+         leftmargin = 2.0mm, bottommargin = -2.0mm,
+         )
 
 # Export figures
 # save_figures = true
