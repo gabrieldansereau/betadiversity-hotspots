@@ -70,7 +70,7 @@ resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW,
 
 # Combine figures
 combined_plot = plot(resNEtr, resSWtr, layout = grid(2,1), 
-                     size = (900, 600), bottommargin = 0.0mm,
+                     size = (900, 600), bottommargin = 1.0mm,
                      title = ["" "" "" ""])
 
 # Export figures
