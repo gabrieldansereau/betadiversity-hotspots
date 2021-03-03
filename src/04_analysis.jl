@@ -46,12 +46,12 @@ richness = calculate_richness(Y, distributions[1])
 richness_plot = plotSDM2(richness; c=:viridis,
                         # title = "Richness ($outcome distributions)",
                         clim = (0.0, maximum(richness)),
-                        colorbar_title = "Number of species per site"
+                        colorbar_title = "Species richness"
                         )
 # Plot richness quantiles
 richness_qplot = plotSDM2(quantiles(richness), c=:viridis,
                          # title = "Richness quantiles ($outcome distributions)",
-                         colorbar_title = "Number of species per site (quantiles)"
+                         colorbar_title = "Species richness (quantiles)"
                          )
 
 ## LCBD
@@ -68,7 +68,7 @@ lcbdtr_plot = plotSDM2(lcbd, c=:viridis,
 # Plot quantile scores
 lcbdtr_qplot = plotSDM2(quantiles(lcbd), c=:viridis,
                        # title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
-                       colorbar_title = "LCBD quantile score"
+                       colorbar_title = "Relative LCBD value (quantiles)"
                        )
 
 ## Relationship
@@ -82,7 +82,8 @@ rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, # title = "Rel
                          size = (650, 400),
                          aspect_ratio = 40
                          )
-
+vline!([median(richness)], label = :none, 
+       linestyle = :dash, c = :grey)
 
 ## Export figures
 

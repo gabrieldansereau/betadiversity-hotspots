@@ -54,6 +54,8 @@ function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
                 xlim = (1, 50), ylim = (0.0, 1.0), clim = (1, 450),
                 bottommargin = 4.0mm
                 )
+    vline!([median(richness)], label = :none, 
+           linestyle = :dash, c = :grey)
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
@@ -139,7 +141,7 @@ end
 anim = @animate for p in subarea_plots[Not(1)]
     plot(p)
 end
-gif(anim, fps = 7)
+gif(anim, fps = 3)
 if (@isdefined save_figures) && save_figures == true
     gif(anim, joinpath("fig", outcome, "05-3_$(outcome)_subareas.gif"), fps = 3)
 end
