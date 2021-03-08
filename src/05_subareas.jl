@@ -174,3 +174,40 @@ p = plot(ps..., dpi = 200, layout = (3,1), size = (900, 900),
 if (@isdefined save_figures) && save_figures == true
     savefig(p, joinpath("fig", outcome, "05-2_$(outcome)_subareas_3scales.png"))
 end
+
+
+## Experimental
+## Expanding GIF
+left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
+dim_ratio = (top-bottom)/(right-left)
+asp_ratio = 92.60/60.75
+coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+richness_medians = []
+lcbd_medians = []
+beta_medians = []
+@time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
+    global nplots += 1
+    global left -= asp_ratio
+    global bottom -= asp_ratio * dim_ratio
+    coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+
+    distribs = [d[coords_subarea] for d in distributions]
+    Y = calculate_Y(distribs)
+    richness = calculate_richness(Y, distribs[1])
+    lcbd = calculate_lcbd(Y, distribs[1])
+    beta_total = calculate_BDtotal(Y)
+    
+    push!(richness_medians, median(richness))
+    push!(lcbd_medians, median(lcbd))
+    push!(beta_medians, median(beta_total))
+end
+
+richness_medians
+lcbd_medians
+beta_medians
+
+plot(x = eachindex(richness_medians), richness_medians ./ maximum(richness_medians), label = "Median Richness")
+plot!(x = eachindex(richness_medians), lcbd_medians ./ maximum(lcbd_medians), label = "Median LCBD")
+plot!(x = eachindex(richness_medians), beta_medians ./ maximum(beta_medians), label = "BDtot")
+plot!(xlabel = "Scale", ylabel = "Value (relative to maximum)", legend = :bottomright)
+
