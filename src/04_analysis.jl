@@ -84,6 +84,8 @@ rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, # title = "Rel
                          )
 vline!([median(richness)], label = :none, 
        linestyle = :dash, c = :grey)
+hline!([median(lcbd)], label = :none, 
+       linestyle = :dash, c = :grey)
 
 ## Export figures
 

@@ -56,6 +56,8 @@ function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
                 )
     vline!([median(richness)], label = :none, 
            linestyle = :dash, c = :grey)
+    hline!([median(lcbd)], label = :none, 
+           linestyle = :dash, c = :grey)
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
@@ -107,6 +109,7 @@ p = plot_subareas(coords_subarea, distributions;
                   leftmargin = 4.0mm,
                   )
 # Non-relative values
+#=
 asp_ratio = 92.60/60.75
 p = plot_subareas(coords_subarea, distributions;
                   relative = false,
@@ -116,6 +119,7 @@ p = plot_subareas(coords_subarea, distributions;
                   formatter = :plain,
                   aspect_ratio = [asp_ratio :auto]
                   )
+=#
 
 ## Expanding GIF
 left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
