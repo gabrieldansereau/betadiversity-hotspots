@@ -129,18 +129,25 @@ p = plot_subareas(coords_subarea, distributions;
 =#
 
 ## Expanding GIF
+# Set initial coordinates
 left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
-dim_ratio = (top-bottom)/(right-left)
-asp_ratio = 92.60/60.75
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-subarea_plots = []
-nplots = 0
+# Set other values
+asp_ratio = 92.60/60.75
+dim_ratio = (top-bottom)/(right-left)
+# Get increasing subarea coordinates
+subarea_coords = []
 @time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
-    global nplots += 1
     global left -= asp_ratio
     global bottom -= asp_ratio * dim_ratio
-    coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-    p = plot_subareas(coords_subarea, distributions;
+    bbox = (left = left, right = right, bottom = bottom, top = top)
+    push!(subarea_coords, bbox)
+end
+
+# Plot subareas
+subarea_plots = []
+for sc in subarea_coords
+    p = plot_subareas(sc, distributions;
                       formatter = f -> "$(round(f, digits = 1))",
                       clim = [(0.0, 1.0) :auto],
                       leftmargin = 4.0mm,
@@ -176,23 +183,15 @@ if (@isdefined save_figures) && save_figures == true
 end
 
 
-## Experimental
-## Expanding GIF
-left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
-dim_ratio = (top-bottom)/(right-left)
-asp_ratio = 92.60/60.75
-coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+## Scaling medians figure
+# Create empty elements
 richness_medians = []
 lcbd_medians = []
-beta_values = []
+betadiv_values = []
 gamma_values = []
-@time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
-    global nplots += 1
-    global left -= asp_ratio
-    global bottom -= asp_ratio * dim_ratio
-    coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-
-    distribs = [d[coords_subarea] for d in distributions]
+# Get analysis values for all subareas
+for sc in subarea_coords
+    distribs = [d[sc] for d in distributions]
     Y = calculate_Y(distribs)
     richness = calculate_richness(Y, distribs[1])
     lcbd = calculate_lcbd(Y, distribs[1])
@@ -204,12 +203,13 @@ gamma_values = []
     push!(beta_values, beta_total)
     push!(gamma_values, gamma)
 end
-
+# Check values
 richness_medians
 lcbd_medians
 beta_values
 gamma_values
 
+# Plot values across scales
 plot(x = eachindex(richness_medians), richness_medians ./ maximum(richness_medians), label = "Median Richness")
 plot!(x = eachindex(richness_medians), lcbd_medians ./ maximum(lcbd_medians), label = "Median LCBD")
 plot!(x = eachindex(richness_medians), beta_values ./ maximum(beta_values), label = "BDtot")
