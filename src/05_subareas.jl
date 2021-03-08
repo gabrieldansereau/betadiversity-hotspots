@@ -184,7 +184,8 @@ asp_ratio = 92.60/60.75
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 richness_medians = []
 lcbd_medians = []
-beta_medians = []
+beta_values = []
+gamma_values = []
 @time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
     global nplots += 1
     global left -= asp_ratio
@@ -196,18 +197,24 @@ beta_medians = []
     richness = calculate_richness(Y, distribs[1])
     lcbd = calculate_lcbd(Y, distribs[1])
     beta_total = calculate_BDtotal(Y)
+    gamma = calculate_gamma(Y)
     
     push!(richness_medians, median(richness))
     push!(lcbd_medians, median(lcbd))
-    push!(beta_medians, median(beta_total))
+    push!(beta_values, beta_total)
+    push!(gamma_values, gamma)
 end
 
 richness_medians
 lcbd_medians
-beta_medians
+beta_values
+gamma_values
 
 plot(x = eachindex(richness_medians), richness_medians ./ maximum(richness_medians), label = "Median Richness")
 plot!(x = eachindex(richness_medians), lcbd_medians ./ maximum(lcbd_medians), label = "Median LCBD")
-plot!(x = eachindex(richness_medians), beta_medians ./ maximum(beta_medians), label = "BDtot")
-plot!(xlabel = "Scale", ylabel = "Value (relative to maximum)", legend = :bottomright)
+plot!(x = eachindex(richness_medians), beta_values ./ maximum(beta_values), label = "BDtot")
+plot!(x = eachindex(richness_medians), gamma_values ./ maximum(gamma_values), label = "Gamma")
+plot!(xlabel = "Spatial scale", ylabel = "Value (relative to maximum)",
+      legend = :bottomright, xticks = :none)
+
 

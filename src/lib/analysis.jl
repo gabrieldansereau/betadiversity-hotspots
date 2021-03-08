@@ -75,6 +75,15 @@ function calculate_richness(Y, layer)
     richness = SimpleSDMResponse(sums, layer.left, layer.right, layer.bottom, layer.top)
 end
 
+function calculate_gamma(Y)
+    # Create necessary Y elements
+    inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    sp_counts = sum(Yobs, dims = 1)
+    gamma = sum(sp_counts .> 0)
+    return gamma
+end
+
 ## LCBD
 # Load functions
 function calculate_lcbd(Y, layer; transform = true, relative = true)
