@@ -105,3 +105,21 @@ function calculate_lcbd(Y, layer; transform = true, relative = true)
                                     layer.bottom, layer.top)
     return LCBDlayer
 end
+
+function calculate_BDtotal(Y; transform = true)
+    # Create necessary Y elements
+    inds_obs = _indsobs(Y)
+    Yobs = _Yobs(Y, inds_obs)
+    
+    # Apply hellinger transformation
+    if transform
+        Yobs = _Ytransf(Yobs)
+    end
+    # Compute beta diversity statistics
+    BDstats = BD(Yobs)
+
+    # Extract LCBD values
+    BDtotal = BDstats.BDtotal
+    
+    return BDtotal
+end

@@ -41,13 +41,17 @@ richness_SW = calculate_richness(Y_SW, distributions_SW[1])
 lcbd_NE = calculate_lcbd(Y_NE, distributions_NE[1])
 lcbd_SW = calculate_lcbd(Y_SW, distributions_SW[1])
 
+## BDtot
+beta_NE = calculate_BDtotal(Y_NE)
+beta_SW = calculate_BDtotal(Y_SW)
+
 ## Subarea figures
 if outcome == "raw"
     plotfct = :plotSDM2
 else
     plotfct = :plot
 end
-function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
+function plot_lcbd_relationship(richness, lcbd, beta_total; maintitle = "", kw...)
     p1 = eval(plotfct)(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
     p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
                 xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
@@ -58,6 +62,8 @@ function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
            linestyle = :dash, c = :grey)
     hline!([median(lcbd)], label = :none, 
            linestyle = :dash, c = :grey)
+    plot!([NaN], label = "BDtot = $(round(beta_total; digits = 3))",
+          legend = :topright)
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
@@ -68,9 +74,9 @@ function plot_lcbd_relationship(richness, lcbd; maintitle = "", kw...)
     end
     return p
 end
-resNEtr = plot_lcbd_relationship(richness_NE, lcbd_NE,
+resNEtr = plot_lcbd_relationship(richness_NE, lcbd_NE, beta_NE,
             maintitle = "Northeast subarea")
-resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW,
+resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW, beta_SW,
             maintitle = "Southwest subarea")
 
 # Combine figures
@@ -92,11 +98,12 @@ function plot_subareas(coords, initial_distributions; display_coords = coords, t
     richness = calculate_richness(Y, distributions[1])
     lcbd = calculate_lcbd(Y, distributions[1];
                           transform = transform, relative = relative)
+    beta_total = calculate_BDtotal(Y)
     if display_coords != coords
         richness = richness[display_coords]
         lcbd = [l[display_coords] for l in lcbd]
     end
-    p = plot_lcbd_relationship(richness, lcbd; kw...)
+    p = plot_lcbd_relationship(richness, lcbd, beta_total; kw...)
 end
 
 # Initial subarea

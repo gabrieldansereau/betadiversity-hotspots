@@ -59,11 +59,16 @@ richness_qplot = plotSDM2(quantiles(richness), c=:viridis,
 # Get LCBD values
 lcbd = calculate_lcbd(Y, distributions[1]; transform = true, relative = true)
 
+# Get total beta
+beta_total = calculate_BDtotal(Y)
+
 # Plot relative values
 lcbdtr_plot = plotSDM2(lcbd, c=:viridis,
                       # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
                       colorbar_title = "Relative LCBD value"
                       )
+plot!([NaN], label = "BDtot = $(round(beta_total; digits = 5))",
+      legend = :bottomright)
 
 # Plot quantile scores
 lcbdtr_qplot = plotSDM2(quantiles(lcbd), c=:viridis,
