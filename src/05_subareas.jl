@@ -187,7 +187,7 @@ end
 # Create empty elements
 richness_medians = []
 lcbd_medians = []
-betadiv_values = []
+beta_values = []
 gamma_values = []
 # Get analysis values for all subareas
 for sc in subarea_coords
@@ -210,11 +210,15 @@ beta_values
 gamma_values
 
 # Plot values across scales
-plot(x = eachindex(richness_medians), richness_medians ./ maximum(richness_medians), label = "Median Richness")
-plot!(x = eachindex(richness_medians), lcbd_medians ./ maximum(lcbd_medians), label = "Median LCBD")
-plot!(x = eachindex(richness_medians), beta_values ./ maximum(beta_values), label = "BDtot")
-plot!(x = eachindex(richness_medians), gamma_values ./ maximum(gamma_values), label = "Gamma")
-plot!(xlabel = "Spatial scale", ylabel = "Value (relative to maximum)",
+medians_plot = plot(x = eachindex(richness_medians), richness_medians ./ maximum(richness_medians), label = "Median Richness", lw = 2)
+plot!(x = eachindex(richness_medians), lcbd_medians ./ maximum(lcbd_medians), label = "Median LCBD", lw = 2)
+plot!(x = eachindex(richness_medians), beta_values ./ maximum(beta_values), label = "Total beta diversity", lw = 2)
+plot!(x = eachindex(richness_medians), gamma_values ./ maximum(gamma_values), label = "Gamma diversity", lw = 2)
+plot!(xlabel = "Subarea extent", ylabel = "Subarea value (relative to maximum)",
       legend = :bottomright, xticks = :none)
 
-
+# Export figure
+# save_figures = true
+if (@isdefined save_figures) && save_figures == true
+    savefig(medians_plot, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png"))
+end
