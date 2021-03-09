@@ -67,8 +67,6 @@ lcbdtr_plot = plotSDM2(lcbd, c=:viridis,
                       # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
                       colorbar_title = "Relative LCBD value"
                       )
-plot!([NaN], label = "BDtot = $(round(beta_total; digits = 5))",
-      legend = :bottomright)
 
 # Plot quantile scores
 lcbdtr_qplot = plotSDM2(quantiles(lcbd), c=:viridis,
@@ -91,6 +89,8 @@ vline!([median(richness)], label = :none,
        linestyle = :dash, c = :grey)
 hline!([median(lcbd)], label = :none, 
        linestyle = :dash, c = :grey)
+scatter!([NaN], label = "BDtot = $(round(beta_total; digits = 3))",
+      legend = :bottomright)
 
 ## Export figures
 

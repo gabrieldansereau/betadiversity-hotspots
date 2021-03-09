@@ -62,7 +62,7 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; maintitle = "", kw..
            linestyle = :dash, c = :grey)
     hline!([median(lcbd)], label = :none, 
            linestyle = :dash, c = :grey)
-    plot!([NaN], label = "BDtot = $(round(beta_total; digits = 3))",
+    scatter!([NaN], label = "BDtot = $(round(beta_total; digits = 3))",
           legend = :topright)
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
