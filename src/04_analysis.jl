@@ -59,6 +59,10 @@ richness_qplot = plotSDM2(quantiles(richness), c=:viridis,
 # Get LCBD values
 lcbd = calculate_lcbd(Y, distributions[1]; transform = true, relative = true)
 
+# Get non-relative values
+lcbd_abs = calculate_lcbd(Y, distributions[1]; transform = true, relative = false)
+round.(Float64.(extrema(lcbd_abs)); sigdigits = 4)
+
 # Get total beta
 beta_total = calculate_BDtotal(Y)
 

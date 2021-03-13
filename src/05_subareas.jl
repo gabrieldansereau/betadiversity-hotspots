@@ -37,9 +37,15 @@ richness_NE = calculate_richness(Y_NE, distributions_NE[1])
 richness_SW = calculate_richness(Y_SW, distributions_SW[1])
 
 ## LCBD
-# Load functions
+# Relative values
 lcbd_NE = calculate_lcbd(Y_NE, distributions_NE[1])
 lcbd_SW = calculate_lcbd(Y_SW, distributions_SW[1])
+
+# Absolute values
+lcbd_abs_NE = calculate_lcbd(Y_NE, distributions_NE[1]; relative = false)
+lcbd_abs_SW = calculate_lcbd(Y_SW, distributions_SW[1]; relative = false)
+round.(Float64.(extrema(lcbd_abs_NE)); sigdigits = 4)
+round.(Float64.(extrema(lcbd_abs_SW)); sigdigits = 4)
 
 ## BDtot
 beta_NE = calculate_BDtotal(Y_NE)
@@ -187,6 +193,7 @@ end
 # Create empty elements
 richness_medians = []
 lcbd_medians = []
+lcbd_abs_medians = []
 beta_values = []
 gamma_values = []
 # Get analysis values for all subareas
@@ -195,11 +202,13 @@ for sc in subarea_coords
     Y = calculate_Y(distribs)
     richness = calculate_richness(Y, distribs[1])
     lcbd = calculate_lcbd(Y, distribs[1])
+    lcbd_abs = calculate_lcbd(Y, distribs[1]; relative = false)
     beta_total = calculate_BDtotal(Y)
     gamma = calculate_gamma(Y)
     
     push!(richness_medians, median(richness))
     push!(lcbd_medians, median(lcbd))
+    push!(lcbd_abs_medians, lcbd_abs)
     push!(beta_values, beta_total)
     push!(gamma_values, gamma)
 end
@@ -208,6 +217,13 @@ richness_medians
 lcbd_medians
 beta_values
 gamma_values
+
+# Get absolute LCBD values
+abs_extr = extrema.(lcbd_abs_medians[[1, mid_ind, end]])
+[round.(Float64.(a); sigdigits = 4) for a in abs_extr]
+
+# Get absolute medians
+extrema.([richness_medians, lcbd_medians, beta_values, gamma_values])
 
 # Plot values across scales
 medians_plot = plot(x = eachindex(richness_medians), richness_medians ./ maximum(richness_medians), label = "Median Richness", lw = 2)
