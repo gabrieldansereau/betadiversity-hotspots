@@ -225,16 +225,28 @@ abs_extr = extrema.(lcbd_abs_medians[[1, mid_ind, end]])
 # Get absolute medians
 extrema.([richness_medians, lcbd_medians, beta_values, gamma_values])
 
-# Plot values across scales
-medians_plot = plot(x = eachindex(richness_medians), richness_medians ./ maximum(richness_medians), label = "Median Richness", lw = 2)
-plot!(x = eachindex(richness_medians), lcbd_medians ./ maximum(lcbd_medians), label = "Median LCBD", lw = 2)
-plot!(x = eachindex(richness_medians), beta_values ./ maximum(beta_values), label = "Total beta diversity", lw = 2)
-plot!(x = eachindex(richness_medians), gamma_values ./ maximum(gamma_values), label = "Gamma diversity", lw = 2)
-plot!(xlabel = "Subarea extent", ylabel = "Subarea value (relative to maximum)",
-      legend = :bottomright, xticks = :none)
+# Transform to relative values
+medians_df = DataFrame(idx = eachindex(richness_medians),
+                       richness = richness_medians ./ maximum(richness_medians),
+                       lcbd = lcbd_medians ./ maximum(lcbd_medians),
+                       beta = beta_values ./ maximum(beta_values),
+                       gamma = gamma_values ./ maximum(gamma_values)
+                       )
+# Plot values across scales (step-by-step plots)
+medians_p1 = plot(medians_df.idx, medians_df.richness, label = "Median richness", lw = 2,
+                xlabel = "Subarea extent", ylabel = "Subarea value (relative to maximum)",
+                legend = :bottomright, xticks = :none, ylim = (0,1), top_margin = mm)
+medians_p2 = plot!(deepcopy(medians_p1), medians_df.lcbd, label = "Median LCBD", lw = 2)
+medians_p3 = plot!(deepcopy(medians_p2), medians_df.beta, label = "Total beta diversity", lw = 2)
+medians_p4 = plot!(deepcopy(medians_p3), medians_df.gamma, label = "Gamma diversity", lw = 2)
 
 # Export figure
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(medians_plot, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png"))
+    # Final plot
+    savefig(medians_p4, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png")),
+    # Step-by-step plots
+    savefig(medians_p1, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians1.png"))
+    savefig(medians_p2, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians2.png"))
+    savefig(medians_p3, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians3.png"))
 end
