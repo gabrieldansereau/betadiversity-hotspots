@@ -52,11 +52,21 @@ beta_NE = calculate_BDtotal(Y_NE)
 beta_SW = calculate_BDtotal(Y_SW)
 
 ## Subarea figures
+# Choose plotting function according to outcome
 if outcome == "raw"
     plotfct = :plotSDM2
 else
     plotfct = :plot
 end
+# Functions to add total beta diversity in rectangle
+rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
+function rectangle!(w, h, x, y, textstring, textsize)
+    plot!(rectangle(w, h, x, y), 
+          color = :white, legend = :none,
+          annotations = (x + (w/2), y + (h/2), text(textstring, textsize, :center)),
+          )
+end
+# Function to produce combined plots
 function plot_lcbd_relationship(richness, lcbd, beta_total; maintitle = "", kw...)
     p1 = eval(plotfct)(lcbd, c = :viridis, title = "LCBD", colorbar_title = "Relative LCBD score", clim = (0,1))
     p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
@@ -68,8 +78,7 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; maintitle = "", kw..
            linestyle = :dash, c = :grey)
     hline!([median(lcbd)], label = :none, 
            linestyle = :dash, c = :grey)
-    scatter!([NaN], label = "BDtot = $(round(beta_total; digits = 3))",
-          legend = :topright)
+    rectangle!(16.0, 0.13, 33.0, 0.84, "BDtot = $(round(beta_total; digits = 3))", 7)
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
@@ -80,12 +89,12 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; maintitle = "", kw..
     end
     return p
 end
+
+# Combined subarea figures
 resNEtr = plot_lcbd_relationship(richness_NE, lcbd_NE, beta_NE,
             maintitle = "Northeast subarea")
 resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW, beta_SW,
             maintitle = "Southwest subarea")
-
-# Combine figures
 combined_plot = plot(resNEtr, resSWtr, layout = grid(2,1), 
                      size = (900, 600), 
                      bottommargin = 1.0mm,
