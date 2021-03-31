@@ -1,6 +1,6 @@
 #### 03c - BART predictions ####
 import Pkg; Pkg.activate(".")
-@time include("required.jl")
+include("required.jl")
 
 ## Conditional arguments
 # save_data = true

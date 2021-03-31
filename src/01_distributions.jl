@@ -1,5 +1,5 @@
 import Pkg; Pkg.activate(".")
-@time include("required.jl")
+include("required.jl")
 
 ## Conditional arguments
 outcome = "raw" # desired outcome (required)

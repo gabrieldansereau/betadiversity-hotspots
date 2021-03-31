@@ -2,7 +2,7 @@
 import Pkg; Pkg.activate(".")
 using RCall
 R"source(file.path('src', 'required.R'))" # bug with `velox` if not called here
-@time include("required.jl")
+include("required.jl")
 
 ## Conditional arguments
 # save_data = true

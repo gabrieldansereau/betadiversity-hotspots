@@ -1,5 +1,5 @@
 import Pkg; Pkg.activate(".")
-@time include("required.jl")
+include("required.jl")
 
 ## Conditional arguments
 # save_prepdata = true # should preparation data be overwritten (optional)
