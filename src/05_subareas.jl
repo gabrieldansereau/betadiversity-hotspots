@@ -1,7 +1,5 @@
-if !(@isdefined BetadiversityHotspots)
-    import Pkg; Pkg.activate(".")
-    @time include("required.jl")
-end
+import Pkg; Pkg.activate(".")
+@time include("required.jl")
 
 ## Conditional arguments
 # outcome = "rf"

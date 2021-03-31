@@ -1,12 +1,8 @@
 #### 03b - Random Forests predictions ####
-import Pkg
-Pkg.activate(".")
+import Pkg; Pkg.activate(".")
 using RCall
 R"source(file.path('src', 'required.R'))" # bug with `velox` if not called here
-if !(@isdefined BetadiversityHotspots)
-    import Pkg; Pkg.activate(".")
-    @time include("required.jl")
-end
+@time include("required.jl")
 
 ## Conditional arguments
 # save_data = true
