@@ -1,7 +1,5 @@
-if !(@isdefined BetadiversityHotspots)
-    import Pkg; Pkg.activate(".")
-    @time include("required.jl")
-end
+import Pkg; Pkg.activate(".")
+include("required.jl")
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
@@ -80,21 +78,28 @@ lcbdtr_qplot = plotSDM2(quantiles(lcbd), c=:viridis,
 
 ## Relationship
 
+# Functions to add total beta value
+rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
+function rectangle!(w, h, x, y, textstring, textsize)
+    plot!(rectangle(w, h, x, y), 
+          color = :white, legend = :none,
+          annotations = (x + (w/2), y + (h/2), text(textstring, textsize, :center)),
+          )
+end
+
 # Plot relationship as histogram2d
 rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, # title = "Relationship",
                          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                         xlim = (1.0, Inf), ylim = (0.0, 1.0),
-                         # right_margin = 3.0mm,
-                         # colorbar_titlefonthalign = :left,
-                         size = (650, 400),
-                         aspect_ratio = 40
+                         xlim = (1.0, 50.0), ylim = (0.0, 1.0),
+                         aspect_ratio = 40,
+                        #  size = (900, 300),
+                        #  bottom_margin = 5.0mm,
                          )
 vline!([median(richness)], label = :none, 
        linestyle = :dash, c = :grey)
 hline!([median(lcbd)], label = :none, 
        linestyle = :dash, c = :grey)
-scatter!([NaN], label = "BDtot = $(round(beta_total; digits = 3))",
-      legend = :bottomright)
+rectangle!(12.0, 0.11, 35.0, 0.85, "BDtot = $(round(beta_total; digits = 3))", 8)
 
 ## Export figures
 
@@ -110,7 +115,7 @@ else
 end
 
 # save_quantile_figures = true # should quantile figures be overwritten (optional)
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_quantile_figures) && save_quantile_figures == true
     @info "Quantile figures saved ($(outcome))"
     savefig(plot(richness_qplot, dpi = 200), joinpath("fig", "quantiles", "04-2_$(outcome)_richness_quantiles.png"))
     savefig(plot(lcbdtr_qplot, dpi = 200),   joinpath("fig", "quantiles", "04-3_$(outcome)_lcbd-transf_quantiles.png"))

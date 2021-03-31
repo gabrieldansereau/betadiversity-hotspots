@@ -1,8 +1,6 @@
 #### Master file
-if !(@isdefined BetadiversityHotspots)
-    import Pkg; Pkg.activate(".")
-    @time include("required.jl")
-end
+import Pkg; Pkg.activate(".")
+include("required.jl")
 
 ## Data preparation
 

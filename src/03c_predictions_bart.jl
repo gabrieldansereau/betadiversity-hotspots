@@ -1,8 +1,6 @@
 #### 03c - BART predictions ####
-if !(@isdefined BetadiversityHotspots)
-    import Pkg; Pkg.activate(".")
-    @time include("required.jl")
-end
+import Pkg; Pkg.activate(".")
+include("required.jl")
 
 ## Conditional arguments
 # save_data = true
