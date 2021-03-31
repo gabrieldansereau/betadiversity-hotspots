@@ -116,18 +116,18 @@ sort(pres_counts)
 ## Plot result
 # Species 1
 sp1 = "Setophaga_townsendi"
-map_sp1 = plotSDM2(distributions[speindex[sp1]], c = reverse(cgrad(:BuPu)),
-                   title = "$(sp1) distribution ($(outcome))",
+map_sp1 = plotSDM2(distributions[speindex[sp1]], c = :BuPu,
+                   title = "$(replace(sp1, "_" => " ")) distribution ($(outcome))",
                    colorbar = :none)
-scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
-                        legend = :bottomright, legendfontsize = 5)
+# scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
+#                         legend = :bottomright, legendfontsize = 5)
 # Species 2
 sp2 = "Setophaga_petechia"
-map_sp2 = plotSDM2(distributions[speindex[sp2]], c = reverse(cgrad(:BuPu)),
-                   title = "$(sp2) distribution ($(outcome))",
+map_sp2 = plotSDM2(distributions[speindex[sp2]], c = :BuPu,
+                   title = "$(replace(sp2, "_" => " ")) distribution ($(outcome))",
                    colorbar = :none)
-scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
-                        legend = :bottomright, legendfontsize = 5)
+# scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
+#                         legend = :bottomright, legendfontsize = 5)
 
 ## Export figures
 # save_figures = true # should figures be overwritten (optional)
