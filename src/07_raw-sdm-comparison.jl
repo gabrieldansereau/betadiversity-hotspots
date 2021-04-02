@@ -51,8 +51,11 @@ richness_diff = sdm.richness - raw.richness
 lcbd_diff = sdm.lcbd - raw.lcbd
 
 function difference_plot(layer::T; title = "") where T <: SimpleSDMLayer
+    # Center colorscale at zero instead of midpoint between extremas
+    # lims = extrema(layer)
+    # centervalue = abs(lims[1])/(lims[2] - lims[1])
     diff_map = plotSDM2(layer,
-                        c = cgrad(:PuOr, rev = true),
+                        c = cgrad(:PuOr, centervalue, rev = true), 
                         # clim = limrange,
                         title = "Richness difference",
                         colorbar_title = "Difference")
