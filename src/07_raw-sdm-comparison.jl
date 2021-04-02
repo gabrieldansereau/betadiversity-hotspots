@@ -88,13 +88,17 @@ PlotUtils.ContinuousColorGradient(colors, values1)
 
 # LinRange thing from mkb
 limslayer = (-38.0, 45.0)
+rescale(x, m, M) = (x .- minimum(x))./(maximum(x)-minimum(x)).*(M-m).+m
 remap(value, oldmin, oldmax, newmin, newmax) =
     ((value .- oldmin) ./ (oldmax .- oldmin)) .* (newmax .- newmin) .+ newmin
 remap([limslayer[1], 0, limslayer[2]], limslayer..., 0, 1)
+rescale(limslayer, 0, 1)
+rescale([limslayer[1], 0, limslayer[2]], 0, 1)
 
+# From https://github.com/JuliaPlots/PlotDocs.jl/pull/57#issuecomment-335469346
 # subsetgrad(grad, lims) = (lims = linspace(lims..., 20); cgrad([getindex.(cgrad(grad), lims)...]))
 subsetgrad(grad, lims; kw...) = (lims = LinRange(lims..., 20); 
-                                          cgrad([getindex(cgrad(grad; kw...), lims)...]))
+                                 cgrad([getindex(cgrad(grad; kw...), lims)...]))
 quantile
 grad = PlotUtils.get_colorscheme(:PuOr)
 lims = (0.2, 1.0)
@@ -108,17 +112,46 @@ subsetgrad(:PuOr, limslayer; rev = true)
 subsetgrad(:PuOr, (0.0, 1.0), [0.2]; rev = true)
 cgrad(:PuOr, [0.2]; rev = true)
 
+function subsetgrad(grad, lims; kw...)
+    lims_range = range(lims..., length = 20) 
+    subgrad = cgrad([getindex(cgrad(grad; kw...), lims_range)...])
+    return subgrad
+end
 
+function rescalegrad(grad, lims; kw...) 
+    centervalue = abs(lims[1])/(lims[2] - lims[1])
+    rescaled_grad = cgrad(grad, centervalue; kw...)
+    return rescaled_grad
+end
+
+lims = (-38.0, 45.0)
+function recentergrad(grad, lims; kw...)
+    lmin = minimum(lims)
+    lmax = maximum(lims)
+    absmax = max(abs(lmin), lmax)
+    if abs(lmin) < lmax
+        rlims = rescale([-absmax, lmin, absmax], 0, 1)
+        subsetgrad(:PuOr, rlims[2:3]; kw...)
+    elseif abs(lmin) > lmax
+        rlims = rescale([-absmax, lmax, absmax], 0, 1)
+        subsetgrad(:PuOr, rlims[1:2]; kw...)
+    end
+end
+recentergrad(:PuOr, lims; rev = true)
+recentergrad(:PuOr, (0.1); rev = true)
 
 function difference_plot(layer::T; title = "") where T <: SimpleSDMLayer
     # Center colorscale at zero instead of midpoint between extremas
-    # lims = extrema(layer)
+    lims = extrema(layer)
     # centervalue = abs(lims[1])/(lims[2] - lims[1])
-    scalevalues = remap([limslayer[1], 0, limslayer[2]], limslayer..., 0, 1)
+    # scalevalues = rescale([lims[1], 0.0, lims[2]], 0, 1)
+    # scalevalues = remap([limslayer[1], 0, limslayer[2]], limslayer..., 0, 1)
     diff_map = plotSDM2(layer,
                         # c = cgrad(:PuOr, centervalue, rev = true), 
-                        c = cgrad(:PuOr, scalevalues, rev = true), 
-                        # clim = limrange,
+                        # c = rescalegrad(:PuOr, extrema(layer); rev = true),
+                        # c = cgrad(:PuOr, scalevalues, rev = true), 
+                        c = recentergrad(:PuOr, lims; rev = true),
+                        # clim = limranglimslayer...e,
                         title = "Richness difference",
                         colorbar_title = "Difference")
     # diff_hist = histogram([filter(x -> !isnothing(x) && x > 0, layer.grid), 

@@ -89,7 +89,7 @@ function difference_plot(layer, lim; title = "")
     diff_hist = histogram([filter(x -> !isnothing(x) && x > 0, layer.grid), 
                            filter(x -> !isnothing(x) && x <= 0, layer.grid)],
                           bins = :rice, c = [:diverging_r :diverging], legend = :none,
-                          ylim = maxrange, # xlabel = "Difference",
+                          ylim = limrange, # xlabel = "Difference",
                           title = "Distribution of difference values", 
                           orientation = :horizontal)
     diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
