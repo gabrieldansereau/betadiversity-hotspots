@@ -152,22 +152,31 @@ function difference_plot(layer::T; title = "") where T <: SimpleSDMLayer
                         # c = cgrad(:PuOr, scalevalues, rev = true), 
                         c = recentergrad(:PuOr, lims; rev = true),
                         # clim = limranglimslayer...e,
-                        title = "Richness difference",
-                        colorbar_title = "Difference")
-    # diff_hist = histogram([filter(x -> !isnothing(x) && x > 0, layer.grid), 
-    #                        filter(x -> !isnothing(x) && x <= 0, layer.grid)],
-    #                       bins = :rice, c = [:diverging_r :diverging], legend = :none,
-    #                       ylim = limrange, # xlabel = "Difference",
-    #                       title = "Distribution of difference values", 
-    #                       orientation = :horizontal)
-    # diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
-    # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
-    # diff_plot = plot(diff_title, diff_map, diff_hist, 
-    #                  size = (800, 400), layout = l)
-    # return diff_plot
+                        title = "Difference map",
+                        colorbar_title = "Difference from observed value")
+    diff_hist = histogram([filter(x -> !isnothing(x) && x >= 0, layer.grid), 
+                           filter(x -> !isnothing(x) && x < 0, layer.grid)],
+                          bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], legend = :none,
+                          # ylim = limrange, # xlabel = "Difference",
+                          title = "Difference distribution", 
+                          xlabel = "Frequency",
+                          orientation = :horizontal,
+                          )
+    diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
+    l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    diff_plot = plot(diff_title, diff_map, diff_hist, 
+                     size = (850, 400), layout = l,
+                     bottommargin = 3.0mm, dpi = 200)
+    return diff_plot
 end
-difference_plot(richness_diff)
-difference_plot(lcbd_diff)
+richness_diffplot = difference_plot(richness_diff; title = "Predicted richness compared to observed richness")
+lcbd_diffplot = difference_plot(lcbd_diff; title = "Predicted LCBD compared to observed LCBD")
+
+# Save figures
+if (@isdefined save_figures) && save_figures == true
+    savefig(richness_diffplot, joinpath("fig", "$(outcome)", "07_$(outcome)_comparison-richness.png"))
+    savefig(lcbd_diffplot, joinpath("fig", "$(outcome)", "07_$(outcome)_comparison-lcbd.png"))
+end
 
 ## Correlation, GLM, and friends
 # Prepare data
