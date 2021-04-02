@@ -50,73 +50,9 @@ end
 richness_diff = sdm.richness - raw.richness
 lcbd_diff = sdm.lcbd - raw.lcbd
 
-# Custom function
+# Custom fonctions for gradients
 
-lims = (-38.0, 45.0)
-centervalue = abs(lims[1])/(lims[2] - lims[1])
-
-emptyfct(x) = x
-cgrad(:PuOr, centervalue, rev = true, scale = emptyfct)
-cgrad(:PuOr, [0.0, centervalue, 1.0], rev = true)
-cgrad(:PuOr, [0.0, centervalue, 1.0], rev = true, scale = emptyfct)
-
-emptyfct.(centervalue)
-
-# Set args
-colors = PlotUtils.get_colorscheme(:PuOr)
-values1 = centervalue
-values1 = [0.0, centervalue, 1.0]
-scale = emptyfct
-# Exp
-values1 = ColorSchemes.remap(exp10.(values1), 1, 10, 0, 1)
-# Custom fct
-v = scale.(values1)
-values1 = ColorSchemes.remap(v, extrema(v)..., 0, 1)
-# Inside remap
-# remap(value, oldmin, oldmax, newmin, newmax) =
-#     ((value .- oldmin) ./ (oldmax .- oldmin)) .* (newmax .- newmin) .+ newmin
-v[1] = -1
-value = v
-oldmin = extrema(v)[1]
-oldmax = extrema(v)[2]
-newmin = 0
-newmax = 1
-((value .- oldmin) ./ (oldmax .- oldmin)) .* (newmax .- newmin) .+ newmin
-# Return
-PlotUtils.ContinuousColorGradient(colors, values1)
-
-
-# LinRange thing from mkb
-limslayer = (-38.0, 45.0)
 rescale(x, m, M) = (x .- minimum(x))./(maximum(x)-minimum(x)).*(M-m).+m
-remap(value, oldmin, oldmax, newmin, newmax) =
-    ((value .- oldmin) ./ (oldmax .- oldmin)) .* (newmax .- newmin) .+ newmin
-remap([limslayer[1], 0, limslayer[2]], limslayer..., 0, 1)
-rescale(limslayer, 0, 1)
-rescale([limslayer[1], 0, limslayer[2]], 0, 1)
-
-# From https://github.com/JuliaPlots/PlotDocs.jl/pull/57#issuecomment-335469346
-# subsetgrad(grad, lims) = (lims = linspace(lims..., 20); cgrad([getindex.(cgrad(grad), lims)...]))
-subsetgrad(grad, lims; kw...) = (lims = LinRange(lims..., 20); 
-                                 cgrad([getindex(cgrad(grad; kw...), lims)...]))
-quantile
-grad = PlotUtils.get_colorscheme(:PuOr)
-lims = (0.2, 1.0)
-
-lims2 = LinRange(lims..., 20)
-cgrad([getindex(cgrad(grad; rev = true), lims2)...])
-subsetgrad(:PuOr, (0.0, 1.0); rev = true)
-subsetgrad(:PuOr, (0.2, 1.0); rev = true)
-subsetgrad(:PuOr, (0.2, 1.0); rev = true)
-subsetgrad(:PuOr, limslayer; rev = true)
-subsetgrad(:PuOr, (0.0, 1.0), [0.2]; rev = true)
-cgrad(:PuOr, [0.2]; rev = true)
-
-function subsetgrad(grad, lims; kw...)
-    lims_range = range(lims..., length = 20) 
-    subgrad = cgrad([getindex(cgrad(grad; kw...), lims_range)...])
-    return subgrad
-end
 
 function rescalegrad(grad, lims; kw...) 
     centervalue = abs(lims[1])/(lims[2] - lims[1])
@@ -124,7 +60,12 @@ function rescalegrad(grad, lims; kw...)
     return rescaled_grad
 end
 
-lims = (-38.0, 45.0)
+function subsetgrad(grad, lims; kw...)
+    lims_range = range(lims..., length = 20) 
+    subgrad = cgrad([getindex(cgrad(grad; kw...), lims_range)...])
+    return subgrad
+end
+
 function recentergrad(grad, lims; kw...)
     lmin = minimum(lims)
     lmax = maximum(lims)
@@ -137,27 +78,30 @@ function recentergrad(grad, lims; kw...)
         subsetgrad(:PuOr, rlims[1:2]; kw...)
     end
 end
-recentergrad(:PuOr, lims; rev = true)
-recentergrad(:PuOr, (0.1); rev = true)
 
+# Test functions
+lims = extrema(richness_diff)
+rescale([lims[1], 0, lims[2]], 0, 1)
+rescalegrad(:PuOr, extrema(layer); rev = true)
+subsetgrad(:PuOr, (0.2, 1.0); rev = true)
+recentergrad(:PuOr, lims; rev = true)
+
+# Custom function to visualize the difference
 function difference_plot(layer::T; title = "") where T <: SimpleSDMLayer
     # Center colorscale at zero instead of midpoint between extremas
     lims = extrema(layer)
     # centervalue = abs(lims[1])/(lims[2] - lims[1])
     # scalevalues = rescale([lims[1], 0.0, lims[2]], 0, 1)
-    # scalevalues = remap([limslayer[1], 0, limslayer[2]], limslayer..., 0, 1)
     diff_map = plotSDM2(layer,
                         # c = cgrad(:PuOr, centervalue, rev = true), 
                         # c = rescalegrad(:PuOr, extrema(layer); rev = true),
                         # c = cgrad(:PuOr, scalevalues, rev = true), 
                         c = recentergrad(:PuOr, lims; rev = true),
-                        # clim = limranglimslayer...e,
                         title = "Difference map",
                         colorbar_title = "Difference from observed value")
     diff_hist = histogram([filter(x -> !isnothing(x) && x >= 0, layer.grid), 
                            filter(x -> !isnothing(x) && x < 0, layer.grid)],
                           bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], legend = :none,
-                          # ylim = limrange, # xlabel = "Difference",
                           title = "Difference distribution", 
                           xlabel = "Frequency",
                           orientation = :horizontal,
