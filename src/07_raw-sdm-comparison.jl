@@ -45,6 +45,32 @@ if (@isdefined save_figures) && save_figures == true
     savefig(joinpath(mspath, "figures", "combined-maps.png"))
 end
 
+## Difference plots
+# Difference between values from SDM models & raw observations
+richness_diff = sdm.richness - raw.richness
+lcbd_diff = sdm.lcbd - raw.lcbd
+
+function difference_plot(layer::T; title = "") where T <: SimpleSDMLayer
+    diff_map = plotSDM2(layer,
+                        c = cgrad(:PuOr, rev = true),
+                        # clim = limrange,
+                        title = "Richness difference",
+                        colorbar_title = "Difference")
+    # diff_hist = histogram([filter(x -> !isnothing(x) && x > 0, layer.grid), 
+    #                        filter(x -> !isnothing(x) && x <= 0, layer.grid)],
+    #                       bins = :rice, c = [:diverging_r :diverging], legend = :none,
+    #                       ylim = limrange, # xlabel = "Difference",
+    #                       title = "Distribution of difference values", 
+    #                       orientation = :horizontal)
+    # diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
+    # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    # diff_plot = plot(diff_title, diff_map, diff_hist, 
+    #                  size = (800, 400), layout = l)
+    # return diff_plot
+end
+difference_plot(richness_diff)
+difference_plot(lcbd_diff)
+
 ## Correlation, GLM, and friends
 # Prepare data
 results = DataFrame([raw.richness, raw.lcbd, sdm.richness, sdm.lcbd])
