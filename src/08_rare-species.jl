@@ -27,17 +27,46 @@ getoccupancy_percentage(Ymatrix) = getoccupancy(Ymatrix) ./ size(_Yobs(Ymatrix),
 occupancy_percentage = getoccupancy_percentage(Y)
 occupancy_percentage_NE = getoccupancy_percentage(Y_NE)
 occupancy_percentage_SW = getoccupancy_percentage(Y_SW)
+
 # Classify as rare species
-# thresholds = [0.1, 0.2, 0.3, 0.4, 0.5]
-# rarespecies = [occupancy_percentage .< t for t in thresholds]
-getrarespecies(occupancy_percentage, threshold) = [iszero(op) ? missing : (op < threshold ? 1 : 0 ) for op in occupancy_percentage]
+# Function to get rare species based on local occupancy
+function getrarespecies(occupancy_percentage::Vector{<:AbstractFloat}, threshold::AbstractFloat)
+    @assert all(x -> 0.0 <= x <= 1.0, occupancy_percentage) "occupancy_percentage must be between 0 and 1"
+    rarespecies = Vector{Union{Missing, Int64}}(undef, length(occupancy_percentage))
+    for (i, op) in enumerate(occupancy_percentage)
+        if iszero(op)
+            rarespecies[i] = missing
+        else
+            rarespecies[i] = op < threshold ? 1 : 0
+        end
+    end
+    return rarespecies
+end
+# Function to get rare species based on total occupancy
+function getrarespecies(occupancy_percentage::Vector{<:T}, total_occupancy::Vector{<:T}, threshold::T) where {T <: AbstractFloat}
+    @assert all(x -> 0.0 <= x <= 1.0, occupancy_percentage) "occupancy_percentage must be between 0 and 1"
+    @assert all(x -> 0.0 <= x <= 1.0, total_occupancy) "occupancy_percentage must be between 0 and 1"
+    rarespecies = Vector{Union{Missing, Int64}}(undef, length(occupancy_percentage))
+    for (i, op) in enumerate(occupancy_percentage)
+        if iszero(op)
+            rarespecies[i] = missing
+        else
+            rarespecies[i] = total_occupancy[i] < threshold ? 1 : 0
+        end
+    end
+    return rarespecies
+end
 rarespecies = getrarespecies(occupancy_percentage, 0.4)
 rarespecies_NE = getrarespecies(occupancy_percentage_NE, 0.4)
 rarespecies_SW = getrarespecies(occupancy_percentage_SW, 0.4)
+rarespecies_NE_total = getrarespecies(occupancy_percentage_NE, occupancy_percentage, 0.4)
+rarespecies_SW_total = getrarespecies(occupancy_percentage_SW, occupancy_percentage, 0.4)
 # Percentage of rarespecies
 rarespecies_percentage = mean(skipmissing(rarespecies))
 rarespecies_percentage_NE = mean(skipmissing(rarespecies_NE))
 rarespecies_percentage_SW = mean(skipmissing(rarespecies_SW))
+rarespecies_percentage_NE_total = mean(skipmissing(rarespecies_NE_total))
+rarespecies_percentage_SW_total = mean(skipmissing(rarespecies_SW_total))
 
 # LCBD-richness correlation
 get_eusrr(richness, lcbd) = corspearman(collect(richness), collect(lcbd))
@@ -133,6 +162,19 @@ scatter(permutedims([rarespecies_percentage, rarespecies_percentage_NE, rarespec
         x -> hline!(x, [0.0], style = :dash, c = :grey, label = :none)
 # EUSRR negative whatever subarea & percentage of rare species?
 savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr.png"))
+
+# Subareas & rarity based on total occupancy
+scatter(permutedims([rarespecies_percentage, rarespecies_percentage_NE_total, rarespecies_percentage_SW_total]), 
+        permutedims([eusrr, eusrr_NE, eusrr_SW]),
+        xlabel = "Percentage of rare species (%)",
+        ylabel = "EUSRR",
+        xlim = (0.40, 1.0), ylim = (-1.0, 1.0),
+        label = ["Total" "NE" "SW"],
+        legendtitle = "Regions", legendtitlefontsize = 9,
+        ) |>
+        x -> hline!(x, [0.0], style = :dash, c = :grey, label = :none)
+# EUSRR negative whatever subarea & percentage of rare species?
+savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_total.png"))
 
 # Subareas & thresholds
 scatter(rarespecies_matrix, 
