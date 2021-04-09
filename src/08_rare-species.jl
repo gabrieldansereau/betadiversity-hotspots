@@ -218,7 +218,7 @@ function ascending_plots(richness, lcbd, rarespecies)
     # Choose threshold
     ascending_threshold = minimum(lcbd)
     min_indx = findall(x -> x == ascending_threshold, lcbd.grid)
-    abs_min = minimum(richness.grid[min_indx])
+    abs_min = median(richness.grid[min_indx])
     
     binlayer = replace(richness, Pair.(unique(richness), unique(richness) .> abs_min)...)
     lplot = plotSDM2(binlayer, c = :PuOr)
@@ -231,6 +231,6 @@ function ascending_plots(richness, lcbd, rarespecies)
 end
 p_asc1 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
 p_asc2 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
-plot(pasc1, pasc2, layout = (2,1), size = (900, 600), leftmargin = 2.0mm)
+plot(p_asc1, p_asc2, layout = (2,1), size = (900, 600), leftmargin = 2.0mm)
 savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
 
