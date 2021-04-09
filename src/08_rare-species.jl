@@ -221,21 +221,22 @@ function ascending_plots(richness, lcbd, rarespecies)
     abs_min = median(richness.grid[min_indx])
     
     binlayer = replace(richness, Pair.(unique(richness), unique(richness) .> abs_min)...)
-    lplot = plotSDM2(binlayer, c = cgrad(:PuOr, rev = true))
+    lplot = plotSDM2(binlayer, c = cgrad(:PuOr, rev = true),
+                     colorbar = :none)
     
     bin_names = map(x -> isone(x) ? "Ascending" : "Descending", collect(binlayer))
     isascending = isequal.(bin_names, "Ascending")
 
     rare_values = collect(rarespecies)
 
-    bplot = boxplot(bin_names[isascending], rare_values[isascending], c = :PuOr)
-    boxplot!(bin_names[.!isascending], rare_values[.!isascending],
-             ylabel = "Proportion of rare species", c = cgrad(:PuOr, rev = true))
+    dplot = density(rare_values[isascending], c = :PuOr, label = "Ascending")
+    density!(rare_values[.!isascending], c = cgrad(:PuOr, rev = true), label = "Descending")
+    plot!(xlabel = "Rare species percentage", ylabel = "Density", bottommargin = 4.0mm)
     
-    plot(lplot, bplot, size = (900, 300))
+    plot(lplot, dplot, size = (900, 300))
 end
-p_asc1 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
-p_asc2 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
-plot(p_asc1, p_asc2, layout = (2,1), size = (900, 600), leftmargin = 2.0mm)
+p_asc1 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
+p_asc2 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
+plot(p_asc1, p_asc2, layout = (2,1), size = (900, 600))
 savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
 
