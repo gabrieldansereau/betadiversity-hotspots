@@ -212,3 +212,51 @@ show(stdout, "text/plain", rarespecies_scaling)
 show(stdout, "text/plain", eusrr_scaling)
 # Whatever
 savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_scaling.png"))
+
+
+## Spatial distribution of rare species proportion
+function get_site_rarespecies(Y, rarespecies, richness)
+    if any(ismissing, rarespecies)
+        rarespecies = replace(rarespecies, missing => 0)
+    end
+    Yobs = _Yobs(Y)
+    Yrare = Yobs + repeat(permutedims(rarespecies), size(Yobs, 1)) .- 1.0
+    Yrare_percentage = sum(isone, Yrare, dims = 2) ./ sum(Yobs, dims = 2)
+
+    rarespecies_layer = copy(richness)
+    inds_obs = findall(!isnothing, rarespecies_layer.grid)
+    rarespecies_layer.grid[inds_obs] .= vec(Yrare_percentage)
+    return rarespecies_layer
+end
+rarespecies_layer = get_site_rarespecies(Y, rarespecies, richness)
+plotSDM2(rarespecies_layer, c = :viridis)
+savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_global.png"))
+
+rarespecies_layer_NE = get_site_rarespecies(Y_NE, rarespecies_NE, richness_NE)
+p1 = plotSDM2(rarespecies_layer_NE, c = :viridis)
+
+rarespecies_layer_NE_total = get_site_rarespecies(Y_NE, rarespecies_NE_total, richness_NE)
+p2 = plotSDM2(rarespecies_layer_NE_total, c = :viridis)
+
+rarespecies_layer_SW = get_site_rarespecies(Y_SW, rarespecies_SW, richness_SW)
+p3 = plotSDM2(rarespecies_layer_SW, c = :viridis)
+
+rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, richness_SW)
+p4 = plotSDM2(rarespecies_layer_SW_total, c = :viridis)
+
+plot(p1, p2, p3, p4, dpi = 200)
+savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"))
+
+# Rare species percentage - LCBD relationship?
+histogram2d(rarespecies_layer, lcbd, c = :viridis,
+            xlabel = "Percentage of rare species", ylabel = "LCBD")
+histogram2d(rarespecies_layer_NE, lcbd_NE, c = :viridis,
+            xlabel = "Percentage of rare species", ylabel = "LCBD")
+histogram2d(rarespecies_layer_SW, lcbd_SW, c = :viridis,
+            xlabel = "Percentage of rare species", ylabel = "LCBD")
+# Same as scatterplots ?!
+scatter(collect(rarespecies_layer), collect(lcbd))
+scatter(collect(rarespecies_layer_NE), collect(lcbd_NE))
+scatter(collect(rarespecies_layer_SW), collect(lcbd_SW))
+scatter(collect(rarespecies_layer_NE_total), collect(lcbd_NE))
+scatter(collect(rarespecies_layer_SW_total), collect(lcbd_SW))
