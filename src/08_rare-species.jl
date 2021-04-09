@@ -207,3 +207,30 @@ p4 = plotSDM2(rarespecies_layer_SW_total, c = :viridis)
 
 plot(p1, p2, p3, p4, dpi = 200)
 savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"))
+
+## Ascending & descending parts
+using StatsPlots
+
+# Check relationship plots
+combined_plot
+
+function ascending_plots(richness, lcbd, rarespecies)
+    # Choose threshold
+    ascending_threshold = minimum(lcbd)
+    min_indx = findall(x -> x == ascending_threshold, lcbd.grid)
+    abs_min = minimum(richness.grid[min_indx])
+    
+    binlayer = replace(richness, Pair.(unique(richness), unique(richness) .> abs_min)...)
+    lplot = plotSDM2(binlayer, c = :PuOr)
+    
+    bin_names = map(x -> isone(x) ? "Ascending" : "Descending", collect(binlayer))
+    
+    bplot = boxplot(bin_names, collect(rarespecies),
+                   ylabel = "Proportion of rare species")
+    plot(lplot, bplot, size = (900, 300))
+end
+p_asc1 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
+p_asc2 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
+plot(pasc1, pasc2, layout = (2,1), size = (900, 600), leftmargin = 2.0mm)
+savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
+
