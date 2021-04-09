@@ -64,6 +64,25 @@ thresholds = [0.1, 0.2, 0.3, 0.4, 0.5]
 Ys = [Y, Y_NE, Y_SW]
 rarespecies_matrix = [get_rarespecies_percentage(y, t) for t in thresholds, y in Ys]
 
+# Scaling EUSRR
+threshold = 0.4
+rarespecies_scaling = Vector{Float64}()
+eusrr_scaling = Vector{Float64}()
+for sc in subarea_coords
+    distributions_sc = [d[sc] for d in distributions]
+    Y_sc = calculate_Y(distributions_sc)
+    richness_sc = calculate_richness(Y_sc, distributions_sc[1])
+    lcbd_sc = calculate_lcbd(Y_sc, distributions_sc[1])
+    
+    rarespecies_sc = get_rarespecies_percentage(Y_sc, threshold)
+    eusrr_sc = get_eusrr(richness_sc, lcbd_sc)
+    
+    push!(rarespecies_scaling, rarespecies_sc)
+    push!(eusrr_scaling, eusrr_sc)
+end
+rarespecies_scaling
+eusrr_scaling
+
 # Plot EUSRR ~ rare species percentage
 # Similar to Fig. 3 of Yao et al. 2021
 # i_thr = findall(x -> x == 0.4, thresholds)
@@ -134,4 +153,20 @@ plot(thresholds, rarespecies_matrix,
      ylabel = "Rare species percentage",
      labels = ["Total" "NE" "SW"],
      legend = :bottomright)
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_thresholds.png"))
+savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_thresholds.png"))
+
+# Scaling EUSRR
+scatter(rarespecies_scaling, 
+        eusrr_scaling,
+        xlabel = "Percentage of rare species (%)",
+        ylabel = "EUSRR",
+        xlim = (0.0, 1.0), ylim = (-1.0, 1.0),
+        label = ["Total" "NE" "SW"],
+        legendtitle = "Regions", legendtitlefontsize = 9,
+        ) |>
+        x -> hline!(x, [0.0], style = :dash, c = :grey, label = :none)
+# Huh ok...
+show(stdout, "text/plain", rarespecies_scaling)
+show(stdout, "text/plain", eusrr_scaling)
+# Whatever
+savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_scaling.png"))
