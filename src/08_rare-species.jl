@@ -221,12 +221,17 @@ function ascending_plots(richness, lcbd, rarespecies)
     abs_min = median(richness.grid[min_indx])
     
     binlayer = replace(richness, Pair.(unique(richness), unique(richness) .> abs_min)...)
-    lplot = plotSDM2(binlayer, c = :PuOr)
+    lplot = plotSDM2(binlayer, c = cgrad(:PuOr, rev = true))
     
     bin_names = map(x -> isone(x) ? "Ascending" : "Descending", collect(binlayer))
+    isascending = isequal.(bin_names, "Ascending")
+
+    rare_values = collect(rarespecies)
+
+    bplot = boxplot(bin_names[isascending], rare_values[isascending], c = :PuOr)
+    boxplot!(bin_names[.!isascending], rare_values[.!isascending],
+             ylabel = "Proportion of rare species", c = cgrad(:PuOr, rev = true))
     
-    bplot = boxplot(bin_names, collect(rarespecies),
-                   ylabel = "Proportion of rare species")
     plot(lplot, bplot, size = (900, 300))
 end
 p_asc1 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
