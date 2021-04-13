@@ -82,7 +82,7 @@ end
 # Test functions
 lims = extrema(richness_diff)
 rescale([lims[1], 0, lims[2]], 0, 1)
-rescalegrad(:PuOr, extrema(layer); rev = true)
+rescalegrad(:PuOr, extrema(richness_diff); rev = true)
 subsetgrad(:PuOr, (0.2, 1.0); rev = true)
 recentergrad(:PuOr, lims; rev = true)
 
@@ -173,7 +173,11 @@ glm_richness = glm(@formula(richness_sdm ~ richness_raw), results, Poisson())
 negb_richness = negbin(@formula(richness_sdm ~ richness_raw), results, LogLink())
 glm_lcbd = glm(@formula(richness_sdm ~ richness_raw), results, Gamma())
 
+
 ## Test regression in R
+# Export to CSV
+CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
+# Rput in Julia Session
 @rput results
 
 R"""
