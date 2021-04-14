@@ -539,12 +539,26 @@
       "Repository": "CRAN",
       "Hash": "4d243a9c10b00589889fe32314ffd902"
     },
+    "ggfortify": {
+      "Package": "ggfortify",
+      "Version": "0.4.11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "16fde1490c7a356c847ee561b96b6572"
+    },
     "ggiraph": {
       "Package": "ggiraph",
       "Version": "0.7.8",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "af635db65dcea06d477c263453239097"
+    },
+    "ggiraphExtra": {
+      "Package": "ggiraphExtra",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4ba99cda68b52121dd8d6473d09f459b"
     },
     "ggplot2": {
       "Package": "ggplot2",
@@ -692,6 +706,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "f155de6e70e7746b970e6f95de2439dd"
+    },
+    "insight": {
+      "Package": "insight",
+      "Version": "0.13.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b83ce8d0ff3ae0cb853f662f20e2f6c3"
     },
     "ipred": {
       "Package": "ipred",
@@ -868,6 +889,13 @@
       "Repository": "CRAN",
       "Hash": "6dfe8bf774944bd5595785e3229d8771"
     },
+    "mycor": {
+      "Package": "mycor",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "91d6ed4a15226f14771bc5db4f535d96"
+    },
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-150",
@@ -993,6 +1021,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "c396592ecfe9e75cee1013533efafe34"
+    },
+    "ppcor": {
+      "Package": "ppcor",
+      "Version": "1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0b26c0c84f22515249dd7915f4214d32"
     },
     "praise": {
       "Package": "praise",
@@ -1218,6 +1253,20 @@
       "Repository": "CRAN",
       "Hash": "bf0ef23231efe31576e08d69772892ef"
     },
+    "sjlabelled": {
+      "Package": "sjlabelled",
+      "Version": "1.1.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b60c3daa2a30df836c12a8e903cca595"
+    },
+    "sjmisc": {
+      "Package": "sjmisc",
+      "Version": "2.8.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5756baef86c66b177680e664db83f5ee"
+    },
     "slider": {
       "Package": "slider",
       "Version": "0.1.5",
@@ -1350,6 +1399,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4a3df844d6d35ca2ba2b7ba95446b955"
+    },
+    "unix": {
+      "Package": "unix",
+      "Version": "1.5.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "OS_type": "unix",
+      "Hash": "628bcdd1e649df9af85cd55568952ae6"
     },
     "utf8": {
       "Package": "utf8",

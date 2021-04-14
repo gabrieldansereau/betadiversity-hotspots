@@ -145,3 +145,47 @@ residuals_df
 # Export
 write_tsv(residuals_df, here("data", "proc", "comparison-residuals.csv"))
 
+cov
+diff
+
+v1 <- rnorm(40000)
+v2 <- rnorm(40000)
+m1 <- cbind(v1, v2)
+head(m1)
+dim(m1)
+# dist(m1)
+
+install.packages("unix")
+library(unix)
+# From ?rlimit
+# Print all limits
+rlimit_all()
+
+# Get one limit
+rlimit_as()
+
+# Set a soft limit
+lim <- rlimit_as(1e9)
+print(lim)
+rlimit_as()
+
+# Reset the limit to max
+rlimit_as(cur = lim$max)
+rlimit_as()
+
+unix::rlimit_as(25e9) # ~ 20 GB limit
+unix::rlimit_as(20e9) # ~ 20 GB limit
+unix::rlimit_as(Inf) # ~ 20 GB limit
+unix::rlimit_all()
+
+# overload memory
+v1 <- rnorm(40000)
+v2 <- rnorm(40000)
+m1 <- cbind(v1, v2)
+head(m1)
+dim(m1)
+# dist(m1) # watchout
+
+rm(tmp)
+tmp <- 1
+tmp <- rep(m1, 35000)
