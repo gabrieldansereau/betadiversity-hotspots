@@ -1,7 +1,5 @@
 source(file.path("src", "required.R"))
 
-library(broom)
-
 results <- read_tsv(here("data", "proc", "comparison-results.csv"))
 results
 

@@ -8,6 +8,7 @@ library(furrr)
 library(ranger)
 library(caret)
 library(pbapply)
+library(broom)
 plan(multiprocess)
 
 # Resolve conflicts
