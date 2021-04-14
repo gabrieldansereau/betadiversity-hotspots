@@ -65,6 +65,12 @@ tidy(glm_richness)
 glance(glm_richness)
 # Overdispersion (Null deviance ~3-4x degrees of freedom)
 
+poisregfun = function(a, b) {
+    Y.pred = exp(a + b * x)
+    -sum(dpois(y, lambda = Y.pred, log = TRUE))
+}
+
+
 glm_richness %>% 
     augment(type.predict = "response") %>% 
     rename(.y = 1, .x = 2) %>% 
@@ -96,6 +102,16 @@ plot(ggpredict(glm_richness), add.data = TRUE)
 library(ggfortify)
 autoplot(glm_richness)
 
+results %>% 
+    ggplot(aes(longitude, latitude, colour = richness_raw)) +
+    scale_color_viridis() +
+    geom_point(size = 1)
+
+results %>% 
+    ggplot(aes(longitude, latitude, colour = residuals(glm_richness))) +
+    scale_color_gradient2() +
+    geom_point(size = 1)
+
 # Quasi-Poisson
 glm_qp_richness <- glm(richness_sdm ~ richness_raw, data = results, family = quasipoisson)
 summary(glm_qp_richness)
@@ -116,5 +132,16 @@ tidy(glm_lcbd)
 glance(glm_lcbd)
 
 # Get residuals
-richness_res <- residuals(glm_nb_richness)
-lcbd_res <- residuals(glm_lcbd)
+residuals_df <- tibble(
+    longitude = results$longitude,
+    latitude = results$latitude,
+    richness_res = residuals(glm_richness),
+    richness_qp_res = residuals(glm_qp_richness),
+    richness_nb_res = residuals(glm_nb_richness),
+    lcbd_res = residuals(glm_lcbd),
+)
+residuals_df
+
+# Export
+write_tsv(residuals_df, here("data", "proc", "comparison-residuals.csv"))
+
