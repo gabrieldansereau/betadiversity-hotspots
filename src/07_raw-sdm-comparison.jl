@@ -156,10 +156,13 @@ variation(results.richness_sdm)
 
 ## Test linear regression in Julia
 using GLM
+
+# LM
 lm_richness = lm(@formula(richness_sdm ~ richness_raw), results)
 lm_lcbd = lm(@formula(lcbd_sdm ~ lcbd_raw), results)
 
 # Test utility functions
+coeftable(lm_richness)
 coef(lm_richness)
 deviance(lm_richness)
 dof_residual(lm_richness)
@@ -168,79 +171,61 @@ stderror(lm_richness)
 vcov(lm_richness)
 predict(lm_richness)
 
-# Test GLMs
-glm_richness = glm(@formula(richness_sdm ~ richness_raw), results, Poisson())
-negb_richness = negbin(@formula(richness_sdm ~ richness_raw), results, LogLink())
-glm_lcbd = glm(@formula(richness_sdm ~ richness_raw), results, Gamma())
+function glance(model::StatsModels.TableRegressionModel{<:LinearModel})
+    DataFrame(
+        r_squared = r2(model),
+        adj_r_squared = adjr2(model),
+        # sigma(model),
+        sigma = missing,
+        # ftest(model),
+        statistic = missing,
+        # pvalue(model),
+        pvalue = missing,
+        df = dof(model),
+        loglik = loglikelihood(model),
+        AIC = aic(model),
+        BIC = bic(model),
+        deviance = deviance(model),
+        df_residual = dof_residual(model),
+        nobs = nobs(model),
+    )
+end
+glance(lm_richness)
+glance(lm_lcbd)
 
+# Test GLMs
+# Poisson
+glm_richness = glm(@formula(richness_sdm ~ richness_raw), results, Poisson())
+deviance(glm_richness) / dof_residual(glm_richness) # Overdispersion
+
+function glance(model::StatsModels.TableRegressionModel{<:GeneralizedLinearModel})
+    glancedf = DataFrame(
+        # null_deviance = nulldeviance(model) # not working
+        null_deviance = missing,
+        df_null = dof_residual(model),
+        loglik = loglikelihood(model),
+        AIC = aic(model),
+        BIC = bic(model),
+        deviance = deviance(model),
+        df_residual = nobs(model) - dof(model),
+        nobs = nobs(model),
+    )
+end
+glance(glm_richness)
+
+# Negative binomial
+negb_richness = negbin(@formula(richness_sdm ~ richness_raw), results, LogLink())
+glance(negb_richness)
+
+# LCBD Gamma
+glm_lcbd = glm(@formula(lcbd_sdm ~ lcbd_raw), results, Gamma())
+glance(glm_lcbd)
+
+residuals(glm_richness)
 
 ## Test regression in R
 # Export to CSV
 CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
-# Rput in Julia Session
-@rput results
-
-R"""
-# Regression
-lm_richness <- lm(richness_sdm ~ richness_raw, data = results)
-lm_lcbd <- lm(lcbd_sdm ~ lcbd_raw, data = results)
-
-summary(lm_richness)
-summary(lm_lcbd)
-
-# Check for assumptions
-plotlm <- function(model) {
-    opar <- par(mfrow=c(2,2))
-    plot(model)
-    par(opar)    
-}
-plotlm(lm_richness) # not met
-plotlm(lm_lcbd) # not met
-
-# Plot relation
-plot(results$richness_raw, results$richness_sdm)
-abline(lm_richness, col = "red")
-
-plot(results$lcbd_raw, results$lcbd_sdm)
-abline(lm_lcbd, col = "red")
-
-# Check distribution
-hist(results$richness_raw)
-hist(results$richness_sdm)
-hist(results$lcbd_raw)
-hist(results$lcbd_sdm)
-
-# Check transformation
-# loglm_richness <- lm(log10(richness_sdm) ~ log10(richness_raw), data = results)
-# summary(loglm_richness)
-# plotlm(loglm_richness)
-
-# loglm_lcbd <- lm(log10(lcbd_sdm) ~ log10(lcbd_raw), data = results)
-# summary(loglm_lcbd)
-# plotlm(loglm_lcbd)
-
-# Richness GLMs
-# Poisson
-glm_richness <- glm(richness_sdm ~ richness_raw, data = results, family = poisson)
-summary(glm_richness)
-# Overdispersion (Null deviance ~3-4x degrees of freedom)
-# Quasi-Poisson
-glm_richness <- glm(richness_sdm ~ richness_raw, data = results, family = quasipoisson)
-summary(glm_richness)
-# Negative binomial
-library(MASS)
-glm_nb_richness <- glm.nb(richness_sdm ~ richness_raw, data = results)
-summary(glm_nb_richness)
-
-# LCBD GLM
-glm_lcbd <- glm(lcbd_sdm ~ lcbd_raw, data = results, family = Gamma)
-summary(glm_lcbd)
-
-# Get residuals
-richness_res <- residuals(glm_nb_richness)
-lcbd_res <- residuals(glm_lcbd)
-
-"""
 
 @rget richness_res lcbd_res
 
