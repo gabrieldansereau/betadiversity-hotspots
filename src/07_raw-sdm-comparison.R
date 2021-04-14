@@ -75,6 +75,27 @@ glm_richness %>%
             color = "red"
         )
 
+glm_richness %>% 
+    augment(type.predict = "response") %>% 
+    rename(.y = 1, .x = 2) %>% 
+    ggplot(aes(x = .x, y = .y)) +
+        geom_point() +
+        geom_smooth(method = "glm", se = TRUE, method.args = list(family = "poisson"))
+
+# install.packages("ggiraph")
+# install.packages("ggiraphExtra")
+install.packages("ggeffects")
+# install.packages("ggfortify")
+
+library(ggiraph)
+library(ggiraphExtra)
+ggPredict(glm_richness)
+
+plot(ggpredict(glm_richness), add.data = TRUE)
+
+library(ggfortify)
+autoplot(glm_richness)
+
 # Quasi-Poisson
 glm_qp_richness <- glm(richness_sdm ~ richness_raw, data = results, family = quasipoisson)
 summary(glm_qp_richness)
