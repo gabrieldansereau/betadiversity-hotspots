@@ -27,26 +27,34 @@ plotlm(lm_richness) # not met
 plotlm(lm_lcbd) # not met
 
 # Plot relation
-plot(results$richness_raw, results$richness_sdm)
-abline(lm_richness, col = "red")
-
-plot(results$lcbd_raw, results$lcbd_sdm)
-abline(lm_lcbd, col = "red")
+lm_richness %>% 
+    augment(type = "response") %>% 
+    rename(.y = 1, .x = 2) %>% 
+    ggplot(aes(x = .x, y = .y)) +
+        geom_point() +
+        # geom_abline(
+        #     intercept = coef(lm_richness)[1],
+        #     slope = coef(lm_richness)[2]
+        # )
+        geom_line(
+            aes(y = .fitted),
+            color = "red"
+        )
+lm_lcbd %>% 
+    augment(type = "response") %>% 
+    rename(.y = 1, .x = 2) %>% 
+    ggplot(aes(x = .x, y = .y)) +
+    geom_point() +
+    geom_line(
+        aes(y = .fitted),
+        color = "red"
+    )
 
 # Check distribution
 hist(results$richness_raw)
 hist(results$richness_sdm)
 hist(results$lcbd_raw)
 hist(results$lcbd_sdm)
-
-# Check transformation
-# loglm_richness <- lm(log10(richness_sdm) ~ log10(richness_raw), data = results)
-# summary(loglm_richness)
-# plotlm(loglm_richness)
-
-# loglm_lcbd <- lm(log10(lcbd_sdm) ~ log10(lcbd_raw), data = results)
-# summary(loglm_lcbd)
-# plotlm(loglm_lcbd)
 
 ## Richness GLMs
 
@@ -56,6 +64,16 @@ summary(glm_richness)
 tidy(glm_richness)
 glance(glm_richness)
 # Overdispersion (Null deviance ~3-4x degrees of freedom)
+
+glm_richness %>% 
+    augment(type.predict = "response") %>% 
+    rename(.y = 1, .x = 2) %>% 
+    ggplot(aes(x = .x, y = .y)) +
+        geom_point() +
+        geom_line(
+            aes(y = .fitted),
+            color = "red"
+        )
 
 # Quasi-Poisson
 glm_qp_richness <- glm(richness_sdm ~ richness_raw, data = results, family = quasipoisson)
