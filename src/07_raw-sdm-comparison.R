@@ -95,8 +95,9 @@ install.packages("ggeffects")
 
 library(ggiraph)
 library(ggiraphExtra)
-ggPredict(glm_richness)
+ggPredict(glm_richness, se = TRUE)
 
+library(ggeffects)
 plot(ggpredict(glm_richness), add.data = TRUE)
 
 library(ggfortify)
