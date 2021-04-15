@@ -244,13 +244,15 @@ CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "
 residuals_df = CSV.read(joinpath("data", "proc", "comparison-residuals.csv"), DataFrame)
 
 # Arrange data
-richres_layer = SimpleSDMResponse(residuals_df, :richness_res, similar(raw.richness), 
+richres_layer = SimpleSDMResponse(residuals_df, :richness, similar(raw.richness), 
                                   latitude = :latitude, longitude = :longitude)
-richres_qp_layer = SimpleSDMResponse(residuals_df, :richness_qp_res, similar(raw.richness), 
+richres_qp_layer = SimpleSDMResponse(residuals_df, :richness_qp, similar(raw.richness), 
                                   latitude = :latitude, longitude = :longitude)
-richres_nb_layer = SimpleSDMResponse(residuals_df, :richness_nb_res, similar(raw.richness), 
+richres_nb_layer = SimpleSDMResponse(residuals_df, :richness_nb, similar(raw.richness), 
                                   latitude = :latitude, longitude = :longitude)
-lcbdres_layer = SimpleSDMResponse(residuals_df, :lcbd_res, similar(raw.lcbd), 
+lcbdres_layer = SimpleSDMResponse(residuals_df, :lcbd, similar(raw.lcbd), 
+                                  latitude = :latitude, longitude = :longitude)
+lcbdres_br_layer = SimpleSDMResponse(residuals_df, :lcbd_br, similar(raw.lcbd), 
                                   latitude = :latitude, longitude = :longitude)
 
 # Plot residuals
@@ -258,11 +260,13 @@ plotSDM2(richres_layer, c = :PuOr, dpi = 200)
 plotSDM2(richres_qp_layer, c = :PuOr, dpi = 200)
 plotSDM2(richres_nb_layer, c = :PuOr, dpi = 200)
 plotSDM2(lcbdres_layer, c = :PuOr, dpi = 200)
+plotSDM2(lcbdres_br_layer, c = :PuOr, dpi = 200)
 # Check distribution
 histogram(richres_layer)
 histogram(richres_qp_layer)
 histogram(richres_nb_layer)
 histogram(lcbdres_layer)
+histogram(lcbdres_br_layer)
 histogram2d(richres_layer, lcbdres_layer)
 histogram2d(richres_nb_layer, lcbdres_layer)
 

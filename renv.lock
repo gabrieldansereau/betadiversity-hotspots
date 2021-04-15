@@ -546,47 +546,12 @@
       "Repository": "CRAN",
       "Hash": "224cbc34a2c97606b0e6311e3bd19e05"
     },
-    "gdtools": {
-      "Package": "gdtools",
-      "Version": "0.2.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "12a524de5a491ff39debb9311fc0763f"
-    },
     "generics": {
       "Package": "generics",
       "Version": "0.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4d243a9c10b00589889fe32314ffd902"
-    },
-    "ggeffects": {
-      "Package": "ggeffects",
-      "Version": "1.0.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f7501589603ef13922dc557206010afc"
-    },
-    "ggfortify": {
-      "Package": "ggfortify",
-      "Version": "0.4.11",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "16fde1490c7a356c847ee561b96b6572"
-    },
-    "ggiraph": {
-      "Package": "ggiraph",
-      "Version": "0.7.8",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "af635db65dcea06d477c263453239097"
-    },
-    "ggiraphExtra": {
-      "Package": "ggiraphExtra",
-      "Version": "0.3.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "4ba99cda68b52121dd8d6473d09f459b"
     },
     "ggplot2": {
       "Package": "ggplot2",
@@ -714,13 +679,6 @@
       "Repository": "CRAN",
       "Hash": "7d651b7131794fe007b1ad6f21aaa401"
     },
-    "htmlwidgets": {
-      "Package": "htmlwidgets",
-      "Version": "1.5.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "6fdaa86d0700f8b3e92ee3c445a5a10d"
-    },
     "httr": {
       "Package": "httr",
       "Version": "1.4.2",
@@ -734,13 +692,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "f155de6e70e7746b970e6f95de2439dd"
-    },
-    "insight": {
-      "Package": "insight",
-      "Version": "0.13.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b83ce8d0ff3ae0cb853f662f20e2f6c3"
     },
     "ipred": {
       "Package": "ipred",
@@ -931,13 +882,6 @@
       "Repository": "CRAN",
       "Hash": "6dfe8bf774944bd5595785e3229d8771"
     },
-    "mycor": {
-      "Package": "mycor",
-      "Version": "0.1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "91d6ed4a15226f14771bc5db4f535d96"
-    },
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-150",
@@ -1063,13 +1007,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "c396592ecfe9e75cee1013533efafe34"
-    },
-    "ppcor": {
-      "Package": "ppcor",
-      "Version": "1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0b26c0c84f22515249dd7915f4214d32"
     },
     "praise": {
       "Package": "praise",
@@ -1302,20 +1239,6 @@
       "Repository": "CRAN",
       "Hash": "bf0ef23231efe31576e08d69772892ef"
     },
-    "sjlabelled": {
-      "Package": "sjlabelled",
-      "Version": "1.1.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b60c3daa2a30df836c12a8e903cca595"
-    },
-    "sjmisc": {
-      "Package": "sjmisc",
-      "Version": "2.8.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "5756baef86c66b177680e664db83f5ee"
-    },
     "slider": {
       "Package": "slider",
       "Version": "0.1.5",
@@ -1364,13 +1287,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b227d13e29222b4574486cfcbde077fa"
-    },
-    "systemfonts": {
-      "Package": "systemfonts",
-      "Version": "1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "6e899d7c097698d50ec87b1d8e65f246"
     },
     "testthat": {
       "Package": "testthat",
@@ -1455,13 +1371,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4a5081acfb7b81a572e4384a7aaf2af1"
-    },
-    "uuid": {
-      "Package": "uuid",
-      "Version": "0.1-4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "e4169eb989a5d03ccb6b628cad1b1b50"
     },
     "vctrs": {
       "Package": "vctrs",
