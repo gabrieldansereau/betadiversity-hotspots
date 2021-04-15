@@ -30,6 +30,13 @@
       "Repository": "CRAN",
       "Hash": "c37a99997a2108edb7ef6563b8f6103f"
     },
+    "Formula": {
+      "Package": "Formula",
+      "Version": "1.2-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cc8c8c4d61346cde1ca60030ff9c241f"
+    },
     "GPfit": {
       "Package": "GPfit",
       "Version": "1.0-8",
@@ -183,6 +190,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "543776ae6848fde2f48ff3816d0628bc"
+    },
+    "betareg": {
+      "Package": "betareg",
+      "Version": "3.1-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "91e7a98d41aa25ea3909198c2b482ddd"
     },
     "bitops": {
       "Package": "bitops",
@@ -482,6 +496,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "dad6793a5a1f73c8e91f1a1e3e834b05"
+    },
+    "flexmix": {
+      "Package": "flexmix",
+      "Version": "2.3-17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4e331c6d2ed36e62b25572ab30a547d6"
     },
     "forcats": {
       "Package": "forcats",
@@ -805,6 +826,13 @@
       "Repository": "CRAN",
       "Hash": "b3b401eba1d6435bcf009576e811f9bf"
     },
+    "lmtest": {
+      "Package": "lmtest",
+      "Version": "0.9-38",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b0edacc02f7a3dad41a1afc385e929f4"
+    },
     "lubridate": {
       "Package": "lubridate",
       "Version": "1.7.9",
@@ -888,6 +916,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "9fd59716311ee82cba83dc2826fc5577"
+    },
+    "modeltools": {
+      "Package": "modeltools",
+      "Version": "0.2-23",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f5a957c02222589bdf625a67be68b2a9"
     },
     "munsell": {
       "Package": "munsell",
@@ -1239,6 +1274,13 @@
       "Repository": "CRAN",
       "Hash": "a9795ccb2d608330e841998b67156764"
     },
+    "sandwich": {
+      "Package": "sandwich",
+      "Version": "3.0-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "10994501b2ed2262168cae1556b29168"
+    },
     "scales": {
       "Package": "scales",
       "Version": "1.1.1",
@@ -1532,6 +1574,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "3bc8405c637d988801ec5ea88372d0c2"
+    },
+    "zoo": {
+      "Package": "zoo",
+      "Version": "1.8-9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "035d1c7c12593038c26fb1c2fd40c4d2"
     }
   }
 }
