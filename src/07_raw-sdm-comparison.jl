@@ -1,27 +1,37 @@
 import Pkg; Pkg.activate(".")
 include("required.jl")
 
-# Run analysis on raw data
+## Run analysis on raw data
 outcome = "raw"
 include("04_analysis.jl")
 
+# Add non-relative LCBD values
+lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
+
+# Assemble results
 raw = (Y = Y,
        richness = richness,
        richness_plot = richness_plot,
        lcbd = lcbd,
+       lcbdnr = lcbdnr,
        beta_total = beta_total,
        lcbd_plot = lcbdtr_plot,
        rel_plot = rel2d_plot
        )
 
-# Run analysis on sdm data
+## Run analysis on sdm data
 outcome = "bart"
 include("04_analysis.jl")
 
+# Add non-relative LCBD values
+lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
+
+# Assemble results
 sdm = (Y = Y,
        richness = richness,
        richness_plot = richness_plot,
        lcbd = lcbd,
+       lcbdnr = lcbdnr,
        beta_total = beta_total,
        lcbd_plot = lcbdtr_plot,
        rel_plot = rel2d_plot
@@ -124,10 +134,11 @@ end
 
 ## Correlation, GLM, and friends
 # Prepare data
-results = DataFrame([raw.richness, raw.lcbd, sdm.richness, sdm.lcbd])
+results = DataFrame([raw.richness, raw.lcbd, sdm.richness, sdm.lcbd, raw.lcbdnr, sdm.lcbdnr])
 rename!(results, 
         :x1 => :richness_raw, :x2 => :lcbd_raw, 
-        :x3 => :richness_sdm, :x4 => :lcbd_sdm)
+        :x3 => :richness_sdm, :x4 => :lcbd_sdm,
+        :x5 => :lcbdnr_raw, :x6 => :lcbdnr_sdm)
 allowmissing!(results, Not([:latitude, :longitude]))
 for col in eachcol(results)
     replace!(col, nothing => missing)
@@ -221,14 +232,12 @@ glance(negb_richness)
 glm_lcbd = glm(@formula(lcbd_sdm ~ lcbd_raw), results, Gamma())
 glance(glm_lcbd)
 
-residuals(glm_richness)
+# residuals(glm_richness)
 
 ## Test regression in R
 # Export to CSV
 CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
-
-@rget richness_res lcbd_res
-
+# results = CSV.read(joinpath("data", "proc", "comparison-results.csv"), DataFrame)
 
 ## Residual visualization
 # Load residuals
