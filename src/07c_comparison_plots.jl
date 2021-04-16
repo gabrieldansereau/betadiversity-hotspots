@@ -119,18 +119,29 @@ lcbdres_br_layer = SimpleSDMResponse(residuals_df, :lcbd_br, similar(raw.lcbd),
                                   latitude = :latitude, longitude = :longitude)
 
 # Plot residuals
-# plotSDM2(richres_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
-plotSDM2(richres_qp_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
-plotSDM2(richres_nb_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
-plotSDM2(lcbdres_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
-plotSDM2(lcbdres_br_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
-# Check distribution
-histogram(richres_layer)
-histogram(richres_qp_layer)
-histogram(richres_nb_layer)
-histogram(lcbdres_layer)
-histogram(lcbdres_br_layer)
-histogram2d(richres_layer, lcbdres_layer)
-histogram2d(richres_nb_layer, lcbdres_layer)
-
-
+function residuals_plot(layer::T; title = "") where T <: SimpleSDMLayer
+    # Center colorscale at zero instead of midpoint between extremas
+    lims = extrema(layer)
+    diff_map = plotSDM2(layer, 
+                        c = recentergrad(:PuOr, lims; rev = true),
+                        title = "Residuals map",
+                        colorbar_title = "Deviance residuals")
+    diff_hist = histogram([filter(x -> !isnothing(x) && x >= 0, layer.grid), 
+                           filter(x -> !isnothing(x) && x < 0, layer.grid)],
+                          bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], legend = :none,
+                          title = "Residuals distribution", 
+                          xlabel = "Frequency",
+                          orientation = :horizontal,
+                          )
+    diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
+    l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    diff_plot = plot(diff_title, diff_map, diff_hist, 
+                     size = (850, 400), layout = l,
+                     bottommargin = 3.0mm, dpi = 200)
+    return diff_plot
+end
+# residuals_plot(richres_layer; title = "Richness Poisson GLM")
+residuals_plot(richres_qp_layer; title = "Richness Quasipoisson GLM")
+residuals_plot(richres_nb_layer; title = "Richness Negative Binomial GLM")
+residuals_plot(lcbdres_layer; title = "LCBD Gamma GLM")
+residuals_plot(lcbdres_br_layer; title = "LCBD Beta Regression")
