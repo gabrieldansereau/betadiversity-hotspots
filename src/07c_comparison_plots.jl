@@ -133,18 +133,4 @@ histogram(lcbdres_br_layer)
 histogram2d(richres_layer, lcbdres_layer)
 histogram2d(richres_nb_layer, lcbdres_layer)
 
-# Julia residuals
-# histogram(residuals(lm_richness))
-# histogram(residuals(lm_lcbd))
-
-# results.richness_res_jl = residuals(lm_richness)
-# results.lcbd_res_jl = residuals(lm_lcbd)
-
-# richresjl_layer = SimpleSDMResponse(results, :richness_res_jl, similar(raw.richness), 
-#                                   latitude = :latitude, longitude = :longitude)
-# lcbdresjl_layer = SimpleSDMResponse(results, :lcbd_res_jl, similar(raw.lcbd), 
-#                                   latitude = :latitude, longitude = :longitude)
-
-# plotSDM2(richresjl_layer, c = :PuOr, dpi = 200)
-# plotSDM2(lcbdresjl_layer, c = :PuOr, dpi = 200)
 
