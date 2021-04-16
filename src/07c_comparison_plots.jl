@@ -1,46 +1,20 @@
 import Pkg; Pkg.activate(".")
 include("required.jl")
 
-## Run analysis on raw data
-outcome = "raw"
-include("04_analysis.jl")
+## Conditional arguments
+# save_figures = true
 
-# Add non-relative LCBD values
-lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
+## Get data
+@load joinpath("data", "jld2", "comparison-results.jld2") raw sdm
+results = CSV.read(joinpath("data", "proc", "comparison-results.csv"), DataFrame)
+residuals_df = CSV.read(joinpath("data", "proc", "comparison-residuals.csv"), DataFrame)
 
-# Assemble results
-raw = (Y = Y,
-       richness = richness,
-       richness_plot = richness_plot,
-       lcbd = lcbd,
-       lcbdnr = lcbdnr,
-       beta_total = beta_total,
-       lcbd_plot = lcbdtr_plot,
-       rel_plot = rel2d_plot
-       )
-
-## Run analysis on sdm data
-outcome = "bart"
-include("04_analysis.jl")
-
-# Add non-relative LCBD values
-lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
-
-# Assemble results
-sdm = (Y = Y,
-       richness = richness,
-       richness_plot = richness_plot,
-       lcbd = lcbd,
-       lcbdnr = lcbdnr,
-       beta_total = beta_total,
-       lcbd_plot = lcbdtr_plot,
-       rel_plot = rel2d_plot
-       )
-
-# Plot distributions
+## Plot distributions
+# Get colorbar limits
 lims_richness = extrema(mapreduce(collect, vcat, [raw.richness, sdm.richness]))
 lims_lcbd = extrema(mapreduce(collect, vcat, [raw.lcbd, sdm.lcbd]))
 
+# Plot combined distributions
 plot(raw.richness_plot, sdm.richness_plot,
      raw.lcbd_plot, sdm.lcbd_plot,
      clim = [lims_richness lims_richness lims_lcbd lims_lcbd],
@@ -61,7 +35,6 @@ richness_diff = sdm.richness - raw.richness
 lcbd_diff = sdm.lcbd - raw.lcbd
 
 # Custom fonctions for gradients
-
 rescale(x, m, M) = (x .- minimum(x))./(maximum(x)-minimum(x)).*(M-m).+m
 
 function rescalegrad(grad, lims; kw...) 
@@ -132,117 +105,7 @@ if (@isdefined save_figures) && save_figures == true
     savefig(lcbd_diffplot, joinpath("fig", "$(outcome)", "07_$(outcome)_comparison-lcbd.png"))
 end
 
-## Correlation, GLM, and friends
-# Prepare data
-results = DataFrame([raw.richness, raw.lcbd, sdm.richness, sdm.lcbd, raw.lcbdnr, sdm.lcbdnr])
-rename!(results, 
-        :x1 => :richness_raw, :x2 => :lcbd_raw, 
-        :x3 => :richness_sdm, :x4 => :lcbd_sdm,
-        :x5 => :lcbdnr_raw, :x6 => :lcbdnr_sdm)
-allowmissing!(results, Not([:latitude, :longitude]))
-for col in eachcol(results)
-    replace!(col, nothing => missing)
-end
-dropmissing!(results)
-results = convert.(Float64, results)
-
-# Check correlation
-cor(results.richness_raw, results.richness_sdm)
-cor(results.lcbd_raw, results.lcbd_sdm)
-
-# Check distribution
-histogram(results.richness_raw, title = "richness_raw", legend = :none)
-histogram(results.richness_sdm, title = "richness_sdm", legend = :none)
-histogram(results.lcbd_raw, title = "lcbd_raw", legend = :none)
-histogram(results.lcbd_sdm, title = "lcbd_sdm", legend = :none)
-
-mean(results.richness_raw)
-std(results.richness_raw)
-variation(results.richness_raw)
-var(results.richness_raw)/mean(results.richness_raw)
-
-mean(results.richness_sdm)
-std(results.richness_sdm)
-variation(results.richness_sdm)
-
-## Test linear regression in Julia
-using GLM
-
-# LM
-lm_richness = lm(@formula(richness_sdm ~ richness_raw), results)
-lm_lcbd = lm(@formula(lcbd_sdm ~ lcbd_raw), results)
-
-# Test utility functions
-coeftable(lm_richness)
-coef(lm_richness)
-deviance(lm_richness)
-dof_residual(lm_richness)
-r2(lm_richness)
-stderror(lm_richness)
-vcov(lm_richness)
-predict(lm_richness)
-
-function glance(model::StatsModels.TableRegressionModel{<:LinearModel})
-    DataFrame(
-        r_squared = r2(model),
-        adj_r_squared = adjr2(model),
-        # sigma(model),
-        sigma = missing,
-        # ftest(model),
-        statistic = missing,
-        # pvalue(model),
-        pvalue = missing,
-        df = dof(model),
-        loglik = loglikelihood(model),
-        AIC = aic(model),
-        BIC = bic(model),
-        deviance = deviance(model),
-        df_residual = dof_residual(model),
-        nobs = nobs(model),
-    )
-end
-glance(lm_richness)
-glance(lm_lcbd)
-
-# Test GLMs
-# Poisson
-glm_richness = glm(@formula(richness_sdm ~ richness_raw), results, Poisson())
-deviance(glm_richness) / dof_residual(glm_richness) # Overdispersion
-
-function glance(model::StatsModels.TableRegressionModel{<:GeneralizedLinearModel})
-    glancedf = DataFrame(
-        # null_deviance = nulldeviance(model) # not working
-        null_deviance = missing,
-        df_null = dof_residual(model),
-        loglik = loglikelihood(model),
-        AIC = aic(model),
-        BIC = bic(model),
-        deviance = deviance(model),
-        df_residual = nobs(model) - dof(model),
-        nobs = nobs(model),
-    )
-end
-glance(glm_richness)
-
-# Negative binomial
-negb_richness = negbin(@formula(richness_sdm ~ richness_raw), results, LogLink())
-glance(negb_richness)
-
-# LCBD Gamma
-glm_lcbd = glm(@formula(lcbd_sdm ~ lcbd_raw), results, Gamma())
-glance(glm_lcbd)
-
-# residuals(glm_richness)
-
-## Test regression in R
-# Export to CSV
-CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
-# results = CSV.read(joinpath("data", "proc", "comparison-results.csv"), DataFrame)
-
 ## Residual visualization
-# Load residuals
-residuals_df = CSV.read(joinpath("data", "proc", "comparison-residuals.csv"), DataFrame)
-
 # Arrange data
 richres_layer = SimpleSDMResponse(residuals_df, :richness, similar(raw.richness), 
                                   latitude = :latitude, longitude = :longitude)
@@ -256,11 +119,11 @@ lcbdres_br_layer = SimpleSDMResponse(residuals_df, :lcbd_br, similar(raw.lcbd),
                                   latitude = :latitude, longitude = :longitude)
 
 # Plot residuals
-plotSDM2(richres_layer, c = :PuOr, dpi = 200)
-plotSDM2(richres_qp_layer, c = :PuOr, dpi = 200)
-plotSDM2(richres_nb_layer, c = :PuOr, dpi = 200)
-plotSDM2(lcbdres_layer, c = :PuOr, dpi = 200)
-plotSDM2(lcbdres_br_layer, c = :PuOr, dpi = 200)
+# plotSDM2(richres_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
+plotSDM2(richres_qp_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
+plotSDM2(richres_nb_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
+plotSDM2(lcbdres_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
+plotSDM2(lcbdres_br_layer, c = cgrad(:PuOr, rev = true), dpi = 200)
 # Check distribution
 histogram(richres_layer)
 histogram(richres_qp_layer)
@@ -271,17 +134,17 @@ histogram2d(richres_layer, lcbdres_layer)
 histogram2d(richres_nb_layer, lcbdres_layer)
 
 # Julia residuals
-histogram(residuals(lm_richness))
-histogram(residuals(lm_lcbd))
+# histogram(residuals(lm_richness))
+# histogram(residuals(lm_lcbd))
 
-results.richness_res_jl = residuals(lm_richness)
-results.lcbd_res_jl = residuals(lm_lcbd)
+# results.richness_res_jl = residuals(lm_richness)
+# results.lcbd_res_jl = residuals(lm_lcbd)
 
-richresjl_layer = SimpleSDMResponse(results, :richness_res_jl, similar(raw.richness), 
-                                  latitude = :latitude, longitude = :longitude)
-lcbdresjl_layer = SimpleSDMResponse(results, :lcbd_res_jl, similar(raw.lcbd), 
-                                  latitude = :latitude, longitude = :longitude)
+# richresjl_layer = SimpleSDMResponse(results, :richness_res_jl, similar(raw.richness), 
+#                                   latitude = :latitude, longitude = :longitude)
+# lcbdresjl_layer = SimpleSDMResponse(results, :lcbd_res_jl, similar(raw.lcbd), 
+#                                   latitude = :latitude, longitude = :longitude)
 
-plotSDM2(richresjl_layer, c = :PuOr, dpi = 200)
-plotSDM2(lcbdresjl_layer, c = :PuOr, dpi = 200)
+# plotSDM2(richresjl_layer, c = :PuOr, dpi = 200)
+# plotSDM2(lcbdresjl_layer, c = :PuOr, dpi = 200)
 
