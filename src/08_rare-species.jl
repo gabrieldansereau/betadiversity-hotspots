@@ -60,10 +60,6 @@ threshold = 0.4
 rarespecies = getrarespecies(occupancy, threshold)
 rarespecies_NE = getrarespecies(occupancy_NE, 0.4)
 rarespecies_SW = getrarespecies(occupancy_SW, 0.4)
-rarespecies_NE30 = getrarespecies(occupancy_NE, 0.3)
-rarespecies_SW30 = getrarespecies(occupancy_SW, 0.3)
-rarespecies_NE50 = getrarespecies(occupancy_NE, 0.5)
-rarespecies_SW50 = getrarespecies(occupancy_SW, 0.5)
 rarespecies_NE_total = getrarespecies(occupancy_NE, occupancy, 0.4)
 rarespecies_SW_total = getrarespecies(occupancy_SW, occupancy, 0.4)
 # Percentage of rarespecies
@@ -198,21 +194,13 @@ plotSDM2(rarespecies_layer, c = :viridis)
 savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_global.png"))
 
 rarespecies_layer_NE = get_site_rarespecies(Y_NE, rarespecies_NE, richness_NE)
-rarespecies_layer_NE30 = get_site_rarespecies(Y_NE, rarespecies_NE30, richness_NE)
-rarespecies_layer_NE50 = get_site_rarespecies(Y_NE, rarespecies_NE50, richness_NE)
 p1 = plotSDM2(rarespecies_layer_NE, c = :viridis)
-plotSDM2(rarespecies_layer_NE30, c = :viridis)
-plotSDM2(rarespecies_layer_NE50, c = :viridis)
 
 rarespecies_layer_NE_total = get_site_rarespecies(Y_NE, rarespecies_NE_total, richness_NE)
 p2 = plotSDM2(rarespecies_layer_NE_total, c = :viridis)
 
 rarespecies_layer_SW = get_site_rarespecies(Y_SW, rarespecies_SW, richness_SW)
-rarespecies_layer_SW30 = get_site_rarespecies(Y_SW, rarespecies_SW30, richness_SW)
-rarespecies_layer_SW50 = get_site_rarespecies(Y_SW, rarespecies_SW50, richness_SW)
 p3 = plotSDM2(rarespecies_layer_SW, c = :viridis)
-plotSDM2(rarespecies_layer_SW30, c = :viridis)
-plotSDM2(rarespecies_layer_SW50, c = :viridis)
 
 rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, richness_SW)
 p4 = plotSDM2(rarespecies_layer_SW_total, c = :viridis)
@@ -249,13 +237,6 @@ function ascending_plots(richness, lcbd, rarespecies)
 end
 p_asc1 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
 p_asc2 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
-plot(p_asc1, p_asc2, layout = (2,1), size = (900, 600), title = "40")
+plot(p_asc1, p_asc2, layout = (2,1), size = (900, 600))
 savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
 
-p_asc130 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE30)
-p_asc230 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW30)
-plot(p_asc130, p_asc230, layout = (2,1), size = (900, 600), title = "30")
-
-p_asc150 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE50)
-p_asc250 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW50)
-plot(p_asc150, p_asc250, layout = (2,1), size = (900, 600), title = "50")
