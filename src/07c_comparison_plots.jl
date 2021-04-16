@@ -101,8 +101,8 @@ lcbd_diffplot = difference_plot(lcbd_diff; title = "Predicted LCBD compared to o
 
 # Save figures
 if (@isdefined save_figures) && save_figures == true
-    savefig(richness_diffplot, joinpath("fig", "$(outcome)", "07_$(outcome)_comparison-richness.png"))
-    savefig(lcbd_diffplot, joinpath("fig", "$(outcome)", "07_$(outcome)_comparison-lcbd.png"))
+    savefig(richness_diffplot, joinpath("fig", "bart", "07_bart_comparison-richness.png"))
+    savefig(lcbd_diffplot, joinpath("fig", "bart", "07_bart_comparison-lcbd.png"))
 end
 
 ## Residual visualization
@@ -140,8 +140,17 @@ function residuals_plot(layer::T; title = "") where T <: SimpleSDMLayer
                      bottommargin = 3.0mm, dpi = 200)
     return diff_plot
 end
-# residuals_plot(richres_layer; title = "Richness Poisson GLM")
-residuals_plot(richres_qp_layer; title = "Richness Quasipoisson GLM")
-residuals_plot(richres_nb_layer; title = "Richness Negative Binomial GLM")
-residuals_plot(lcbdres_layer; title = "LCBD Gamma GLM")
-residuals_plot(lcbdres_br_layer; title = "LCBD Beta Regression")
+# richness_resplot residuals_plot(richres_layer; title = "Richness Poisson GLM")
+richness_qp_resplot = residuals_plot(richres_qp_layer; title = "Richness Quasipoisson GLM")
+richness_nb_resplot = residuals_plot(richres_nb_layer; title = "Richness Negative Binomial GLM")
+lcbd_resplot = residuals_plot(lcbdres_layer; title = "LCBD Gamma GLM")
+lcbd_br_resplot = residuals_plot(lcbdres_br_layer; title = "LCBD Beta Regression")
+
+# Save figures
+if (@isdefined save_figures) && save_figures == true
+    # savefig(richness_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-poisson.png"))
+    savefig(richness_qp_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-quasipoisson.png"))
+    savefig(richness_nb_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-negbinomial.png"))
+    savefig(lcbd_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-gamma.png"))
+    savefig(lcbd_br_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-betareg.png"))
+end
