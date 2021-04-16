@@ -142,6 +142,13 @@
       "Repository": "CRAN",
       "Hash": "fbe4ac267bf42a91e495cc68ad3f8b63"
     },
+    "SpatialPack": {
+      "Package": "SpatialPack",
+      "Version": "0.3-8196",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "65e4911cc11fa3b6b958a8492a28d0d2"
+    },
     "abind": {
       "Package": "abind",
       "Version": "1.4-5",
@@ -496,6 +503,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "dad6793a5a1f73c8e91f1a1e3e834b05"
+    },
+    "fastmatrix": {
+      "Package": "fastmatrix",
+      "Version": "0.3-81",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6fea5964656c78ff767eead1267cb1a1"
     },
     "flexmix": {
       "Package": "flexmix",

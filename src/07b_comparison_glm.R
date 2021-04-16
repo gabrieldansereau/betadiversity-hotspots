@@ -169,3 +169,45 @@ residuals_df
 # Export
 write_tsv(residuals_df, here("data", "proc", "comparison-residuals.csv"))
 
+## Dutilleul modified t-test
+library(SpatialPack)
+
+# Subset results to NE subregion
+coords_NE <- list(left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
+results_NE <- results %>% 
+    filter(coords_NE$left < longitude & longitude < coords_NE$right) %>% 
+    filter(coords_NE$bottom < latitude & latitude < coords_NE$top)
+results_NE
+# Map to verify extent
+results_NE %>% 
+    ggplot(aes(longitude, latitude, colour = richness_sdm)) +
+        geom_point() +
+        scale_colour_viridis()
+
+## Test at NE scale
+# Computing the modified t-test of spatial association
+system.time(z_richness <- modified.ttest(results_NE$richness_raw, results_NE$richness_sdm, select(results_NE, longitude, latitude)))
+# 3 sec.
+z_richness
+system.time(z_lcbd <- modified.ttest(results_NE$lcbd_raw, results_NE$lcbd_sdm, select(results_NE, longitude, latitude)))
+z_lcbd
+
+# Display the upper bounds, cardinality and the computed Moran's index
+summary(z_richness)
+summary(z_lcbd)
+
+## Test at full scale
+# Computing the modified t-test of spatial association
+system.time(z_richness <- modified.ttest(results$richness_raw, results$richness_sdm, select(results, longitude, latitude)))
+# 3 min
+z_richness
+system.time(z_lcbd <- modified.ttest(results$lcbd_raw, results$lcbd_sdm, select(results, longitude, latitude)))
+z_lcbd
+
+# Display the upper bounds, cardinality and the computed Moran's index
+summary(z_richness)
+summary(z_lcbd)
+
+# Save as RData
+save(z_richness, z_lcbd, file = here("data", "rdata", "cor-dutilleul.Rdata"))
+load(here("data", "rdata", "cor-dutilleul.Rdata"))
