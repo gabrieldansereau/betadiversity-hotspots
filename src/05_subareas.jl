@@ -3,7 +3,7 @@ include("required.jl")
 
 ## Conditional arguments
 # outcome = "rf"
-outcome = "bart"
+# outcome = "bart"
 # save_figures = true
 
 # Make sure "outcome" is defined
@@ -160,11 +160,11 @@ end
 # Plot subareas
 subarea_plots = []
 for sc in subarea_coords
-    p = plot_subareas(sc, distributions;
-                      formatter = f -> "$(round(f, digits = 1))",
-                      clim = [(0.0, 1.0) :auto],
-                      leftmargin = 4.0mm,
-                      dpi = 200)
+    local p = plot_subareas(sc, distributions;
+                            formatter = f -> "$(round(f, digits = 1))",
+                            clim = [(0.0, 1.0) :auto],
+                            leftmargin = 4.0mm,
+                            dpi = 200)
     push!(subarea_plots, p)
 end
 
