@@ -8,9 +8,9 @@ version = "3.3.0"
 
 [[ArchGDAL]]
 deps = ["Dates", "DiskArrays", "GDAL", "GeoFormatTypes", "GeoInterface", "Tables"]
-git-tree-sha1 = "ac9a3bdf0b1cc5bd276c530b645194bf57373ecf"
+git-tree-sha1 = "c5196140e54514a869d012332f3ab0b02ad2b337"
 uuid = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
-version = "0.6.0"
+version = "0.5.3"
 
 [[ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -75,9 +75,9 @@ version = "3.12.1"
 
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
-git-tree-sha1 = "024fe24d83e4a5bf5fc80501a314ce0d1aa35597"
+git-tree-sha1 = "32a2b8af383f11cbb65803883837a149d10dfe8a"
 uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
-version = "0.11.0"
+version = "0.10.12"
 
 [[Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -129,10 +129,11 @@ uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.6.0"
 
 [[DataFrames]]
-deps = ["Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "6e5452d9cf401ed9048e1cde93815be53d951079"
+deps = ["CategoricalArrays", "Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
+git-tree-sha1 = "6b6dcb8c1a32c2151c5110e0e11fecff1c50dfca"
+pinned = true
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.0.2"
+version = "0.22.6"
 
 [[DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -567,9 +568,9 @@ version = "0.16.2"
 
 [[MLJBase]]
 deps = ["CategoricalArrays", "ComputationalResources", "Dates", "DelimitedFiles", "Distributed", "Distributions", "InteractiveUtils", "InvertedIndices", "LinearAlgebra", "LossFunctions", "MLJModelInterface", "MLJScientificTypes", "Missings", "OrderedCollections", "Parameters", "PrettyTables", "ProgressMeter", "Random", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "eca640d6905779301c1fec95d1f96c550621686e"
+git-tree-sha1 = "92fefe91b67bbffd83d232a85ee86604be356cf7"
 uuid = "a7f614a8-145f-11e9-1d2a-a57a1082229d"
-version = "0.18.3"
+version = "0.18.1"
 
 [[MLJIteration]]
 deps = ["IterationControl", "MLJBase", "Random"]
@@ -597,9 +598,9 @@ version = "1.0.0"
 
 [[MLJScientificTypes]]
 deps = ["CategoricalArrays", "ColorTypes", "Dates", "PersistenceDiagramsBase", "PrettyTables", "ScientificTypes", "StatisticalTraits", "Tables"]
-git-tree-sha1 = "1df86148d552ed191a1d6f337ae81cf53280f1d7"
+git-tree-sha1 = "4528abd14d3799ffbc5e92ee1fa54549ab411744"
 uuid = "2e2323e0-db8b-457b-ae0d-bdfb3bc63afd"
-version = "0.4.7"
+version = "0.4.5"
 
 [[MLJSerialization]]
 deps = ["IterationControl", "JLSO", "MLJBase", "MLJModelInterface"]
@@ -646,9 +647,9 @@ version = "1.1.2"
 
 [[Missings]]
 deps = ["DataAPI"]
-git-tree-sha1 = "4ea90bd5d3985ae1f9a908bd4500ae88921c5ce7"
+git-tree-sha1 = "f8c673ccc215eb50fcadb285f522420e29e69e1c"
 uuid = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
-version = "1.0.0"
+version = "0.4.5"
 
 [[Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
@@ -783,9 +784,9 @@ version = "1.2.1"
 
 [[PrettyTables]]
 deps = ["Crayons", "Formatting", "Markdown", "Reexport", "Tables"]
-git-tree-sha1 = "b60494adf99652d220cdef46f8a32232182cc22d"
+git-tree-sha1 = "574a6b3ea95f04e8757c0280bb9c29f1a5e35138"
 uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-version = "1.0.1"
+version = "0.11.1"
 
 [[Printf]]
 deps = ["Unicode"]
@@ -908,19 +909,20 @@ uuid = "992d4aef-0814-514b-bc4d-f2e9a6c4116f"
 version = "1.0.3"
 
 [[SimpleSDMLayers]]
-deps = ["ArchGDAL", "Downloads", "RecipesBase", "Requires", "Statistics", "ZipFile"]
-git-tree-sha1 = "ba9537bdb0e836e83ba1f142f97b1d9ca1cd6c43"
+deps = ["ArchGDAL", "HTTP", "RecipesBase", "Requires", "Statistics", "ZipFile"]
+git-tree-sha1 = "488d4294f3112ea550896a0a2b8d3a11d5b1dac8"
+pinned = true
 uuid = "2c645270-77db-11e9-22c3-0f302a89c64c"
-version = "0.5.0"
+version = "0.4.8"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [[SortingAlgorithms]]
-deps = ["DataStructures"]
-git-tree-sha1 = "2ec1962eba973f383239da22e75218565c390a96"
+deps = ["DataStructures", "Random", "Test"]
+git-tree-sha1 = "03f5898c9959f8115e30bc7226ada7d0df554ddd"
 uuid = "a2af1166-a08f-5f64-846c-94a0d3cef48c"
-version = "1.0.0"
+version = "0.3.1"
 
 [[SparseArrays]]
 deps = ["LinearAlgebra", "Random"]
