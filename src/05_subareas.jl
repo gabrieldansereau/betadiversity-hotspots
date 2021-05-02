@@ -36,14 +36,16 @@ richness_SW = calculate_richness(Y_SW, distributions_SW[1])
 
 ## LCBD
 # Relative values
-lcbd_NE = calculate_lcbd(Y_NE, distributions_NE[1])
-lcbd_SW = calculate_lcbd(Y_SW, distributions_SW[1])
+lcbd_rel_NE = calculate_lcbd(Y_NE, distributions_NE[1])
+lcbd__rel_SW = calculate_lcbd(Y_SW, distributions_SW[1])
 
 # Absolute values
 lcbd_abs_NE = calculate_lcbd(Y_NE, distributions_NE[1]; relative = false)
 lcbd_abs_SW = calculate_lcbd(Y_SW, distributions_SW[1]; relative = false)
 round.(Float64.(extrema(lcbd_abs_NE)); sigdigits = 4)
 round.(Float64.(extrema(lcbd_abs_SW)); sigdigits = 4)
+lcbd_NE = lcbd_abs_NE
+lcbd_SW = lcbd_abs_SW
 
 ## BDtot
 beta_NE = calculate_BDtotal(Y_NE)

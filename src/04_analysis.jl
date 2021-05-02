@@ -46,11 +46,12 @@ richness_qplot = plotSDM2(quantiles(richness), c=:viridis,
 ## LCBD
 
 # Get LCBD values
-lcbd = calculate_lcbd(Y, distributions[1]; transform = true, relative = true)
+lcbd_rel = calculate_lcbd(Y, distributions[1]; transform = true, relative = true)
 
 # Get non-relative values
 lcbd_abs = calculate_lcbd(Y, distributions[1]; transform = true, relative = false)
 round.(Float64.(extrema(lcbd_abs)); sigdigits = 4)
+lcbd = lcbd_abs
 
 # Get total beta
 beta_total = calculate_BDtotal(Y)
@@ -58,7 +59,12 @@ beta_total = calculate_BDtotal(Y)
 # Plot relative values
 lcbdtr_plot = plotSDM2(lcbd, c=:viridis,
                       # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
-                      colorbar_title = "Relative LCBD value"
+                      colorbar_title = "LCBD value"
+                      )
+# Plot absolute values
+lcbdtr_plot = plotSDM2(lcbd_abs, c=:viridis,
+                      # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
+                      colorbar_title = "LCBD value"
                       )
 
 # Plot quantile scores
@@ -81,9 +87,9 @@ end
 # Plot relationship as histogram2d
 rel2d_plot = histogram2d(richness, lcbd, c = :viridis, bins = 40, # title = "Relationship",
                          xlabel = "Richness", ylabel = "LCBD", colorbar_title = "Number of sites",
-                         xlim = (1.0, 50.0), ylim = (0.0, 1.0),
-                         aspect_ratio = 40,
-                        #  size = (900, 300),
+                         xlim = (1.0, 50.0), # ylim = (0.0, 1.0),
+                        #  aspect_ratio = 40,
+                         size = (700, 400),
                         #  bottom_margin = 5.0mm,
                          )
 vline!([median(richness)], label = :none, 
