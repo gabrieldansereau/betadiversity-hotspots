@@ -26,15 +26,6 @@ Y = calculate_Y(distributions; transform = false)
 # Create matrix of observed sites only
 Yobs = _Yobs(Y)
 
-# Sort Yobs by rows & columns sums
-Ysort = sortslices(Yobs, dims = 1, by = sum) |> y ->
-            sortslices(y, dims = 2, by = sum, rev = true)
-# Heatmap of Yobs
-Yobs_plot = heatmap(Ysort,
-                    # title = "$(titlecase(outcome)) matrix Y (sorted by row and column sum)",
-                    ylabel = "Sites", yticks = :none, xlabel = "Species number"
-                    )
-
 ## Richness
 
 # Get richness
