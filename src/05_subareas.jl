@@ -86,10 +86,12 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, maintitl
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
-        p = plot(ptitle, p1, p2, layout = l, size = (900, 300), rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm]; kw...)
+        p = plot(ptitle, p1, p2, layout = l, size = (900, 300), 
+                 rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm]; kw...)
     else
         l = @layout [a b]
-        p = plot(p1, p2, layout = l, size = (900, 300); kw...)
+        p = plot(p1, p2, layout = l, size = (900, 300),
+                 rightmargin = [5.0mm 0mm], leftmargin = [5.0mm 5.0mm]; kw...)
     end
     return p
 end
@@ -98,7 +100,9 @@ end
 resNEtr = plot_lcbd_relationship(richness_NE, lcbd_NE, beta_NE,
             maintitle = "Northeast subarea")
 resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW, beta_SW,
-            maintitle = "Southwest subarea")
+            maintitle = "Southwest subarea",
+            yticks = [:auto :auto (1.0:0.5:5.0, string.(1.0:0.5:5.0))]
+            )
 combined_plot = plot(resNEtr, resSWtr, layout = grid(2,1), 
                      size = (900, 600), 
                      bottommargin = 1.0mm,
@@ -132,7 +136,7 @@ coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 p = plot_subareas(coords_subarea, distributions; 
                 #   formatter = f -> "$(round(f, digits = 1))",
                   clim = [:auto :auto],
-                  leftmargin = 4.0mm,
+                #   leftmargin = 5.0mm,
                   )
 # Non-relative values
 #=
@@ -169,7 +173,7 @@ for sc in subarea_coords
     local p = plot_subareas(sc, distributions;
                             # formatter = f -> "$(round(f, digits = 1))",
                             clim = [:auto :auto],
-                            leftmargin = 4.0mm,
+                            # leftmargin = 4.0mm,
                             dpi = 200)
     push!(subarea_plots, p)
 end
@@ -190,10 +194,18 @@ mid_ind = median(1:length(subarea_plots)) |> round |> Int64
 ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
-p = plot(ps..., dpi = 200, layout = (3,1), size = (900, 900),
-         title = ["LCBD" "Relationship" "" "" "" ""],
-         leftmargin = 2.0mm, bottommargin = -2.0mm,
-         )
+p = plot(
+    ps..., 
+    dpi = 200, layout = (3,1), size = (900, 900),
+    title = ["LCBD" "Relationship" "" "" "" ""],
+    bottommargin = -2.0mm,
+    yticks = permutedims(
+        [:auto, (0.5:0.5:5.0, string.(0.5:0.5:5.0)),
+         :auto, :auto,
+         :auto, (1.5:0.5:5.0, string.(1.5:0.5:5.0)),
+        ]
+    )
+)
 
 # Export figures
 # save_figures = true
