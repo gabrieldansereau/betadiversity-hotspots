@@ -270,16 +270,21 @@ abs_extr = extrema.(lcbd_abs_medians[[1, mid_ind, end]])
 extrema.([richness_medians, lcbd_medians, beta_values, gamma_values])
 
 # Transform to relative values
-medians_df = DataFrame(idx = eachindex(richness_medians),
-                       richness = richness_medians ./ maximum(richness_medians),
-                       lcbd = lcbd_medians ./ maximum(lcbd_medians),
-                       beta = beta_values ./ maximum(beta_values),
-                       gamma = gamma_values ./ maximum(gamma_values)
-                       )
+medians_df = DataFrame(
+    idx = eachindex(richness_medians),
+    richness = richness_medians ./ maximum(richness_medians),
+    lcbd = lcbd_medians ./ maximum(lcbd_medians),
+    beta = beta_values ./ maximum(beta_values),
+    gamma = gamma_values ./ maximum(gamma_values)
+)
 # Plot values across scales (step-by-step plots)
-medians_p1 = plot(medians_df.idx, medians_df.richness, label = "Median richness", lw = 2,
-                xlabel = "Subarea extent", ylabel = "Subarea value (relative to maximum)",
-                legend = :bottomright, xticks = :none, ylim = (0,1), top_margin = mm)
+medians_p1 = plot(
+    medians_df.idx, medians_df.richness, 
+    label = "Median richness", lw = 2,
+    xlabel = "Subarea extent", ylabel = "Subarea value (relative to maximum)",
+    legend = :bottomright, xticks = :none, 
+    ylim = (0,1), top_margin = mm
+)
 medians_p2 = plot!(deepcopy(medians_p1), medians_df.lcbd, label = "Median LCBD", lw = 2)
 medians_p3 = plot!(deepcopy(medians_p2), medians_df.beta, label = "Total beta diversity", lw = 2)
 medians_p4 = plot!(deepcopy(medians_p3), medians_df.gamma, label = "Gamma diversity", lw = 2)
