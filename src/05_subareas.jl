@@ -67,62 +67,57 @@ function rectangle!(w, h, x, y, textstring, textsize)
           )
 end
 # Function to produce combined plots
-function plot_lcbd_relationship(richness, lcbd, beta_total; maintitle = "", kw...)
-    # p1 = plotlcbd(
-    #     lcbd, "LCBD value",
-    #     title = ["LCBD" ""],  
-    #     c = :viridis, clim = (-Inf, Inf),
-    #     leftmargin = [0.0mm -7.0mm]
-    # )
-    p1 = eval(plotfct)(
-        lcbd, title = "LCBD",  
-        c = :viridis, clim = (0, Inf), 
-        # colorbar_title = "LCBD values",
-        rightmargin = 30px, leftmargin = 20px,
-        )
+function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, maintitle = "", kw...)
+    if scale
+        scaling = Int(ceil(abs(log10(maximum(lcbd)))))
+        lcbd = rescale(lcbd, extrema(lcbd) .* 10^scaling)
+    end
+    p1 = eval(plotfct)(lcbd, c = :viridis, title = "LCBD", colorbar_title = "LCBD value (x 10^-$(Int(scaling)))", clim = (-Inf,Inf))
     p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
-                xlabel = "Richness", ylabel = "LCBD value", colorbar_title = "Number of sites",
-                xlim = (1, 50), ylim = (0, Inf), clim = (1, 400),
-                bottommargin = 4.0mm, formatter = f -> "$f",
+                xlabel = "Richness", ylabel = "LCBD value (x 10^-$(Int(scaling)))", colorbar_title = "Number of sites",
+                xlim = (1, 50), ylim = (-Inf, Inf), clim = (1, 450),
+                bottommargin = 4.0mm
                 )
     vline!([median(richness)], label = :none, 
            linestyle = :dash, c = :grey)
     hline!([median(lcbd)], label = :none, 
            linestyle = :dash, c = :grey)
-    
+
     lmin, lmax = extrema(lcbd)
     lrange = lmax-lmin
     rectangle!(16.0, 0.15*lrange, 33.0, lmax-0.2*lrange, "BDtot = $(round(beta_total; digits = 3))", 7)
+    
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
-        p = plot(ptitle, p1, p2, layout = l, size = (900, 300); kw...)
+        p = plot(ptitle, p1, p2, layout = l, size = (900, 300), 
+                 rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm]; kw...)
     else
         l = @layout [a b]
-        p = plot(p1, p2, layout = l, size = (900, 300); kw...)
+        p = plot(p1, p2, layout = l, size = (900, 300),
+                 rightmargin = [5.0mm 0mm], leftmargin = [5.0mm 5.0mm]; kw...)
     end
     return p
 end
 
 # Combined subarea figures
-begin
-    resNEtr = plot_lcbd_relationship(
-        richness_NE, lcbd_NE, beta_NE,
-        maintitle = "Northeast subarea",
-        yticks = [:auto :auto ([0.0, 0.00025, 0.00050, 0.00075, 0.00100, 0.00125], ["0", "0.00025", "0.00050", "0.00075", "0.00100", "0.00125"])]
-    )
-    resSWtr = plot_lcbd_relationship(
-        richness_SW, lcbd_SW, beta_SW,
-        maintitle = "Southwest subarea",
-        yticks = [:auto :auto ([0.0, 0.0001, 0.0002, 0.0003, 0.0004, 0.0005], ["0", "0.0001", "0.0002", "0.0003", "0.0004", "0.0005"])]
-    )
-    combined_plot = plot(
-        resNEtr, resSWtr, layout = grid(2,1), 
-        size = (900, 600), 
-        bottommargin = 1.0mm,
-        title = ["" "" "" ""]
-    )
-end
+resNEtr = plot_lcbd_relationship(
+    richness_NE, lcbd_NE, beta_NE,
+    maintitle = "Northeast subarea"
+)
+resSWtr = plot_lcbd_relationship(
+    richness_SW, lcbd_SW, beta_SW,
+    maintitle = "Southwest subarea",
+    yticks = [:auto :auto (1.0:0.5:5.0, string.(1.0:0.5:5.0))]
+)
+combined_plot = plot(
+    resNEtr, resSWtr, 
+    layout = grid(2,1), 
+    size = (900, 600), 
+    bottommargin = 1.0mm,
+    title = ["" "" "" ""]
+)
+
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
@@ -130,7 +125,7 @@ if (@isdefined save_figures) && save_figures == true
 end
 
 #### Repeat for different subareas
-function plot_subareas(coords, initial_distributions; display_coords = coords, transform = true, relative = true, kw...)
+function plot_subareas(coords, initial_distributions, scaling = 1; display_coords = coords, transform = true, relative = false, kw...)
     distributions = [d[coords] for d in initial_distributions]
     Y = calculate_Y(distributions)
     richness = calculate_richness(Y, distributions[1])
@@ -148,23 +143,11 @@ end
 left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
 coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 # Relative LCBD values
-p = plot_subareas(coords_subarea, distributions; relative = false,
-                #   formatter = f -> "$(round(f, digits = 1))",
-                  clim = [(0, Inf) :auto],
-                  leftmargin = 4.0mm,
-                  )
-# Non-relative values
-#=
-asp_ratio = 92.60/60.75
-p = plot_subareas(coords_subarea, distributions;
-                  relative = false,
-                  clim = [(0.0, Inf) (-Inf, Inf)],
-                  ylim = [(-Inf, Inf) (0.0, Inf)],
-                  colorbar_title = ["LCBD score" "Number of sites"],
-                  formatter = :plain,
-                  aspect_ratio = [asp_ratio :auto]
-                  )
-=#
+p = plot_subareas(
+    coords_subarea, distributions; 
+    formatter = [f -> "$(Int(f))" :plain],
+    clim = [:auto :auto],
+)
 
 ## Expanding GIF
 # Set initial coordinates
@@ -185,12 +168,14 @@ end
 # Plot subareas
 subarea_plots = []
 for sc in subarea_coords
-    local p = plot_subareas(sc, distributions;
-                            relative = false,
-                            formatter = :plain,
-                            clim = [(0, Inf) :auto],
-                            leftmargin = 4.0mm,
-                            dpi = 200)
+    local p = plot_subareas(
+        sc, distributions;
+        # formatter = f -> "$(round(f, digits = 1))",
+        formatter = [f -> "$(Int(round(f, digits = 0)))" :plain],
+        clim = [:auto :auto],
+        # leftmargin = 4.0mm,
+        dpi = 200
+    )
     push!(subarea_plots, p)
 end
 
@@ -214,14 +199,13 @@ p = plot(
     ps..., 
     dpi = 200, layout = (3,1), size = (900, 900),
     title = ["LCBD" "Relationship" "" "" "" ""],
-    leftmargin = 2.0mm, bottommargin = -2.0mm,
+    bottommargin = -2.0mm,
     yticks = permutedims(
-        [
-            :auto, ([0.0, 0.001, 0.002, 0.003, 0.004, 0.005], ["0", "0.001", "0.002", "0.003", "0.004", "0.005"]), 
-            :auto, ([0.0, 0.00005, 0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035], ["0", "0.00005", "0.0001", "0.00015", "0.0002", "0.00025", "0.0003", "0.00035"]),
-            :auto, ([0.0, 0.00001, 0.00002, 0.00003, 0.00004, 0.00005], ["0", "0.00001", "0.00002", "0.00003", "0.00004", "0.00005"]),
+        [:auto, (0.5:0.5:5.0, string.(0.5:0.5:5.0)),
+         :auto, :auto,
+         :auto, (1.5:0.5:5.0, string.(1.5:0.5:5.0)),
         ]
-    ),
+    )
 )
 
 # Export figures
