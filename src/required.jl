@@ -16,6 +16,7 @@ using ProgressMeter
 using ArchGDAL
 using RCall
 using ZipFile
+using Formatting
 
 include(joinpath("lib", "analysis.jl"))
 include(joinpath("lib", "beta-div.jl"))

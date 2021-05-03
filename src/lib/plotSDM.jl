@@ -66,8 +66,8 @@ function plotSDM2(layer::SimpleSDMLayer; kw...)
     # kw: optional plotting arguments
 
     # Create background layer
-    baselayer = worldclim(1)[(left = layer.left, right = layer.right,
-                              top = layer.top, bottom = layer.bottom)]
+    baselayer = similar(worldclim(1)[(left = layer.left, right = layer.right,
+                              top = layer.top, bottom = layer.bottom)])
 
     # Create empty plot
     sdm_plot = heatmap(baselayer, c = :lightgrey, lab="", msw=0.0, ms=0.0, frame=:box)
@@ -90,6 +90,14 @@ function plotSDM2(layer::SimpleSDMLayer; kw...)
     end
 
     return sdm_plot
+end
+
+function plotlcbd(layer::SimpleSDMLayer, cbtitle::String; kw...)
+    p1 = plot(layer, c = :viridis)
+    p2 = plot(frame = :none)
+    annotate!(p2, 0.5, 0.5, text(cbtitle, 11, :center, 90.0))
+    l = @layout [a b{0.01w}]
+    plot(p1, p2, layout = l; kw...)
 end
 
 @recipe function plot(layer::T) where {T <: SimpleSDMLayer}
