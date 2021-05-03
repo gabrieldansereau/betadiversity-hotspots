@@ -148,7 +148,7 @@ for sc in subarea_coords
     distributions_sc = [d[sc] for d in distributions]
     Y_sc = calculate_Y(distributions_sc)
     richness_sc = calculate_richness(Y_sc, distributions_sc[1])
-    lcbd_sc = calculate_lcbd(Y_sc, distributions_sc[1])
+    lcbd_sc = calculate_lcbd(Y_sc, distributions_sc[1]; relative = false)
     
     rarespecies_sc = get_rarespecies_p(Y_sc, threshold)
     eusrr_sc = get_eusrr(richness_sc, lcbd_sc)
