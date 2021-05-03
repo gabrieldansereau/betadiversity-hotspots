@@ -45,10 +45,10 @@ end
 ## Difference plots
 # Difference between values from SDM models & raw observations
 richness_diff = sdm.richness - raw.richness
-lcbd_diff = sdm.lcbd - raw.lcbd
+lcbd_diff = sdm.lcbdcom - raw.lcbdcom
 
 # Custom fonctions for gradients
-rescale(x, m, M) = (x .- minimum(x))./(maximum(x)-minimum(x)).*(M-m).+m
+SimpleSDMLayers.rescale(x::AbstractArray, m, M) = (x .- minimum(x))./(maximum(x)-minimum(x)).*(M-m).+m
 
 function rescalegrad(grad, lims; kw...) 
     centervalue = abs(lims[1])/(lims[2] - lims[1])
@@ -83,34 +83,59 @@ subsetgrad(:PuOr, (0.2, 1.0); rev = true)
 recentergrad(:PuOr, lims; rev = true)
 
 # Custom function to visualize the difference
-function difference_plot(layer::T; title = "") where T <: SimpleSDMLayer
+function difference_plot(layer::T; title = "", kw...) where T <: SimpleSDMLayer
     # Center colorscale at zero instead of midpoint between extremas
     lims = extrema(layer)
     # centervalue = abs(lims[1])/(lims[2] - lims[1])
     # scalevalues = rescale([lims[1], 0.0, lims[2]], 0, 1)
-    diff_map = plotSDM2(layer,
-                        # c = cgrad(:PuOr, centervalue, rev = true), 
-                        # c = rescalegrad(:PuOr, extrema(layer); rev = true),
-                        # c = cgrad(:PuOr, scalevalues, rev = true), 
-                        c = recentergrad(:PuOr, lims; rev = true),
-                        title = "Difference map",
-                        colorbar_title = "Difference from observed value")
-    diff_hist = histogram([filter(x -> !isnothing(x) && x >= 0, layer.grid), 
-                           filter(x -> !isnothing(x) && x < 0, layer.grid)],
-                          bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], legend = :none,
-                          title = "Difference distribution", 
-                          xlabel = "Frequency",
-                          orientation = :horizontal,
-                          )
+    diff_map = plotSDM2(
+        layer,
+        # c = cgrad(:PuOr, centervalue, rev = true), 
+        # c = rescalegrad(:PuOr, extrema(layer); rev = true),
+        # c = cgrad(:PuOr, scalevalues, rev = true), 
+        c = recentergrad(:PuOr, lims; rev = true),
+        clims = lims,
+        title = "Difference map",
+        colorbar_title = "Difference from observed value"
+    )
+    diff_hist = histogram(
+        [filter(x -> !isnothing(x) && x >= 0, layer.grid), 
+        filter(x -> !isnothing(x) && x < 0, layer.grid)],
+        bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], 
+        ylims = lims,
+        legend = :none,
+        title = "Difference distribution", 
+        xlabel = "Frequency",
+        orientation = :horizontal,
+    )
     diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
     l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
-    diff_plot = plot(diff_title, diff_map, diff_hist, 
-                     size = (850, 400), layout = l,
-                     bottommargin = 3.0mm, dpi = 200)
+    diff_plot = plot(
+        diff_title, diff_map, diff_hist, 
+        size = (850, 400), layout = l,
+        bottommargin = 3.0mm, dpi = 200,
+        rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+        kw...
+    )
     return diff_plot
 end
-richness_diffplot = difference_plot(richness_diff; title = "Predicted richness compared to observed richness")
-lcbd_diffplot = difference_plot(lcbd_diff; title = "Predicted LCBD compared to observed LCBD")
+richness_diffplot = difference_plot(
+    richness_diff; 
+    title = "Predicted richness compared to observed richness",
+    yticks = [:auto :auto (-30:10:40, string.(-30:10:40))],
+    colorbar_title = "Richness difference",
+    ylabel = ["" "Latitude" "Richness difference"]
+)
+lcbd_diff_resc = rescale(lcbd_diff, extrema(lcbd_diff) .* 100_000)
+lcbd_diffplot = difference_plot(
+    lcbd_diff_resc; 
+    title = "Predicted LCBD compared to observed LCBD",
+    colorbar_title = "LCBD difference (x 100,000)",
+    ylabel = ["" "Latitude" "LCBD difference (x 100,000)"],
+    yticks = [:auto :auto (-4:1:3, string.(-4:1:3))],
+    ylim = [:auto extrema(latitudes(lcbd_diff_resc)) extrema(lcbd_diff_resc)],
+    clim = extrema(lcbd_diff_resc)
+)
 
 # Save figures
 if (@isdefined save_figures) && save_figures == true
