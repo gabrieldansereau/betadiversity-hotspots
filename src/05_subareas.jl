@@ -69,19 +69,25 @@ end
 # Function to produce combined plots
 function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, maintitle = "", kw...)
     if scale
-        scaling = Int(ceil(abs(log10(maximum(lcbd)))))
-        lcbd = rescale(lcbd, extrema(lcbd) .* 10^scaling)
+        scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
+        scaling_value = 10^scaling_factor
+        lcbd = rescale(lcbd, extrema(lcbd) .* scaling_value)
     end
-    p1 = eval(plotfct)(lcbd, c = :viridis, title = "LCBD", colorbar_title = "LCBD value (x 10^-$(Int(scaling)))", clim = (-Inf,Inf))
-    p2 = histogram2d(richness, lcbd, c = :viridis, bins = 40, title = "Relationship",
-                xlabel = "Richness", ylabel = "LCBD value (x 10^-$(Int(scaling)))", colorbar_title = "Number of sites",
-                xlim = (1, 50), ylim = (-Inf, Inf), clim = (1, 450),
-                bottommargin = 4.0mm
-                )
-    vline!([median(richness)], label = :none, 
-           linestyle = :dash, c = :grey)
-    hline!([median(lcbd)], label = :none, 
-           linestyle = :dash, c = :grey)
+    p1 = eval(plotfct)(
+        lcbd, c = :viridis,
+        title = "LCBD", 
+        colorbar_title = "LCBD value (x $(format(scaling_value, commas = true)))", 
+        clim = (-Inf,Inf)
+    )
+    p2 = histogram2d(
+        richness, lcbd, c = :viridis, bins = 40, 
+        title = "Relationship", colorbar_title = "Number of sites",
+        xlabel = "Richness", ylabel = "LCBD value (x $(format(scaling_value, commas = true)))", 
+        xlim = (1, 50), ylim = (-Inf, Inf), clim = (1, 450),
+        bottommargin = 4.0mm
+    )
+    vline!([median(richness)], label = :none, linestyle = :dash, c = :grey)
+    hline!([median(lcbd)], label = :none, linestyle = :dash, c = :grey)
 
     lmin, lmax = extrema(lcbd)
     lrange = lmax-lmin
