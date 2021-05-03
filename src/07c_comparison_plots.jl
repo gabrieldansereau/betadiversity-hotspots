@@ -15,13 +15,26 @@ lims_richness = extrema(mapreduce(collect, vcat, [raw.richness, sdm.richness]))
 lims_lcbd = extrema(mapreduce(collect, vcat, [raw.lcbd, sdm.lcbd]))
 
 # Plot combined distributions
-plot(raw.richness_plot, sdm.richness_plot,
-     raw.lcbd_plot, sdm.lcbd_plot,
-     clim = [lims_richness lims_richness lims_lcbd lims_lcbd],
-     title = ["a" "b" "c" "d"],
-     titleloc = :left,
-     size = (850, 600), 
-     dpi = 200)
+p1 = plot(raw.richness_plot, clim = lims_richness)
+p2 = plot(sdm.richness_plot, clim = lims_richness)
+p3 = plotSDM2(
+    rescale(raw.lcbd, extrema(raw.lcbd) .* 100_000), 
+    c = :viridis,
+    colorbar_title = "LCBD value (x 100,000)"
+)
+p4 = plotSDM2(
+    rescale(sdm.lcbd, extrema(sdm.lcbd) .* 100_000), 
+    c = :viridis,
+    colorbar_title = "LCBD value (x 100,000)"
+)
+plot(
+    p1, p2,
+    p3, p4,
+    title = ["a" "b" "c" "d"],
+    titleloc = :left,
+    size = (850, 600), 
+    dpi = 200
+)
 
 # Save result
 if (@isdefined save_figures) && save_figures == true
