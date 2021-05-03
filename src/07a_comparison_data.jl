@@ -9,15 +9,16 @@ include("04_analysis.jl")
 lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
 
 # Assemble results
-raw = (Y = Y,
-       richness = richness,
-       richness_plot = richness_plot,
-       lcbd = lcbd,
-       lcbdnr = lcbdnr,
-       beta_total = beta_total,
-       lcbd_plot = lcbdtr_plot,
-       rel_plot = rel2d_plot
-       )
+raw = (
+    Y = Y,
+    richness = richness,
+    richness_plot = richness_plot,
+    lcbd = lcbd,
+    lcbdnr = lcbdnr,
+    beta_total = beta_total,
+    lcbd_plot = lcbdtr_plot,
+    rel_plot = rel2d_plot
+)
 
 ## Run analysis on sdm data
 outcome = "bart"
@@ -27,15 +28,16 @@ include("04_analysis.jl")
 lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
 
 # Assemble results
-sdm = (Y = Y,
-       richness = richness,
-       richness_plot = richness_plot,
-       lcbd = lcbd,
-       lcbdnr = lcbdnr,
-       beta_total = beta_total,
-       lcbd_plot = lcbdtr_plot,
-       rel_plot = rel2d_plot
-       )
+sdm = (
+    Y = Y,
+    richness = richness,
+    richness_plot = richness_plot,
+    lcbd = lcbd,
+    lcbdnr = lcbdnr,
+    beta_total = beta_total,
+    lcbd_plot = lcbdtr_plot,
+    rel_plot = rel2d_plot
+)
 
 # Export to JLD2
 jld_path = joinpath("data", "jld2", "comparison-results.jld2")
@@ -44,10 +46,12 @@ jld_path = joinpath("data", "jld2", "comparison-results.jld2")
 ## Prepare data for GLMs
 # Assemble in DataFrame
 results = DataFrame([raw.richness, raw.lcbd, sdm.richness, sdm.lcbd, raw.lcbdnr, sdm.lcbdnr])
-rename!(results, 
-        :x1 => :richness_raw, :x2 => :lcbd_raw, 
-        :x3 => :richness_sdm, :x4 => :lcbd_sdm,
-        :x5 => :lcbdnr_raw, :x6 => :lcbdnr_sdm)
+rename!(
+    results, 
+    :x1 => :richness_raw, :x2 => :lcbd_raw, 
+    :x3 => :richness_sdm, :x4 => :lcbd_sdm,
+    :x5 => :lcbdnr_raw, :x6 => :lcbdnr_sdm
+)
 # Remove lines with missing values
 allowmissing!(results, Not([:latitude, :longitude]))
 for col in eachcol(results)
