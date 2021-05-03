@@ -157,30 +157,43 @@ lcbdres_br_layer = SimpleSDMResponse(residuals_df, :lcbd_br, similar(raw.lcbd),
                                   latitude = :latitude, longitude = :longitude)
 
 # Plot residuals
-function residuals_plot(layer::T; title = "") where T <: SimpleSDMLayer
+function residuals_plot(layer::T; title = "", kw...) where T <: SimpleSDMLayer
     # Center colorscale at zero instead of midpoint between extremas
     lims = extrema(layer)
-    diff_map = plotSDM2(layer, 
-                        c = recentergrad(:PuOr, lims; rev = true),
-                        title = "Residuals map",
-                        colorbar_title = "Deviance residuals")
-    diff_hist = histogram([filter(x -> !isnothing(x) && x >= 0, layer.grid), 
-                           filter(x -> !isnothing(x) && x < 0, layer.grid)],
-                          bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], legend = :none,
-                          title = "Residuals distribution", 
-                          xlabel = "Frequency",
-                          orientation = :horizontal,
-                          )
+    diff_map = plotSDM2(
+        layer, 
+        c = recentergrad(:PuOr, lims; rev = true),
+        title = "Residuals map",
+        colorbar_title = "Deviance residuals",
+        clims = lims
+    )
+    diff_hist = histogram(
+        [filter(x -> !isnothing(x) && x >= 0, layer.grid), 
+        filter(x -> !isnothing(x) && x < 0, layer.grid)],
+        bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], legend = :none,
+        title = "Residuals distribution", 
+        xlabel = "Frequency", ylabel = "Deviance residuals",
+        orientation = :horizontal,
+        ylims = lims
+    )
     diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
     l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
-    diff_plot = plot(diff_title, diff_map, diff_hist, 
-                     size = (850, 400), layout = l,
-                     bottommargin = 3.0mm, dpi = 200)
+    diff_plot = plot(
+        diff_title, diff_map, diff_hist, 
+        size = (850, 400), layout = l,
+        bottommargin = 3.0mm, dpi = 200,
+        rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+        kw...
+    )
     return diff_plot
 end
 # richness_resplot residuals_plot(richres_layer; title = "Richness Poisson GLM")
 richness_qp_resplot = residuals_plot(richres_qp_layer; title = "Richness Quasipoisson GLM")
-richness_nb_resplot = residuals_plot(richres_nb_layer; title = "Richness Negative Binomial GLM")
+richness_nb_resplot = residuals_plot(
+    richres_nb_layer; 
+    title = "Richness Negative Binomial GLM",
+    yticks = [:auto :auto (-3:1:4, string.(-3:1:4))]
+)
 lcbd_resplot = residuals_plot(lcbdres_layer; title = "LCBD Gamma GLM")
 lcbd_br_resplot = residuals_plot(lcbdres_br_layer; title = "LCBD Beta Regression")
 
