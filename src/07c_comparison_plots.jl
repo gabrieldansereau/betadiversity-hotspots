@@ -38,8 +38,7 @@ plot(
 
 # Save result
 if (@isdefined save_figures) && save_figures == true
-    mspath = abspath("..", "ms_betadiversity_hotspots")
-    savefig(joinpath(mspath, "figures", "combined-maps.png"))
+    savefig(joinpath("fig", "bart", "07_bart_combined-maps.png"))
 end
 
 ## Difference plots
