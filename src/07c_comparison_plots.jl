@@ -99,9 +99,8 @@ function difference_plot(layer::T; title = "", kw...) where T <: SimpleSDMLayer
         colorbar_title = "Difference from observed value"
     )
     diff_hist = histogram(
-        [filter(x -> !isnothing(x) && x >= 0, layer.grid), 
-        filter(x -> !isnothing(x) && x < 0, layer.grid)],
-        bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], 
+        layer,
+        bins = 50, c = :PuOr, 
         ylims = lims,
         legend = :none,
         title = "Difference distribution", 
@@ -168,9 +167,8 @@ function residuals_plot(layer::T; title = "", kw...) where T <: SimpleSDMLayer
         clims = lims
     )
     diff_hist = histogram(
-        [filter(x -> !isnothing(x) && x >= 0, layer.grid), 
-        filter(x -> !isnothing(x) && x < 0, layer.grid)],
-        bins = :rice, c = [:PuOr cgrad(:PuOr; rev = true)], legend = :none,
+        layer,
+        bins = 50, c = :PuOr, legend = :none,
         title = "Residuals distribution", 
         xlabel = "Frequency", ylabel = "Deviance residuals",
         orientation = :horizontal,
