@@ -51,10 +51,18 @@ lcbdcom_raw = recalculate_lcbd(raw.Y, raw.lcbd, inds_common)
 lcbdcom_sdm = recalculate_lcbd(sdm.Y, sdm.lcbd, inds_common)
 plotSDM2(lcbdcom_raw, c = :viridis)
 plotSDM2(lcbdcom_sdm, c = :viridis)
+extrema(lcbdcom_raw)
+extrema(lcbdcom_sdm)
+extrema(raw.lcbd)
+extrema(sdm.lcbd)
 
 # Add to NamedTuples
 raw = (raw..., lcbdcom = lcbdcom_raw)
 sdm = (sdm..., lcbdcom = lcbdcom_sdm)
+extrema(raw.lcbdcom)
+extrema(sdm.lcbdcom)
+extrema(raw.lcbd)
+extrema(sdm.lcbd)
 
 ## Tests
 # isequal([sdm.richness[i] for i in inds_common], results.richness_sdm)
@@ -74,7 +82,7 @@ jld_path = joinpath("data", "jld2", "comparison-results.jld2")
 
 ## Prepare data for GLMs
 # Assemble in DataFrame
-results = DataFrame([raw.richness, raw.lcbd, sdm.richness, sdm.lcbd, raw.lcbdnr, sdm.lcbdnr])
+results = DataFrame([raw.richness, raw.lcbdcom, sdm.richness, sdm.lcbdcom, raw.lcbdnr, sdm.lcbdnr])
 rename!(
     results, 
     :x1 => :richness_raw, :x2 => :lcbd_raw, 
@@ -89,6 +97,10 @@ end
 dropmissing!(results)
 # Convert to Float64 (cannot write to CSV otherwise)
 results = convert.(Float64, results)
+extrema(results.lcbd_raw)
+extrema(results.lcbd_sdm)
+extrema(results.lcbdnr_raw)
+extrema(results.lcbdnr_sdm)
 
 # Export to CSV
 CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
