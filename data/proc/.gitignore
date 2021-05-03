@@ -4,3 +4,4 @@
 !.gitignore
 !distributions_*.csv
 !glossary.csv
+!comparison*.csv
