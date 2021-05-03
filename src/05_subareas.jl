@@ -67,10 +67,12 @@ function rectangle!(w, h, x, y, textstring, textsize)
           )
 end
 # Function to produce combined plots
-function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, maintitle = "", kw...)
+function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_value=1, maintitle = "", kw...)
     if scale
-        scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
-        scaling_value = 10^scaling_factor
+        if scaling_value == 1
+            scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
+            scaling_value = 10^scaling_factor
+        end
         lcbd = rescale(lcbd, extrema(lcbd) .* scaling_value)
     end
     p1 = eval(plotfct)(
@@ -80,7 +82,8 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, maintitl
         clim = (-Inf,Inf)
     )
     p2 = histogram2d(
-        richness, lcbd, c = :viridis, bins = 40, 
+        richness, lcbd, 
+        c = :viridis, bins = 40, 
         title = "Relationship", colorbar_title = "Number of sites",
         xlabel = "Richness", ylabel = "LCBD value (x $(format(scaling_value, commas = true)))", 
         xlim = (1, 50), ylim = (-Inf, Inf), clim = (1, 450),
@@ -96,12 +99,20 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, maintitl
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
         ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
-        p = plot(ptitle, p1, p2, layout = l, size = (900, 300), 
-                 rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm]; kw...)
+        p = plot(
+            ptitle, p1, p2, 
+            layout = l, size = (900, 300), 
+            rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+            kw...
+        )
     else
         l = @layout [a b]
-        p = plot(p1, p2, layout = l, size = (900, 300),
-                 rightmargin = [5.0mm 0mm], leftmargin = [5.0mm 5.0mm]; kw...)
+        p = plot(
+            p1, p2, 
+            layout = l, size = (900, 300),
+            rightmargin = [5.0mm 0mm], leftmargin = [5.0mm 5.0mm];
+            kw...
+        )
     end
     return p
 end
@@ -113,8 +124,9 @@ resNEtr = plot_lcbd_relationship(
 )
 resSWtr = plot_lcbd_relationship(
     richness_SW, lcbd_SW, beta_SW,
+    scaling_value = 1000,
     maintitle = "Southwest subarea",
-    yticks = [:auto :auto (1.0:0.5:5.0, string.(1.0:0.5:5.0))]
+    yticks = [:auto :auto (0.1:0.05:0.5, format.(0.1:0.05:0.5, precision=2))],
 )
 combined_plot = plot(
     resNEtr, resSWtr, 
