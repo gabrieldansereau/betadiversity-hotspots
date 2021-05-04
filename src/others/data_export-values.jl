@@ -13,7 +13,7 @@ lcbdraw_min, lcbdraw_max = extrema(raw.lcbd)
 lcbdsdm_min, lcbdsdm_max = extrema(sdm.lcbd)
 
 lcbdcomraw_min, lcbdcomraw_max = extrema(raw.lcbdcom)
-lcbdcomsdm_min, lcbdcomsdm_max = maximum(sdm.lcbdcom)
+lcbdcomsdm_min, lcbdcomsdm_max = extrema(sdm.lcbdcom)
 
 bdtot_raw = raw.beta_total
 bdtot_sdm = sdm.beta_total
@@ -31,6 +31,9 @@ lcbdres_min, lcbdres_max = extrema(lcbdres_br_layer)
 ##
 
 include("../05_subareas.jl")
+
+coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
+coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
 
 bdtot_NE = beta_NE
 bdtot_SW = beta_SW
