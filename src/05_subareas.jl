@@ -237,6 +237,8 @@ end
 # Create empty elements
 richness_medians = []
 lcbd_medians = []
+lcbd_mins = []
+lcbd_maxs = []
 lcbd_abs_medians = []
 beta_values = []
 gamma_values = []
@@ -245,13 +247,15 @@ for sc in subarea_coords
     distribs = [d[sc] for d in distributions]
     Y = calculate_Y(distribs)
     richness = calculate_richness(Y, distribs[1])
-    lcbd = calculate_lcbd(Y, distribs[1])
+    lcbd = calculate_lcbd(Y, distribs[1], relative = false)
     lcbd_abs = calculate_lcbd(Y, distribs[1]; relative = false)
     beta_total = calculate_BDtotal(Y)
     gamma = calculate_gamma(Y)
     
     push!(richness_medians, median(richness))
     push!(lcbd_medians, median(lcbd))
+    push!(lcbd_mins, minimum(lcbd))
+    push!(lcbd_maxs, maximum(lcbd))
     push!(lcbd_abs_medians, lcbd_abs)
     push!(beta_values, beta_total)
     push!(gamma_values, gamma)

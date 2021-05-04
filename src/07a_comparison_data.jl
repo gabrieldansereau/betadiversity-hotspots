@@ -1,6 +1,10 @@
 import Pkg; Pkg.activate(".")
 include("required.jl")
 
+## Conditional argument
+# save_data = false
+# save_data = true
+
 ## Run analysis on raw data
 outcome = "raw"
 include("04_analysis.jl")
@@ -55,8 +59,10 @@ raw = (raw..., lcbdcom = lcbdcom_raw)
 sdm = (sdm..., lcbdcom = lcbdcom_sdm)
 
 # Export to JLD2
-jld_path = joinpath("data", "jld2", "comparison-results.jld2")
-@save jld_path raw sdm
+if (@isdefined save_data) && save_data == true
+    jld_path = joinpath("data", "jld2", "comparison-results.jld2")
+    @save jld_path raw sdm
+end
 
 ## Prepare data for GLMs
 # Assemble in DataFrame
@@ -77,4 +83,6 @@ dropmissing!(results)
 results = convert.(Float64, results)
 
 # Export to CSV
-CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
+if (@isdefined save_data) && save_data == true
+    CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
+end
