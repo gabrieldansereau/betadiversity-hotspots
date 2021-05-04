@@ -50,6 +50,16 @@ lcbdmax_s2 = sprintf1("%.3e", lcbd_maxs[mid_ind])
 lcbdmin_s3 = sprintf1("%.3e", lcbd_mins[end])
 lcbdmax_s3 = sprintf1("%.3e", lcbd_maxs[end])
 
+ascending_threshold_NE = minimum(lcbd_NE)
+sprintf1("%.3e", ascending_threshold_NE)
+min_indx_NE = findall(x -> x == ascending_threshold_NE, lcbd_NE.grid)
+abs_min_NE = median(richness_NE.grid[min_indx_NE])
+
+ascending_threshold_SW = minimum(lcbd_SW)
+sprintf1("%.3e", ascending_threshold_SW)
+min_indx_SW = findall(x -> x == ascending_threshold_SW, lcbd_SW.grid)
+abs_min_SW = median(richness_SW.grid[min_indx_SW])
+
 # medrichmin
 # medrichmax
 # medlcbdmin
