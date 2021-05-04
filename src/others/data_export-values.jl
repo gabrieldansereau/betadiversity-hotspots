@@ -4,29 +4,29 @@ include("../required.jl")
 include("../07a_comparison_data.jl")
 
 nspecies = size(raw.Y, 2)
-nsites_raw = length(raw.richness)
-nsites_sdm = length(sdm.richness)
+nsites_raw = format(length(raw.richness), commas = true)
+nsites_sdm = format(length(sdm.richness), commas = true)
 coords_full = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
-nsites_tot = length(worldclim(1)[coords_full])
+nsites_tot = format(length(worldclim(1)[coords_full]), commas = true)
 
-lcbdraw_min, lcbdraw_max = extrema(raw.lcbd)
-lcbdsdm_min, lcbdsdm_max = extrema(sdm.lcbd)
+lcbdraw_min, lcbdraw_max = sprintf1.("%.3e", extrema(raw.lcbd))
+lcbdsdm_min, lcbdsdm_max = sprintf1.("%.3e", extrema(sdm.lcbd))
 
-lcbdcomraw_min, lcbdcomraw_max = extrema(raw.lcbdcom)
-lcbdcomsdm_min, lcbdcomsdm_max = extrema(sdm.lcbdcom)
+lcbdcomraw_min, lcbdcomraw_max = sprintf1.("%.3e", extrema(raw.lcbdcom))
+lcbdcomsdm_min, lcbdcomsdm_max = sprintf1.("%.3e", extrema(sdm.lcbdcom))
 
-bdtot_raw = raw.beta_total
-bdtot_sdm = sdm.beta_total
+bdtot_raw = sprintf1("%.3f", raw.beta_total)
+bdtot_sdm = sprintf1("%.3f", sdm.beta_total)
 
 ##
 
 include("../07c_comparison_plots.jl")
 
-richdiff_min, richdiff_max = extrema(richness_diff)
-lcbddiff_min, lcbddiff_max = extrema(lcbd_diff)
+richdiff_min, richdiff_max = sprintf1.("%i", extrema(richness_diff))
+lcbddiff_min, lcbddiff_max = sprintf1.("%.3e", extrema(lcbd_diff))
 
-richres_min, richres_max = extrema(richres_nb_layer)
-lcbdres_min, lcbdres_max = extrema(lcbdres_br_layer)
+richres_min, richres_max = sprintf1.("%.3f", extrema(richres_nb_layer))
+lcbdres_min, lcbdres_max = sprintf1.("%.3f", extrema(lcbdres_br_layer))
 
 ##
 
@@ -35,20 +35,20 @@ include("../05_subareas.jl")
 coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
 coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
 
-bdtot_NE = beta_NE
-bdtot_SW = beta_SW
+bdtot_NE = sprintf1("%.3f", beta_NE)
+bdtot_SW = sprintf1("%.3f", beta_SW)
 
-lcbdne_min, lcbdne_max = extrema(lcbd_NE)
-lcbdsw_min, lcbdsw_max = extrema(lcbd_SW)
+lcbdne_min, lcbdne_max = sprintf1.("%.3e", extrema(lcbd_NE))
+lcbdsw_min, lcbdsw_max = sprintf1.("%.3e", extrema(lcbd_SW))
 
-bdtot_s1, bdtot_s2, bdtot_s3 = beta_values[[1, mid_ind, end]]
+bdtot_s1, bdtot_s2, bdtot_s3 = sprintf1.("%.3f", beta_values[[1, mid_ind, end]])
 
-lcbdmin_s1 = lcbd_mins[1]
-lcbdmax_s1 = lcbd_maxs[1]
-lcbdmin_s2 = lcbd_mins[2]
-lcbdmax_s2 = lcbd_maxs[2]
-lcbdmin_s3 = lcbd_mins[3]
-lcbdmax_s3 = lcbd_maxs[3]
+lcbdmin_s1 = sprintf1("%.3e", lcbd_mins[1])
+lcbdmax_s1 = sprintf1("%.3e", lcbd_maxs[1])
+lcbdmin_s2 = sprintf1("%.3e", lcbd_mins[mid_ind])
+lcbdmax_s2 = sprintf1("%.3e", lcbd_maxs[mid_ind])
+lcbdmin_s3 = sprintf1("%.3e", lcbd_mins[end])
+lcbdmax_s3 = sprintf1("%.3e", lcbd_maxs[end])
 
 # medrichmin
 # medrichmax

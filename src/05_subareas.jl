@@ -37,7 +37,7 @@ richness_SW = calculate_richness(Y_SW, distributions_SW[1])
 ## LCBD
 # Relative values
 lcbd_rel_NE = calculate_lcbd(Y_NE, distributions_NE[1])
-lcbd__rel_SW = calculate_lcbd(Y_SW, distributions_SW[1])
+lcbd_rel_SW = calculate_lcbd(Y_SW, distributions_SW[1])
 
 # Absolute values
 lcbd_abs_NE = calculate_lcbd(Y_NE, distributions_NE[1]; relative = false)
