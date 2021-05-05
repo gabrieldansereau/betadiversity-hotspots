@@ -77,17 +77,18 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
     end
     p1 = eval(plotfct)(
         lcbd, c = :viridis,
-        title = "LCBD", 
+        # title = "LCBD", 
         colorbar_title = "LCBD value (x $(format(scaling_value, commas = true)))", 
         clim = (-Inf,Inf)
     )
     p2 = histogram2d(
         richness, lcbd, 
         c = :viridis, bins = 40, 
-        title = "Relationship", colorbar_title = "Number of sites",
+        # title = "Relationship", 
+        colorbar_title = "Number of sites",
         xlabel = "Richness", ylabel = "LCBD value (x $(format(scaling_value, commas = true)))", 
         xlim = (1, 50), ylim = (-Inf, Inf), clim = (1, 450),
-        bottommargin = 4.0mm
+        # bottommargin = 4.0mm
     )
     vline!([median(richness)], label = :none, linestyle = :dash, c = :grey)
     hline!([median(lcbd)], label = :none, linestyle = :dash, c = :grey)
@@ -98,18 +99,19 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
     
     if maintitle != ""
         l = @layout [t{.01h}; grid(1,2)]
-        ptitle = plot(annotation = (0.5, 0.5, "$maintitle"), framestyle = :none)
+        ptitle = plot(annotation = (0.0, 0.5, "$maintitle", :left), framestyle = :none)
         p = plot(
             ptitle, p1, p2, 
             layout = l, size = (900, 300), 
-            rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+            rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm],;
             kw...
         )
     else
-        l = @layout [a b]
+        l = @layout [a{0.5w} b{0.5w, 0.9h}]
         p = plot(
             p1, p2, 
             layout = l, size = (900, 300),
+            # bottommargin = [0.0mm 5.0mm],
             rightmargin = [5.0mm 0mm], leftmargin = [5.0mm 5.0mm];
             kw...
         )
@@ -120,20 +122,20 @@ end
 # Combined subarea figures
 resNEtr = plot_lcbd_relationship(
     richness_NE, lcbd_NE, beta_NE,
-    maintitle = "Northeast subarea"
+    # maintitle = "Northeast subarea"
 )
 resSWtr = plot_lcbd_relationship(
     richness_SW, lcbd_SW, beta_SW,
     scaling_value = 1000,
-    maintitle = "Southwest subarea",
+    # maintitle = "Southwest subarea",
     yticks = [:auto :auto (0.1:0.05:0.5, format.(0.1:0.05:0.5, precision=2))],
 )
 combined_plot = plot(
     resNEtr, resSWtr, 
     layout = grid(2,1), 
     size = (900, 600), 
-    bottommargin = 1.0mm,
-    title = ["" "" "" ""]
+    bottommargin = 0.0mm,
+    title = ["a) Northeast subregion" "" "b) Southwest subregion" ""]
 )
 
 # Export figures
@@ -215,8 +217,9 @@ ps = subarea_plots[[1, mid_ind, end]]
 # Combine 3 scales
 p = plot(
     ps..., 
-    dpi = 200, layout = (3,1), size = (900, 900),
-    title = ["LCBD" "Relationship" "" "" "" ""],
+    dpi = 200, layout = (3,1), size = (900, 960),
+    title = ["a) Regional extent" "" "b) Intermediate extent" "" "c) Continental extent" ""],
+    titleloc = :left,
     bottommargin = -2.0mm,
     yticks = permutedims(
         [:auto, (0.5:0.5:5.0, string.(0.5:0.5:5.0)),
