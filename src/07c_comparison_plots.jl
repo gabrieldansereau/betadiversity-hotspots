@@ -232,5 +232,5 @@ if (@isdefined save_figures) && save_figures == true
     savefig(richness_nb_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-negbinomial.png"))
     savefig(lcbd_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-gamma.png"))
     savefig(lcbd_br_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-betareg.png"))
-    savefig(combined_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-combined.png"))
+    savefig(combined_resplot, joinpath("fig", "bart", "07_bart_residuals-combined.png"))
 end
