@@ -27,18 +27,20 @@ p4 = plotSDM2(
     c = :viridis,
     colorbar_title = "LCBD value (x 100,000)"
 )
-plot(
+combined_plot = plot(
     p1, p2,
     p3, p4,
-    title = ["a" "b" "c" "d"],
+    title = ["a) Observed richness", "b) Predicted richness",
+             "c) Observed uniqueness", "d) Predicted uniqueness"] |> permutedims,
     titleloc = :left,
-    size = (850, 600), 
+    leftmargin = 3.0mm,
+    size = (940, 680), 
     dpi = 200
 )
 
 # Save result
 if (@isdefined save_figures) && save_figures == true
-    savefig(joinpath("fig", "bart", "07_bart_combined-maps.png"))
+    savefig(combined_plot, joinpath("fig", "bart", "07_bart_combined-maps.png"))
 end
 
 ## Difference plots
