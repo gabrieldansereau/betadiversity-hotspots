@@ -146,7 +146,8 @@ combined_diffplot = plot(
     deepcopy(richness_diffplot),
     deepcopy(lcbd_diffplot),
     layout = (2,1),
-    title = ["a" "b" "c" "d"],
+    title = ["a) Difference between richness estimates", "",
+             "b) Difference between LCBD estimates", ""] |> permutedims,
     titleloc = :left,
     dpi = 200,
     size = (850, 680) 
@@ -219,7 +220,8 @@ lcbd_br_resplot = residuals_plot(lcbdres_br_layer; title = "LCBD Beta Regression
 combined_resplot = plot(
     deepcopy(richness_nb_resplot),
     deepcopy(lcbd_br_resplot),
-    title = ["a" "b" "c" "d"],
+    title = ["a) Poisson regression residuals between richness estimates", "", 
+             "b) Beta regression residuals between LCBD estimates", ""] |> permutedims,
     titleloc = :left,
     layout = (2,1),
     size = (850, 680)
