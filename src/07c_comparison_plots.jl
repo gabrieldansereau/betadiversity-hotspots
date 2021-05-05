@@ -106,39 +106,57 @@ function difference_plot(layer::T; title = "", kw...) where T <: SimpleSDMLayer
         xlabel = "Frequency",
         orientation = :horizontal,
     )
-    diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
-    l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    # diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
+    # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    l = @layout [a{0.6w} b{0.38w}]
     diff_plot = plot(
-        diff_title, diff_map, diff_hist, 
-        size = (850, 400), layout = l,
+        # diff_title, 
+        diff_map, diff_hist, 
+        size = (850, 340), 
+        layout = l,
         bottommargin = 3.0mm, dpi = 200,
-        rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+        # rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+        rightmargin = [5.0mm 0mm], leftmargin = [5.0mm 5.0mm];
         kw...
     )
     return diff_plot
 end
 richness_diffplot = difference_plot(
     richness_diff; 
-    title = "Predicted richness compared to observed richness",
-    yticks = [:auto :auto (-30:10:40, string.(-30:10:40))],
+    # title = "Predicted richness compared to observed richness",
+    # yticks = [:auto :auto (-30:10:40, string.(-30:10:40))],
+    yticks = [:auto (-30:10:40, string.(-30:10:40))],
     colorbar_title = "Richness difference",
-    ylabel = ["" "Latitude" "Richness difference"]
+    # ylabel = ["" "Latitude" "Richness difference"]
+    ylabel = ["Latitude" "Richness difference"]
 )
 lcbd_diff_resc = rescale(lcbd_diff, extrema(lcbd_diff) .* 100_000)
 lcbd_diffplot = difference_plot(
     lcbd_diff_resc; 
-    title = "Predicted LCBD compared to observed LCBD",
+    # title = "Predicted LCBD compared to observed LCBD",
     colorbar_title = "LCBD difference (x 100,000)",
-    ylabel = ["" "Latitude" "LCBD difference (x 100,000)"],
-    yticks = [:auto :auto (-4:1:3, string.(-4:1:3))],
-    ylim = [:auto extrema(latitudes(lcbd_diff_resc)) extrema(lcbd_diff_resc)],
+    ylabel = ["Latitude" "LCBD difference (x 100,000)"],
+    # yticks = [:auto :auto (-4:1:3, string.(-4:1:3))],
+    yticks = [:auto (-4:1:3, string.(-4:1:3))],
+    # ylim = [:auto extrema(latitudes(lcbd_diff_resc)) extrema(lcbd_diff_resc)],
+    ylim = [extrema(latitudes(lcbd_diff_resc)) extrema(lcbd_diff_resc)],
     clim = extrema(lcbd_diff_resc)
+)
+combined_diffplot = plot(
+    deepcopy(richness_diffplot),
+    deepcopy(lcbd_diffplot),
+    layout = (2,1),
+    title = ["a" "b" "c" "d"],
+    titleloc = :left,
+    dpi = 200,
+    size = (850, 680) 
 )
 
 # Save figures
 if (@isdefined save_figures) && save_figures == true
     savefig(richness_diffplot, joinpath("fig", "bart", "07_bart_comparison-richness.png"))
     savefig(lcbd_diffplot, joinpath("fig", "bart", "07_bart_comparison-lcbd.png"))
+    savefig(combined_diffplot, joinpath("fig", "bart", "07_bart_comparison-combined.png"))
 end
 
 ## Residual visualization
@@ -173,13 +191,16 @@ function residuals_plot(layer::T; title = "", kw...) where T <: SimpleSDMLayer
         orientation = :horizontal,
         ylims = lims
     )
-    diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
-    l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    # diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
+    # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+    l = @layout [a{0.6w} b{0.38w}]
     diff_plot = plot(
-        diff_title, diff_map, diff_hist, 
-        size = (850, 400), layout = l,
+        # diff_title, 
+        diff_map, diff_hist, 
+        size = (850, 340), layout = l,
         bottommargin = 3.0mm, dpi = 200,
-        rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+        # rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
+        rightmargin = [5.0mm 0mm], leftmargin = [5.0mm 5.0mm];
         kw...
     )
     return diff_plot
@@ -189,10 +210,20 @@ richness_qp_resplot = residuals_plot(richres_qp_layer; title = "Richness Quasipo
 richness_nb_resplot = residuals_plot(
     richres_nb_layer; 
     title = "Richness Negative Binomial GLM",
-    yticks = [:auto :auto (-3:1:4, string.(-3:1:4))]
+    # yticks = [:auto :auto (-3:1:4, string.(-3:1:4))]
+    yticks = [:auto (-3:1:4, string.(-3:1:4))]
 )
 lcbd_resplot = residuals_plot(lcbdres_layer; title = "LCBD Gamma GLM")
 lcbd_br_resplot = residuals_plot(lcbdres_br_layer; title = "LCBD Beta Regression")
+
+combined_resplot = plot(
+    deepcopy(richness_nb_resplot),
+    deepcopy(lcbd_br_resplot),
+    title = ["a" "b" "c" "d"],
+    titleloc = :left,
+    layout = (2,1),
+    size = (850, 680)
+)
 
 # Save figures
 if (@isdefined save_figures) && save_figures == true
@@ -201,4 +232,5 @@ if (@isdefined save_figures) && save_figures == true
     savefig(richness_nb_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-negbinomial.png"))
     savefig(lcbd_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-gamma.png"))
     savefig(lcbd_br_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-betareg.png"))
+    savefig(combined_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-combined.png"))
 end
