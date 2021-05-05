@@ -233,10 +233,16 @@ function ascending_plots(richness, lcbd, rarespecies)
     density!(rare_values[.!isascending], c = cgrad(:PuOr, rev = true), label = "Descending")
     plot!(xlabel = "Rare species percentage", ylabel = "Density", bottommargin = 4.0mm)
     
-    plot(lplot, dplot, size = (900, 300))
+    l = @layout [a{0.5w} b{0.45w}]
+    plot(lplot, dplot, size = (900, 300), layout = l)
 end
 p_asc1 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
 p_asc2 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
-plot(p_asc1, p_asc2, layout = (2,1), size = (900, 600))
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
+asc_plots = plot(
+    p_asc1, p_asc2, 
+    layout = (2,1), size = (900, 660),
+    title = ["a) Northeast subregion" "" "b) Southwest subregion" ""],
+    titleloc = :left,
+)
+savefig(asc_plots, joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
 
