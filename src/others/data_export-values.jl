@@ -28,6 +28,14 @@ lcbddiff_min, lcbddiff_max = sprintf1.("%.3e", extrema(lcbd_diff))
 richres_min, richres_max = sprintf1.("%.3f", extrema(richres_nb_layer))
 lcbdres_min, lcbdres_max = sprintf1.("%.3f", extrema(lcbdres_br_layer))
 
+R"""
+library(SpatialPack)
+load(file.path("data", "rdata", "cor-dutilleul.Rdata"))
+z_richness
+z_richness$p.value
+z_lcbd
+z_lcbd$p.value
+"""
 ##
 
 include("../05_subareas.jl")
