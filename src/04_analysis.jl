@@ -36,7 +36,7 @@ richness_plot = plotSDM2(
     richness; 
     c = :viridis,
     # title = "Richness ($outcome distributions)",
-    clim = (0.0, maximum(richness)),
+    # clim = (0.0, maximum(richness)),
     colorbar_title = "Species richness",
     size = (650, 400),
 )
