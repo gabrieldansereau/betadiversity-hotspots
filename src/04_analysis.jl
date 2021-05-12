@@ -87,7 +87,7 @@ lcbdtr_qplot = plotSDM2(
     quantiles(lcbd), 
     c = :viridis,
     # title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
-    colorbar_title = "Relative LCBD value (quantiles)",
+    colorbar_title = "LCBD value (quantiles)",
     size = (650, 400)
 )
 
