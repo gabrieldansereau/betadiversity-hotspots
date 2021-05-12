@@ -96,7 +96,6 @@ scatter([rarespecies_p rarespecies_p_NE rarespecies_p_SW],
         ) |>
         x -> hline!(x, [0.0], style = :dash, c = :grey, label = :none)
 # EUSRR negative whatever subarea & percentage of rare species?
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr.png"))
 
 # Subareas & rarity based on total occupancy
 scatter([rarespecies_p rarespecies_p_NE_total rarespecies_p_SW_total], 
@@ -109,7 +108,6 @@ scatter([rarespecies_p rarespecies_p_NE_total rarespecies_p_SW_total],
         ) |>
         x -> hline!(x, [0.0], style = :dash, c = :grey, label = :none)
 # EUSRR negative whatever subarea & percentage of rare species?
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_total.png"))
 
 ## Effect of thresholds
 # Thresholds variation only
@@ -131,14 +129,19 @@ scatter(rarespecies_matrix,
         x -> hline!(x, [0.0], style = :dash, c = :grey, label = :none)
 # EUSRR negative whatever subarea, percentage of rare species & threshold
 # Whatever the threshold, EUSRR negative
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_thresholds.png"))
+if (@isdefined save_figures) && save_figures == true
+    savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_thresholds.png"))
+end
 
 plot(thresholds, rarespecies_matrix,
      xlabel = "Rare species threshold",
      ylabel = "Rare species percentage",
      labels = ["Total" "NE" "SW"],
      legend = :bottomright)
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_thresholds.png"))
+
+if (@isdefined save_figures) && save_figures == true
+    savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_thresholds.png"))
+end
 
 ## Effect of scaling
 # Scaling EUSRR
@@ -173,7 +176,6 @@ scatter(rarespecies_scaling,
 show(stdout, "text/plain", rarespecies_scaling)
 show(stdout, "text/plain", eusrr_scaling)
 # Whatever
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_scaling.png"))
 
 ## Spatial distribution of rare species proportion
 function get_site_rarespecies(Y, rarespecies, richness)
@@ -191,7 +193,6 @@ function get_site_rarespecies(Y, rarespecies, richness)
 end
 rarespecies_layer = get_site_rarespecies(Y, rarespecies, richness)
 plotSDM2(rarespecies_layer, c = :viridis)
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_global.png"))
 
 rarespecies_layer_NE = get_site_rarespecies(Y_NE, rarespecies_NE, richness_NE)
 p1 = plotSDM2(rarespecies_layer_NE, c = :viridis)
@@ -206,7 +207,9 @@ rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, ri
 p4 = plotSDM2(rarespecies_layer_SW_total, c = :viridis)
 
 plot(p1, p2, p3, p4, dpi = 200)
-savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"))
+if (@isdefined save_figures) && save_figures == true
+    savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"))
+end
 
 ## Ascending & descending parts
 using StatsPlots
@@ -244,5 +247,7 @@ asc_plots = plot(
     title = ["a) Northeast subregion" "" "b) Southwest subregion" ""],
     titleloc = :left,
 )
-savefig(asc_plots, joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
+if (@isdefined save_figures) && save_figures == true
+    savefig(asc_plots, joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
+end
 

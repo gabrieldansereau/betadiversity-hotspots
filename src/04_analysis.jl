@@ -103,7 +103,6 @@ rectangle!(12.0, 0.11, 35.0, 0.85, "BDtot = $(round(beta_total; digits = 3))", 8
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome))"
-    savefig(plot(Yobs_plot, dpi = 200),     joinpath("fig", outcome, "04-1_$(outcome)_Yobs.png"))
     savefig(plot(richness_plot, dpi = 200), joinpath("fig", outcome, "04-2_$(outcome)_richness.png"))
     savefig(plot(lcbdtr_plot, dpi = 200),   joinpath("fig", outcome, "04-3_$(outcome)_lcbd-transf.png"))
     savefig(plot(rel2d_plot, dpi = 200),    joinpath("fig", outcome, "04-4_$(outcome)_relationship2d-transf.png"))

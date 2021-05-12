@@ -300,9 +300,5 @@ medians_p4 = plot!(deepcopy(medians_p3), medians_df.gamma, label = "Gamma divers
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     # Final plot
-    savefig(medians_p4, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png")),
-    # Step-by-step plots
-    savefig(medians_p1, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians1.png"))
-    savefig(medians_p2, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians2.png"))
-    savefig(medians_p3, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians3.png"))
+    savefig(medians_p4, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png"))
 end
