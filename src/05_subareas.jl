@@ -61,10 +61,11 @@ end
 # Functions to add total beta diversity in rectangle
 rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
 function rectangle!(w, h, x, y, textstring, textsize)
-    plot!(rectangle(w, h, x, y), 
-          color = :white, legend = :none,
-          annotations = (x + (w/2), y + (h/2), text(textstring, textsize, :center)),
-          )
+    plot!(
+        rectangle(w, h, x, y), 
+        color = :white, legend = :none,
+        annotations = (x + (w/2), y + (h/2), text(textstring, textsize, :center)),
+    )
 end
 # Function to produce combined plots
 function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_value=1, maintitle = "", kw...)
@@ -128,7 +129,7 @@ resSWtr = plot_lcbd_relationship(
     richness_SW, lcbd_SW, beta_SW,
     scaling_value = 1000,
     # maintitle = "Southwest subarea",
-    yticks = [:auto :auto (0.1:0.05:0.5, format.(0.1:0.05:0.5, precision=2))],
+    yticks = [:auto (0.1:0.05:0.5, format.(0.1:0.05:0.5, precision=2))],
 )
 combined_plot = plot(
     resNEtr, resSWtr, 
