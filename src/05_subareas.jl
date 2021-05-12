@@ -131,12 +131,15 @@ resSWtr = plot_lcbd_relationship(
     # maintitle = "Southwest subarea",
 )
 if outcome == "bart"
+    local cmax = 450
+    resNEtr[2][:clims] = (-Inf, cmax)
+    resSWtr[2][:clims] = (-Inf, cmax)
     yticks!(resSWtr[2], 0.1:0.05:0.5)
 elseif outcome == "raw"
     local cmax = 285
-    yticks!(resNEtr[2], 0.25:0.25:1.0)
     resNEtr[2][:clims] = (-Inf, cmax)
     resSWtr[2][:clims] = (-Inf, cmax)
+    yticks!(resNEtr[2], 0.25:0.25:1.0)
 end
 combined_plot = plot(
     resNEtr, resSWtr, 
@@ -175,6 +178,7 @@ p = plot_subareas(
     coords_subarea, distributions; 
     formatter = [f -> "$(Int(f))" :plain],
     # clim = [:auto :auto],
+    title = ["LCBD" "Relationship"]
 )
 
 ## Expanding GIF
@@ -202,6 +206,7 @@ for sc in subarea_coords
         formatter = [f -> "$(Int(round(f, digits = 0)))" :plain],
         # clim = [:auto :auto],
         # leftmargin = 4.0mm,
+        title = ["LCBD" "Relationship"],
         dpi = 200
     )
     push!(subarea_plots, p)
