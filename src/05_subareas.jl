@@ -80,7 +80,7 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
         lcbd, c = :viridis,
         # title = "LCBD", 
         colorbar_title = "LCBD value (x $(format(scaling_value, commas = true)))", 
-        clim = (-Inf,Inf)
+        clim = extrema(lcbd)
     )
     p2 = histogram2d(
         richness, lcbd, 
@@ -88,7 +88,7 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
         # title = "Relationship", 
         colorbar_title = "Number of sites",
         xlabel = "Richness", ylabel = "LCBD value (x $(format(scaling_value, commas = true)))", 
-        xlim = (1, 50), ylim = (-Inf, Inf), clim = (1, 450),
+        xlim = (1, 50), ylim = (-Inf, Inf), # clim = (1, 450),
         # bottommargin = 4.0mm
     )
     vline!([median(richness)], label = :none, linestyle = :dash, c = :grey)
@@ -129,8 +129,15 @@ resSWtr = plot_lcbd_relationship(
     richness_SW, lcbd_SW, beta_SW,
     scaling_value = 1000,
     # maintitle = "Southwest subarea",
-    yticks = [:auto (0.1:0.05:0.5, format.(0.1:0.05:0.5, precision=2))],
 )
+if outcome == "bart"
+    yticks!(resSWtr[2], 0.1:0.05:0.5)
+elseif outcome == "raw"
+    local cmax = 285
+    yticks!(resNEtr[2], 0.25:0.25:1.0)
+    resNEtr[2][:clims] = (-Inf, cmax)
+    resSWtr[2][:clims] = (-Inf, cmax)
+end
 combined_plot = plot(
     resNEtr, resSWtr, 
     layout = grid(2,1), 
@@ -167,7 +174,7 @@ coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 p = plot_subareas(
     coords_subarea, distributions; 
     formatter = [f -> "$(Int(f))" :plain],
-    clim = [:auto :auto],
+    # clim = [:auto :auto],
 )
 
 ## Expanding GIF
@@ -193,7 +200,7 @@ for sc in subarea_coords
         sc, distributions;
         # formatter = f -> "$(round(f, digits = 1))",
         formatter = [f -> "$(Int(round(f, digits = 0)))" :plain],
-        clim = [:auto :auto],
+        # clim = [:auto :auto],
         # leftmargin = 4.0mm,
         dpi = 200
     )
@@ -217,18 +224,19 @@ ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
 p = plot(
-    ps..., 
+    deepcopy(ps)..., 
     dpi = 200, layout = (3,1), size = (900, 960),
     title = ["a) Regional extent" "" "b) Intermediate extent" "" "c) Continental extent" ""],
     titleloc = :left,
     bottommargin = -2.0mm,
-    yticks = permutedims(
-        [:auto, (0.5:0.5:5.0, string.(0.5:0.5:5.0)),
-         :auto, :auto,
-         :auto, (1.5:0.5:5.0, string.(1.5:0.5:5.0)),
-        ]
-    )
 )
+if outcome == "bart"
+    yticks!(p[2], 0.5:0.5:5.0)
+    yticks!(p[6], 1.5:0.5:5.0)
+elseif outcome == "raw"
+    yticks!(p[4], 0.5:0.5:2.5)
+    yticks!(p[6], 2:1:9)
+end
 
 # Export figures
 # save_figures = true
