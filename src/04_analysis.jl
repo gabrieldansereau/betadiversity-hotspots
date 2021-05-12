@@ -78,7 +78,7 @@ lcbdtr_plot = plotSDM2(
     lcbd_resc,
     c = :viridis,
     # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
-    colorbar_title = "LCBD value (x $(format(scaling_value, commas = true))",
+    colorbar_title = "LCBD value (x $(format(scaling_value, commas = true)))",
     size = (650, 400)
 )
 
