@@ -61,10 +61,11 @@ end
 # Functions to add total beta diversity in rectangle
 rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
 function rectangle!(w, h, x, y, textstring, textsize)
-    plot!(rectangle(w, h, x, y), 
-          color = :white, legend = :none,
-          annotations = (x + (w/2), y + (h/2), text(textstring, textsize, :center)),
-          )
+    plot!(
+        rectangle(w, h, x, y), 
+        color = :white, legend = :none,
+        annotations = (x + (w/2), y + (h/2), text(textstring, textsize, :center)),
+    )
 end
 # Function to produce combined plots
 function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_value=1, maintitle = "", kw...)
@@ -79,7 +80,7 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
         lcbd, c = :viridis,
         # title = "LCBD", 
         colorbar_title = "LCBD value (x $(format(scaling_value, commas = true)))", 
-        clim = (-Inf,Inf)
+        clim = extrema(lcbd)
     )
     p2 = histogram2d(
         richness, lcbd, 
@@ -87,7 +88,7 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
         # title = "Relationship", 
         colorbar_title = "Number of sites",
         xlabel = "Richness", ylabel = "LCBD value (x $(format(scaling_value, commas = true)))", 
-        xlim = (1, 50), ylim = (-Inf, Inf), clim = (1, 450),
+        xlim = (1, 50), ylim = (-Inf, Inf), # clim = (1, 450),
         # bottommargin = 4.0mm
     )
     vline!([median(richness)], label = :none, linestyle = :dash, c = :grey)
@@ -128,8 +129,18 @@ resSWtr = plot_lcbd_relationship(
     richness_SW, lcbd_SW, beta_SW,
     scaling_value = 1000,
     # maintitle = "Southwest subarea",
-    yticks = [:auto :auto (0.1:0.05:0.5, format.(0.1:0.05:0.5, precision=2))],
 )
+if outcome == "bart"
+    local cmax = 450
+    resNEtr[2][:clims] = (-Inf, cmax)
+    resSWtr[2][:clims] = (-Inf, cmax)
+    yticks!(resSWtr[2], 0.1:0.05:0.5)
+elseif outcome == "raw"
+    local cmax = 285
+    resNEtr[2][:clims] = (-Inf, cmax)
+    resSWtr[2][:clims] = (-Inf, cmax)
+    yticks!(resNEtr[2], 0.25:0.25:1.0)
+end
 combined_plot = plot(
     resNEtr, resSWtr, 
     layout = grid(2,1), 
@@ -166,7 +177,8 @@ coords_subarea = (left = left, right = right, bottom = bottom, top = top)
 p = plot_subareas(
     coords_subarea, distributions; 
     formatter = [f -> "$(Int(f))" :plain],
-    clim = [:auto :auto],
+    # clim = [:auto :auto],
+    title = ["LCBD" "Relationship"]
 )
 
 ## Expanding GIF
@@ -192,8 +204,9 @@ for sc in subarea_coords
         sc, distributions;
         # formatter = f -> "$(round(f, digits = 1))",
         formatter = [f -> "$(Int(round(f, digits = 0)))" :plain],
-        clim = [:auto :auto],
+        # clim = [:auto :auto],
         # leftmargin = 4.0mm,
+        title = ["LCBD" "Relationship"],
         dpi = 200
     )
     push!(subarea_plots, p)
@@ -216,18 +229,19 @@ ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
 p = plot(
-    ps..., 
+    deepcopy(ps)..., 
     dpi = 200, layout = (3,1), size = (900, 960),
     title = ["a) Regional extent" "" "b) Intermediate extent" "" "c) Continental extent" ""],
     titleloc = :left,
     bottommargin = -2.0mm,
-    yticks = permutedims(
-        [:auto, (0.5:0.5:5.0, string.(0.5:0.5:5.0)),
-         :auto, :auto,
-         :auto, (1.5:0.5:5.0, string.(1.5:0.5:5.0)),
-        ]
-    )
 )
+if outcome == "bart"
+    yticks!(p[2], 0.5:0.5:5.0)
+    yticks!(p[6], 1.5:0.5:5.0)
+elseif outcome == "raw"
+    yticks!(p[4], 0.5:0.5:2.5)
+    yticks!(p[6], 2:1:9)
+end
 
 # Export figures
 # save_figures = true
@@ -300,9 +314,5 @@ medians_p4 = plot!(deepcopy(medians_p3), medians_df.gamma, label = "Gamma divers
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     # Final plot
-    savefig(medians_p4, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png")),
-    # Step-by-step plots
-    savefig(medians_p1, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians1.png"))
-    savefig(medians_p2, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians2.png"))
-    savefig(medians_p3, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians3.png"))
+    savefig(medians_p4, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png"))
 end

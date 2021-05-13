@@ -157,8 +157,6 @@ combined_diffplot = plot(
 
 # Save figures
 if (@isdefined save_figures) && save_figures == true
-    savefig(richness_diffplot, joinpath("fig", "bart", "07_bart_comparison-richness.png"))
-    savefig(lcbd_diffplot, joinpath("fig", "bart", "07_bart_comparison-lcbd.png"))
     savefig(combined_diffplot, joinpath("fig", "bart", "07_bart_comparison-combined.png"))
 end
 
@@ -232,9 +230,5 @@ combined_resplot = plot(
 # Save figures
 if (@isdefined save_figures) && save_figures == true
     # savefig(richness_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-poisson.png"))
-    savefig(richness_qp_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-quasipoisson.png"))
-    savefig(richness_nb_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-negbinomial.png"))
-    savefig(lcbd_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-gamma.png"))
-    savefig(lcbd_br_resplot, joinpath("fig", "bart", "07_bart_residuals_lcbd-betareg.png"))
     savefig(combined_resplot, joinpath("fig", "bart", "07_bart_residuals-combined.png"))
 end
