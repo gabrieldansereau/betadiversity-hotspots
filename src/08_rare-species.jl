@@ -3,8 +3,15 @@ include("required.jl")
 
 ## Conditional arguments
 # outcome = "raw"
-outcome = "bart"
+# outcome = "bart"
 # save_figures = true
+
+# Make sure "outcome" is defined
+if !(@isdefined outcome) || !(outcome in ["raw", "bart"])
+    @error "'outcome' must be either 'raw' or 'bart'"
+else
+    @info "'outcome' currently set to '$(outcome)'"
+end
 
 ## Occupancy
 # Prep values
@@ -118,7 +125,7 @@ Ys = [Y, Y_NE, Y_SW]
 rarespecies_matrix = [get_rarespecies_p(y, t) for t in thresholds, y in Ys]
 
 # Subareas & thresholds
-scatter(rarespecies_matrix, 
+p_eusrr = scatter(rarespecies_matrix, 
         [eusrr eusrr_NE eusrr_SW],
         xlabel = "Percentage of rare species (%)",
         ylabel = "EUSRR",
@@ -130,17 +137,17 @@ scatter(rarespecies_matrix,
 # EUSRR negative whatever subarea, percentage of rare species & threshold
 # Whatever the threshold, EUSRR negative
 if (@isdefined save_figures) && save_figures == true
-    savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_thresholds.png"))
+    savefig(p_eusrr, joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_thresholds.png"))
 end
 
-plot(thresholds, rarespecies_matrix,
+p_thresholds = plot(thresholds, rarespecies_matrix,
      xlabel = "Rare species threshold",
      ylabel = "Rare species percentage",
      labels = ["Total" "NE" "SW"],
      legend = :bottomright)
 
 if (@isdefined save_figures) && save_figures == true
-    savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_thresholds.png"))
+    savefig(p_thresholds, joinpath("fig", outcome, "08_$(outcome)_rare-species_thresholds.png"))
 end
 
 ## Effect of scaling
@@ -206,9 +213,9 @@ p3 = plotSDM2(rarespecies_layer_SW, c = :viridis)
 rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, richness_SW)
 p4 = plotSDM2(rarespecies_layer_SW_total, c = :viridis)
 
-plot(p1, p2, p3, p4, dpi = 200)
+p_subareas = plot(p1, p2, p3, p4, dpi = 200)
 if (@isdefined save_figures) && save_figures == true
-    savefig(joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"))
+    savefig(p_subareas, joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"))
 end
 
 ## Ascending & descending parts
