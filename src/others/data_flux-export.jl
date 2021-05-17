@@ -24,7 +24,7 @@ lats = repeat(collect(latitudes(wc_vars[1])), outer=size(wc_vars[1].grid, 2))[in
 lons = repeat(collect(longitudes(wc_vars[1])), inner=size(wc_vars[1].grid, 1))[inds_pred]
 
 # Create dataframe
-fluxdf = DataFrame(hcat(lats, lons, vars_spe..., vars_env...))
+fluxdf = DataFrame(hcat(lats, lons, vars_spe..., vars_env...), :auto)
 # Create column names
 fluxnames = [:latitude, :longitude, :sp1, :sp2, :sp3, Symbol.("wcvars", collect(1:19))...]
 # Change column names

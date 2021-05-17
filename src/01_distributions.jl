@@ -98,9 +98,9 @@ if (@isdefined save_data) && save_data == true
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
     # Convert to dataframe
-    spe_df = DataFrame(Yobs)
+    spe_df = DataFrame(Yobs, :auto)
     rename!(spe_df, Symbol.("sp", 1:ncol(spe_df)))
-    insertcols!(spe_df, 1, site = inds_obs)
+    insertcols!(spe_df, 1, :site => inds_obs)
     # Export to CSV
     CSV.write(joinpath("data", "proc", "distributions_spe_full.csv"), spe_df, delim="\t")
 else
