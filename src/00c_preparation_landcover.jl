@@ -37,7 +37,7 @@ lc_vars = landcover(1:10, resolution = 10.0)
 lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10)
 
 # Load worldclim variables to compare
-wc_vars = map(x -> worldclim(x, resolution = 10.0)[coords], 1:19);
+wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0, coords...);
 
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)

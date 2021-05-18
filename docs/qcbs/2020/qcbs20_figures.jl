@@ -6,8 +6,8 @@ figdir = joinpath("docs", "qcbs", "2020", "fig")
 
 # Load temperature
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
-temp_full = worldclim(1)[coords]
-# temp5 = worldclim(1, resolution = 5.0)[coords]
+temp_full = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
+# temp5 = SimpleSDMPredictor(WorldClim, BioClim, 1; resolution = 5.0, coords...)
 
 # Clip to QC
 coords_qc = (left = -82.5, right = -51.0,

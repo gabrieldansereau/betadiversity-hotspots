@@ -7,7 +7,7 @@ nspecies = size(raw.Y, 2)
 nsites_raw = format(length(raw.richness), commas = true)
 nsites_sdm = format(length(sdm.richness), commas = true)
 coords_full = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
-nsites_tot = format(length(worldclim(1)[coords_full]), commas = true)
+nsites_tot = format(length(SimpleSDMPredictor(WorldClim, BioClim, 1; coords_full...)), commas = true)
 
 lcbdraw_min, lcbdraw_max = sprintf1.("%.3e", extrema(raw.lcbd))
 lcbdsdm_min, lcbdsdm_max = sprintf1.("%.3e", extrema(sdm.lcbd))

@@ -19,7 +19,7 @@ end
 ## Get & prepare data
 # Define coordinates range
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
-copy_layer = worldclim(1)[coords]
+copy_layer = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
 coords_bbox = (left = copy_layer.left, right = copy_layer.right, 
                bottom = copy_layer.bottom, top = coords.top)
 # Load data from CSV files
@@ -51,11 +51,11 @@ coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
 
 ## Get environmental data (with different training resolutions)
 # WorldClim data
-wc_vars = map(x -> worldclim(x, resolution = 10.0)[coords], [1,12]);
+wc_vars = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 10.0, coords...);
 # Landcover data
 lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10);
 # Training data with finer resolution
-wc_vars_train = map(x -> worldclim(x, resolution = 5.0)[coords_obs], [1,12]);
+wc_vars_train = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 5.0, coords_obs...);
 lc_vars_train = map(x -> landcover(x, resolution = 5.0)[coords_obs], 1:10);
 
 # Combine environmental data
@@ -98,9 +98,9 @@ if (@isdefined save_data) && save_data == true
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
     # Convert to dataframe
-    spe_df = DataFrame(Yobs)
+    spe_df = DataFrame(Yobs, :auto)
     rename!(spe_df, Symbol.("sp", 1:ncol(spe_df)))
-    insertcols!(spe_df, 1, site = inds_obs)
+    insertcols!(spe_df, 1, :site => inds_obs)
     # Export to CSV
     CSV.write(joinpath("data", "proc", "distributions_spe_full.csv"), spe_df, delim="\t")
 else

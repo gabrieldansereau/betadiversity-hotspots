@@ -66,8 +66,8 @@ function plotSDM2(layer::SimpleSDMLayer; kw...)
     # kw: optional plotting arguments
 
     # Create background layer
-    baselayer = similar(worldclim(1)[(left = layer.left, right = layer.right,
-                              top = layer.top, bottom = layer.bottom)])
+    coords = (left = layer.left, right = layer.right, top = layer.top, bottom = layer.bottom)
+    baselayer = similar(SimpleSDMPredictor(WorldClim, BioClim, 1; coords...))
 
     # Create empty plot
     sdm_plot = heatmap(baselayer, c = :lightgrey, lab="", msw=0.0, ms=0.0, frame=:box)
