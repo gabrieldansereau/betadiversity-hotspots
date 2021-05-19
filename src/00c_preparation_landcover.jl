@@ -106,6 +106,27 @@ spa_mat = [lats lons]
 # Create spa dataframe
 spa_df = DataFrame(site = eachindex(lats), lat = lats, lon = lons)
 
+## Check difference with previously saved data
+run(`cp ./data/proc/distributions_env_full.csv ./data/proc/distributions_env_full_backup.csv`)
+run(`cp ./data/proc/distributions_spa_full.csv ./data/proc/distributions_spa_full_backup.csv`)
+run(`cp ./data/proc/distributions_spa_qc.csv ./data/proc/distributions_spa_qc_backup.csv`)
+CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df, delim="\t")
+CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), env_df, delim="\t")
+# Git diff says file are different
+# Sizes are different too
+# Looking at the diff, it seems to be a float approximation difference, which should be fine
+# Let's make sure it's just that
+spa_df_backup = CSV.read(joinpath("data", "proc", "distributions_spa_full_backup.csv"), DataFrame)
+spa_df_backup
+spa_df
+isequal(spa_df_backup, spa_df) # false
+isapprox(spa_df_backup, spa_df) # true
+isequal(spa_df_backup.site, spa_df.site) # true
+isapprox(spa_df_backup.lat, spa_df.lat) # true
+isapprox(spa_df_backup.lon, spa_df.lon) # true
+# Yep, should just be approximation error, so its fine
+
+
 # Export dataframes
 # save_prepdata = true
 if (@isdefined save_prepdata) && save_prepdata == true
