@@ -207,3 +207,10 @@ dropmissing(compdf, :geo_fix)
 plot(lc2_geo_fix, c = :viridis)
 plot(lc2_csv, c = :viridis) # one cell misplacement
 
+## Attempt to load full 100m resolution layer
+megafilepath = "./assets/landcover/landcover_copernicus_global_100m_v2.0.2_crops.tif"
+megafilepath = "./assets/landcover/landcover_copernicus_global_100m_v2.0.2_urban.tif"
+isfile(megafilepath)
+test = geotiff(SimpleSDMPredictor, joinpath("assets", "landcover", "landcover_copernicus_global_100m_v2.0.2_crops.tif"))
+ArchGDAL.read(megafilepath)
+ArchGDAL.read("./assets/landcover/lc_bare_10m.tif")
