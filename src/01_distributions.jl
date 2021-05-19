@@ -54,6 +54,9 @@ coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
 wc_vars = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 10.0, coords...);
 # Landcover data
 lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10);
+# Temporary fix for landcover layers dimensions
+lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+
 # Training data with finer resolution
 wc_vars_train = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 5.0, coords_obs...);
 lc_vars_train = map(x -> landcover(x, resolution = 5.0)[coords_obs], 1:10);

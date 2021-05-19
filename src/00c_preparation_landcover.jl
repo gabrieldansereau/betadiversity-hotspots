@@ -39,6 +39,9 @@ lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10)
 # Load worldclim variables to compare
 wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0, coords...);
 
+# Temporary fix for landcover layers dimensions
+lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)
 wc_plot = plotSDM2(wc_vars[1], colorbar_title = "Annual Mean Temperature (°C)")
