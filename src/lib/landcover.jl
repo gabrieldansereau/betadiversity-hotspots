@@ -1,7 +1,21 @@
 ## Landcover variables loading functions
 
+struct Copernicus end
+
+# function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layer::Integer=1; kwargs...)
+#     file = _get_raster(EarthEnv, LandCover, layer, full)
+#     return geotiff(SimpleSDMPredictor, file; kwargs...)
+# end
+
+# function SimpleSDMPredictor(::Type{EarthEnv}, ::Type{LandCover}, layers::AbstractArray; kwargs...)
+#     @assert eltype(layers) <: Integer
+#     return [SimpleSDMPredictor(EarthEnv, LandCover, l; kwargs...) for l in layers]
+# end
+
+import SimpleSDMLayers: SimpleSDMPredictor
+
 # Landcover variables loading
-function landcover(layers::Vector{Int64}; resolution::AbstractFloat=10.0, path::AbstractString=joinpath("assets", "landcover/"))
+function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layers::Vector{Int64}; resolution::AbstractFloat=10.0, path::AbstractString=joinpath("assets", "landcover/"))
     ## Get file paths
     # List files in path
     lc_files = readdir("$(path)")
@@ -40,15 +54,15 @@ function landcover(layers::Vector{Int64}; resolution::AbstractFloat=10.0, path::
 end
 
 """
-    landcover(layer::Int64; x...)
+    SimpleSDMPredictor(Copernicus, LandCover, layer::Int64; x...)
 
 Return a single landcover layer.
 """
-landcover(layer::Int64; x...) = landcover([layer]; x...)[1]
+SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layer::Int64; x...) = SimpleSDMPredictor(Copernicus, LandCover, [layer]; x...)[1]
 
 """
-    landcover(layers::UnitRange{Int64}; x...)
+    SimpleSDMPredictor(Copernicus, LandCover, layers::UnitRange{Int64}; x...)
 
 Return a range of landcover layers.
 """
-landcover(layers::UnitRange{Int64}; x...) = landcover(collect(layers); x...)
+SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layers::UnitRange{Int64}; x...) = SimpleSDMPredictor(Copernicus, LandCover, collect(layers); x...)

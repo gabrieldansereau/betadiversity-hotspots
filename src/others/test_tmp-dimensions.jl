@@ -6,7 +6,7 @@ include("../required.jl")
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 
 # Test loading variables
-lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10)
+lc_vars = map(x -> SimpleSDMPredictor(Copernicus, LandCover, x; resolution = 10.0)[coords], 1:10)
 
 # Load worldclim variables to compare
 wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0, coords...);
