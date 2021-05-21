@@ -18,7 +18,7 @@ landcover_variables=(bare crops grass moss shrub snow tree urban water-permanent
 for i in "${landcover_variables[@]}"
 do
     # Set resolution to 10 arc-minutes
-    gdalwarp -tr 0.166667 0.166667 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi landcover_copernicus_global_100m_v2.0.2_"$i".tif lc_"$i"_10m.tif &
+    gdalwarp -tr 0.1666666666666666574 0.1666666666666666574 -te -180.0 -60.0 180.0 80.0 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi landcover_copernicus_global_100m_v2.0.2_"$i".tif lc_"$i"_10m.tif &
 done
 wait
 echo "10 arc-minutes - All done"
