@@ -217,3 +217,48 @@ dataset = ArchGDAL.read(megafilepath)
 ArchGDAL.getgeotransform(dataset)
 ArchGDAL.read("./assets/landcover/lc_bare_10m.tif")
 ArchGDAL.getgeotransform(ArchGDAL.read("./assets/landcover/lc_bare_10m.tif"))
+
+wc1_path = "/home/gdansereau/.data/SimpleSDMLayers.jl/assets/WorldClim/BioClim/10/wc2.1_10m_bio_1.tif"
+geotiff(SimpleSDMPredictor, wc1_path)
+wc1_dataset = ArchGDAL.read(wc1_path)
+ArchGDAL.getgeotransform(wc1_dataset)
+
+## In bash
+# -tap option
+gdalwarp -tr 0.166667 0.166667 -tap -r average --config GDAL_CACHEMAX 500 -wm 500 -multi assets/landcover/lc_moss_10m.tif -overwrite assets/landcover/landcover_test.tif
+
+# -te option
+gdalwarp -tr 0.166667 0.166667 -te -180.0 -60.0 180.0 80.0 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi assets/landcover/lc_moss_10m.tif -overwrite assets/landcover/landcover_test.tif
+
+# -te option and same stride as WorldClim
+gdalwarp -tr 0.1666666666666666574 0.1666666666666666574 -te -180.0 -60.0 180.0 80.0 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi assets/landcover/lc_moss_10m.tif -overwrite assets/landcover/landcover_test.tif
+
+# -te option and same stride as WorldClim on full layer
+gdalwarp -tr 0.1666666666666666574 0.1666666666666666574 -te -180.0 -60.0 180.0 80.0 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi assets/landcover/landcover_copernicus_global_100m_v2.0.2_moss.tif -overwrite assets/landcover/landcover_fulltest.tif
+
+# Back in Julia
+test_path = "./assets/landcover/landcover_test.tif"
+test_dataset = ArchGDAL.read(test_path)
+ArchGDAL.getgeotransform(test_dataset)
+
+moss_path = "./assets/landcover/lc_moss_10m.tif"
+moss_dataset = ArchGDAL.read(moss_path)
+ArchGDAL.getgeotransform(moss_dataset)
+
+fulltest_path = "./assets/landcover/landcover_fulltest.tif"
+fulltest_dataset = ArchGDAL.read(test_path)
+ArchGDAL.getgeotransform(fulltest_dataset)
+
+geotiff(SimpleSDMPredictor, test_path)
+geotiff(SimpleSDMPredictor, fulltest_path)
+test_layer = convert(Float32, geotiff(SimpleSDMPredictor, test_path; coords...))
+fulltest_layer = convert(Float32, geotiff(SimpleSDMPredictor, fulltest_path; coords...))
+lc_vars[4]
+
+plot(test_layer)
+plot(lc_vars[4])
+plot(fulltest_layer)
+
+isequal(lc_vars[4], fulltest_layer)
+isequal(lc_vars[4].grid, fulltest_layer.grid)
+testdf = DataFrame([lc_vars[4], fulltest_layer]) # not exactly same coordinates
