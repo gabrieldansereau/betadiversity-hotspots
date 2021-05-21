@@ -262,3 +262,33 @@ plot(fulltest_layer)
 isequal(lc_vars[4], fulltest_layer)
 isequal(lc_vars[4].grid, fulltest_layer.grid)
 testdf = DataFrame([lc_vars[4], fulltest_layer]) # not exactly same coordinates
+
+isapprox(lc_vars[4].bottom, fulltest_layer.bottom)
+
+moss_new = similar(lc_vars[4])
+moss_new.grid = copy(fulltest_layer.grid)
+moss_new = convert(SimpleSDMPredictor, moss_new)
+
+testdf = DataFrame([lc_vars[4], moss_new])
+isequal(testdf.x1, testdf.x2)
+isapprox(testdf.x1, testdf.x2)
+isequal(collect(lc_vars[4]), collect(moss_new))
+isapprox(collect(lc_vars[4]), collect(moss_new))
+
+writedlm("test.csv", collect(lc_vars[4]))
+writedlm("test.csv", collect(moss_new))
+
+allowmissing!(testdf)
+for col in [:x1, :x2]
+    replace!(testdf[!, col], nothing => missing)
+end
+testdf
+filter(x -> ismissing(x.x1) && !ismissing(x.x2), testdf)
+filter(x -> !ismissing(x.x1) && ismissing(x.x2), testdf)
+isequal(nrow(dropmissing(testdf)), length(lc_vars[4]))
+
+dropmissing!(testdf)
+testdiff = filter(x -> x.x1 != x.x2, testdf) # 800 sites with difference
+insertcols!(testdiff, :diff => testdiff.x2 .- testdiff.x1)
+unique(testdiff.diff)
+sort(countmap(testdiff.diff))
