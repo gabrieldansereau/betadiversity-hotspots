@@ -6,7 +6,7 @@ include("../required.jl")
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 
 # Test loading variables
-lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:10)
+lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:7)
 
 # Temporary fix for landcover layers dimensions
 lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
@@ -236,6 +236,9 @@ gdalwarp -tr 0.1666666666666666574 0.1666666666666666574 -te -180.0 -60.0 180.0 
 # -te option and same stride as WorldClim on full layer
 gdalwarp -tr 0.1666666666666666574 0.1666666666666666574 -te -180.0 -60.0 180.0 80.0 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi assets/landcover/landcover_copernicus_global_100m_v2.0.2_moss.tif -overwrite assets/landcover/landcover_fulltest.tif
 
+# full spatial extent
+gdalwarp -tr 0.1666666666666666574 0.1666666666666666574 -te -180.0 -90.0 180.0 90.0 -r average --config GDAL_CACHEMAX 500 -wm 500 -multi assets/landcover/landcover_copernicus_global_100m_v2.0.2_moss.tif -overwrite assets/landcover/landcover_fulltest.tif
+
 # Back in Julia
 test_path = "./assets/landcover/landcover_test.tif"
 test_dataset = ArchGDAL.read(test_path)
@@ -246,36 +249,44 @@ moss_dataset = ArchGDAL.read(moss_path)
 ArchGDAL.getgeotransform(moss_dataset)
 
 fulltest_path = "./assets/landcover/landcover_fulltest.tif"
-fulltest_dataset = ArchGDAL.read(test_path)
+fulltest_dataset = ArchGDAL.read(fulltest_path)
 ArchGDAL.getgeotransform(fulltest_dataset)
 
 geotiff(SimpleSDMPredictor, test_path)
 geotiff(SimpleSDMPredictor, fulltest_path)
 test_layer = convert(Float32, geotiff(SimpleSDMPredictor, test_path; coords...))
 fulltest_layer = convert(Float32, geotiff(SimpleSDMPredictor, fulltest_path; coords...))
-lc_vars[4]
+wctest_layer = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
+moss_indx = readdir("assets/landcover/") |> x -> 
+    filter(f -> occursin.("10m.tif", f), x) |> x ->
+    findfirst(occursin.("moss", x))
+lc_moss = lc_vars[moss_indx]
+
+isequal(latitudes(fulltest_layer), latitudes(wctest_layer))
+isequal(longitudes(fulltest_layer), longitudes(wctest_layer))
+SimpleSDMLayers._layers_are_compatible(fulltest_layer, wctest_layer)
 
 plot(test_layer)
-plot(lc_vars[4])
+plot(lc_moss)
 plot(fulltest_layer)
 
-isequal(lc_vars[4], fulltest_layer)
-isequal(lc_vars[4].grid, fulltest_layer.grid)
-testdf = DataFrame([lc_vars[4], fulltest_layer]) # not exactly same coordinates
+isequal(lc_moss, fulltest_layer)
+isequal(lc_moss.grid, fulltest_layer.grid)
+testdf = DataFrame([lc_moss, fulltest_layer]) # not exactly same coordinates
 
-isapprox(lc_vars[4].bottom, fulltest_layer.bottom)
+isapprox(lc_moss.bottom, fulltest_layer.bottom)
 
-moss_new = similar(lc_vars[4])
+moss_new = similar(lc_moss)
 moss_new.grid = copy(fulltest_layer.grid)
 moss_new = convert(SimpleSDMPredictor, moss_new)
 
-testdf = DataFrame([lc_vars[4], moss_new])
+testdf = DataFrame([lc_moss, moss_new])
 isequal(testdf.x1, testdf.x2)
 isapprox(testdf.x1, testdf.x2)
-isequal(collect(lc_vars[4]), collect(moss_new))
-isapprox(collect(lc_vars[4]), collect(moss_new))
+isequal(collect(lc_moss), collect(moss_new))
+isapprox(collect(lc_moss), collect(moss_new))
 
-writedlm("test.csv", collect(lc_vars[4]))
+writedlm("test.csv", collect(lc_moss))
 writedlm("test.csv", collect(moss_new))
 
 allowmissing!(testdf)
@@ -285,7 +296,7 @@ end
 testdf
 filter(x -> ismissing(x.x1) && !ismissing(x.x2), testdf)
 filter(x -> !ismissing(x.x1) && ismissing(x.x2), testdf)
-isequal(nrow(dropmissing(testdf)), length(lc_vars[4]))
+isequal(nrow(dropmissing(testdf)), length(lc_moss))
 
 dropmissing!(testdf)
 testdiff = filter(x -> x.x1 != x.x2, testdf) # 800 sites with difference
