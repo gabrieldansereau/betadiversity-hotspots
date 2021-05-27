@@ -87,3 +87,17 @@ l3 = geotiff(SimpleSDMPredictor, p2; coords...)
 SimpleSDMLayers._layers_are_compatible(l3, l1) # not compatible
 SimpleSDMLayers._layers_are_compatible(l3, wc1) # true, compatible with WorldClim!!
 isequal(l3.grid, l1.grid) # grids are equal!!
+
+# Export values
+lc_files = readdir(path)
+filter!(x -> occursin.("$(Int(resolution))m.tif", x), lc_files)
+ps = joinpath.(path, lc_files)
+lc_vars = geotiff.(SimpleSDMPredictor, ps)
+lc_vars = geotiff.(SimpleSDMPredictor, ps; coords...)
+lc_vars = convert.(Float32, lc_vars)
+df3 = valuesdf(lc_vars)
+# CSV.write(joinpath(lc_path, "landcover_values_df1.csv"), df3)
+# CSV.write(joinpath(lc_path, "landcover_values_df3.csv"), df3)
+df3 = CSV.read(joinpath(lc_path, "landcover_values_df3.csv"), DataFrame)
+isequal(df1, df3) # true
+# confirmed by comparison
