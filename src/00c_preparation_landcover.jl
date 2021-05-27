@@ -34,13 +34,10 @@ coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 # Test loading variables
 lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 5.0)
 lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 10.0)
-lc_vars = map(x -> SimpleSDMPredictor(Copernicus, LandCover; x, resolution = 10.0)[coords], 1:10)
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 10.0, coords...)
 
 # Load worldclim variables to compare
 wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0, coords...);
-
-# Temporary fix for landcover layers dimensions
-lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
 
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)

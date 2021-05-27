@@ -53,13 +53,11 @@ coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
 # WorldClim data
 wc_vars = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 10.0, coords...);
 # Landcover data
-lc_vars = map(x -> SimpleSDMPredictor(Copernicus, LandCover, x; resolution = 10.0)[coords], 1:10);
-# Temporary fix for landcover layers dimensions
-lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 10.0, coords...)
 
 # Training data with finer resolution
 wc_vars_train = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 5.0, coords_obs...);
-lc_vars_train = map(x -> SimpleSDMPredictor(Copernicus, LandCover, x; resolution = 5.0)[coords_obs], 1:10);
+lc_vars_train = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 5.0, coords_obs...)
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
