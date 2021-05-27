@@ -46,11 +46,15 @@ function nothingtomissing!(df::DataFrame)
 end
 function valuesdf(layers::Vector{T}) where {T <: SimpleSDMLayer}
     df = DataFrame(layers)
-    rename!(df, [:longitude, :latitude, Symbol.("lc", 1:10)...])
+    select!(df, Not([:longitude, :latitude]))
+    rename!(df, Symbol.("lc", 1:10))
     nothingtomissing!(df)
     return df
 end
 
+lc_vars = map(x -> SimpleSDMPredictor(Copernicus, LandCover, x)[coords], 1:10)
+lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+
 # Step 1: SimpleSDMPredictor, as before
 df1 = valuesdf(lc_vars)
-CSV.write(joinpath(lc_path, "landcover_values_1.csv"), df1)
+CSV.write(joinpath(lc_path, "landcover_values_df1.csv"), df1)
