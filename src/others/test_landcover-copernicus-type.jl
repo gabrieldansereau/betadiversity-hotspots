@@ -42,6 +42,8 @@ end
 
 lc_vars = map(x -> SimpleSDMPredictor(Copernicus, LandCover, x)[coords], 1:10)
 lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+lc1 = copy(lc_vars)[1]
+wc1 = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
 
 # Step 1: SimpleSDMPredictor, as before
 df1 = valuesdf(lc_vars)
@@ -57,3 +59,31 @@ df2 = valuesdf(lc_vars)
 df2 = CSV.read(joinpath(lc_path, "landcover_values_df2.csv"), DataFrame)
 isequal(df1, df2) # true
 # confirmed by comparison
+
+# Step 3. load with geotiff instead of custom ArchGDAL call
+layer = 1
+resolution = 10.0
+path = joinpath("assets", "landcover")
+
+# List files in path
+lc_files = readdir(path)
+# Filter for selected resolution
+filter!(x -> occursin.("$(Int(resolution))m.tif", x), lc_files)
+# Create path for selected layer only
+p = joinpath.(path, lc_files)[layer]
+# Use geotiff instead
+geotiff(SimpleSDMPredictor, p)
+ArchGDAL.getgeotransform(d)
+wctransform = ArchGDAL.getgeotransform(ArchGDAL.read(joinpath(ENV["SDMLAYERS_PATH"], "WorldClim", "BioClim", "10", "wc2.1_10m_bio_1.tif")))
+
+gdalwarp -te -180.0 -60.0 180.0 80.0 assets/landcover/lc_bare_10m.tif assets/landcover/lc_bare_10m2.tif
+
+p2 = replace(p, ".tif" => "2.tif")
+d2 = ArchGDAL.read(p2)
+ArchGDAL.getgeotransform(d2)
+landcover_layers2 = geotiff(SimpleSDMPredictor, p2)
+
+l3 = geotiff(SimpleSDMPredictor, p2; coords...)
+SimpleSDMLayers._layers_are_compatible(l3, l1) # not compatible
+SimpleSDMLayers._layers_are_compatible(l3, wc1) # true, compatible with WorldClim!!
+isequal(l3.grid, l1.grid) # grids are equal!!
