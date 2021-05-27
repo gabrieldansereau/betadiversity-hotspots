@@ -40,8 +40,10 @@ function valuesdf(layers::Vector{T}) where {T <: SimpleSDMLayer}
     return df
 end
 
-lc_vars = map(x -> SimpleSDMPredictor(Copernicus, LandCover, x)[coords], 1:10)
-lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+# lc_vars = map(x -> SimpleSDMPredictor(Copernicus, LandCover, x)[coords], 1:10)
+# lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10)
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; coords...)
 lc1 = copy(lc_vars)[1]
 wc1 = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
 
@@ -100,4 +102,13 @@ df3 = valuesdf(lc_vars)
 # CSV.write(joinpath(lc_path, "landcover_values_df3.csv"), df3)
 df3 = CSV.read(joinpath(lc_path, "landcover_values_df3.csv"), DataFrame)
 isequal(df1, df3) # true
+# confirmed by comparison
+
+# Step 4: Update function
+SimpleSDMLayers._layers_are_compatible(lc1, wc1)
+df4 = valuesdf(lc_vars)
+# CSV.write(joinpath(lc_path, "landcover_values_df1.csv"), df4)
+# CSV.write(joinpath(lc_path, "landcover_values_df4.csv"), df4)
+df4 = CSV.read(joinpath(lc_path, "landcover_values_df4.csv"), DataFrame)
+isequal(df1, df4) # true
 # confirmed by comparison
