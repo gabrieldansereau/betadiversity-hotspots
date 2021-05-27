@@ -11,10 +11,10 @@
 
 ## Go to landcover directory
 cd assets/landcover/
+landcover_variables=(bare crops grass moss shrub snow tree urban water-permanent water-seasonal)
 
 ## Coarsen resolution
 # BEWARE, can be very long and will take 10 cores, took 30 min and ~ 16GB of RAM in my case
-landcover_variables=(bare crops grass moss shrub snow tree urban water-permanent water-seasonal)
 for i in "${landcover_variables[@]}"
 do
     # Set resolution to 10 arc-minutes
@@ -30,3 +30,14 @@ do
 done
 wait
 echo "5 arc-minutes - All done"
+
+## Fix layer extents
+for i in "${landcover_variables[@]}"
+do
+    # Rename layers to allow overwrite
+    mv lc_"$i"_10m.tif lc_"$i"_10m_previous.tif
+    # Set layer extent to exact values
+    gdalwarp -te -180.0 -60.0 180.0 80.0 lc_"$i"_10m_previous.tif lc_"$i"_10m.tif
+    # Remove previous layers
+    rm lc_"$i"_10m_previous.tif
+done
