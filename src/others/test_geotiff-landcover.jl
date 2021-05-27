@@ -6,13 +6,10 @@ include("../required.jl")
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 
 # Test loading variables
-lc_vars = map(x -> landcover(x, resolution = 10.0)[coords], 1:7)
-
-# Temporary fix for landcover layers dimensions
-lc_vars = [l[top = coords.top - stride(l, 2)] for l in lc_vars]
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 10.0, coords...)
 
 # Load worldclim variables to compare
-wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0, coords...);
+wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0, coords...)
 
 ## Load with geotiff instead
 
