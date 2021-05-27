@@ -5,3 +5,4 @@ assets/wc*
 .Rproj.user
 .vscode
 assets/landcover/backup/*
+assets/landcover/*test.tif
