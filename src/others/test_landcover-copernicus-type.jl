@@ -112,3 +112,20 @@ df4 = valuesdf(lc_vars)
 df4 = CSV.read(joinpath(lc_path, "landcover_values_df4.csv"), DataFrame)
 isequal(df1, df4) # true
 # confirmed by comparison
+
+# Step 5: stack
+stack_path = joinpath("assets", "landcover", "landcover.tif")
+geotiff(stack_path, lc_vars)
+lc_vars2 = [geotiff(SimpleSDMPredictor, stack_path, i) for i in 1:10]
+lc_vars2 = replace.(lc_vars2, NaN => nothing)
+isequal(lc_vars, lc_vars2)
+isequal(lc_vars[1], lc_vars2[1])
+isequal(lc_vars[1].grid, lc_vars2[1].grid)
+isequal(size(lc_vars[1]), size(lc_vars2[1].grid)) # not same size...
+# so dimensions problem with geotiff writing and/or reading call too...
+
+geotiff("test.tif", lc_vars[1])
+test1 = geotiff(SimpleSDMPredictor, "test.tif")
+isequal(size(lc_vars[1]), test1) # not equal
+dtest1 = ArchGDAL.read("test.tif") # dimensions are good in tif file
+ArchGDAL.getgeotransform(dtest1) # possibly are problem with left coordinate?
