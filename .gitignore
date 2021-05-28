@@ -4,3 +4,6 @@ assets/bioclim*
 assets/wc*
 .Rproj.user
 .vscode
+assets/landcover/backup/*
+assets/landcover/*test.tif
+assets/landcover/landcover_values_*.csv
