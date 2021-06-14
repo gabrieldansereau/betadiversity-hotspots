@@ -39,9 +39,9 @@ version = "0.4.1"
 
 [[CSV]]
 deps = ["Dates", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "Tables", "Unicode"]
-git-tree-sha1 = "6d4242ef4cb1539e7ede8e01a47a32365e0a34cd"
+git-tree-sha1 = "b83aa3f513be680454437a0eee21001607e5d983"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.8.4"
+version = "0.8.5"
 
 [[Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -398,10 +398,10 @@ uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
 [[JLD2]]
-deps = ["DataStructures", "FileIO", "MacroTools", "Mmap", "Pkg", "Printf", "Reexport", "Requires", "TranscodingStreams", "UUIDs"]
-git-tree-sha1 = "c50e77bb661b0e5aea126404246b07c7937691c5"
+deps = ["DataStructures", "FileIO", "MacroTools", "Mmap", "Pkg", "Printf", "Reexport", "TranscodingStreams", "UUIDs"]
+git-tree-sha1 = "3fd9b8beee02a27e3ad52e194c414ddc5f4c046b"
 uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-version = "0.4.5"
+version = "0.4.9"
 
 [[JLLWrappers]]
 deps = ["Preferences"]
@@ -446,9 +446,9 @@ version = "1.2.1"
 
 [[Latexify]]
 deps = ["Formatting", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "Printf", "Requires"]
-git-tree-sha1 = "f77a16cb3804f4a74f57e5272a6a4a9a628577cb"
+git-tree-sha1 = "a4b12a1bd2ebade87891ab7e36fdbce582301a92"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
-version = "0.15.5"
+version = "0.15.6"
 
 [[LatinHypercubeSampling]]
 deps = ["Random", "StableRNGs", "StatsBase", "Test"]
@@ -571,9 +571,9 @@ version = "0.16.4"
 
 [[MLJBase]]
 deps = ["CategoricalArrays", "ComputationalResources", "Dates", "DelimitedFiles", "Distributed", "Distributions", "InteractiveUtils", "InvertedIndices", "LinearAlgebra", "LossFunctions", "MLJModelInterface", "MLJScientificTypes", "Missings", "OrderedCollections", "Parameters", "PrettyTables", "ProgressMeter", "Random", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "f12e4054cdf589b1aa7b2e034b1add51d8dc16d9"
+git-tree-sha1 = "c841d75dcd7dad3e3faee3a49efaf533a2c8d1df"
 uuid = "a7f614a8-145f-11e9-1d2a-a57a1082229d"
-version = "0.18.8"
+version = "0.18.11"
 
 [[MLJIteration]]
 deps = ["IterationControl", "MLJBase", "Random"]
@@ -613,9 +613,9 @@ version = "1.1.2"
 
 [[MLJTuning]]
 deps = ["ComputationalResources", "Distributed", "Distributions", "LatinHypercubeSampling", "MLJBase", "MLJModelInterface", "ProgressMeter", "Random", "RecipesBase"]
-git-tree-sha1 = "53f7e8e362a702a3319a1e75fb8e4ddc8f06596a"
+git-tree-sha1 = "516187c8578e5a33897f0c8963ccc548e38daa8b"
 uuid = "03970b2e-30c4-11ea-3135-d1576263f10f"
-version = "0.6.7"
+version = "0.6.8"
 
 [[MacroTools]]
 deps = ["Markdown", "Random"]
@@ -769,9 +769,9 @@ version = "1.0.10"
 
 [[Plots]]
 deps = ["Base64", "Contour", "Dates", "FFMPEG", "FixedPointNumbers", "GR", "GeometryBasics", "JSON", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "PlotThemes", "PlotUtils", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs"]
-git-tree-sha1 = "2628e5859819173cef995470af83db42bf411ef8"
+git-tree-sha1 = "e995fa1821b6daff8b107a8eafbec234ae2263d0"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-version = "1.14.0"
+version = "1.16.5"
 
 [[PooledArrays]]
 deps = ["DataAPI", "Future"]
@@ -797,9 +797,9 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [[ProgressMeter]]
 deps = ["Distributed", "Printf"]
-git-tree-sha1 = "1be8800271c86f572d334fef6e3b8364eaece7d9"
+git-tree-sha1 = "afadeba63d90ff223a6a48d2009434ecee2ec9e8"
 uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
-version = "1.6.2"
+version = "1.7.1"
 
 [[Qt5Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "xkbcommon_jll"]
