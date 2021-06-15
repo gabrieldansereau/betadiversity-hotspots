@@ -13,31 +13,42 @@ source(file.path("src", "required.R"))
 (spa_stack <- stack("./data/proc/spa_stack.tif"))
 (env_stack <- stack("./data/proc/env_stack.tif"))
 
-(spa_full <- as_tibble(as.data.frame(spa_stack, xy = TRUE)))
+names(spa_stack) <- c("site", "lon", "lat")
+names(env_stack) <- c(paste0("wc", 1:19), paste0("lc", 1:10))
+
+(spa_full <- as_tibble(as.data.frame(spa_stack)))
 (env_full <- as_tibble(as.data.frame(env_stack)))
 
-spa_full %>% 
-    arrange(spa_stack.1)
+(vars_full2 <- bind_cols(spa_full, env_full))
 
-tail(spa_full$x == spa_full$spa_stack.2)
-sum(spa_full$x == spa_full$spa_stack.2)/nrow(spa_full)
-spa_full %>% 
-    select(x, spa_stack.2) %>% 
-    tail() %>% 
-    as.data.frame()
-
-tail(spa_full$x)[6] == tail(spa_full$spa_stack.2)[6]
-(test1 <- print(tail(spa_full$x)[6], digits=20))
-(test2 <- print(tail(spa_full$spa_stack.2)[6], digits=20))
-
+vars_full2 <- vars_full2 %>% 
+    arrange(site)
 
 # Load data
 source(here("src", "02a_training_data-preparation.R"))
-(test3 <- print(max(spa_full$lon), digits = 20))
 
-print(test1, digits = 20)
-print(test2, digits = 20)
-print(test3, digits = 20)
+vars_full
+vars_full2
+vars_full == vars_full2
+all(vars_full == vars_full2, na.rm = TRUE)
+all(select(vars_full, site:lat) == select(vars_full2, site:lat))
+drop_na(vars_full) == drop_na(vars_full2)
+(idcols <- map_lgl(1:ncol(vars_full), ~ all(vars_full[,.x] == vars_full2[,.x], na.rm = TRUE)))
+vars_full[,-which(idcols)]
+test <- bind_cols(select(vars_full, wc1), select(vars_full2, wc1)) %>% 
+    drop_na()
+names(test) <- c("old", "new")
+options(pillar.sigfig = 10)
+test %>% 
+    mutate(eq = old - new) %>% 
+    summary()
+
+all.equal(test$old, test$new, tol=1e-7)
+all.equal(vars_full, vars_full2, tol=1e-7, na.rm = TRUE)
+all.equal(vars_full, vars_full2, tol=1e-7, na.rm = TRUE)
+(idcols <- sapply(1:ncol(vars_full), function(x) all.equal(vars_full[,x], vars_full2[,x], tol=1e-7)))
+all(sapply(1:ncol(vars_full), function(x) all.equal(vars_full[,x], vars_full2[,x], tol=1e-7)))
+# All approximately equal
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
