@@ -50,8 +50,8 @@ function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layer::Intege
     layer = geotiff(SimpleSDMPredictor, p; kwargs...)
     # Convert from UInt8 to Float32
     layer = convert(Float32, layer)
-
-    return layer
+    
+    return convert(SimpleSDMPredictor, layer)
 end
 
 function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layers::AbstractArray; kwargs...)
