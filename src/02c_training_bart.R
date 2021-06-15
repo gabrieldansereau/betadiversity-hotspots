@@ -9,8 +9,35 @@ source(file.path("src", "required.R"))
 
 ## 1. Load data ####
 
+# Raster data
+(spa_stack <- stack("./data/proc/spa_stack.tif"))
+(env_stack <- stack("./data/proc/env_stack.tif"))
+
+(spa_full <- as_tibble(as.data.frame(spa_stack, xy = TRUE)))
+(env_full <- as_tibble(as.data.frame(env_stack)))
+
+spa_full %>% 
+    arrange(spa_stack.1)
+
+tail(spa_full$x == spa_full$spa_stack.2)
+sum(spa_full$x == spa_full$spa_stack.2)/nrow(spa_full)
+spa_full %>% 
+    select(x, spa_stack.2) %>% 
+    tail() %>% 
+    as.data.frame()
+
+tail(spa_full$x)[6] == tail(spa_full$spa_stack.2)[6]
+(test1 <- print(tail(spa_full$x)[6], digits=20))
+(test2 <- print(tail(spa_full$spa_stack.2)[6], digits=20))
+
+
 # Load data
 source(here("src", "02a_training_data-preparation.R"))
+(test3 <- print(max(spa_full$lon), digits = 20))
+
+print(test1, digits = 20)
+print(test2, digits = 20)
+print(test3, digits = 20)
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
