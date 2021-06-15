@@ -72,7 +72,7 @@ function calculate_richness(Y, layer)
     # Reshape to grid format
     sums = reshape(sums, size(layer)) |> Array
     ## Create SimpleSDMLayer
-    richness = SimpleSDMResponse(sums, layer.left, layer.right, layer.bottom, layer.top)
+    richness = SimpleSDMResponse(sums, layer)
 end
 
 function calculate_gamma(Y)
@@ -110,8 +110,7 @@ function calculate_lcbd(Y, layer; transform = true, relative = true)
     # Fill-in grid
     LCBDgrid[inds_obs] = LCBDvals
     # Create SimpleSDMLayer with LCBD values
-    LCBDlayer = SimpleSDMResponse(LCBDgrid, layer.left, layer.right,
-                                    layer.bottom, layer.top)
+    LCBDlayer = SimpleSDMResponse(LCBDgrid, layer)
     return LCBDlayer
 end
 

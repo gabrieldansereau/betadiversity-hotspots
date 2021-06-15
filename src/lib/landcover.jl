@@ -42,7 +42,7 @@ function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layer::Intege
     # List files in path
     lc_files = readdir(path)
     # Filter for selected resolution
-    filter!(x -> occursin.("$(Int(resolution))m.tif", x), lc_files)
+    filter!(contains("$(Int(resolution))m.tif"), lc_files)
     # Create path for selected layer only
     p = joinpath.(path, lc_files)[layer]
     

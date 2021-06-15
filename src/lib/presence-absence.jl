@@ -7,8 +7,6 @@ function presence_absence(species::AbstractDataFrame, copy_layer::SimpleSDMLayer
     # full_range: return species full range, even outside range of interest
     # binary: convert to binary presence-absence values per site
 
-    # Extract coordinates
-    coords = (left = copy_layer.left, right = copy_layer.right, bottom = copy_layer.bottom, top = copy_layer.top)
     # Create empty grid for presence-absence data (with NaN)
     distribution_grid = copy(copy_layer.grid)
     replace!(x -> !isnothing(x) ? 0.0 : NaN, distribution_grid)

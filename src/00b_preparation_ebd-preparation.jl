@@ -15,10 +15,10 @@ include("required.jl")
 # Select subset with specific columns
 newdf = select(df, [:species, :commonName, :year, :latitude, :longitude, :groupIdentifier])
 # Remove 1 Aleutian Islands observation with positive longitude
-filter!(x -> x.longitude < 0, newdf)
+filter!(:longitude => <(0.0), newdf)
 
 # Remove duplicates (BUT not ok for counts, so-so for dates, see group-observation.jl in src/test/)
-df_nogroups = filter(x -> ismissing(x[:groupIdentifier]), newdf)
+df_nogroups = filter(:groupIdentifier => ismissing, newdf)
 df_groups = dropmissing(newdf, :groupIdentifier)
 df_groups_unique = unique(df_groups, [:species, :groupIdentifier])
 newdf = vcat(df_nogroups, df_groups_unique)

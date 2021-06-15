@@ -20,15 +20,15 @@ end
 # Define coordinates range
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 copy_layer = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
-coords_bbox = (left = copy_layer.left, right = copy_layer.right, 
-               bottom = copy_layer.bottom, top = coords.top)
 # Load data from CSV files
-@time df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t");
+df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t");
 # Remove groupIdentifier column (causing bug)
 select!(df, Not(:groupIdentifier))
 # Filter observations outside coordinates range
-filter!(x -> coords_bbox.left < x.longitude < coords_bbox.right, df)
-filter!(x -> coords_bbox.bottom < x.latitude < coords_bbox.top, df)
+filter!(:longitude => >(coords.left), df)
+filter!(:longitude => <(coords.right), df)
+filter!(:latitude => >(coords.bottom), df)
+filter!(:latitude => <(coords.top), df)
 # Separate species
 # warblers = [df[df.species .== u,:] for u in unique(df.species)]
 warblers = groupby(df, :species)
@@ -134,8 +134,8 @@ map_sp2 = plotSDM2(distributions[speindex[sp2]], c = :BuPu,
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) distributions)"
-    savefig(map_sp1, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp1).png")
-    savefig(map_sp2, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp2).png")
+    savefig(map_sp1, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp1).png"))
+    savefig(map_sp2, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp2).png"))
 else
     @info "Figures not saved ($(outcome) distributions)"
 end
