@@ -111,8 +111,8 @@ if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting env & spa to CSV"
     CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df, delim="\t")
     CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_df, delim="\t")
-    geotiff(joinpath("data", "proc", "env_stack.tiff"), env_vars)
-    geotiff(joinpath("data", "proc", "spa_stack.tiff"), spa_vars)
+    geotiff(joinpath("data", "proc", "env_stack.tif"), env_vars)
+    geotiff(joinpath("data", "proc", "spa_stack.tif"), spa_vars)
 end
 
 # Test load
