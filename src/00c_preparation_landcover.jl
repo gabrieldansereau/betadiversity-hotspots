@@ -97,14 +97,13 @@ env_df = DataFrame(env_mat, :auto)
 rename!(env_df, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
 insertcols!(env_df, 1, :site => 1:nrow(env_df))
 
-# Get sites latitudes
-lats = repeat(collect(latitudes(wc_vars[1])), outer=size(wc_vars[1].grid, 2))
-# Get sites longitudes
-lons = repeat(collect(longitudes(wc_vars[1])), inner=size(wc_vars[1].grid, 1))
-# Create spa matrix
-spa_mat = [lats lons]
-# Create spa dataframe
-spa_df = DataFrame(site = eachindex(lats), lat = lats, lon = lons)
+# Create spa DataFrame
+spa_df = DataFrame(wc_vars[1])
+select!(spa_df, Not(:values))
+insertcols!(spa_df, 1, :site => Float64.(1:nrow(spa_df)))
+rename!(spa_df, [:site, :lon, :lat])
+# Create spa layers
+spa_vars = [SimpleSDMPredictor(spa_df, x, wc_vars[1]; latitude=:lat, longitude=:lon) for x in [:site, :lon, :lat]]
 
 # Export dataframes
 # save_prepdata = true
@@ -112,6 +111,8 @@ if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting env & spa to CSV"
     CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df, delim="\t")
     CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_df, delim="\t")
+    geotiff(joinpath("data", "proc", "env_stack.tiff"), env_vars)
+    geotiff(joinpath("data", "proc", "spa_stack.tiff"), spa_vars)
 end
 
 # Test load
