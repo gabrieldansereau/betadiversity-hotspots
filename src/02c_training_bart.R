@@ -42,6 +42,15 @@ spe
 env <- filter(env_full, site %in% spe$site)
 env
 
+# Remove site with NAs for landcover variables
+(inds_withNAs <- unique(unlist(map(env, ~ which(is.na(.x))))))
+if (length(inds_withNAs) > 0) {
+    message("Removing sites with observations but NA for land cover values")
+    spe <- spe[-inds_withNAs,]
+    env <- env[-inds_withNAs,]
+}
+
+# Copy values for comparison
 spe_full2 <- spe_full
 spe2 <- spe
 env2 <- env
@@ -50,8 +59,7 @@ env2 <- env
 source(here("src", "02a_training_data-preparation.R"))
 
 # Make sure data is same as before
-all(env == select(env2, -c("site", "lon", "lat")), na.rm = TRUE) # why NAs?
-filter(env, if_any(everything(), ~ is.na(.x))) # sites with observations but NA for landcover values
+all(env == select(env2, -c("site", "lon", "lat")))
 all(spe == select(spe2, -c("site", "lon", "lat")))
 all(select(spe_full, contains("sp")) == select(spe_full2, contains("sp")), na.rm = TRUE)
 

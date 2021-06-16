@@ -48,7 +48,7 @@ spe_full <- as_tibble(
 spe_full[inds_obs,] <- spe
 
 # Remove site with NAs for landcover variables
-(inds_withNAs <- unique(unlist(map(env, ~ which(is.nan(.x))))))
+(inds_withNAs <- unique(unlist(map(env, ~ which(is.na(.x))))))
 if (length(inds_withNAs) > 0) {
     spe <- spe[-inds_withNAs,]
     spa <- spa[-inds_withNAs,]
