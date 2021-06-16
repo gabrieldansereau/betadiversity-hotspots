@@ -21,7 +21,7 @@ end
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 copy_layer = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
 # Load data from CSV files
-df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t");
+df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t")
 # Remove groupIdentifier column (causing bug)
 select!(df, Not(:groupIdentifier))
 # Filter observations outside coordinates range
@@ -38,7 +38,6 @@ warblers = warblers |>
     x -> combine(nrow, x) |>
     x -> sortperm(x, :nrow, rev = true) |>
     x -> warblers[x]
-warblers = [w for w in warblers]
 # Extract species names
 spenames = [w.species[1] for w in warblers]
 specommon = [w.commonName[1] for w in warblers]
@@ -71,7 +70,7 @@ if (@isdefined create_distributions) && create_distributions == true
     # Select function to run given desired outcome
     if outcome == "raw"
         # Get raw distributions
-        @time distributions = @showprogress map(x -> presence_absence(x, env_vars[1]), warblers)
+        @time distributions = @showprogress [presence_absence(w, env_vars[1]) for w in warblers]
     elseif outcome == "bio"
         # Get sdm distributions (with different training resolutions)
         @time distributions = @showprogress map(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
@@ -91,6 +90,8 @@ if (@isdefined save_data) && save_data == true
               joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
     # Make sure JLD2 timestamp is more recent than ZIP archive
     touch(joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
+    # Export distribution layers
+    geotiff(joinpath("data", "proc", "distributions_raw.tif"), distributions)
 
     ## Export to CSV as Y matrix
     @info "Exporting data to CSV as Y matrix ($(outcome) distributions data)"

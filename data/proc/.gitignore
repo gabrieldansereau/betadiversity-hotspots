@@ -6,5 +6,6 @@
 !glossary.csv
 !comparison*.csv
 !*_stack.tif
+!distributions*.tif
 # But really ignore
 *_backup.csv
