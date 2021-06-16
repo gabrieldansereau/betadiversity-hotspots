@@ -89,11 +89,9 @@ end
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
-# Create env matrix
-env_mat = mapreduce(x -> vec(x.grid), hcat, env_vars)
-replace!(env_mat, nothing => NaN)
 # Create env dataframe
-env_df = DataFrame(env_mat, :auto)
+env_df = DataFrame(convert.(Float64, env_vars))
+select!(env_df, Not([:longitude, :latitude]))
 rename!(env_df, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
 insertcols!(env_df, 1, :site => 1:nrow(env_df))
 
