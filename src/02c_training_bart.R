@@ -38,8 +38,8 @@ names(spe_stack) <- c("site", "lon", "lat", paste0("sp", 1:(nlayers(spe_stack)-3
 spe <- spe_full %>% 
     filter(if_any(contains("sp"), ~ !is.na(.x))) %>% 
     mutate(across(contains("sp"), ~ replace(., is.na(.), 0)))
-spe
 env <- filter(env_full, site %in% spe$site)
+spe
 env
 
 # Remove site with NAs for landcover variables
@@ -50,18 +50,8 @@ if (length(inds_withNAs) > 0) {
     env <- env[-inds_withNAs,]
 }
 
-# Copy values for comparison
-spe_full2 <- spe_full
-spe2 <- spe
-env2 <- env
-
 # Load data
-source(here("src", "02a_training_data-preparation.R"))
-
-# Make sure data is same as before
-all(env == select(env2, -c("site", "lon", "lat")))
-all(spe == select(spe2, -c("site", "lon", "lat")))
-all(select(spe_full, contains("sp")) == select(spe_full2, contains("sp")), na.rm = TRUE)
+# source(here("src", "02a_training_data-preparation.R"))
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
