@@ -40,7 +40,7 @@ env <- dplyr::filter(env_full, site %in% sites_obs)
 # Expand spe to full scale
 spe_full <- as_tibble(
      matrix(
-          NaN, 
+          NA_real_, 
           nrow = nrow(spa_full), ncol = ncol(spe), 
           dimnames = list(NULL, names(spe))
      )

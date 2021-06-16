@@ -9,33 +9,51 @@ source(file.path("src", "required.R"))
 
 ## 1. Load data ####
 
-# Raster data
-(spa_stack <- stack(here("data", "proc", "spa_stack.tif")))
-(env_stack <- stack(here("data", "proc", "env_stack.tif")))
-
-# Load QC data (if subset_qc option correctly set)
+# Select raster files
+env_files <- list(here("data", "proc", "spa_stack.tif"), here("data", "proc", "env_stack.tif"))
+spe_files <- list(here("data", "proc", "spa_stack.tif"), here("data", "proc", "distributions_raw.tif"))
+# Select QC data (if subset_qc option correctly set)
 if (exists("subset_qc") && isTRUE(subset_qc)) {
     message("Subsetting to QC data")
-    spa_stack <- stack(here("data", "proc", "spa_stack_qc.tif"))
-    env_stack <- stack(here("data", "proc", "env_stack_qc.tif"))
+    env_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "env_stack_qc.tif"))
+    spe_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "distributions_raw_qc.tif"))
 }
+# Load rasters as stack
+(env_stack <- stack(env_files))
+(spe_stack <- stack(spe_files))
 
 # Rename variables
-names(spa_stack) <- c("site", "lon", "lat")
-names(env_stack) <- c(paste0("wc", 1:19), paste0("lc", 1:10))
+names(env_stack) <- c("site", "lon", "lat", paste0("wc", 1:19), paste0("lc", 1:10))
+names(spe_stack) <- c("site", "lon", "lat", paste0("sp", 1:(nlayers(spe_stack)-3)))
 
 # Convert to tibble
-(spa_full <- as_tibble(as.data.frame(spa_stack)))
 (env_full <- as_tibble(as.data.frame(env_stack)))
-
-# Group in single DataFrame
-(vars_full <- bind_cols(spa_full, env_full))
+(spe_full <- as_tibble(as.data.frame(spe_stack)))
 
 # Reorder rows by site id (same order as SimpleSDMLayers)
-vars_full <- arrange(vars_full, site)
+(env_full <- arrange(env_full, site))
+(spe_full <- arrange(spe_full, site))
+
+# Select sites with observations only & replace NA by zero
+spe <- spe_full %>% 
+    filter(if_any(contains("sp"), ~ !is.na(.x))) %>% 
+    mutate(across(contains("sp"), ~ replace(., is.na(.), 0)))
+spe
+env <- filter(env_full, site %in% spe$site)
+env
+
+spe_full2 <- spe_full
+spe2 <- spe
+env2 <- env
 
 # Load data
 source(here("src", "02a_training_data-preparation.R"))
+
+# Make sure data is same as before
+all(env == select(env2, -c("site", "lon", "lat")), na.rm = TRUE) # why NAs?
+filter(env, if_any(everything(), ~ is.na(.x))) # sites with observations but NA for landcover values
+all(spe == select(spe2, -c("site", "lon", "lat")))
+all(select(spe_full, contains("sp")) == select(spe_full2, contains("sp")), na.rm = TRUE)
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
@@ -45,11 +63,11 @@ xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:
 message("Creating layers")
 
 # Create raster layers
-vars_layers <- map(
-    vars_full[,xnames], 
-    ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
-)
-wc_layer <- vars_layers$wc1
+# vars_layers <- map(
+#     vars_full[,xnames], 
+#     ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
+# )
+# wc_layer <- vars_layers$wc1
 
 # Stack variables layers
 vars_stack <- stack(vars_layers, names = xnames)
