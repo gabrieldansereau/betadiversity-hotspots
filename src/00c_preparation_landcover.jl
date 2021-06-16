@@ -126,10 +126,15 @@ coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 # Get site indices
 spa_qc = filter(x -> (coords_qc.left - stride(wc_vars[1], dims = 2) <= x.lon < coords_qc.right) &&
                      (coords_qc.bottom - stride(wc_vars[1], dims = 1) <= x.lat < coords_qc.top), spa_df)
+# Subset layers to QC only
+env_vars_qc = [v[coords_qc] for v in env_vars]
+spa_vars_qc = [v[coords_qc] for v in spa_vars]
 
 # Export QC dataframes
 # save_prepdata = true
 if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting QC env & spa to CSV"
     CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spa_qc, delim="\t")
+    geotiff(joinpath("data", "proc", "env_stack_qc.tif"), env_vars_qc)
+    geotiff(joinpath("data", "proc", "spa_stack_qc.tif"), spa_vars_qc)
 end

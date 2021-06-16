@@ -10,8 +10,15 @@ source(file.path("src", "required.R"))
 ## 1. Load data ####
 
 # Raster data
-(spa_stack <- stack("./data/proc/spa_stack.tif"))
-(env_stack <- stack("./data/proc/env_stack.tif"))
+(spa_stack <- stack(here("data", "proc", "spa_stack.tif")))
+(env_stack <- stack(here("data", "proc", "env_stack.tif")))
+
+# Load QC data (if subset_qc option correctly set)
+if (exists("subset_qc") && isTRUE(subset_qc)) {
+    message("Subsetting to QC data")
+    spa_stack <- stack(here("data", "proc", "spa_stack_qc.tif"))
+    env_stack <- stack(here("data", "proc", "env_stack_qc.tif"))
+}
 
 # Rename variables
 names(spa_stack) <- c("site", "lon", "lat")
@@ -25,8 +32,7 @@ names(env_stack) <- c(paste0("wc", 1:19), paste0("lc", 1:10))
 (vars_full <- bind_cols(spa_full, env_full))
 
 # Reorder rows by site id (same order as SimpleSDMLayers)
-vars_full <- vars_full %>% 
-    arrange(site)
+vars_full <- arrange(vars_full, site)
 
 # Load data
 source(here("src", "02a_training_data-preparation.R"))
