@@ -61,6 +61,11 @@ if (@isdefined save_data) && save_data == true
     @save jld_path prob_distrib lower_distrib upper_distrib
     _zip_jld2(replace(jld_path, ".jld2" => ".zip"), jld_path)
     touch(jld_path)
+    # Export to tif files
+    geotiff(joinpath("data", "proc", "distributions_bart.tif"), distributions)
+    geotiff(joinpath("data", "proc", "bart_xtras_prob-distrib.tif"), prob_distrib)
+    geotiff(joinpath("data", "proc", "bart_xtras_lower-distrib.tif"), lower_distrib)
+    geotiff(joinpath("data", "proc", "bart_xtras_upper-distrib.tif"), upper_distrib)
 end
 
 ## Get richness & LCBD
