@@ -1,7 +1,7 @@
 ## 0. Load packages ####
 source(file.path("src", "required.R"))
 
-# Conditional evaluations
+## Conditional evaluations
 # subset_qc <- TRUE # subset to QC data (optional)
 # create_models <- TRUE # train models
 # save_models <- TRUE # save & overwrite models
@@ -58,37 +58,18 @@ if (length(spe_withoutobs) > 0) {
     spe_full <- dplyr::select(spe_full, -all_of(spe_withoutobs))
 }
 
-# Load data
-# source(here("src", "02a_training_data-preparation.R"))
-
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
 vars_stack <- subset(env_stack, xnames)
 plot(vars_stack)
 
-## 2. Create layers ####
+## 2. Prepare model functions & outputs ####
 
-message("Creating layers")
+message("Preparing model functions & outputs")
 
-# Create raster layers
-# vars_layers <- map(
-#     vars_full[,xnames], 
-#     ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
-# )
-# wc_layer <- vars_layers$wc1
-
-# Stack variables layers
-# vars_stack <- stack(vars_layers, names = xnames)
-# plot(vars_stack)
-
-
-## 3. Multi-species model training ####
-
-message("Training multi-species models")
-
-# Split species in groups
+# Split species in groups (every group will run on a different core)
 # max_procs <- availableCores() - 1
-max_procs <- 7
+max_procs <- 7 # max number with fits in memory in my case
 spe_num <- which(startsWith(names(spe), "sp"))
 spe_splits <- split(spe_num, ceiling((spe_num - min(spe_num) + 1)/max_procs))
 spe_groups <- map(spe_splits, ~ select(spe, all_of(.)))
@@ -109,8 +90,10 @@ bart_parallel <- function(x.train, y.train, ...) {
 }
 
 # Prepare global sets
+# Models (not currently used)
 sdms_list <- list()
 predictions_list <- list()
+# Summary results for every species
 results_global <- tibble(
     spe = names(select(spe, contains("sp"))),
     auc = NA_real_,
@@ -119,11 +102,13 @@ results_global <- tibble(
     type_I = NA_real_,
     type_II = NA_real_
 )
+# Variable importance for every variable & species
 varimps_global <- spe_full %>%
     slice(1:length(xnames)) %>% 
     mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_))) %>% 
     mutate(vars = xnames) %>% 
     select(vars, everything(), -c(site, lon, lat))
+# Predictions assembled as tibbles
 pred_df_global <- spe_full %>% 
     select(-c(site, lon, lat)) %>% 
     mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_)))
@@ -131,19 +116,32 @@ lower_df_global <- pred_df_global
 upper_df_global <- pred_df_global
 pres_df_global <- pred_df_global
 
+## 3. Run models ####
 
-# Run for each group
+# The BART model objects take a lot of memory at full scale.
+# Model training & predictions are therefore done in the same (huge) loop.
+# The loop runs for groups of species which fit in memory at the same time.
+# The training & predicting steps are run in parallel.
+# Models are exported to .RData files in case of reuse.
+# Predictions are exported to the predictions tibbles (and later exported to CSV).
+
+message("Training multi-species models & predicting distributions")
+
+# Run loop for each group
 system.time(
 for (gp in seq_along(spe_groups)) {
 
     message(paste0("Training multi-species group (", gp, "/", length(spe_groups)), ")")
 
-    ## Create BART models
-    # create_models <- TRUE
+    ## 3.1 Create BART models ####
+
+    # Set file paths for .RData
     modelname <- ifelse(exists("subset_qc") && isTRUE(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
     filepath <- here("data", "rdata", modelname)
+    # Create models (and optionally save to .RData) or load from existing RData
+    # create_models <- TRUE
     if (exists("create_models") && isTRUE(create_models)){
-        # Run models
+        # Run models in parallel
         message("Creating models in parallel: ", modelname)
         set.seed(42)
         system.time(
@@ -169,6 +167,8 @@ for (gp in seq_along(spe_groups)) {
         message("Loading models from RData: ", modelname)
         load(filepath)
     }
+
+    ## 3.2 Extract summary data ####
 
     # Extract summary statistics
     summaries <-  future_map(sdms, summary_inner)
@@ -197,8 +197,7 @@ for (gp in seq_along(spe_groups)) {
         ) %>% 
         arrange(desc(mean))
 
-
-    ## 4. Multi-species predictions ####
+    ## 3.3 Predict species distributions ####
 
     message("Predicting species distributions: ", modelname)
 
@@ -218,7 +217,7 @@ for (gp in seq_along(spe_groups)) {
         )
     ) # ~ 3 min in parallel
 
-    # Predictions
+    # Collect predictions
     pred_df <- predictions %>% 
         map(~ .x$layer.1) %>% 
         stack() %>% 
@@ -246,19 +245,23 @@ for (gp in seq_along(spe_groups)) {
         select(-c(x, y))
     upper_df
 
-    # Presence-absence dataframe
+    # Convert to presence-absence based on recommended threshold per species
     pres_df <- map2_df(
         pred_df, results$threshold, 
         function(pred, thresh) ifelse(pred > thresh, 1, 0) 
     )
     pres_df
 
-    # Export group results
+    ## 3.4 Export results ####
+
+    # Models & predictions objects (not used for now)
     # sdms_list[[gp]] <- sdms
     # predictions_list[[gp]] <- predictions
+    # Summary statistics
     spe_names <- names(spe_groups[[gp]])
     results_global[results_global$spe %in% spe_names,] <- results
     varimps_global[names(varimps_global) %in% spe_names] <- select(varimps, -vars)
+    # Prediction tibbles
     pred_df_global[names(pred_df_global) %in% spe_names] <- pred_df
     lower_df_global[names(lower_df_global) %in% spe_names] <- lower_df
     upper_df_global[names(upper_df_global) %in% spe_names] <- upper_df
@@ -266,12 +269,18 @@ for (gp in seq_along(spe_groups)) {
 }
 )
 
-# Check results
+## Check results
+# Summary statistics
 results_global
+# Variable importance
 varimps_global
+# Predictions (posterior mean)
 pred_df_global
+# Lower CI predictions
 lower_df_global
+# Upper CI predictions
 upper_df_global
+# Presence-absence predictions
 pres_df_global
 
 # Export to CSV
@@ -285,7 +294,7 @@ if (exists("save_predictions") && isTRUE(save_predictions)) {
     write_tsv(pres_df_global,  here("data", "proc", "bart_predictions_pres.csv"))
 }
 
-## 5. Visualize results ####
+## 4. Visualize results ####
 
 # Empty canvas
 pred_plot <- ggplot(env_full, aes(lon, lat)) +
@@ -302,7 +311,10 @@ pred_plot + geom_raster(aes(fill = upper_df_global[[sp_no]] - lower_df_global[[s
 pred_plot + geom_raster(aes(fill = pres_df_global[[sp_no]])) + ggtitle("Presence-absence")
 
 
-## Variable selection
+## 5. Variable selection ####
+
+warning("Testing variable selection for 3 species only. This can take a while to run at full scale.")
+pred_plot
 
 # Select species
 sort(colSums(spe)/nrow(spe), decreasing = TRUE)
