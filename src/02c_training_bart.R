@@ -5,7 +5,7 @@ source(file.path("src", "required.R"))
 # subset_qc <- TRUE # subset to QC data (optional)
 # create_models <- TRUE # train models
 # save_models <- TRUE # save & overwrite models
-
+# save_predictions <- TRUE # save & overwrite predictions
 
 ## 1. Load data ####
 
@@ -63,6 +63,8 @@ if (length(spe_withoutobs) > 0) {
 
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
+vars_stack <- subset(env_stack, xnames)
+plot(vars_stack)
 
 ## 2. Create layers ####
 
@@ -76,8 +78,8 @@ message("Creating layers")
 # wc_layer <- vars_layers$wc1
 
 # Stack variables layers
-vars_stack <- stack(vars_layers, names = xnames)
-plot(vars_stack)
+# vars_stack <- stack(vars_layers, names = xnames)
+# plot(vars_stack)
 
 
 ## 3. Multi-species model training ####
@@ -87,8 +89,8 @@ message("Training multi-species models")
 # Split species in groups
 # max_procs <- availableCores() - 1
 max_procs <- 7
-spe_num <- 1:ncol(spe)
-spe_splits <- split(spe_num, ceiling(spe_num/max_procs))
+spe_num <- which(startsWith(names(spe), "sp"))
+spe_splits <- split(spe_num, ceiling((spe_num - min(spe_num) + 1)/max_procs))
 spe_groups <- map(spe_splits, ~ select(spe, all_of(.)))
 
 # Function to run BART in parallel
@@ -110,21 +112,21 @@ bart_parallel <- function(x.train, y.train, ...) {
 sdms_list <- list()
 predictions_list <- list()
 results_global <- tibble(
-    spe = names(spe),
-    auc = NaN,
-    threshold = NaN,
-    tss = NaN,
-    type_I = NaN,
-    type_II = NaN
+    spe = names(select(spe, contains("sp"))),
+    auc = NA_real_,
+    threshold = NA_real_,
+    tss = NA_real_,
+    type_I = NA_real_,
+    type_II = NA_real_
 )
 varimps_global <- spe_full %>%
-    slice(seq_along(xnames)) %>% 
-    mutate_all(~ replace(.x, !is.nan(.), NaN)) %>% 
+    slice(1:length(xnames)) %>% 
+    mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_))) %>% 
     mutate(vars = xnames) %>% 
-    select(vars, everything(), -site)
+    select(vars, everything(), -c(site, lon, lat))
 pred_df_global <- spe_full %>% 
-    select(-site) %>% 
-    mutate_all(~ replace(.x, !is.nan(.), NaN))
+    select(-c(site, lon, lat)) %>% 
+    mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_)))
 lower_df_global <- pred_df_global
 upper_df_global <- pred_df_global
 pres_df_global <- pred_df_global
@@ -138,7 +140,7 @@ for (gp in seq_along(spe_groups)) {
 
     ## Create BART models
     # create_models <- TRUE
-    modelname <- ifelse(exists("subset_qc") && isTrue(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
+    modelname <- ifelse(exists("subset_qc") && isTRUE(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
     filepath <- here("data", "rdata", modelname)
     if (exists("create_models") && isTRUE(create_models)){
         # Run models
@@ -149,9 +151,10 @@ for (gp in seq_along(spe_groups)) {
                 spe_groups[[gp]],
                 ~ bart_parallel(
                     y.train = .x,
-                    x.train = vars[,xnames]
+                    x.train = env[, xnames]
                 ),
-                .progress = TRUE
+                .progress = TRUE,
+                .options = furrr_options(seed = TRUE) # disables warning about seed
             )
         ) # ~ 4 min in parallel
         
@@ -253,12 +256,13 @@ for (gp in seq_along(spe_groups)) {
     # Export group results
     # sdms_list[[gp]] <- sdms
     # predictions_list[[gp]] <- predictions
-    results_global[spe_splits[[gp]],] <- results
-    varimps_global[spe_splits[[gp]]+1] <- varimps[,-1]
-    pred_df_global[spe_splits[[gp]]] <- pred_df
-    lower_df_global[spe_splits[[gp]]] <- lower_df
-    upper_df_global[spe_splits[[gp]]] <- upper_df
-    pres_df_global[spe_splits[[gp]]] <- pres_df
+    spe_names <- names(spe_groups[[gp]])
+    results_global[results_global$spe %in% spe_names,] <- results
+    varimps_global[names(varimps_global) %in% spe_names] <- select(varimps, -vars)
+    pred_df_global[names(pred_df_global) %in% spe_names] <- pred_df
+    lower_df_global[names(lower_df_global) %in% spe_names] <- lower_df
+    upper_df_global[names(upper_df_global) %in% spe_names] <- upper_df
+    pres_df_global[names(pres_df_global) %in% spe_names] <- pres_df
 }
 )
 
@@ -284,7 +288,7 @@ if (exists("save_predictions") && isTRUE(save_predictions)) {
 ## 5. Visualize results ####
 
 # Empty canvas
-pred_plot <- ggplot(spa_full, aes(lon, lat)) +
+pred_plot <- ggplot(env_full, aes(lon, lat)) +
     scale_fill_viridis_c(na.value = "white", "Value") +
     coord_quickmap() +
     theme_minimal()
