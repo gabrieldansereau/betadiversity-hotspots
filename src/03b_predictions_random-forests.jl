@@ -63,7 +63,9 @@ Y[inds_zeros, :] .= nothing
 ## Create distributions
 
 # Load raw distributions (for grid size)
-@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
+glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
+spenames = filter(:type => ==("species"), glossary).full_name
+distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_raw.tif"), i) for i in eachindex(spenames)]
 raw_distributions = distributions
 # Get layer dimensions & limits
 dims = size(raw_distributions[1].grid)
