@@ -137,10 +137,12 @@ nplots = 0
     global nplots += 1
     global left -= asp_ratio
     global bottom -= asp_ratio * dim_ratio
-    coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-    p = plot_lcbd_relationship(richness[coords_subarea], LCBDwindow[coords_subarea],
-                            formatter = f -> "$(round(f, digits = 1))",
-                            dpi = 200)
+    local coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+    local p = plot_lcbd_relationship(
+        richness[coords_subarea], LCBDwindow[coords_subarea],
+        formatter = f -> "$(round(f, digits = 1))",
+        dpi = 200
+    )
     push!(subarea_plots, p)
 end
 anim = @animate for p in subarea_plots[Not(1)]

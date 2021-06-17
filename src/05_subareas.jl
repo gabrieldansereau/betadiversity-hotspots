@@ -263,13 +263,13 @@ beta_values = []
 gamma_values = []
 # Get analysis values for all subareas
 for sc in subarea_coords
-    distribs = [d[sc] for d in distributions]
-    Y = calculate_Y(distribs)
-    richness = calculate_richness(Y, distribs[1])
-    lcbd = calculate_lcbd(Y, distribs[1], relative = false)
-    lcbd_abs = calculate_lcbd(Y, distribs[1]; relative = false)
-    beta_total = calculate_BDtotal(Y)
-    gamma = calculate_gamma(Y)
+    local distribs = [d[sc] for d in distributions]
+    local Y = calculate_Y(distribs)
+    local richness = calculate_richness(Y, distribs[1])
+    local lcbd = calculate_lcbd(Y, distribs[1], relative = false)
+    local lcbd_abs = calculate_lcbd(Y, distribs[1]; relative = false)
+    local beta_total = calculate_BDtotal(Y)
+    local gamma = calculate_gamma(Y)
     
     push!(richness_medians, median(richness))
     push!(lcbd_medians, median(lcbd))
