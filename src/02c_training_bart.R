@@ -50,6 +50,14 @@ if (length(inds_withNAs) > 0) {
     env <- env[-inds_withNAs,]
 }
 
+# Remove species without observations
+(spe_withoutobs <- names(which(colSums(spe) == 0)))
+if (length(spe_withoutobs) > 0) {
+    message("Removing ", length(spe_withoutobs), " species without observations")
+    spe <- dplyr::select(spe, -all_of(spe_withoutobs))
+    spe_full <- dplyr::select(spe_full, -all_of(spe_withoutobs))
+}
+
 # Load data
 # source(here("src", "02a_training_data-preparation.R"))
 
