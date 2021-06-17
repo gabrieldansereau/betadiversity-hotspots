@@ -5,9 +5,8 @@ include("required.jl")
 ## Conditional arguments
 # save_data = true
 
-
 ## Load predictions from CSV
-results  = CSV.read(joinpath("data", "proc", "bart_summaries.csv"), DataFrame)
+summaries  = CSV.read(joinpath("data", "proc", "bart_summaries.csv"), DataFrame)
 varimps  = CSV.read(joinpath("data", "proc", "bart_varimps.csv"), DataFrame)
 pred_df  = CSV.read(joinpath("data", "proc", "bart_predictions_prob.csv"), DataFrame, missingstrings = ["NA"])
 lower_df = CSV.read(joinpath("data", "proc", "bart_predictions_lower.csv"), DataFrame, missingstrings = ["NA"])
@@ -29,14 +28,13 @@ Y[inds_zeros,:] .= nothing
 
 # Load raw distributions (for grid size)
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
-raw_distributions = distributions
+raw_distributions = copy(distributions)
 # Cut to Quebec coordinates (optional)
 # coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 # raw_distributions = [d[coords_qc] for d in raw_distributions]
 # Get layer dimensions & limits
-dims = size(raw_distributions[1].grid)
-lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
-        bottom = raw_distributions[1].bottom, top = raw_distributions[1].top)
+dims = size(raw_distributions[1])
+lims = boundingbox(raw_distributions[1])
 
 # Create distribution layers
 layers = []
