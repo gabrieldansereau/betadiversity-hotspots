@@ -2,7 +2,7 @@ import Pkg; Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
-# save_figures = true
+# save_additional_figures = true
 
 ## Get data
 @load joinpath("data", "jld2", "comparison-results.jld2") raw sdm
@@ -39,7 +39,7 @@ combined_plot = plot(
 )
 
 # Save result
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(combined_plot, joinpath("fig", "bart", "07_bart_combined-maps.png"))
 end
 
@@ -156,7 +156,7 @@ combined_diffplot = plot(
 )
 
 # Save figures
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(combined_diffplot, joinpath("fig", "bart", "07_bart_comparison-combined.png"))
 end
 
@@ -228,7 +228,7 @@ combined_resplot = plot(
 )
 
 # Save figures
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_additional_figures) && save_additional_figures == true
     # savefig(richness_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-poisson.png"))
     savefig(combined_resplot, joinpath("fig", "bart", "07_bart_residuals-combined.png"))
 end

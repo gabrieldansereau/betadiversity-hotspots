@@ -3,7 +3,7 @@ include("required.jl")
 
 ## Conditional arguments
 # outcome = "rf"
-outcome = "bart"
+# outcome = "bart"
 # save_figures = true
 
 # Make sure "outcome" is defined
