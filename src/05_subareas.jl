@@ -87,7 +87,7 @@ function plot_lcbd_relationship(
     end
     p1 = eval(plotfct)(
         lcbd;
-        c=:viridis
+        c=:viridis,
         # title = "LCBD",
         colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
         clim=extrema(lcbd)
@@ -137,7 +137,7 @@ function plot_lcbd_relationship(
         l = @layout [a{0.5w} b{0.5w,0.9h}]
         p = plot(
             p1,
-            p2,
+            p2;
             layout=l,
             size=(900, 300),
             # bottommargin = [0.0mm 5.0mm],
@@ -186,8 +186,7 @@ end
 #### Repeat for different subareas
 function plot_subareas(
     coords,
-    initial_distributions,
-    scaling=1;
+    initial_distributions;
     display_coords=coords,
     transform=true,
     relative=false,
