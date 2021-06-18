@@ -38,7 +38,7 @@ save_figures = true # should figures be overwritten (optional)
 @time run("Rscript src/02_training_bart.R")
 
 # 3. Get Random Forest predictions
-@time include("03_predictions_bart.jl")
+@time include("03c_predictions_bart.jl")
 
 ## Part III - Main analyses ####
 
