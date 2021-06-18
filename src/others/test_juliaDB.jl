@@ -2,18 +2,22 @@ using JuliaDB
 using IndexedTables
 using Dates
 
-@time df = loadtable("data/raw/ebd_warblers_cut.csv", delim='\t',
-                        nastrings=[""],
-                        type_detect_rows=1000, spacedelim=false)
+@time df = loadtable(
+    "data/raw/ebd_warblers_cut.csv";
+    delim='\t',
+    nastrings=[""],
+    type_detect_rows=1000,
+    spacedelim=false,
+)
 
 # Fix names case & spacing
 oldnames = collect(colnames(df))
-newnames = oldnames .|>
+newnames =
+    oldnames .|>
     string .|>
     titlecase .|>
     lowercasefirst .|>
-    x -> replace(x, "_" => "") .|>
-    Symbol
+    x -> replace(x, "_" => "") .|> Symbol
 replace!(newnames, :scientificName => :species)
 df = rename(df, oldnames .=> newnames)
 # Separate year-month-day

@@ -13,23 +13,33 @@ BDstats = BD(Ytransf)
 scbd = vec(BDstats.SCBDj)
 
 # Visualize
-histogram(scbd, bins = 20)
+histogram(scbd; bins=20)
 scatter(scbd)
 
 ## Species counts
 # Count sites with occurrences per species
-specounts = vec(sum(Yobs, dims = 1))
+specounts = vec(sum(Yobs; dims=1))
 
 # Visualize
-histogram(specounts, bins = 20)
-occupancy_plot = scatter(specounts, formatter = :plain, legend = :none,
-                         xlabel = "Species ID number", ylabel = "Species occupancy")
+histogram(specounts; bins=20)
+occupancy_plot = scatter(
+    specounts;
+    formatter=:plain,
+    legend=:none,
+    xlabel="Species ID number",
+    ylabel="Species occupancy",
+)
 
 ## Combine stuff
-scbd_plot = scatter(specounts, scbd, 
-                    xlabel = "Species occupancy", ylabel = "SCBD value",
-                    formatter = :plain, label = :none)
-scatter!([NaN], label = "r = $(round(cor(specounts, scbd), digits = 3))")
+scbd_plot = scatter(
+    specounts,
+    scbd;
+    xlabel="Species occupancy",
+    ylabel="SCBD value",
+    formatter=:plain,
+    label=:none,
+)
+scatter!([NaN]; label="r = $(round(cor(specounts, scbd), digits = 3))")
 
 ## Save figures
 savefig(occupancy_plot, joinpath(".", "fig", "bart", "x_sp-occupancy.png"))

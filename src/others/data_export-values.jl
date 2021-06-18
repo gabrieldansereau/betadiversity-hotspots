@@ -1,13 +1,16 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 include("../required.jl")
 
 include("../07a_comparison_data.jl")
 
 nspecies = size(raw.Y, 2)
-nsites_raw = format(length(raw.richness), commas = true)
-nsites_sdm = format(length(sdm.richness), commas = true)
-coords_full = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
-nsites_tot = format(length(SimpleSDMPredictor(WorldClim, BioClim, 1; coords_full...)), commas = true)
+nsites_raw = format(length(raw.richness); commas=true)
+nsites_sdm = format(length(sdm.richness); commas=true)
+coords_full = (left=-145.0, right=-50.0, bottom=20.0, top=75.0)
+nsites_tot = format(
+    length(SimpleSDMPredictor(WorldClim, BioClim, 1; coords_full...)); commas=true
+)
 
 lcbdraw_min, lcbdraw_max = sprintf1.("%.3e", extrema(raw.lcbd))
 lcbdsdm_min, lcbdsdm_max = sprintf1.("%.3e", extrema(sdm.lcbd))
@@ -40,8 +43,8 @@ z_lcbd$p.value
 
 include("../05_subareas.jl")
 
-coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
-coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
+coords_NE = (left=-80.0, right=-60.0, bottom=40.0, top=50.0)
+coords_SW = (left=-120.0, right=-100.0, bottom=30.0, top=40.0)
 
 bdtot_NE = sprintf1("%.3f", beta_NE)
 bdtot_SW = sprintf1("%.3f", beta_SW)
@@ -79,9 +82,10 @@ abs_min_SW = median(richness_SW.grid[min_indx_SW])
 
 ##
 
-@time df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t");
+@time df = CSV.read(
+    joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame; header=true, delim="\t"
+);
 
 nobs_tot = 27_821_881
 nobs_u = 22_974_330
-nchecklists =  9_103_750
-
+nchecklists = 9_103_750

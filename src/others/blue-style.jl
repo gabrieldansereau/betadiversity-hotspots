@@ -2,7 +2,7 @@ using JuliaFormatter
 
 # Test formatter on single script
 format("./src/04_analysis.jl", BlueStyle())
-format("./src/04_analysis.jl", BlueStyle(), pipe_to_function_call = false)
+format("./src/04_analysis.jl", BlueStyle(); pipe_to_function_call=false)
 
 # Use formatter on main scripts
 mainfiles = readdir("./src/"; join=true)
@@ -32,3 +32,9 @@ format(mainfiles[5], BlueStyle(); pipe_to_function_call=false)
 libfiles = readdir("./src/lib/"; join=true)
 filter!(endswith(".jl"), libfiles)
 formatfiles(libfiles)
+
+# Use formatter on other scripts
+otherfiles = readdir("./src/others/"; join=true)
+filter!(endswith(".jl"), otherfiles)
+formatfiles(otherfiles)
+unique(problems)

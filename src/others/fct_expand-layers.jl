@@ -1,9 +1,10 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 using Distributed
 @time @everywhere include("src/required.jl")
 
 ## Get the worldclim data
-@time wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 5.0);
+@time wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution=5.0);
 temp = wc_vars[1]
 
 ## Load predictions
@@ -31,23 +32,27 @@ function expand_layers(layers::Array{SimpleSDMLayer,1})
     max_lat = max(map(x -> x.top, layers)...)
 
     # Get grid size (rounding should prevent problems with last decimal)
-    grid_size_lons = 1/round(1/stride(layers[1], dims=1))
-    grid_size_lats = 1/round(1/stride(layers[1], dims=2))
+    grid_size_lons = 1 / round(1 / stride(layers[1]; dims=1))
+    grid_size_lats = 1 / round(1 / stride(layers[1]; dims=2))
 
     # Get coordinate range of newlayer -> original layers must have same stride
-    lons_newlayers = min_lon+grid_size_lons:2*grid_size_lons:max_lon-grid_size_lons
-    lats_newlayers = min_lat+grid_size_lats:2*grid_size_lats:max_lat-grid_size_lats
+    lons_newlayers =
+        (min_lon + grid_size_lons):(2 * grid_size_lons):(max_lon - grid_size_lons)
+    lats_newlayers =
+        (min_lat + grid_size_lats):(2 * grid_size_lats):(max_lat - grid_size_lats)
 
     # Create expanded layers
     newlayers = []
     for i in 1:length(layers)
         # Get position of original layers in new layer
-        m_lon = findmin(abs.(layers[i].left+grid_size_lons .- lons_newlayers))[2]
-        M_lon = findmin(abs.(layers[i].right-grid_size_lons .- lons_newlayers))[2]
-        m_lat = findmin(abs.(layers[i].bottom+grid_size_lats .- lats_newlayers))[2]
-        M_lat = findmin(abs.(layers[i].top-grid_size_lats .- lats_newlayers))[2]
+        m_lon = findmin(abs.(layers[i].left + grid_size_lons .- lons_newlayers))[2]
+        M_lon = findmin(abs.(layers[i].right - grid_size_lons .- lons_newlayers))[2]
+        m_lat = findmin(abs.(layers[i].bottom + grid_size_lats .- lats_newlayers))[2]
+        M_lat = findmin(abs.(layers[i].top - grid_size_lats .- lats_newlayers))[2]
         # Create new grid
-        newgrid = fill(nothing, length(lats_newlayers), length(lons_newlayers)) |> Array{Union{Nothing, Float32}}
+        newgrid =
+            fill(nothing, length(lats_newlayers), length(lons_newlayers)) |>
+            Array{Union{Nothing,Float32}}
         # Fill in original values
         newgrid[(m_lat:M_lat), (m_lon:M_lon)] .= layers[i].grid
         # Convert to SimpleSDMLayer
@@ -72,16 +77,17 @@ plotn3 = plotSDM(newlayers[3])
 sdm_plot = plotSDM(newlayers[1])
 heatmap!(
     sdm_plot,
-    longitudes(newlayers[2]), latitudes(newlayers[2]), # layer range
-    newlayers[2].grid, # evenness values
+    longitudes(newlayers[2]),
+    latitudes(newlayers[2]), # layer range
+    newlayers[2].grid; # evenness values
     c=:viridis, # ~color palette
-    clim=(0.0, maximum(filter(!isnothing, newlayers[2].grid))) # colorbar limits
+    clim=(0.0, maximum(filter(!isnothing, newlayers[2].grid))), # colorbar limits
 )
 plot!(
-    sdm_plot,
+    sdm_plot;
     xlims=(pred.left, pred.right),
     ylims=(pred.bottom, pred.top),
-    aspectratio=92.60/60.75
+    aspectratio=92.60 / 60.75,
 )
 # Compare to p2
 plotp2
