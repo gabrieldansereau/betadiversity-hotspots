@@ -1,4 +1,5 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -18,14 +19,18 @@ end
 ## Load distribution data for all species
 glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 spenames = filter(:type => ==("species"), glossary).full_name
-distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i) for i in eachindex(spenames)]
+distributions = [
+    geotiff(
+        SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i
+    ) for i in eachindex(spenames)
+]
 
 ## Extract subareas
 # Northeast subarea
-coords_NE = (left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
+coords_NE = (left=-80.0, right=-60.0, bottom=40.0, top=50.0)
 distributions_NE = [d[coords_NE] for d in distributions]
 # Southwest subarea
-coords_SW = (left = -120.0, right = -100.0, bottom = 30.0, top = 40.0)
+coords_SW = (left=-120.0, right=-100.0, bottom=30.0, top=40.0)
 distributions_SW = [d[coords_SW] for d in distributions]
 
 ## Get Ymatrices
@@ -61,16 +66,18 @@ else
     plotfct = :plot
 end
 # Functions to add total beta diversity in rectangle
-rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
+rectangle(w, h, x, y) = Shape(x .+ [0, w, w, 0], y .+ [0, 0, h, h])
 function rectangle!(w, h, x, y, textstring, textsize)
     plot!(
-        rectangle(w, h, x, y), 
+        rectangle(w, h, x, y),
         color=:white, legend=:none,
         annotations=(x + (w / 2), y + (h / 2), text(textstring, textsize, :center)),
     )
 end
 # Function to produce combined plots
-function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_value=1, maintitle="", kw...)
+function plot_lcbd_relationship(
+    richness, lcbd, beta_total; scale=true, scaling_value=1, maintitle="", kw...
+)
     if scale
         if scaling_value == 1
             scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
@@ -79,18 +86,24 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
         lcbd = rescale(lcbd, extrema(lcbd) .* scaling_value)
     end
     p1 = eval(plotfct)(
-        lcbd, c=:viridis,
-        # title = "LCBD", 
-        colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))", 
+        lcbd;
+        c=:viridis
+        # title = "LCBD",
+        colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
         clim=extrema(lcbd)
     )
     p2 = histogram2d(
-        richness, lcbd, 
-        c=:viridis, bins=40, 
-        # title = "Relationship", 
+        richness,
+        lcbd;
+        c=:viridis,
+        bins=40,
+        # title = "Relationship",
         colorbar_title="Number of sites",
-        xlabel="Richness", ylabel="LCBD value (x $(format(scaling_value, commas=true)))", 
-        xlim=(1, 50), ylim=(-Inf, Inf), # clim = (1, 450),
+        xlabel="Richness",
+        ylabel="LCBD value (x $(format(scaling_value, commas=true)))",
+        xlim=(1, 50),
+        ylim=(-Inf, Inf),
+        # clim = (1, 450),
         # bottommargin = 4.0mm
     )
     vline!([median(richness)], label=:none, linestyle=:dash, c=:grey)
@@ -98,24 +111,38 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
 
     lmin, lmax = extrema(lcbd)
     lrange = lmax - lmin
-    rectangle!(16.0, 0.15 * lrange, 33.0, lmax - 0.2 * lrange, "BDtot = $(round(beta_total; digits=3))", 7)
-    
+    rectangle!(
+        16.0,
+        0.15 * lrange,
+        33.0,
+        lmax - 0.2 * lrange,
+        "BDtot = $(round(beta_total; digits=3))",
+        7,
+    )
+
     if maintitle != ""
         l = @layout [t{.01h}; grid(1, 2)]
         ptitle = plot(annotation=(0.0, 0.5, "$maintitle", :left), framestyle=:none)
         p = plot(
-            ptitle, p1, p2, 
-            layout=l, size=(900, 300), 
-            rightmargin=[0mm 5.0mm 0mm], leftmargin=[0mm 5.0mm 5.0mm],;
+            ptitle,
+            p1,
+            p2;
+            layout=l,
+            size=(900, 300),
+            rightmargin=[0mm 5.0mm 0mm],
+            leftmargin=[0mm 5.0mm 5.0mm],
             kw...
         )
     else
         l = @layout [a{0.5w} b{0.5w,0.9h}]
         p = plot(
-            p1, p2, 
-            layout=l, size=(900, 300),
+            p1,
+            p2,
+            layout=l,
+            size=(900, 300),
             # bottommargin = [0.0mm 5.0mm],
-            rightmargin=[5.0mm 0mm], leftmargin=[5.0mm 5.0mm];
+            rightmargin=[5.0mm 0mm],
+            leftmargin=[5.0mm 5.0mm],
             kw...
         )
     end
@@ -123,15 +150,8 @@ function plot_lcbd_relationship(richness, lcbd, beta_total; scale=true, scaling_
 end
 
 # Combined subarea figures
-resNEtr = plot_lcbd_relationship(
-    richness_NE, lcbd_NE, beta_NE,
-    # maintitle = "Northeast subarea"
-)
-resSWtr = plot_lcbd_relationship(
-    richness_SW, lcbd_SW, beta_SW,
-    scaling_value=1000,
-    # maintitle = "Southwest subarea",
-)
+resNEtr = plot_lcbd_relationship(richness_NE, lcbd_NE, beta_NE)
+resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW, beta_SW, scaling_value=1000)
 yticks!(resNEtr[1], 40:2:50)
 yticks!(resSWtr[1], 30:2:40)
 xticks!(resNEtr[1], -80:4:-60)
@@ -146,9 +166,10 @@ elseif outcome == "raw"
     resSWtr[2][:clims] = (-Inf, cmax)
 end
 combined_plot = plot(
-    resNEtr, resSWtr, 
-    layout=grid(2, 1), 
-    size=(900, 600), 
+    resNEtr,
+    resSWtr;
+    layout=grid(2, 1),
+    size=(900, 600),
     bottommargin=0.0mm,
     title=["a) Northeast subregion" "" "b) Southwest subregion" ""]
 )
@@ -156,16 +177,31 @@ combined_plot = plot(
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(plot(combined_plot, dpi=200), joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png"))
+    savefig(
+        plot(combined_plot, dpi=200),
+        joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png")
+    )
 end
 
 #### Repeat for different subareas
-function plot_subareas(coords, initial_distributions, scaling=1; display_coords=coords, transform=true, relative=false, kw...)
+function plot_subareas(
+    coords,
+    initial_distributions,
+    scaling=1;
+    display_coords=coords,
+    transform=true,
+    relative=false,
+    kw...
+)
     distributions = [d[coords] for d in initial_distributions]
     Y = calculate_Y(distributions)
     richness = calculate_richness(Y, distributions[1])
-    lcbd = calculate_lcbd(Y, distributions[1];
-                          transform=transform, relative=relative)
+    lcbd = calculate_lcbd(
+        Y,
+        distributions[1];
+        transform=transform,
+        relative=relative
+    )
     beta_total = calculate_BDtotal(Y)
     if display_coords != coords
         richness = richness[display_coords]
@@ -176,10 +212,11 @@ end
 
 # Initial subarea
 left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
-coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+coords_subarea = (left=left, right=right, bottom=bottom, top=top)
 # Relative LCBD values
 p = plot_subareas(
-    coords_subarea, distributions; 
+    coords_subarea,
+    distributions;
     formatter=[f -> "$(Int(f))" :plain],
     # clim = [:auto :auto],
     title=["LCBD" "Relationship"]
@@ -188,16 +225,16 @@ p = plot_subareas(
 ## Expanding GIF
 # Set initial coordinates
 left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
-coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+coords_subarea = (left=left, right=right, bottom=bottom, top=top)
 # Set other values
 asp_ratio = 92.60 / 60.75
-dim_ratio = (top - bottom) / (right - left)
+dim_ratio = (top - bottom)/(right - left)
 # Get increasing subarea coordinates
 subarea_coords = []
 @time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
     global left -= asp_ratio
     global bottom -= asp_ratio * dim_ratio
-    bbox = (left = left, right = right, bottom = bottom, top = top)
+    bbox = (left=left, right=right, bottom=bottom, top=top)
     push!(subarea_coords, bbox)
 end
 
@@ -205,7 +242,8 @@ end
 subarea_plots = []
 for sc in subarea_coords
     local p = plot_subareas(
-        sc, distributions;
+        sc,
+        distributions;
         # formatter = f -> "$(round(f, digits = 1))",
         formatter=[f -> "$(Int(round(f, digits=0)))" :plain],
         # clim = [:auto :auto],
@@ -222,7 +260,7 @@ anim = @animate for p in subarea_plots[Not(1)]
 end
 gif(anim, fps=3)
 if (@isdefined save_figures) && save_figures == true
-    gif(anim, joinpath("fig", outcome, "05-3_$(outcome)_subareas.gif"), fps=3)
+    gif(anim, joinpath("fig", outcome, "05-3_$(outcome)_subareas.gif"); fps=3)
 end
 
 #### 3 scales comparison
@@ -233,8 +271,10 @@ ps = subarea_plots[[1, mid_ind, end]]
 
 # Combine 3 scales
 p = plot(
-    deepcopy(ps)..., 
-    dpi=200, layout=(3, 1), size=(900, 960),
+    deepcopy(ps)...;
+    dpi=200,
+    layout=(3, 1),
+    size=(900, 960),
     title=["a) Regional extent" "" "b) Intermediate extent" "" "c) Continental extent" ""],
     titleloc=:left,
     bottommargin=-2.0mm,
@@ -269,11 +309,11 @@ for sc in subarea_coords
     local distribs = [d[sc] for d in distributions]
     local Y = calculate_Y(distribs)
     local richness = calculate_richness(Y, distribs[1])
-    local lcbd = calculate_lcbd(Y, distribs[1], relative=false)
+    local lcbd = calculate_lcbd(Y, distribs[1]; relative=false)
     local lcbd_abs = calculate_lcbd(Y, distribs[1]; relative=false)
     local beta_total = calculate_BDtotal(Y)
     local gamma = calculate_gamma(Y)
-    
+
     push!(richness_medians, median(richness))
     push!(lcbd_medians, median(lcbd))
     push!(lcbd_mins, minimum(lcbd))
@@ -305,11 +345,16 @@ medians_df = DataFrame(
 )
 # Plot values across scales (step-by-step plots)
 medians_p1 = plot(
-    medians_df.idx, medians_df.richness, 
-    label="Median richness", lw=2,
-    xlabel="Subarea extent", ylabel="Subarea value (relative to maximum)",
-    legend=:bottomright, xticks=:none, 
-    ylim=(0, 1), top_margin=mm
+    medians_df.idx,
+    medians_df.richness;
+    label="Median richness",
+    lw=2,
+    xlabel="Subarea extent",
+    ylabel="Subarea value (relative to maximum)",
+    legend=:bottomright,
+    xticks=:none,
+    ylim=(0, 1),
+    top_margin=mm
 )
 medians_p2 = plot!(deepcopy(medians_p1), medians_df.lcbd, label="Median LCBD", lw=2)
 medians_p3 = plot!(deepcopy(medians_p2), medians_df.beta, label="Total beta diversity", lw=2)
