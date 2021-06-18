@@ -4,7 +4,8 @@
 # BUT be careful as some steps might take a while
 
 # Load required packages & scripts
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 include("required.jl")
 
 ## Part I - Data preparation ####

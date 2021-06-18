@@ -1,4 +1,5 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -7,7 +8,9 @@ include("required.jl")
 ## EBD data preparation
 
 # Load data from CSV files (from file cut with terminal)
-@time df = CSV.read(joinpath("data", "raw", "ebd_warblers_cut.csv"), DataFrame, header=true, delim="\t")
+@time df = CSV.read(
+    joinpath("data", "raw", "ebd_warblers_cut.csv"), DataFrame; header=true, delim="\t"
+)
 
 # Prepare data (arrange values & columns)
 @time prepare_ebd_data!(df)
@@ -27,7 +30,7 @@ newdf = vcat(df_nogroups, df_groups_unique)
 # save_prepdata = true # should prepared data be overwritten (optional)
 if (@isdefined save_prepdata) && save_prepdata == true
     @info "Data exported to file (data preparation)"
-    CSV.write(joinpath("data", "proc", "ebd_warblers_prep.csv"), newdf, delim="\t")
+    CSV.write(joinpath("data", "proc", "ebd_warblers_prep.csv"), newdf; delim="\t")
 else
     @info "Data not exported (data preparation)"
 end

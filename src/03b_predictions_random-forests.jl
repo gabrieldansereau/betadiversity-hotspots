@@ -1,5 +1,6 @@
 #### 03b - Random Forests predictions ####
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 using RCall
 R"source(file.path('src', 'required.R'))" # bug with `velox` if not called here
 include("required.jl")
@@ -65,12 +66,19 @@ Y[inds_zeros, :] .= nothing
 # Load raw distributions (for grid size)
 glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 spenames = filter(:type => ==("species"), glossary).full_name
-distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_raw.tif"), i) for i in eachindex(spenames)]
+distributions = [
+    geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_raw.tif"), i) for
+    i in eachindex(spenames)
+]
 raw_distributions = distributions
 # Get layer dimensions & limits
 dims = size(raw_distributions[1].grid)
-lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
-        bottom = raw_distributions[1].bottom, top = raw_distributions[1].top)
+lims = (
+    left=raw_distributions[1].left,
+    right=raw_distributions[1].right,
+    bottom=raw_distributions[1].bottom,
+    top=raw_distributions[1].top,
+)
 
 # Create RF distribution layers
 Ydistrib = replace(Y, 0.0 => nothing)
@@ -82,8 +90,10 @@ distributions = SimpleSDMResponse.(Ygrids, lims...)
 # save_data = true
 if (@isdefined save_data) && save_data == true
     @save joinpath("data", "jld2", "rf-distributions.jld2") distributions
-    _zip_jld2(joinpath("data", "jld2", "rf-distributions.zip"),
-              joinpath("data", "jld2", "rf-distributions.jld2"))
+    _zip_jld2(
+        joinpath("data", "jld2", "rf-distributions.zip"),
+        joinpath("data", "jld2", "rf-distributions.jld2"),
+    )
     touch(joinpath("data", "jld2", "rf-distributions.jld2"))
 end
 

@@ -1,4 +1,5 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 include("required.jl")
 
 ## Get data
@@ -10,10 +11,10 @@ cor(results.richness_raw, results.richness_sdm)
 cor(results.lcbd_raw, results.lcbd_sdm)
 
 # Check distribution
-histogram(results.richness_raw, title="richness_raw", legend=:none)
-histogram(results.richness_sdm, title="richness_sdm", legend=:none)
-histogram(results.lcbd_raw, title="lcbd_raw", legend=:none)
-histogram(results.lcbd_sdm, title="lcbd_sdm", legend=:none)
+histogram(results.richness_raw; title="richness_raw", legend=:none)
+histogram(results.richness_sdm; title="richness_sdm", legend=:none)
+histogram(results.lcbd_raw; title="lcbd_raw", legend=:none)
+histogram(results.lcbd_sdm; title="lcbd_sdm", legend=:none)
 
 mean(results.richness_raw)
 std(results.richness_raw)
@@ -42,7 +43,7 @@ vcov(lm_richness)
 predict(lm_richness)
 
 function glance(model::StatsModels.TableRegressionModel{<:LinearModel})
-    DataFrame(
+    return DataFrame(;
         r_squared=r2(model),
         adj_r_squared=adjr2(model),
         # sigma(model),
@@ -69,7 +70,7 @@ glm_richness = glm(@formula(richness_sdm ~ richness_raw), results, Poisson())
 deviance(glm_richness) / dof_residual(glm_richness) # Overdispersion
 
 function glance(model::StatsModels.TableRegressionModel{<:GeneralizedLinearModel})
-    glancedf = DataFrame(
+    return glancedf = DataFrame(;
         # null_deviance = nulldeviance(model) # not working
         null_deviance=missing,
         df_null=dof_residual(model),
@@ -92,5 +93,3 @@ glm_lcbd = glm(@formula(lcbd_sdm ~ lcbd_raw), results, Gamma())
 glance(glm_lcbd)
 
 # residuals(glm_richness)
-
-

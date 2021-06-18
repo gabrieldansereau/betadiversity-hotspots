@@ -1,4 +1,5 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -18,10 +19,10 @@ end
 
 ## Get & prepare data
 # Define coordinates range
-coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
+coords = (left=-145.0, right=-50.0, bottom=20.0, top=75.0)
 copy_layer = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
 # Load data from CSV files
-df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t")
+df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame)
 # Remove groupIdentifier column (causing bug)
 select!(df, Not(:groupIdentifier))
 # Filter observations outside coordinates range
@@ -45,18 +46,26 @@ specommon = [w.commonName[1] for w in warblers]
 speindex = indexmap(spenames)
 
 # Observed coordinates range
-coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
-              bottom = minimum(df.latitude), top = maximum(df.latitude))
+coords_obs = (
+    left=minimum(df.longitude),
+    right=maximum(df.longitude),
+    bottom=minimum(df.latitude),
+    top=maximum(df.latitude),
+)
 
 ## Get environmental data (with different training resolutions)
 # WorldClim data
-wc_vars = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution=10.0, coords...);
+wc_vars = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution=10.0, coords...)
 # Landcover data
 lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=10.0, coords...)
 
 # Training data with finer resolution
-wc_vars_train = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution=5.0, coords_obs...);
-lc_vars_train = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=5.0, coords_obs...)
+wc_vars_train = SimpleSDMPredictor(
+    WorldClim, BioClim, [1, 12]; resolution=5.0, coords_obs...
+)
+lc_vars_train = SimpleSDMPredictor(
+    Copernicus, LandCover, 1:10; resolution=5.0, coords_obs...
+)
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
@@ -70,10 +79,14 @@ if (@isdefined create_distributions) && create_distributions == true
     # Select function to run given desired outcome
     if outcome == "raw"
         # Get raw distributions
-        @time distributions = @showprogress [presence_absence(w, env_vars[1]) for w in warblers]
+        @time distributions = @showprogress [
+            presence_absence(w, env_vars[1]) for w in warblers
+        ]
     elseif outcome == "bio"
         # Get sdm distributions (with different training resolutions)
-        @time distributions = @showprogress map(x -> bioclim(x, env_vars, training_layers=env_vars_train), warblers);
+        @time distributions = @showprogress [
+            bioclim(w, env_vars; training_layers=env_vars_train) for w in warblers
+        ]
     end
 end
 
@@ -86,14 +99,16 @@ if (@isdefined save_data) && save_data == true
     @save joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames specommon speindex
     # Export to ZIP archive
     @info "Exporting data from JLD2 to ZIP archive ($(outcome) distributions data)"
-    _zip_jld2(joinpath("data", "jld2", "$(outcome)-distributions.zip"),
-              joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
+    _zip_jld2(
+        joinpath("data", "jld2", "$(outcome)-distributions.zip"),
+        joinpath("data", "jld2", "$(outcome)-distributions.jld2"),
+    )
     # Make sure JLD2 timestamp is more recent than ZIP archive
     touch(joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
     # Export distribution layers
     geotiff(joinpath("data", "proc", "distributions_raw.tif"), distributions)
     # Export distributions for QC only
-    coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
+    coords_qc = (left=-80.0, right=-55.0, bottom=45.0, top=63.0)
     distributions_qc = [d[coords_qc] for d in distributions]
     geotiff(joinpath("data", "proc", "distributions_raw_qc.tif"), distributions_qc)
 
@@ -108,33 +123,45 @@ if (@isdefined save_data) && save_data == true
     rename!(spe_df, Symbol.("sp", 1:ncol(spe_df)))
     insertcols!(spe_df, 1, :site => inds_obs)
     # Export to CSV
-    CSV.write(joinpath("data", "proc", "distributions_spe_full.csv"), spe_df, delim="\t")
+    CSV.write(joinpath("data", "proc", "distributions_spe_full.csv"), spe_df; delim="\t")
 else
     # Load data
     @info "Data imported from file ($(outcome) distributions data)"
     @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") spenames specommon speindex
-    distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i) for i in eachindex(spenames)]
+    distributions = [
+        geotiff(
+            SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i
+        ) for i in eachindex(spenames)
+    ]
 end
 
 ## Count sites with presence per species
-pres_counts = [length(filter(x -> !isnothing(x) && x > 0.0, species.grid)) for species in distributions]
+pres_counts = [
+    length(filter(x -> !isnothing(x) && x > 0.0, species.grid)) for species in distributions
+]
 sort(pres_counts)
 
 ## Plot result
 # Species 1
 sp1 = "Setophaga_townsendi"
-map_sp1 = plotSDM2(distributions[speindex[sp1]], c=:BuPu,
-                   title="$(replace(sp1, "_" => " ")) distribution ($(outcome))",
-                   colorbar=:none,
-                   dpi=200)
+map_sp1 = plotSDM2(
+    distributions[speindex[sp1]];
+    c=:BuPu,
+    title="$(replace(sp1, "_" => " ")) distribution ($(outcome))",
+    colorbar=:none,
+    dpi=200,
+)
 # scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 # Species 2
 sp2 = "Setophaga_petechia"
-map_sp2 = plotSDM2(distributions[speindex[sp2]], c=:BuPu,
-                   title="$(replace(sp2, "_" => " ")) distribution ($(outcome))",
-                   colorbar=:none,
-                   dpi=200)
+map_sp2 = plotSDM2(
+    distributions[speindex[sp2]];
+    c=:BuPu,
+    title="$(replace(sp2, "_" => " ")) distribution ($(outcome))",
+    colorbar=:none,
+    dpi=200,
+)
 # scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 
