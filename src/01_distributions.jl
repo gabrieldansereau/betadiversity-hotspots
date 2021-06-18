@@ -134,7 +134,7 @@ sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM2(distributions[speindex[sp2]], c = :BuPu,
                    title = "$(replace(sp2, "_" => " ")) distribution ($(outcome))",
                    colorbar = :none,
-                   spi = 200)
+                   dpi = 200)
 # scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 
