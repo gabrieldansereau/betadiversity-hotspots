@@ -55,7 +55,7 @@ end
 ## Create Y matrices
 
 # Get matrix Y
-Y = replace(predictions_full, missing => nothing) |> Array{Union{Nothing, Float32}}
+Y = replace(predictions_full, missing => nothing) |> Array{Union{Nothing,Float32}}
 # Set values to nothing if no species present
 inds_zeros = _indsnotobs(Y)
 Y[inds_zeros, :] .= nothing
@@ -74,7 +74,7 @@ lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
 
 # Create RF distribution layers
 Ydistrib = replace(Y, 0.0 => nothing)
-Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib,2)]
+Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib, 2)]
 Ygrids = reshape.(Ygrids, dims...) .|> Array
 distributions = SimpleSDMResponse.(Ygrids, lims...)
 

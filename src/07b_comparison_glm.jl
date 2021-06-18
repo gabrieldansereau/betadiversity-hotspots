@@ -10,15 +10,15 @@ cor(results.richness_raw, results.richness_sdm)
 cor(results.lcbd_raw, results.lcbd_sdm)
 
 # Check distribution
-histogram(results.richness_raw, title = "richness_raw", legend = :none)
-histogram(results.richness_sdm, title = "richness_sdm", legend = :none)
-histogram(results.lcbd_raw, title = "lcbd_raw", legend = :none)
-histogram(results.lcbd_sdm, title = "lcbd_sdm", legend = :none)
+histogram(results.richness_raw, title="richness_raw", legend=:none)
+histogram(results.richness_sdm, title="richness_sdm", legend=:none)
+histogram(results.lcbd_raw, title="lcbd_raw", legend=:none)
+histogram(results.lcbd_sdm, title="lcbd_sdm", legend=:none)
 
 mean(results.richness_raw)
 std(results.richness_raw)
 variation(results.richness_raw)
-var(results.richness_raw)/mean(results.richness_raw)
+var(results.richness_raw) / mean(results.richness_raw)
 
 mean(results.richness_sdm)
 std(results.richness_sdm)
@@ -43,21 +43,21 @@ predict(lm_richness)
 
 function glance(model::StatsModels.TableRegressionModel{<:LinearModel})
     DataFrame(
-        r_squared = r2(model),
-        adj_r_squared = adjr2(model),
+        r_squared=r2(model),
+        adj_r_squared=adjr2(model),
         # sigma(model),
-        sigma = missing,
+        sigma=missing,
         # ftest(model),
-        statistic = missing,
+        statistic=missing,
         # pvalue(model),
-        pvalue = missing,
-        df = dof(model),
-        loglik = loglikelihood(model),
-        AIC = aic(model),
-        BIC = bic(model),
-        deviance = deviance(model),
-        df_residual = dof_residual(model),
-        nobs = nobs(model),
+        pvalue=missing,
+        df=dof(model),
+        loglik=loglikelihood(model),
+        AIC=aic(model),
+        BIC=bic(model),
+        deviance=deviance(model),
+        df_residual=dof_residual(model),
+        nobs=nobs(model),
     )
 end
 glance(lm_richness)
@@ -71,14 +71,14 @@ deviance(glm_richness) / dof_residual(glm_richness) # Overdispersion
 function glance(model::StatsModels.TableRegressionModel{<:GeneralizedLinearModel})
     glancedf = DataFrame(
         # null_deviance = nulldeviance(model) # not working
-        null_deviance = missing,
-        df_null = dof_residual(model),
-        loglik = loglikelihood(model),
-        AIC = aic(model),
-        BIC = bic(model),
-        deviance = deviance(model),
-        df_residual = nobs(model) - dof(model),
-        nobs = nobs(model),
+        null_deviance=missing,
+        df_null=dof_residual(model),
+        loglik=loglikelihood(model),
+        AIC=aic(model),
+        BIC=bic(model),
+        deviance=deviance(model),
+        df_residual=nobs(model) - dof(model),
+        nobs=nobs(model),
     )
 end
 glance(glm_richness)

@@ -36,7 +36,7 @@ warblers = groupby(df, :species)
 # sort!(warblers, by = x -> nrow(x), rev = true)
 warblers = warblers |> 
     x -> combine(nrow, x) |>
-    x -> sortperm(x, :nrow, rev = true) |>
+    x -> sortperm(x, :nrow, rev=true) |>
     x -> warblers[x]
 # Extract species names
 spenames = [w.species[1] for w in warblers]
@@ -50,13 +50,13 @@ coords_obs = (left = minimum(df.longitude), right = maximum(df.longitude),
 
 ## Get environmental data (with different training resolutions)
 # WorldClim data
-wc_vars = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 10.0, coords...);
+wc_vars = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution=10.0, coords...);
 # Landcover data
-lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 10.0, coords...)
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=10.0, coords...)
 
 # Training data with finer resolution
-wc_vars_train = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution = 5.0, coords_obs...);
-lc_vars_train = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 5.0, coords_obs...)
+wc_vars_train = SimpleSDMPredictor(WorldClim, BioClim, [1, 12]; resolution=5.0, coords_obs...);
+lc_vars_train = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=5.0, coords_obs...)
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
@@ -73,7 +73,7 @@ if (@isdefined create_distributions) && create_distributions == true
         @time distributions = @showprogress [presence_absence(w, env_vars[1]) for w in warblers]
     elseif outcome == "bio"
         # Get sdm distributions (with different training resolutions)
-        @time distributions = @showprogress map(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
+        @time distributions = @showprogress map(x -> bioclim(x, env_vars, training_layers=env_vars_train), warblers);
     end
 end
 
@@ -123,18 +123,18 @@ sort(pres_counts)
 ## Plot result
 # Species 1
 sp1 = "Setophaga_townsendi"
-map_sp1 = plotSDM2(distributions[speindex[sp1]], c = :BuPu,
-                   title = "$(replace(sp1, "_" => " ")) distribution ($(outcome))",
-                   colorbar = :none,
-                   dpi = 200)
+map_sp1 = plotSDM2(distributions[speindex[sp1]], c=:BuPu,
+                   title="$(replace(sp1, "_" => " ")) distribution ($(outcome))",
+                   colorbar=:none,
+                   dpi=200)
 # scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 # Species 2
 sp2 = "Setophaga_petechia"
-map_sp2 = plotSDM2(distributions[speindex[sp2]], c = :BuPu,
-                   title = "$(replace(sp2, "_" => " ")) distribution ($(outcome))",
-                   colorbar = :none,
-                   dpi = 200)
+map_sp2 = plotSDM2(distributions[speindex[sp2]], c=:BuPu,
+                   title="$(replace(sp2, "_" => " ")) distribution ($(outcome))",
+                   colorbar=:none,
+                   dpi=200)
 # scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 

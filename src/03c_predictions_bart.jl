@@ -8,18 +8,18 @@ include("required.jl")
 ## Load predictions from CSV
 summaries  = CSV.read(joinpath("data", "proc", "bart_summaries.csv"), DataFrame)
 varimps  = CSV.read(joinpath("data", "proc", "bart_varimps.csv"), DataFrame)
-pred_df  = CSV.read(joinpath("data", "proc", "bart_predictions_prob.csv"), DataFrame, missingstrings = ["NA"])
-lower_df = CSV.read(joinpath("data", "proc", "bart_predictions_lower.csv"), DataFrame, missingstrings = ["NA"])
-upper_df = CSV.read(joinpath("data", "proc", "bart_predictions_upper.csv"), DataFrame, missingstrings = ["NA"])
-pres_df  = CSV.read(joinpath("data", "proc", "bart_predictions_pres.csv"), DataFrame, missingstrings = ["NA"])
+pred_df  = CSV.read(joinpath("data", "proc", "bart_predictions_prob.csv"), DataFrame, missingstrings=["NA"])
+lower_df = CSV.read(joinpath("data", "proc", "bart_predictions_lower.csv"), DataFrame, missingstrings=["NA"])
+upper_df = CSV.read(joinpath("data", "proc", "bart_predictions_upper.csv"), DataFrame, missingstrings=["NA"])
+pres_df  = CSV.read(joinpath("data", "proc", "bart_predictions_pres.csv"), DataFrame, missingstrings=["NA"])
 
 ## Create Y matrices
 
 # Get matrix Y
-Y = replace(Array(pres_df), missing => nothing) |> Array{Union{Nothing, Float32}}
-Yprob  = replace(Array(pred_df),  missing => nothing) |> Array{Union{Nothing, Float32}}
-Ylower = replace(Array(lower_df), missing => nothing) |> Array{Union{Nothing, Float32}}
-Yupper = replace(Array(upper_df), missing => nothing) |> Array{Union{Nothing, Float32}}
+Y = replace(Array(pres_df), missing => nothing) |> Array{Union{Nothing,Float32}}
+Yprob  = replace(Array(pred_df),  missing => nothing) |> Array{Union{Nothing,Float32}}
+Ylower = replace(Array(lower_df), missing => nothing) |> Array{Union{Nothing,Float32}}
+Yupper = replace(Array(upper_df), missing => nothing) |> Array{Union{Nothing,Float32}}
 # Set values to nothing if no species present
 inds_zeros = _indsnotobs(Y)
 Y[inds_zeros,:] .= nothing
@@ -42,7 +42,7 @@ lims = boundingbox(raw_distributions[1])
 layers = []
 for Y in (Y, Yprob, Ylower, Yupper)
     Ydistrib = replace(Y, 0.0 => nothing)
-    Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib,2)]
+    Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib, 2)]
     Ygrids = reshape.(Ygrids, dims...) .|> Array
     distributions = SimpleSDMResponse.(Ygrids, lims...)
     push!(layers, distributions)
@@ -79,36 +79,36 @@ lcbd = calculate_lcbd(Y, distributions[1])
 
 # Get uncertainty per species
 uncertainty = upper_distrib .- lower_distrib
-plotSDM2(uncertainty[1], c = :viridis)
+plotSDM2(uncertainty[1], c=:viridis)
 
 # Uncertainty sum
 uncertainty_sum = sum(uncertainty)
-plotSDM2(uncertainty_sum, c = :viridis)
+plotSDM2(uncertainty_sum, c=:viridis)
 # Uncertainty mean
 uncertainty_mean = mean(uncertainty)
-plotSDM2(uncertainty_mean, c = :viridis)
+plotSDM2(uncertainty_mean, c=:viridis)
 histogram(uncertainty_mean)
 
 # Plot uncertainty & histogram
-function uncertainty_plot(layer; title = "")
+function uncertainty_plot(layer; title="")
     unc_map = plotSDM2(layer,
-                        c = :viridis, clim = extrema(layer),
-                        title = "Uncertainty",
-                        colorbar_title = "Uncertainty mean")
+                        c=:viridis, clim=extrema(layer),
+                        title="Uncertainty",
+                        colorbar_title="Uncertainty mean")
     unc_hist = histogram(layer,
-                          legend = :none,
+                          legend=:none,
                           # ylim = maxrange, # xlabel = "Difference",
-                          title = "Distribution of uncertainty values",
-                          orientation = :horizontal)
-    unc_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
+                          title="Distribution of uncertainty values",
+                          orientation=:horizontal)
+    unc_title = plot(annotation=(0.5, 0.5, "$(title)"), framestyle=:none)
     l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
     unc_plot = plot(unc_title, unc_map, unc_hist,
-                     size = (800, 400), layout = l)
+                     size=(800, 400), layout=l)
     return unc_plot
 end
-unc_plot = uncertainty_plot(uncertainty_mean, title = "Uncertainty mean (BART SDMs)")
+unc_plot = uncertainty_plot(uncertainty_mean, title="Uncertainty mean (BART SDMs)")
 
 # Export uncertainty plot
 if (@isdefined save_figures) && save_figures == true
-    savefig(plot(unc_plot, dpi = 150), joinpath("fig", "bart", "x_bart_uncertainty.png"))
+    savefig(plot(unc_plot, dpi=150), joinpath("fig", "bart", "x_bart_uncertainty.png"))
 end

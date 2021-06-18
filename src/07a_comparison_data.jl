@@ -10,7 +10,7 @@ outcome = "raw"
 include("04_analysis.jl")
 
 # Add non-relative LCBD values
-lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
+lcbdnr = calculate_lcbd(Y, lcbd; relative=false)
 
 # Assemble results
 raw = (
@@ -29,7 +29,7 @@ outcome = "bart"
 include("04_analysis.jl")
 
 # Add non-relative LCBD values
-lcbdnr = calculate_lcbd(Y, lcbd; relative = false)
+lcbdnr = calculate_lcbd(Y, lcbd; relative=false)
 
 # Assemble results
 sdm = (
@@ -48,7 +48,7 @@ inds_common = intersect(_indsobs(raw.Y), _indsobs(sdm.Y))
 function recalculate_lcbd(Y, layer, inds_common)
     Ycommon = copy(Y)
     Ycommon[Not(inds_common), :] .= nothing
-    lcbd_common = calculate_lcbd(Ycommon, layer; relative = false)
+    lcbd_common = calculate_lcbd(Ycommon, layer; relative=false)
     return lcbd_common
 end
 lcbdcom_raw = recalculate_lcbd(raw.Y, raw.lcbd, inds_common)
@@ -80,5 +80,5 @@ results = convert.(Float64, results)
 
 # Export to CSV
 if (@isdefined save_additional_data) && save_additional_data == true
-    CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
+    CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim="\t")
 end
