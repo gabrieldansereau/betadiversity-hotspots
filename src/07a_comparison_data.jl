@@ -74,10 +74,6 @@ rename!(
     :x5 => :lcbdnr_raw, :x6 => :lcbdnr_sdm
 )
 # Remove lines with missing values
-allowmissing!(results, Not([:latitude, :longitude]))
-for col in eachcol(results)
-    replace!(col, nothing => missing)
-end
 dropmissing!(results)
 # Convert to Float64 (cannot write to CSV otherwise)
 results = convert.(Float64, results)
