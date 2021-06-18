@@ -66,7 +66,7 @@ function plotSDM2(layer::SimpleSDMLayer; kw...)
     # kw: optional plotting arguments
 
     # Create background layer
-    coords = (left = layer.left, right = layer.right, top = layer.top, bottom = layer.bottom)
+    coords = boundingbox(layer)
     baselayer = similar(SimpleSDMPredictor(WorldClim, BioClim, 1; coords...))
 
     # Create empty plot
@@ -104,8 +104,8 @@ end
     seriestype --> :heatmap
     if get(plotattributes, :seriestype, :heatmap) in [:heatmap, :contour]
         aspect_ratio --> 92.60/60.75
-        xlims --> (minimum(longitudes(layer)),maximum(longitudes(layer)))
-        ylims --> (minimum(latitudes(layer)),maximum(latitudes(layer)))
+        xlims --> (layer.left, layer.right)
+        ylims --> (layer.bottom, layer.top)
         xguide --> "Longitude"
         yguide --> "Latitude"
         lg = copy(layer.grid)

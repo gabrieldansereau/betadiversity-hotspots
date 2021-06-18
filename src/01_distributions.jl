@@ -125,14 +125,16 @@ sort(pres_counts)
 sp1 = "Setophaga_townsendi"
 map_sp1 = plotSDM2(distributions[speindex[sp1]], c = :BuPu,
                    title = "$(replace(sp1, "_" => " ")) distribution ($(outcome))",
-                   colorbar = :none)
+                   colorbar = :none,
+                   dpi = 200)
 # scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 # Species 2
 sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM2(distributions[speindex[sp2]], c = :BuPu,
                    title = "$(replace(sp2, "_" => " ")) distribution ($(outcome))",
-                   colorbar = :none)
+                   colorbar = :none,
+                   spi = 200)
 # scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 

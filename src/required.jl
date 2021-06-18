@@ -17,6 +17,7 @@ using ArchGDAL
 using RCall
 using ZipFile
 using Formatting
+using StatsPlots
 
 include(joinpath("lib", "analysis.jl"))
 include(joinpath("lib", "beta-div.jl"))

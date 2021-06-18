@@ -132,16 +132,18 @@ resSWtr = plot_lcbd_relationship(
     scaling_value = 1000,
     # maintitle = "Southwest subarea",
 )
+yticks!(resNEtr[1], 40:2:50)
+yticks!(resSWtr[1], 30:2:40)
+xticks!(resNEtr[1], -80:4:-60)
+xticks!(resSWtr[1], -120:4:-100)
 if outcome == "bart"
     local cmax = 450
     resNEtr[2][:clims] = (-Inf, cmax)
     resSWtr[2][:clims] = (-Inf, cmax)
-    yticks!(resSWtr[2], 0.1:0.05:0.5)
 elseif outcome == "raw"
     local cmax = 285
     resNEtr[2][:clims] = (-Inf, cmax)
     resSWtr[2][:clims] = (-Inf, cmax)
-    yticks!(resNEtr[2], 0.25:0.25:1.0)
 end
 combined_plot = plot(
     resNEtr, resSWtr, 
@@ -237,13 +239,14 @@ p = plot(
     titleloc = :left,
     bottommargin = -2.0mm,
 )
+yticks!(p[3], 34:3:50)
 if outcome == "bart"
-    yticks!(p[2], 0.5:0.5:5.0)
     yticks!(p[6], 1.5:0.5:5.0)
 elseif outcome == "raw"
     yticks!(p[4], 0.5:0.5:2.5)
     yticks!(p[6], 2:1:9)
 end
+p
 
 # Export figures
 # save_figures = true

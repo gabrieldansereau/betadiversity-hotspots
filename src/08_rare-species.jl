@@ -219,7 +219,6 @@ if (@isdefined save_additional_figures) && save_additional_figures == true
 end
 
 ## Ascending & descending parts
-using StatsPlots
 
 # Check relationship plots
 combined_plot
@@ -248,6 +247,10 @@ function ascending_plots(richness, lcbd, rarespecies)
 end
 p_asc1 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
 p_asc2 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
+yticks!(p_asc1[1], 40:2:50)
+yticks!(p_asc2[1], 30:2:40)
+xticks!(p_asc1[1], -80:4:-60)
+xticks!(p_asc2[1], -120:4:-100)
 asc_plots = plot(
     p_asc1, p_asc2, 
     layout = (2,1), size = (900, 660),
