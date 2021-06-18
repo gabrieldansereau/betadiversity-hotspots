@@ -56,7 +56,7 @@ for Y in (Y, Yprob, Ylower, Yupper)
     Ydistrib = replace(Y, 0.0 => nothing)
     Ygrids = [Ydistrib[:, col] for col in 1:size(Ydistrib, 2)]
     Ygrids = reshape.(Ygrids, dims...) .|> Array
-    distributions = SimpleSDMResponse.(Ygrids, lims...)
+    local distributions = SimpleSDMResponse.(Ygrids, lims...)
     push!(layers, distributions)
 end
 distributions, prob_distrib, lower_distrib, upper_distrib = layers;
