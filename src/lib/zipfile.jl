@@ -9,9 +9,9 @@ If a JLD2 does not exist, it will be extracted from the archives and written to 
 A warning will be returned if ZIP archives are more recent than their corresponding JLD2 files,
 likely indicating upstream changes. Re-run with `extract_recent` set to `true` to extract the newer files.
 """
-function verify_jld2_data(path::AbstractString; extract_recent::Bool = false)
+function verify_jld2_data(path::AbstractString; extract_recent::Bool=false)
     # List zip files
-    files = readdir(path, join = true)
+    files = readdir(path; join=true)
     zipfiles = filter(x -> occursin(".zip", x), files)
     # Check if corresponding .jld2 exist
     jldfiles = replace.(zipfiles, ".zip" => ".jld2")
@@ -22,7 +22,7 @@ function verify_jld2_data(path::AbstractString; extract_recent::Bool = false)
               One (or more) JLD2 file is missing.
               It will be extracted from the ZIP archives and written to disk.
               """
-        for (i,j) in zip(findall(missing_files), 1:sum(missing_files))
+        for (i, j) in zip(findall(missing_files), 1:sum(missing_files))
             @info "Reading $(jldfiles[i]) from archive ($(j)/$(sum(missing_files)))"
             _unzip_jld2(zipfiles[i], jldfiles[i])
         end
@@ -36,7 +36,7 @@ function verify_jld2_data(path::AbstractString; extract_recent::Bool = false)
               """
         # Extract JLD2 file from more recent archive, if specified
         if extract_recent
-            for (i,j) in zip(findall(more_recent), 1:sum(more_recent))
+            for (i, j) in zip(findall(more_recent), 1:sum(more_recent))
                 @info "Reading $(jldfiles[i]) from more recent archive ($(j)/$(sum(more_recent)))"
                 _unzip_jld2(zipfiles[i], jldfiles[i])
             end
@@ -56,10 +56,10 @@ end
 function _zip_jld2(zip_path, jld_path)
     w = ZipFile.Writer(zip_path) # create archive folder
     filename = split(jld_path, "/")[end]
-    f = ZipFile.addfile(w, filename, method=ZipFile.Deflate) # create file for compression
+    f = ZipFile.addfile(w, filename; method=ZipFile.Deflate) # create file for compression
     open(jld_path, "r") do io # file to compress
         write(f, io) # compress file, ~60sec
     end
-    close(w)
+    return close(w)
 end
 # @time _zip_jld2(zipfiles[2], jldfiles[2])

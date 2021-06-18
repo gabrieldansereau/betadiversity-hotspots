@@ -32,12 +32,12 @@ end
 # eBird data preparation (from DataFrame)
 function prepare_ebd_data(df::DataFrame)
     # Fix names case & spacing
-    newnames = names(df) .|>
+    newnames =
+        names(df) .|>
         string .|>
         titlecase .|>
         lowercasefirst .|>
-        x -> replace(x, " " => "") .|>
-        Symbol
+        x -> replace(x, " " => "") .|> Symbol
     df = rename(df, newnames)
     # Rename species column
     df = rename(df, :scientificName => :species)
@@ -55,12 +55,12 @@ end
 
 function prepare_ebd_data!(df::DataFrame)
     # Fix names case & spacing
-    newnames = names(df) .|>
+    newnames =
+        names(df) .|>
         string .|>
         titlecase .|>
         lowercasefirst .|>
-        x -> replace(x, " " => "") .|>
-        Symbol
+        x -> replace(x, " " => "") .|> Symbol
     rename!(df, newnames)
     # Rename species column
     rename!(df, :scientificName => :species)

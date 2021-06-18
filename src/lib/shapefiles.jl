@@ -3,11 +3,11 @@
 # Download worldmap shapefile
 function download_shapefile(res)
     @assert res ∈ [50, 100]
-    dir = "https://github.com/nvkelso/natural-earth-vector/" *
-        "raw/master/$(res)m_physical/"
+    dir =
+        "https://github.com/nvkelso/natural-earth-vector/" * "raw/master/$(res)m_physical/"
 
     fn = "ne_$(res)m_land.shp"
-    run(`wget $dir/$fn -P ./assets/`)
+    return run(`wget $dir/$fn -P ./assets/`)
 end
 
 # Read worlmap shapefile
@@ -27,9 +27,9 @@ end
 function isin(p::Shapefile.Polygon, l::SimpleSDMLayer)
     out = false
     for xy in p.points
-        xy.x < l.right  && (out = true)
-        xy.x > l.left   && (out = true)
-        xy.y < l.top    && (out = true)
+        xy.x < l.right && (out = true)
+        xy.x > l.left && (out = true)
+        xy.y < l.top && (out = true)
         xy.y > l.bottom && (out = true)
     end
     return out
