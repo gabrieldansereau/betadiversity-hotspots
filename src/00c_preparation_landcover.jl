@@ -88,23 +88,20 @@ end
 ## Export to CSV
 
 # Combine environmental data
-env_vars = [wc_vars; lc_vars]
-# Create env matrix
-env_mat = mapreduce(x -> vec(x.grid), hcat, env_vars)
-replace!(x -> isnothing(x) ? NaN : x, env_mat)
+env_vars = vcat(wc_vars, lc_vars)
 # Create env dataframe
-env_df = DataFrame(env_mat, :auto)
+env_df = DataFrame(convert.(Float64, env_vars))
+select!(env_df, Not([:longitude, :latitude]))
 rename!(env_df, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
 insertcols!(env_df, 1, :site => 1:nrow(env_df))
 
-# Get sites latitudes
-lats = repeat(collect(latitudes(wc_vars[1])), outer=size(wc_vars[1].grid, 2))
-# Get sites longitudes
-lons = repeat(collect(longitudes(wc_vars[1])), inner=size(wc_vars[1].grid, 1))
-# Create spa matrix
-spa_mat = [lats lons]
-# Create spa dataframe
-spa_df = DataFrame(site = eachindex(lats), lat = lats, lon = lons)
+# Create spa DataFrame
+spa_df = DataFrame(wc_vars[1])
+select!(spa_df, Not(:values))
+insertcols!(spa_df, 1, :site => Float64.(1:nrow(spa_df)))
+rename!(spa_df, [:site, :lon, :lat])
+# Create spa layers
+spa_vars = [SimpleSDMPredictor(spa_df, x, wc_vars[1]; latitude=:lat, longitude=:lon) for x in [:site, :lon, :lat]]
 
 # Export dataframes
 # save_prepdata = true
@@ -112,6 +109,8 @@ if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting env & spa to CSV"
     CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df, delim="\t")
     CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_df, delim="\t")
+    geotiff(joinpath("data", "proc", "env_stack.tif"), env_vars)
+    geotiff(joinpath("data", "proc", "spa_stack.tif"), spa_vars)
 end
 
 # Test load
@@ -127,10 +126,15 @@ coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 # Get site indices
 spa_qc = filter(x -> (coords_qc.left - stride(wc_vars[1], dims = 2) <= x.lon < coords_qc.right) &&
                      (coords_qc.bottom - stride(wc_vars[1], dims = 1) <= x.lat < coords_qc.top), spa_df)
+# Subset layers to QC only
+env_vars_qc = [v[coords_qc] for v in env_vars]
+spa_vars_qc = [v[coords_qc] for v in spa_vars]
 
 # Export QC dataframes
 # save_prepdata = true
 if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting QC env & spa to CSV"
     CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spa_qc, delim="\t")
+    geotiff(joinpath("data", "proc", "env_stack_qc.tif"), env_vars_qc)
+    geotiff(joinpath("data", "proc", "spa_stack_qc.tif"), spa_vars_qc)
 end

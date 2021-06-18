@@ -3,7 +3,7 @@ include("required.jl")
 
 ## Conditional arguments
 # outcome = "rf"
-outcome = "bart"
+# outcome = "bart"
 # save_figures = true
 
 # Make sure "outcome" is defined
@@ -16,7 +16,9 @@ else
 end
 
 ## Prepare data
-@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
+glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
+spenames = filter(:type => ==("species"), glossary).full_name
+distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i) for i in eachindex(spenames)]
 
 Y = calculate_Y(distributions)
 richness = calculate_richness(Y, distributions[1])
@@ -135,10 +137,12 @@ nplots = 0
     global nplots += 1
     global left -= asp_ratio
     global bottom -= asp_ratio * dim_ratio
-    coords_subarea = (left = left, right = right, bottom = bottom, top = top)
-    p = plot_lcbd_relationship(richness[coords_subarea], LCBDwindow[coords_subarea],
-                            formatter = f -> "$(round(f, digits = 1))",
-                            dpi = 200)
+    local coords_subarea = (left = left, right = right, bottom = bottom, top = top)
+    local p = plot_lcbd_relationship(
+        richness[coords_subarea], LCBDwindow[coords_subarea],
+        formatter = f -> "$(round(f, digits = 1))",
+        dpi = 200
+    )
     push!(subarea_plots, p)
 end
 anim = @animate for p in subarea_plots[Not(1)]

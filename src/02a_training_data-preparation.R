@@ -40,7 +40,7 @@ env <- dplyr::filter(env_full, site %in% sites_obs)
 # Expand spe to full scale
 spe_full <- as_tibble(
      matrix(
-          NaN, 
+          NA_real_, 
           nrow = nrow(spa_full), ncol = ncol(spe), 
           dimnames = list(NULL, names(spe))
      )
@@ -48,7 +48,7 @@ spe_full <- as_tibble(
 spe_full[inds_obs,] <- spe
 
 # Remove site with NAs for landcover variables
-(inds_withNAs <- unique(unlist(map(env, ~ which(is.nan(.x))))))
+(inds_withNAs <- unique(unlist(map(env, ~ which(is.na(.x))))))
 if (length(inds_withNAs) > 0) {
     spe <- spe[-inds_withNAs,]
     spa <- spa[-inds_withNAs,]

@@ -20,15 +20,15 @@ end
 # Define coordinates range
 coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
 copy_layer = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
-coords_bbox = (left = copy_layer.left, right = copy_layer.right, 
-               bottom = copy_layer.bottom, top = coords.top)
 # Load data from CSV files
-@time df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t");
+df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame, header=true, delim="\t")
 # Remove groupIdentifier column (causing bug)
 select!(df, Not(:groupIdentifier))
 # Filter observations outside coordinates range
-filter!(x -> coords_bbox.left < x.longitude < coords_bbox.right, df)
-filter!(x -> coords_bbox.bottom < x.latitude < coords_bbox.top, df)
+filter!(:longitude => >(coords.left), df)
+filter!(:longitude => <(coords.right), df)
+filter!(:latitude => >(coords.bottom), df)
+filter!(:latitude => <(coords.top), df)
 # Separate species
 # warblers = [df[df.species .== u,:] for u in unique(df.species)]
 warblers = groupby(df, :species)
@@ -38,7 +38,6 @@ warblers = warblers |>
     x -> combine(nrow, x) |>
     x -> sortperm(x, :nrow, rev = true) |>
     x -> warblers[x]
-warblers = [w for w in warblers]
 # Extract species names
 spenames = [w.species[1] for w in warblers]
 specommon = [w.commonName[1] for w in warblers]
@@ -71,7 +70,7 @@ if (@isdefined create_distributions) && create_distributions == true
     # Select function to run given desired outcome
     if outcome == "raw"
         # Get raw distributions
-        @time distributions = @showprogress map(x -> presence_absence(x, env_vars[1]), warblers)
+        @time distributions = @showprogress [presence_absence(w, env_vars[1]) for w in warblers]
     elseif outcome == "bio"
         # Get sdm distributions (with different training resolutions)
         @time distributions = @showprogress map(x -> bioclim(x, env_vars, training_layers = env_vars_train), warblers);
@@ -91,6 +90,12 @@ if (@isdefined save_data) && save_data == true
               joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
     # Make sure JLD2 timestamp is more recent than ZIP archive
     touch(joinpath("data", "jld2", "$(outcome)-distributions.jld2"))
+    # Export distribution layers
+    geotiff(joinpath("data", "proc", "distributions_raw.tif"), distributions)
+    # Export distributions for QC only
+    coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
+    distributions_qc = [d[coords_qc] for d in distributions]
+    geotiff(joinpath("data", "proc", "distributions_raw_qc.tif"), distributions_qc)
 
     ## Export to CSV as Y matrix
     @info "Exporting data to CSV as Y matrix ($(outcome) distributions data)"
@@ -107,7 +112,8 @@ if (@isdefined save_data) && save_data == true
 else
     # Load data
     @info "Data imported from file ($(outcome) distributions data)"
-    @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions spenames specommon speindex
+    @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") spenames specommon speindex
+    distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i) for i in eachindex(spenames)]
 end
 
 ## Count sites with presence per species
@@ -119,14 +125,16 @@ sort(pres_counts)
 sp1 = "Setophaga_townsendi"
 map_sp1 = plotSDM2(distributions[speindex[sp1]], c = :BuPu,
                    title = "$(replace(sp1, "_" => " ")) distribution ($(outcome))",
-                   colorbar = :none)
+                   colorbar = :none,
+                   dpi = 200)
 # scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 # Species 2
 sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM2(distributions[speindex[sp2]], c = :BuPu,
                    title = "$(replace(sp2, "_" => " ")) distribution ($(outcome))",
-                   colorbar = :none)
+                   colorbar = :none,
+                   dpi = 200)
 # scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
 #                         legend = :bottomright, legendfontsize = 5)
 
@@ -134,8 +142,8 @@ map_sp2 = plotSDM2(distributions[speindex[sp2]], c = :BuPu,
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) distributions)"
-    savefig(map_sp1, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp1).png")
-    savefig(map_sp2, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp2).png")
+    savefig(map_sp1, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp1).png"))
+    savefig(map_sp2, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp2).png"))
 else
     @info "Figures not saved ($(outcome) distributions)"
 end

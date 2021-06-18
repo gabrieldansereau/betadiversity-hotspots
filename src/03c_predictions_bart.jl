@@ -5,9 +5,8 @@ include("required.jl")
 ## Conditional arguments
 # save_data = true
 
-
 ## Load predictions from CSV
-results  = CSV.read(joinpath("data", "proc", "bart_summaries.csv"), DataFrame)
+summaries  = CSV.read(joinpath("data", "proc", "bart_summaries.csv"), DataFrame)
 varimps  = CSV.read(joinpath("data", "proc", "bart_varimps.csv"), DataFrame)
 pred_df  = CSV.read(joinpath("data", "proc", "bart_predictions_prob.csv"), DataFrame, missingstrings = ["NA"])
 lower_df = CSV.read(joinpath("data", "proc", "bart_predictions_lower.csv"), DataFrame, missingstrings = ["NA"])
@@ -28,15 +27,16 @@ Y[inds_zeros,:] .= nothing
 ## Create distributions
 
 # Load raw distributions (for grid size)
-@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
-raw_distributions = distributions
+glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
+spenames = filter(:type => ==("species"), glossary).full_name
+distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_raw.tif"), i) for i in eachindex(spenames)]
+raw_distributions = copy(distributions)
 # Cut to Quebec coordinates (optional)
 # coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 # raw_distributions = [d[coords_qc] for d in raw_distributions]
 # Get layer dimensions & limits
-dims = size(raw_distributions[1].grid)
-lims = (left = raw_distributions[1].left, right = raw_distributions[1].right,
-        bottom = raw_distributions[1].bottom, top = raw_distributions[1].top)
+dims = size(raw_distributions[1])
+lims = boundingbox(raw_distributions[1])
 
 # Create distribution layers
 layers = []
@@ -63,6 +63,11 @@ if (@isdefined save_data) && save_data == true
     @save jld_path prob_distrib lower_distrib upper_distrib
     _zip_jld2(replace(jld_path, ".jld2" => ".zip"), jld_path)
     touch(jld_path)
+    # Export to tif files
+    geotiff(joinpath("data", "proc", "distributions_bart.tif"), distributions)
+    geotiff(joinpath("data", "proc", "bart_xtras_prob-distrib.tif"), prob_distrib)
+    geotiff(joinpath("data", "proc", "bart_xtras_lower-distrib.tif"), lower_distrib)
+    geotiff(joinpath("data", "proc", "bart_xtras_upper-distrib.tif"), upper_distrib)
 end
 
 ## Get richness & LCBD

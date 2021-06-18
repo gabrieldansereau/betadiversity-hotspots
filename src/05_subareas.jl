@@ -16,7 +16,9 @@ else
 end
 
 ## Load distribution data for all species
-@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
+glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
+spenames = filter(:type => ==("species"), glossary).full_name
+distributions = [geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i) for i in eachindex(spenames)]
 
 ## Extract subareas
 # Northeast subarea
@@ -130,16 +132,18 @@ resSWtr = plot_lcbd_relationship(
     scaling_value = 1000,
     # maintitle = "Southwest subarea",
 )
+yticks!(resNEtr[1], 40:2:50)
+yticks!(resSWtr[1], 30:2:40)
+xticks!(resNEtr[1], -80:4:-60)
+xticks!(resSWtr[1], -120:4:-100)
 if outcome == "bart"
     local cmax = 450
     resNEtr[2][:clims] = (-Inf, cmax)
     resSWtr[2][:clims] = (-Inf, cmax)
-    yticks!(resSWtr[2], 0.1:0.05:0.5)
 elseif outcome == "raw"
     local cmax = 285
     resNEtr[2][:clims] = (-Inf, cmax)
     resSWtr[2][:clims] = (-Inf, cmax)
-    yticks!(resNEtr[2], 0.25:0.25:1.0)
 end
 combined_plot = plot(
     resNEtr, resSWtr, 
@@ -235,13 +239,14 @@ p = plot(
     titleloc = :left,
     bottommargin = -2.0mm,
 )
+yticks!(p[3], 34:3:50)
 if outcome == "bart"
-    yticks!(p[2], 0.5:0.5:5.0)
     yticks!(p[6], 1.5:0.5:5.0)
 elseif outcome == "raw"
     yticks!(p[4], 0.5:0.5:2.5)
     yticks!(p[6], 2:1:9)
 end
+p
 
 # Export figures
 # save_figures = true
@@ -261,13 +266,13 @@ beta_values = []
 gamma_values = []
 # Get analysis values for all subareas
 for sc in subarea_coords
-    distribs = [d[sc] for d in distributions]
-    Y = calculate_Y(distribs)
-    richness = calculate_richness(Y, distribs[1])
-    lcbd = calculate_lcbd(Y, distribs[1], relative = false)
-    lcbd_abs = calculate_lcbd(Y, distribs[1]; relative = false)
-    beta_total = calculate_BDtotal(Y)
-    gamma = calculate_gamma(Y)
+    local distribs = [d[sc] for d in distributions]
+    local Y = calculate_Y(distribs)
+    local richness = calculate_richness(Y, distribs[1])
+    local lcbd = calculate_lcbd(Y, distribs[1], relative = false)
+    local lcbd_abs = calculate_lcbd(Y, distribs[1]; relative = false)
+    local beta_total = calculate_BDtotal(Y)
+    local gamma = calculate_gamma(Y)
     
     push!(richness_medians, median(richness))
     push!(lcbd_medians, median(lcbd))

@@ -49,7 +49,7 @@ function prepare_ebd_data(df::DataFrame)
     # Replace spaces by underscores in species names
     df.species .= replace.(df.species, " " .=> "_")
     # Remove not approved observations (exotic species, unvetted data)
-    df = filter(obs -> obs.approved .== 1, df)
+    df = filter(:approved => ==(1), df)
     return df
 end
 
@@ -72,6 +72,6 @@ function prepare_ebd_data!(df::DataFrame)
     # Replace spaces by underscores in species names
     df.species .= replace.(df.species, " " .=> "_")
     # Remove not approved observations (exotic species, unvetted data)
-    filter!(obs -> obs.approved .== 1, df)
+    filter!(:approved => ==(1), df)
     return df
 end

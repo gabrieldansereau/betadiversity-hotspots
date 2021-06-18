@@ -11,6 +11,7 @@ library(pbapply)
 library(broom)
 library(MASS)
 library(betareg)
+library(SpatialPack)
 plan(multiprocess)
 
 # Resolve conflicts

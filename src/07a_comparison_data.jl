@@ -2,8 +2,8 @@ import Pkg; Pkg.activate(".")
 include("required.jl")
 
 ## Conditional argument
-# save_data = false
-# save_data = true
+# save_additional_data = false
+# save_additional_data = true
 
 ## Run analysis on raw data
 outcome = "raw"
@@ -59,7 +59,7 @@ raw = (raw..., lcbdcom = lcbdcom_raw)
 sdm = (sdm..., lcbdcom = lcbdcom_sdm)
 
 # Export to JLD2
-if (@isdefined save_data) && save_data == true
+if (@isdefined save_additional_data) && save_additional_data == true
     jld_path = joinpath("data", "jld2", "comparison-results.jld2")
     @save jld_path raw sdm
 end
@@ -74,15 +74,11 @@ rename!(
     :x5 => :lcbdnr_raw, :x6 => :lcbdnr_sdm
 )
 # Remove lines with missing values
-allowmissing!(results, Not([:latitude, :longitude]))
-for col in eachcol(results)
-    replace!(col, nothing => missing)
-end
 dropmissing!(results)
 # Convert to Float64 (cannot write to CSV otherwise)
 results = convert.(Float64, results)
 
 # Export to CSV
-if (@isdefined save_data) && save_data == true
+if (@isdefined save_additional_data) && save_additional_data == true
     CSV.write(joinpath("data", "proc", "comparison-results.csv"), results, delim = "\t")
 end

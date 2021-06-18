@@ -42,7 +42,7 @@ function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layer::Intege
     # List files in path
     lc_files = readdir(path)
     # Filter for selected resolution
-    filter!(x -> occursin.("$(Int(resolution))m.tif", x), lc_files)
+    filter!(contains("$(Int(resolution))m.tif"), lc_files)
     # Create path for selected layer only
     p = joinpath.(path, lc_files)[layer]
     
@@ -50,8 +50,8 @@ function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layer::Intege
     layer = geotiff(SimpleSDMPredictor, p; kwargs...)
     # Convert from UInt8 to Float32
     layer = convert(Float32, layer)
-
-    return layer
+    
+    return convert(SimpleSDMPredictor, layer)
 end
 
 function SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layers::AbstractArray; kwargs...)

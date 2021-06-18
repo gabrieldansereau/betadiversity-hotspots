@@ -4,7 +4,7 @@ include("required.jl")
 ## Conditional arguments
 # outcome = "raw"
 # outcome = "bart"
-# save_figures = true
+# save_additional_figures = true
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome) || !(outcome in ["raw", "bart"])
@@ -136,7 +136,7 @@ p_eusrr = scatter(rarespecies_matrix,
         x -> hline!(x, [0.0], style = :dash, c = :grey, label = :none)
 # EUSRR negative whatever subarea, percentage of rare species & threshold
 # Whatever the threshold, EUSRR negative
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(p_eusrr, joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_thresholds.png"))
 end
 
@@ -146,7 +146,7 @@ p_thresholds = plot(thresholds, rarespecies_matrix,
      labels = ["Total" "NE" "SW"],
      legend = :bottomright)
 
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(p_thresholds, joinpath("fig", outcome, "08_$(outcome)_rare-species_thresholds.png"))
 end
 
@@ -214,12 +214,11 @@ rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, ri
 p4 = plotSDM2(rarespecies_layer_SW_total, c = :viridis)
 
 p_subareas = plot(p1, p2, p3, p4, dpi = 200)
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(p_subareas, joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"))
 end
 
 ## Ascending & descending parts
-using StatsPlots
 
 # Check relationship plots
 combined_plot
@@ -248,13 +247,17 @@ function ascending_plots(richness, lcbd, rarespecies)
 end
 p_asc1 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
 p_asc2 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
+yticks!(p_asc1[1], 40:2:50)
+yticks!(p_asc2[1], 30:2:40)
+xticks!(p_asc1[1], -80:4:-60)
+xticks!(p_asc2[1], -120:4:-100)
 asc_plots = plot(
     p_asc1, p_asc2, 
     layout = (2,1), size = (900, 660),
     title = ["a) Northeast subregion" "" "b) Southwest subregion" ""],
     titleloc = :left,
 )
-if (@isdefined save_figures) && save_figures == true
+if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(asc_plots, joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"))
 end
 

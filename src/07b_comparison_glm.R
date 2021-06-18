@@ -170,7 +170,6 @@ residuals_df
 write_tsv(residuals_df, here("data", "proc", "comparison-residuals.csv"))
 
 ## Dutilleul modified t-test
-library(SpatialPack)
 
 # Subset results to NE subregion
 coords_NE <- list(left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
