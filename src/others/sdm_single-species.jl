@@ -1,4 +1,5 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 using Distributed
 addprocs(9)
 @time @everywhere include("src/required.jl")
@@ -6,9 +7,9 @@ addprocs(9)
 ## Get data from CSV files
 @time begin
     # Load data
-    df = CSV.read("data/proc/ebd_warblers_prep.csv", header=true, delim="\t")
+    df = CSV.read("data/proc/ebd_warblers_prep.csv"; header=true, delim="\t")
     # Separate species
-    taxa_occ = [df[df.species .== u,:] for u in unique(df.species)]
+    taxa_occ = [df[df.species .== u, :] for u in unique(df.species)]
     # Select 1 species only
     occ = taxa_occ[1]
 end
@@ -16,19 +17,21 @@ end
 # without : 14.836300 seconds (35.36 M allocations: 1.716 GiB, 6.52% gc time)
 
 ## Get the worldclim data
-@time wc_vars_full = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0)
+@time wc_vars_full = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution=10.0)
 
 ## Create function - SDM & map for 1 species
 @everywhere function map_species_distribution(occ; distributed=true, scatter=false)
     # Get the worldclim data by their layer number
     @info "Extract and crop bioclim variables"
-    @time wc_vars = pmap(x -> clip(wc_vars_full[x], occ), 1:19, distributed=distributed);
+    @time wc_vars = pmap(x -> clip(wc_vars_full[x], occ), 1:19; distributed=distributed)
     # Make the prediction for each layer
     @info "Predictions for each layer"
-    @time predictions = pmap(x -> bioclim_singlevar(occ, wc_vars[x]), 1:19, distributed=distributed);
+    @time predictions = pmap(
+        x -> bioclim_singlevar(occ, wc_vars[x]), 1:19; distributed=distributed
+    )
     # Make the final prediction by taking the minimum
     @info "Minimum-consensus aggregation"
-    @time prediction = reduce(minimum, predictions);
+    @time prediction = reduce(minimum, predictions)
     # Get the threshold for NaN given a percentile
     @info "Threshold estimation"
     @time threshold = first(quantile(prediction[occ], [0.05]))
@@ -40,17 +43,16 @@ end
     end
 
     # Plot SDM
-    sdm_plot = plotSDM(prediction, c=:BuPu, scatter=scatter, occ=occ)
+    sdm_plot = plotSDM(prediction; c=:BuPu, scatter=scatter, occ=occ)
     # Add species name
-    plot!(sdm_plot, title=first(unique(occ.species)))
+    plot!(sdm_plot; title=first(unique(occ.species)))
 
     return sdm_plot
-
 end
 
 ##  Map 1 species
 @time map1 = map_species_distribution(taxa_occ[1])
-@time maps = [map_species_distribution(occ) for occ in taxa_occ[[1,13]]]
+@time maps = [map_species_distribution(occ) for occ in taxa_occ[[1, 13]]]
 
 ## Save result
 #=
@@ -60,8 +62,6 @@ savefig(maps[2], "fig/sdm/01_sdm_sp-$(first(unique(taxa_occ[13].species))).pdf")
 
 ## Map all species
 # @time maps = pmap(x -> map_species_distribution(x, distributed=false), taxa_occ)
-
-
 
 ######
 

@@ -1,4 +1,5 @@
-import Pkg; Pkg.activate(".")
+using Pkg: Pkg
+Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -29,58 +30,66 @@ end
 
 ## Test landcover variables
 # Define coordinates range
-coords = (left = -145.0, right = -50.0, bottom = 20.0, top = 75.0)
+coords = (left=-145.0, right=-50.0, bottom=20.0, top=75.0)
 
 # Test loading variables
-lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 5.0)
-lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 10.0)
-lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution = 10.0, coords...)
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=5.0)
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=10.0)
+lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=10.0, coords...)
 
 # Load worldclim variables to compare
-wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution = 10.0, coords...);
+wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution=10.0, coords...);
 
 ## Plot environmental variables examples
 # Plot wcvars1 (temperature)
-wc_plot = plotSDM2(wc_vars[1], colorbar_title = "Annual Mean Temperature (°C)")
+wc_plot = plotSDM2(wc_vars[1]; colorbar_title="Annual Mean Temperature (°C)")
 # Plot lcvars2 (urban)
-lc_plot = plotSDM2(lc_vars[2], colorbar_title = "Crops land cover (%)")
+lc_plot = plotSDM2(lc_vars[2]; colorbar_title="Crops land cover (%)")
 
 # Get variable info
 glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 lcdf, wcdf, spdf = groupby(glossary, :type)
 
 # Clim variables
-heatplots = [plotSDM2(wc_vars[i], 
-                      c = :OrRd, 
-                      title = uppercasefirst(replace(wcdf.full_name[i], "_" => " ")), 
-                      colorbar_title = wcdf.description[i])
-            for i in (1,2,5,6)]
-heatplot = plot(heatplots..., size = (900, 900))
-precplots = [plotSDM2(wc_vars[i], 
-                      c = :PuBu, 
-                      title = uppercasefirst(replace(wcdf.full_name[i], "_" => " ")), 
-                      colorbar_title = wcdf.description[i])
-            for i in (12,13,14,15)]
-precplot = plot(precplots..., size = (900, 900))
+heatplots = [
+    plotSDM2(
+        wc_vars[i];
+        c=:OrRd,
+        title=uppercasefirst(replace(wcdf.full_name[i], "_" => " ")),
+        colorbar_title=wcdf.description[i],
+    ) for i in (1, 2, 5, 6)
+]
+heatplot = plot(heatplots...; size=(900, 900))
+precplots = [
+    plotSDM2(
+        wc_vars[i];
+        c=:PuBu,
+        title=uppercasefirst(replace(wcdf.full_name[i], "_" => " ")),
+        colorbar_title=wcdf.description[i],
+    ) for i in (12, 13, 14, 15)
+]
+precplot = plot(precplots...; size=(900, 900))
 
 # Landcover variables
-landplots = [plotSDM2(lc_vars[i],
-                     c = :BuGn,
-                     title = uppercasefirst(replace(lcdf.full_name[i], "_" => " ")), 
-                     colorbar_title = lcdf.description[i])
-             for i in (1:5..., 7:10...)]
-landplot = plot(landplots..., size = (1200, 900))
-
+landplots = [
+    plotSDM2(
+        lc_vars[i];
+        c=:BuGn,
+        title=uppercasefirst(replace(lcdf.full_name[i], "_" => " ")),
+        colorbar_title=lcdf.description[i],
+    ) for i in (1:5..., 7:10...)
+]
+landplot = plot(landplots...; size=(1200, 900))
 
 ## Export figures
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved (environmental variables)"
-    savefig(plot(wc_plot, dpi = 300), joinpath("fig", "00c_wc1-temperature.png"))
-    savefig(plot(lc_plot, dpi = 300), joinpath("fig", "00c_lc2-crops.png"))
-    savefig(plot(heatplot, dpi = 300), joinpath("fig", "00c_wc-temperatures.png"))
-    savefig(plot(precplot, dpi = 300), joinpath("fig", "00c_wc-precipitations.png"))
-    savefig(plot(landplot, dpi = 300), joinpath("fig", "00c_lc-landcovers.png"))
+    savefig(plot(wc_plot; dpi=300), joinpath("fig", "00c_wc1-temperature.png"))
+    savefig(plot(lc_plot; dpi=300), joinpath("fig", "00c_lc2-crops.png"))
+    savefig(plot(heatplot; dpi=300), joinpath("fig", "00c_wc-temperatures.png"))
+    savefig(plot(precplot; dpi=300), joinpath("fig", "00c_wc-precipitations.png"))
+    savefig(plot(landplot; dpi=300), joinpath("fig", "00c_lc-landcovers.png"))
 else
     @info "Figures not saved (environmental variables)"
 end
@@ -101,31 +110,35 @@ select!(spa_df, Not(:values))
 insertcols!(spa_df, 1, :site => Float64.(1:nrow(spa_df)))
 rename!(spa_df, [:site, :lon, :lat])
 # Create spa layers
-spa_vars = [SimpleSDMPredictor(spa_df, x, wc_vars[1]; latitude=:lat, longitude=:lon) for x in [:site, :lon, :lat]]
+spa_vars = [
+    SimpleSDMPredictor(spa_df, x, wc_vars[1]; latitude=:lat, longitude=:lon) for
+    x in [:site, :lon, :lat]
+]
 
 # Export dataframes
 # save_prepdata = true
 if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting env & spa to CSV"
-    CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df, delim="\t")
-    CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_df, delim="\t")
+    CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df; delim="\t")
+    CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_df; delim="\t")
     geotiff(joinpath("data", "proc", "env_stack.tif"), env_vars)
     geotiff(joinpath("data", "proc", "spa_stack.tif"), spa_vars)
 end
 
 # Test load
-#=
+#= 
 testspa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), DataFrame, header=true, delim="\t")
 testenv = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), DataFrame, header=true, delim="\t")
-testjoin = innerjoin(testspa, testenv, on = :site)
-=#
+testjoin = innerjoin(testspa, testenv, on = :site) =#
 
 ## Export QC sites coordinates (for smaller scale analyses)
 
-coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
+coords_qc = (left=-80.0, right=-55.0, bottom=45.0, top=63.0)
 # Get site indices
-spa_qc = filter(x -> (coords_qc.left - stride(wc_vars[1], dims = 2) <= x.lon < coords_qc.right) &&
-                     (coords_qc.bottom - stride(wc_vars[1], dims = 1) <= x.lat < coords_qc.top), spa_df)
+spa_qc = filter(:lon => >=(coords_qc.left - stride(wc_vars[1]; dims=2)), spa_df)
+filter!(:lon => <(coords_qc.right), spa_qc)
+filter!(:lat => >=(coords_qc.bottom - stride(wc_vars[1], dims=1)), spa_qc)
+filter!(:lat => <(coords_qc.top), spa_qc)
 # Subset layers to QC only
 env_vars_qc = [v[coords_qc] for v in env_vars]
 spa_vars_qc = [v[coords_qc] for v in spa_vars]
@@ -134,7 +147,7 @@ spa_vars_qc = [v[coords_qc] for v in spa_vars]
 # save_prepdata = true
 if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting QC env & spa to CSV"
-    CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spa_qc, delim="\t")
+    CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spa_qc; delim="\t")
     geotiff(joinpath("data", "proc", "env_stack_qc.tif"), env_vars_qc)
     geotiff(joinpath("data", "proc", "spa_stack_qc.tif"), spa_vars_qc)
 end

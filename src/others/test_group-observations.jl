@@ -3,14 +3,26 @@ using JLD2
 
 @time @everywhere include("src/required.jl")
 
-df = CSV.read("../data/ebd/processed/ebd_warblers_cut.csv", header=true, delim="\t")
+df = CSV.read("../data/ebd/processed/ebd_warblers_cut.csv"; header=true, delim="\t")
 
 ## Data preparation
 
 # Prepare data
 df = prepare_ebd_data(df)
 # Select specific columns
-select!(df, [:species, :groupIdentifier, :observerId, :samplingEventIdentifier, :observationCount, :year, :latitude, :longitude])
+select!(
+    df,
+    [
+        :species,
+        :groupIdentifier,
+        :observerId,
+        :samplingEventIdentifier,
+        :observationCount,
+        :year,
+        :latitude,
+        :longitude,
+    ],
+)
 
 # Remove missing groups (unimportant for investigation)
 df_gr = dropmissing(df, :groupIdentifier)
@@ -41,7 +53,7 @@ unique_counts2 == unique_groups
 # equal, confirms it's only groups that don't have the same count
 
 # Get non unique observations
-nonu = unique_counts[nonunique(unique_counts, [:species, :groupIdentifier]),:]
+nonu = unique_counts[nonunique(unique_counts, [:species, :groupIdentifier]), :]
 sort!(nonu, [:groupIdentifier, :species])
 # Doesn't work!!!
 # nonunique() returns rows equal to one of the previous rows, hence not the first duplicate
@@ -73,20 +85,32 @@ n_unique_dates - n_unique_groups
 grouped_dates1 = groupby(unique_dates, [:groupIdentifier, :species])
 nonu_grouped_dates1 = grouped_dates1[nrow.(grouped_dates1) .> 1]
 # Reformat to dataframe & select columns
-dates_test1 = vcat(nonu_grouped_dates1...)[[:species, :groupIdentifier, :observerId, :observationDate, :observationCount]]
+dates_test1 = vcat(nonu_grouped_dates1...)[[
+    :species, :groupIdentifier, :observerId, :observationDate, :observationCount
+]]
 # Check results
 nrow(dates_test1) # 7895 observations, 3940 groups
-show(first(dates_test1,100), allrows=true)
+show(first(dates_test1, 100); allrows=true)
 # Most differences seem to be minor or typos (± a few days), but sometimes the difference is a few years
 # If the year is ever important for the analyses, those should be removed
 
 # Get non unique dates from dataset of unique observation counts (less important, but was my initial intent)
 grouped_dates = map(x -> unique(x, :observationDate), nonu_grouped)
 nonu_grouped_dates = grouped_dates[nrow.(grouped_dates) .> 1]
-nonu_grouped_dates[1] |> DataFrame |> x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
-nonu_grouped_dates[2] |> DataFrame |> x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
-nonu_grouped_dates[3] |> DataFrame |> x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
-nonu_grouped_dates[4] |> DataFrame |> x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
-test = vcat(nonu_grouped_dates...)[[:species, :groupIdentifier, :observerId, :observationDate]]
+nonu_grouped_dates[1] |>
+DataFrame |>
+x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
+nonu_grouped_dates[2] |>
+DataFrame |>
+x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
+nonu_grouped_dates[3] |>
+DataFrame |>
+x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
+nonu_grouped_dates[4] |>
+DataFrame |>
+x -> select(x, [:species, :groupIdentifier, :observerId, :observationDate])
+test = vcat(nonu_grouped_dates...)[[
+    :species, :groupIdentifier, :observerId, :observationDate
+]]
 nrow(test) # 146 observations, 73 groups
-show(test, allrows=true)
+show(test; allrows=true)

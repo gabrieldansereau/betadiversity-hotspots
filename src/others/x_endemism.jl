@@ -1,4 +1,4 @@
-import Pkg
+using Pkg: Pkg
 Pkg.activate(".")
 using Distributed
 @time include("required.jl")
@@ -28,14 +28,14 @@ Y = calculate_Y(distributions)
 # Number of occupied sites per species
 n_occ = map(x -> sum(filter(!isnothing, x)), eachcol(Y))
 # Weight site score by number of occupied sites per species
-Yweight = hcat([replace(Y[:,i], 1 => 1/n_occ[i]) for i in 1:size(Y,2)]...)
+Yweight = hcat([replace(Y[:, i], 1 => 1 / n_occ[i]) for i in 1:size(Y, 2)]...)
 # Sum scores per site for all species
-endemism_scores = fill(nothing, size(Yweight, 1)) |> Array{Union{Nothing, Float32}}
+endemism_scores = fill(nothing, size(Yweight, 1)) |> Array{Union{Nothing,Float32}}
 inds_obs = _indsobs(Yweight)
 endemism_scores[inds_obs] = sum.(eachrow(Yweight[inds_obs]))
 # Check stats
 describe(filter(!isnothing, endemism_scores))
-sort(filter(!isnothing, endemism_scores), rev=true) # possibly some outliers, scaling problems for visualization
+sort(filter(!isnothing, endemism_scores); rev=true) # possibly some outliers, scaling problems for visualization
 # Reshape to grid format
 endemism_grid = reshape(endemism_scores, size(distributions[1]))
 
@@ -44,15 +44,19 @@ endemism = SimpleSDMResponse(Array(endemism_grid), distributions[1])
 
 ## Plot results
 # Raw endemism scores
-endemism_plot = plotSDM2(endemism, c=:viridis,
-                        title = "Endemism ($outcome distributions)",
-                        colorbar_title = "Weigthed endemism (area of occurrence)",
-                        )
+endemism_plot = plotSDM2(
+    endemism;
+    c=:viridis,
+    title="Endemism ($outcome distributions)",
+    colorbar_title="Weigthed endemism (area of occurrence)",
+)
 # Quantile endemism scores
-endemism_qplot = plotSDM2(quantiles(endemism), c=:viridis,
-                         title = "Endemism quantiles ($outcome distributions)",
-                         colorbar_title = "Weighted endemism quantile (area of occurrence)",
-                         )
+endemism_qplot = plotSDM2(
+    quantiles(endemism);
+    c=:viridis,
+    title="Endemism quantiles ($outcome distributions)",
+    colorbar_title="Weighted endemism quantile (area of occurrence)",
+)
 
 ## Save result
 # save_figures = true # should figures be overwritten (optional)
@@ -64,7 +68,9 @@ else
 end
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome) lcbd)"
-    savefig(endemism_qplot, joinpath("fig", "quantiles", "07_$(outcome)_endemism_quantiles.png"))
+    savefig(
+        endemism_qplot, joinpath("fig", "quantiles", "07_$(outcome)_endemism_quantiles.png")
+    )
 else
     @info "Figures not saved ($(outcome) lcbd)"
 end

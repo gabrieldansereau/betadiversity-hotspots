@@ -1,4 +1,4 @@
-import Pkg
+using Pkg: Pkg
 Pkg.activate(".")
 using Distributed
 @time begin
@@ -8,26 +8,26 @@ using Distributed
 end
 
 ## Load data
-spe = CSV.read(joinpath("data", "proc", "distributions_spe.csv"), header=true, delim="\t")
-spa = CSV.read(joinpath("data", "proc", "distributions_spa.csv"), header=true, delim="\t")
-env = CSV.read(joinpath("data", "proc", "distributions_env.csv"), header=true, delim="\t")
+spe = CSV.read(joinpath("data", "proc", "distributions_spe.csv"); header=true, delim="\t")
+spa = CSV.read(joinpath("data", "proc", "distributions_spa.csv"); header=true, delim="\t")
+env = CSV.read(joinpath("data", "proc", "distributions_env.csv"); header=true, delim="\t")
 var = hcat(env, spa)
 
 ## Create training and validation sets, with partitioning propotional to class frequency
 import MLJ.partition
-function partition_by_class(values, fraction; shuffle = true, rng = 42)
+function partition_by_class(values, fraction; shuffle=true, rng=42)
     # Get indices for each class
     idx0 = findall(iszero, values)
     idx1 = findall(isone, values)
 
     # Partition each class into trn, vld
-    idx0_trn, idx0_vld = partition(idx0, fraction, shuffle = shuffle, rng = rng)
-    idx1_trn, idx1_vld = partition(idx1, fraction, shuffle = shuffle, rng = rng)
+    idx0_trn, idx0_vld = partition(idx0, fraction; shuffle=shuffle, rng=rng)
+    idx1_trn, idx1_vld = partition(idx1, fraction; shuffle=shuffle, rng=rng)
 
     # Combine trn, vld partitions
     idx_trn = vcat(idx0_trn, idx1_trn)
     idx_vld = vcat(idx0_vld, idx1_vld)
-    return (trn = idx_trn, vld = idx_vld)
+    return (trn=idx_trn, vld=idx_vld)
 end
 
 # Create empty Arrays
@@ -71,7 +71,9 @@ vld_pairs = Pair.(vld_labels, vld_features)
 
 # Apply models
 @time predictions = apply_forest.(models, vld_features)
-@time predictions_proba = [apply_forest_proba(m, f, [0,1]) for (m, f) in Pair.(models, vld_features)]
+@time predictions_proba = [
+    apply_forest_proba(m, f, [0, 1]) for (m, f) in Pair.(models, vld_features)
+]
 
 ## Evaluate model performance
 # Get accuracy measures
@@ -79,15 +81,16 @@ vld_pairs = Pair.(vld_labels, vld_features)
 # Get AUC measures
 @time auc_stats = auc.(models, vld_features, vld_labels)
 # Combine evaluation measures
-res = DataFrame(spe = string.("sp", eachindex(acc_mes)),
-                freq_abs = Int.(map(sum, eachcol(spe))),
-                accuracy = map(x -> x.accuracy, acc_mes),
-                sensitivity = map(x -> x.sensitivity, acc_mes),
-                specificity = map(x -> x.specificity, acc_mes),
-                kappa = map(x -> x.kappa, acc_mes),
-                auc = map(x -> x.score, auc_stats),
-                plot = map(x -> x.plot, auc_stats)
-                )
+res = DataFrame(;
+    spe=string.("sp", eachindex(acc_mes)),
+    freq_abs=Int.(map(sum, eachcol(spe))),
+    accuracy=map(x -> x.accuracy, acc_mes),
+    sensitivity=map(x -> x.sensitivity, acc_mes),
+    specificity=map(x -> x.specificity, acc_mes),
+    kappa=map(x -> x.kappa, acc_mes),
+    auc=map(x -> x.score, auc_stats),
+    plot=map(x -> x.plot, auc_stats),
+)
 
 # Explore measures
 auc_plot(1 .- res.specificity, res.sensitivity, NaN)
@@ -102,9 +105,9 @@ quantile(filter(!isnan, res100.sensitivity))
 quantile(filter(!isnan, res100.specificity))
 
 # Combine all ROC curves in single plot
-p = auc_plot([0], [0], NaN, dpi = 200)
+p = auc_plot([0], [0], NaN; dpi=200)
 for auc in auc_stats
-	plot!(p, auc.FP_rates, auc.sensitivities)
+    plot!(p, auc.FP_rates, auc.sensitivities)
 end
 p
 savefig(p, "fig/random-forests/08_rf_auc.png")

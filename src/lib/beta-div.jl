@@ -3,11 +3,11 @@
 ## Function to calculate beta diversity statistics
 function BD(Y)
     # S -> squared deviations from column mean
-    S = (Y .- mean(Y; dims=1)).^2.0
+    S = (Y .- mean(Y; dims=1)) .^ 2.0
     # SStotal -> total sum of squares
     SStotal = sum(S)
     # BDtotal -> index of beta diversity, unbiased & comparable estimator of Var(Y)
-    BDtotal = SStotal / (size(Y,1)-1)
+    BDtotal = SStotal / (size(Y, 1) - 1)
     # SSj -> sum of squares for species j
     SSj = sum(S; dims=1)
     # SCBDj -> species contribution to beta diversity (species j, relative)
@@ -17,8 +17,9 @@ function BD(Y)
     # LCBD -> local contribution to beta diversity (site i, relative)
     LCBDi = SSi ./ SStotal
     # Combine results in tuple
-    res = (S = S, SStotal = SStotal, BDtotal = BDtotal,
-            SSj = SSj, SCBDj = SCBDj, SSi = SSi, LCBDi = LCBDi)
+    res = (
+        S=S, SStotal=SStotal, BDtotal=BDtotal, SSj=SSj, SCBDj=SCBDj, SSi=SSi, LCBDi=LCBDi
+    )
     return res
 end
 
@@ -43,17 +44,17 @@ function BDperm(Y; nperm=999, distributed=true)
     if nperm > 0
         nGE_L = ones(Int64, n)
         # Permutation test, clumsy parallelization
-        ge = @showprogress pmap(x -> permtest(Y, res), 1:nperm, distributed=distributed)
+        ge = @showprogress pmap(x -> permtest(Y, res), 1:nperm; distributed=distributed)
         # Compile number of permuted LCBDs greater than original LCBD
         for bitarray in ge
             nGE_L[findall(bitarray)] .+= 1
         end
         # Standardize counts
-        p_LCBD = nGE_L./(nperm+1)
+        p_LCBD = nGE_L ./ (nperm + 1)
     else
         p_LCBD = nothing
     end
     # Combine results in tuple
-    res_perm = (res..., pLCBD = p_LCBD)
+    res_perm = (res..., pLCBD=p_LCBD)
     return res_perm
 end
