@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -132,7 +130,7 @@ scatter(
 # Thresholds variation only
 thresholds = [0.1, 0.2, 0.3, 0.4, 0.5]
 [get_rarespecies_p(Y, t) for t in thresholds]
-# Thresholds and region 
+# Thresholds and region
 Ys = [Y, Y_NE, Y_SW]
 rarespecies_matrix = [get_rarespecies_p(y, t) for t in thresholds, y in Ys]
 

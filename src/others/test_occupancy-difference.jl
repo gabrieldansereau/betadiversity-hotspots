@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 using Test
 include("../required.jl")
 

@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 using Distributed
 addprocs(9)
 @time @everywhere include("src/required.jl")

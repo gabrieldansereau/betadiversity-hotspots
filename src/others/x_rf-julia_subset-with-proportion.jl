@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 using Distributed
 @time begin
     include("required.jl")

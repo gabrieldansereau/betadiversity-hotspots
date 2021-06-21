@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("required.jl")
 
 ## Get data

@@ -1,6 +1,4 @@
 #### 03b - Random Forests predictions ####
-using Pkg: Pkg
-Pkg.activate(".")
 using RCall
 R"source(file.path('src', 'required.R'))" # bug with `velox` if not called here
 include("required.jl")
@@ -38,13 +36,13 @@ begin
     )
 
     # Extract predictions
-    predictions <- map(rf_pred, "predictions") %>% 
+    predictions <- map(rf_pred, "predictions") %>%
         map_df(~ as.numeric(levels(.x))[.x])
 
     # Add sites with NAs
     predictions_full <- matrix(
-        NA, 
-        nrow = nrow(vars_full), 
+        NA,
+        nrow = nrow(vars_full),
         ncol = ncol(predictions)
     )
     colnames(predictions_full) <- colnames(predictions)

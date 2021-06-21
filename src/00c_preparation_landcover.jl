@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -126,7 +124,7 @@ if (@isdefined save_prepdata) && save_prepdata == true
 end
 
 # Test load
-#= 
+#=
 testspa = CSV.read(joinpath("data", "proc", "distributions_spa_full.csv"), DataFrame, header=true, delim="\t")
 testenv = CSV.read(joinpath("data", "proc", "distributions_env_full.csv"), DataFrame, header=true, delim="\t")
 testjoin = innerjoin(testspa, testenv, on = :site) =#

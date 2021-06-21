@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 using RCall
 R"source(file.path('src', 'required.R'))"; # bug with `velox` if not called here
 using Distributed

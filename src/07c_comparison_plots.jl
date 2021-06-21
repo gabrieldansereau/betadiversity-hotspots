@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -100,9 +98,9 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # scalevalues = rescale([lims[1], 0.0, lims[2]], 0, 1)
     diff_map = plotSDM2(
         layer;
-        # c = cgrad(:PuOr, centervalue, rev = true), 
+        # c = cgrad(:PuOr, centervalue, rev = true),
         # c = rescalegrad(:PuOr, extrema(layer); rev = true),
-        # c = cgrad(:PuOr, scalevalues, rev = true), 
+        # c = cgrad(:PuOr, scalevalues, rev = true),
         c=recentergrad(:PuOr, lims; rev=true),
         clims=lims,
         title="Difference map",
@@ -122,7 +120,7 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
     l = @layout [a{0.6w} b{0.38w}]
     diff_plot = plot(
-        # diff_title, 
+        # diff_title,
         diff_map,
         diff_hist,
         size=(850, 340),
@@ -229,7 +227,7 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
     l = @layout [a{0.6w} b{0.38w}]
     diff_plot = plot(
-        # diff_title, 
+        # diff_title,
         diff_map,
         diff_hist,
         size=(850, 340),

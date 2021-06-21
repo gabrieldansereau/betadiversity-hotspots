@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 @time include("src/required.jl")
 
 outcome = "bart"

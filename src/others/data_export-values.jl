@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("../required.jl")
 
 include("../07a_comparison_data.jl")

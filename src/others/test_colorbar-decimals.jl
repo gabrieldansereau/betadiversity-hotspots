@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("../required.jl")
 
 outcome = "bart"
@@ -30,7 +28,7 @@ heatmap(mwe; c=:viridis, colorbar_title="LCBD value")
 heatmap(lcbd; c=:viridis, colorbar_title="LCBD value")
 plotSDM2(lcbd; c=:viridis, colorbar_title="LCBD value")
 
-#= Problems: 
+#= Problems:
     - Colorbar title overlaps with colorbar ticks
    Pros:
     - That's what I have already
@@ -51,7 +49,7 @@ lcbd_expo = rescale(lcbd_abs, (extrema(lcbd_scaled)))
 collect(lcbd_expo)
 isapprox(collect(lcbd_expo), lcbd_scaled)
 
-#= Problems: 
+#= Problems:
     - Still a bit of overlap, but could be ok
     - Not sure if it's considered a valid presentation form
    Pros:
@@ -74,7 +72,7 @@ heatmap(rand(10, 10); colorbar_ticks=([0.3, 0.6], ["0.300", "0.60"]))
 plotattr(:Subplot)
 plotattr("colorbar")
 
-#= Problems: 
+#= Problems:
     - super slow for layers (long to display)
     - looks terrible for layers
     - some weird lines on the heatmap, like a bad printer...
@@ -94,7 +92,7 @@ plotSDM2(lcbd; c=:viridis, colorbar_title="LCBD value")
 savefig("test-plotlyjs.png")
 savefig("test-plotlyjs.pdf")
 
-#= Problems: 
+#= Problems:
     - micro sign, not sure how to remove
     - space between plot & colorbar (because of aspect_ratio)
         - can improve with leftmargin
@@ -115,7 +113,7 @@ trace = PlotlyJS.heatmap(;
 )
 PlotlyJS.plot(trace)
 
-#= Problems: 
+#= Problems:
     - doesn't work with plotSDM2
     - works differently from Plots, so I don't know how to tweak it
     - not sure if it can be used to combine plots either, which I need for subplots
@@ -130,7 +128,7 @@ CairoMakie.heatmap(
     replace(lcbd.grid, nothing => NaN)'; c=:viridis, colorbar_title="LCBD value"
 )
 
-#= Problems: 
+#= Problems:
     - don't really know how it works
     - no scientific notation
    Pros:

@@ -1,5 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
@@ -35,7 +33,7 @@ filter!(:latitude => <(coords.top), df)
 warblers = groupby(df, :species)
 # Reorder species by frequency
 # sort!(warblers, by = x -> nrow(x), rev = true)
-warblers = warblers |> 
+warblers = warblers |>
     x -> combine(nrow, x) |>
     x -> sortperm(x, :nrow, rev=true) |>
     x -> warblers[x]
