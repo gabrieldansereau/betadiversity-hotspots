@@ -1,9 +1,14 @@
 tags
-assets/landcover/landcover_copernicus_global_100m*
-assets/bioclim*
-assets/wc*
 .Rproj.user
 .vscode
-assets/landcover/backup/*
-assets/landcover/*test.tif
-assets/landcover/landcover_values_*.csv
+*code-workspace
+# Land cover: full resolution files (too large)
+assets/landcover/landcover_copernicus_global_100m*
+# JLD2 files: intermediate results (too large)
+data/jld2/*.jld2
+data/jld2/bart-distributions_xtras.zip
+# Processed data: BART results (too large)
+data/proc/bart_*.csv
+data/proc/bart_*.tif
+# Processed data: EBD prepared data (too large)
+data/proc/ebd*.csv
