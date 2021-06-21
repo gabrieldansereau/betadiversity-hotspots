@@ -2,6 +2,7 @@ include("required.jl")
 
 ## Conditional arguments
 # outcome = "raw" # desired outcome (required)
+# outcome = "bart"
 # save_figures = true # should figures be overwritten (optional)
 # save_quantile_figures = true # should quantile figures be overwritten (optional)
 
