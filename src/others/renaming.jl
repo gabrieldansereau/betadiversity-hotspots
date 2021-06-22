@@ -38,3 +38,21 @@ end
 
 isfile.(newfiles)
 filter(!isfile, newfiles)
+
+oldfiles = replace.(oldfiles, "fig/$(outcome)/" => "")
+newfiles = replace.(newfiles, "archive/fig/$(outcome)/" => "")
+newfiles = replace.(newfiles, "fig/$(outcome)/" => "")
+
+file = "src/04_full-extent.jl"
+(tmppath, tmpio) = mktemp()
+cp(file, tmppath; force=true)
+for (old, new) in zip(oldfiles[1:3], newfiles[1:3])
+    open(tmppath) do io
+        for line in eachline(io, keep=true) # keep so the new line isn't chomped
+            line = replace(line, old => new)
+            write(tmpio, line)
+        end
+    end
+    close(tmpio)
+end
+mv(tmppath, file, force=true)
