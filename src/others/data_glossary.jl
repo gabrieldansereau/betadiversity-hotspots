@@ -1,4 +1,3 @@
-using Distributed
 @time include(joinpath("..", "required.jl"))
 
 ## Create glossary dataframe
