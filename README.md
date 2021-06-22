@@ -3,7 +3,7 @@
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
 <p align="center">
-  <img align = "center" src="./fig/bart/04-3_bart_lcbd-transf.png" width="75%"
+  <img align = "center" src="./fig/bart/04_bart_lcbd.png" width="75%"
        title = "Species richness">
 </p>
 
@@ -62,13 +62,13 @@ All analysis scripts are in `src/`.
 
 Else, the general workflow of the analyses is as follows:
 
-1. `00a_preparation_ebd-extraction.jl` extracts the Warblers data from the complete
+1. `00a_ebd_extraction.jl` extracts the Warblers data from the complete
     EBD to `data/raw` (not version controlled).
 
-1. `00b_preparation_ebd-preparation.jl` prepares the Warblers data in `data/raw` for
+1. `00b_ebd_preparation.jl` prepares the Warblers data in `data/raw` for
     for the analyses, then saves the results in `data/proc` (not version controlled)
 
-1. `00c_preparation_landcover.jl` prepares the landcover data from
+1. `00c_landcover.jl` prepares the landcover data from
     Copernicus and exports the environmental data to CSV in `data/proc`.
 
 1. `01_distributions` assembles species distributions from the raw data as layers and as
@@ -80,7 +80,7 @@ Else, the general workflow of the analyses is as follows:
 1. `03_predictions_random-forests` applies the models on the full-scale continuous
    environmental data and arranges the predictions as layers.
 
-1. `04_analysis.jl` performs the main analysis steps: getting species richness and
+1. `04_full-extent.jl` performs the main analysis steps: getting species richness and
    LCBD values per site, as well as showing the relationship between the two.
 
 1. `05_subareas.jl` investigates the effect of scale and performs the analyses on smaller
@@ -94,30 +94,28 @@ Else, the general workflow of the analyses is as follows:
 ### Species richness
 
 <p align="center">
-    <img src="fig/raw/04-2_raw_richness.png" width="49%" />
-    <img src="fig/bart/04-2_bart_richness.png" width="49%" />
+    <img src="fig/raw/04_raw_richness.png" width="49%" />
+    <img src="fig/bart/04_bart_richness.png" width="49%" />
 </p>
 
 ### LCBD & relationship to richness
 
-[bart_moving-windows]: fig/bart/06-0_bart_moving-windows_full.png
-
 <p align="center">
-    <img src="fig/bart/04-3_bart_lcbd-transf.png" width="49%" />
-    <img src="fig/bart/04-4_bart_relationship2d-transf.png" width="49%" />
+    <img src="fig/bart/04_bart_lcbd.png" width="49%" />
+    <img src="fig/bart/04_bart_relationship.png" width="49%" />
 </p>
 
 ### Subareas
 
 ![Subareas - BARTs][bart_subareas]
 
-[bart_subareas]: fig/bart/05-1_bart_subareas_combined.png
+[bart_subareas]: fig/bart/05_bart_subareas.png
 
 ### Effect of scaling
 
 ![Effect of scaling - BARTs][bart_scaling]
 
-[bart_scaling]: fig/bart//05-3_bart_subareas.gif
+[bart_scaling]: fig/bart//05_bart_scaling.gif
 
 ## Details on library scripts
 

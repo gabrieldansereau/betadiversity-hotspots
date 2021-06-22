@@ -150,11 +150,11 @@ psubareas = plot(
 if (@isdefined save_figures) && save_figures == true
     savefig(
         plot(window_full; dpi=200),
-        joinpath("fig", outcome, "06-0_$(outcome)_moving-windows_full.png"),
+        joinpath("archive", "fig", outcome, "06-0_$(outcome)_moving-windows_full.png"),
     )
     savefig(
         plot(psubareas; dpi=200),
-        joinpath("fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"),
+        joinpath("archive", "fig", outcome, "06-1_$(outcome)_moving-windows_subareas.png"),
     )
 end
 
@@ -207,5 +207,5 @@ p = plot(
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(p, joinpath("fig/", outcome, "06-2_$(outcome)_moving-windows_3scales.png"))
+    savefig(p, joinpath("archive", "fig", outcome, "06-2_$(outcome)_moving-windows_3scales.png"))
 end

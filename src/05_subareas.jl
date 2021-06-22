@@ -177,7 +177,7 @@ combined_plot = plot(
 if (@isdefined save_figures) && save_figures == true
     savefig(
         plot(combined_plot, dpi=200),
-        joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png")
+        joinpath("fig", outcome, "05_$(outcome)_subareas.png")
     )
 end
 
@@ -288,7 +288,7 @@ p
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(p, joinpath("fig", outcome, "05-2_$(outcome)_subareas_3scales.png"))
+    savefig(p, joinpath("fig", outcome, "05_$(outcome)_extents.png"))
 end
 
 
@@ -361,5 +361,5 @@ medians_p4 = plot!(deepcopy(medians_p3), medians_df.gamma, label="Gamma diversit
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     # Final plot
-    savefig(medians_p4, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png"))
+    savefig(medians_p4, joinpath("fig", outcome, "05_$(outcome)_medians.png"))
 end

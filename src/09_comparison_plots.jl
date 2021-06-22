@@ -45,7 +45,7 @@ combined_plot = plot(
 
 # Save result
 if (@isdefined save_additional_figures) && save_additional_figures == true
-    savefig(combined_plot, joinpath("fig", "bart", "07_bart_combined-maps.png"))
+    savefig(combined_plot, joinpath("fig", "bart", "09_bart_combined.png"))
 end
 
 ## Difference plots
@@ -172,7 +172,7 @@ combined_diffplot = plot(
 
 # Save figures
 if (@isdefined save_additional_figures) && save_additional_figures == true
-    savefig(combined_diffplot, joinpath("fig", "bart", "07_bart_comparison-combined.png"))
+    savefig(combined_diffplot, joinpath("fig", "bart", "09_bart_comparison.png"))
 end
 
 ## Residual visualization
@@ -268,6 +268,6 @@ combined_resplot = plot(
 
 # Save figures
 if (@isdefined save_additional_figures) && save_additional_figures == true
-    # savefig(richness_resplot, joinpath("fig", "bart", "07_bart_residuals_richness-poisson.png"))
-    savefig(combined_resplot, joinpath("fig", "bart", "07_bart_residuals-combined.png"))
+    # savefig(richness_resplot, joinpath("fig", "bart", "09_bart_residuals_richness-poisson.png"))
+    savefig(combined_resplot, joinpath("fig", "bart", "09_bart_residuals.png"))
 end

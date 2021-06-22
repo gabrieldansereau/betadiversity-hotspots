@@ -14,7 +14,7 @@ end
 
 ## Occupancy
 # Prep values
-include("04_analysis.jl")
+include("04_full-extent.jl")
 include("05_subareas.jl")
 
 # Count sites with occurrences per species
@@ -151,7 +151,7 @@ p_eusrr =
 # Whatever the threshold, EUSRR negative
 if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(
-        p_eusrr, joinpath("fig", outcome, "08_$(outcome)_rare-species_eusrr_thresholds.png")
+        p_eusrr, joinpath("fig", outcome, "06_$(outcome)_eusrr.png")
     )
 end
 
@@ -166,7 +166,7 @@ p_thresholds = plot(
 
 if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(
-        p_thresholds, joinpath("fig", outcome, "08_$(outcome)_rare-species_thresholds.png")
+        p_thresholds, joinpath("fig", outcome, "06_$(outcome)_thresholds.png")
     )
 end
 
@@ -239,7 +239,7 @@ p_subareas = plot(p1, p2, p3, p4; dpi=200)
 if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(
         p_subareas,
-        joinpath("fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"),
+        joinpath("archive", "fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"),
     )
 end
 
@@ -286,6 +286,6 @@ asc_plots = plot(
 if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(
         asc_plots,
-        joinpath("fig", outcome, "08_$(outcome)_rare-species_ascending_plots.png"),
+        joinpath("fig", outcome, "06_$(outcome)_rare-species.png"),
     )
 end

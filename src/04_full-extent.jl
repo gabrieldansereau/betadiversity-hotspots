@@ -147,15 +147,15 @@ if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome))"
     savefig(
         plot(richness_plot; dpi=200),
-        joinpath("fig", outcome, "04-2_$(outcome)_richness.png"),
+        joinpath("fig", outcome, "04_$(outcome)_richness.png"),
     )
     savefig(
         plot(lcbdtr_plot; dpi=200),
-        joinpath("fig", outcome, "04-3_$(outcome)_lcbd-transf.png"),
+        joinpath("fig", outcome, "04_$(outcome)_lcbd.png"),
     )
     savefig(
         plot(rel2d_plot; dpi=200),
-        joinpath("fig", outcome, "04-4_$(outcome)_relationship2d-transf.png"),
+        joinpath("fig", outcome, "04_$(outcome)_relationship.png"),
     )
 else
     @info "Figures not saved ($(outcome))"
@@ -166,11 +166,11 @@ if (@isdefined save_quantile_figures) && save_quantile_figures == true
     @info "Quantile figures saved ($(outcome))"
     savefig(
         plot(richness_qplot; dpi=200),
-        joinpath("fig", "quantiles", "04-2_$(outcome)_richness_quantiles.png"),
+        joinpath("fig", "quantiles", "04_$(outcome)_richness_quantiles.png"),
     )
     savefig(
         plot(lcbdtr_qplot; dpi=200),
-        joinpath("fig", "quantiles", "04-3_$(outcome)_lcbd-transf_quantiles.png"),
+        joinpath("fig", "quantiles", "04_$(outcome)_lcbd.png"),
     )
 else
     @info "Quantile figures not saved ($(outcome) richness)"

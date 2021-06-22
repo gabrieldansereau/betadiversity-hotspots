@@ -1,6 +1,6 @@
 include("../required.jl")
 
-include("../07a_comparison_data.jl")
+include("../07_comparison_data.jl")
 
 nspecies = size(raw.Y, 2)
 nsites_raw = format(length(raw.richness); commas=true)
@@ -21,7 +21,7 @@ bdtot_sdm = sprintf1("%.3f", sdm.beta_total)
 
 ##
 
-include("../07c_comparison_plots.jl")
+include("../09_comparison_plots.jl")
 
 richdiff_min, richdiff_max = sprintf1.("%i", extrema(richness_diff))
 lcbddiff_min, lcbddiff_max = sprintf1.("%.3e", extrema(lcbd_diff))

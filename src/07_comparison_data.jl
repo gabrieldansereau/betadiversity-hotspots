@@ -6,7 +6,7 @@ include("required.jl")
 
 ## Run analysis on raw data
 outcome = "raw"
-include("04_analysis.jl")
+include("04_full-extent.jl")
 
 # Add non-relative LCBD values
 lcbdnr = calculate_lcbd(Y, lcbd; relative=false)
@@ -25,7 +25,7 @@ raw = (
 
 ## Run analysis on sdm data
 outcome = "bart"
-include("04_analysis.jl")
+include("04_full-extent.jl")
 
 # Add non-relative LCBD values
 lcbdnr = calculate_lcbd(Y, lcbd; relative=false)

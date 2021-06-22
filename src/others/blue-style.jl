@@ -1,8 +1,8 @@
 using JuliaFormatter
 
 # Test formatter on single script
-format("./src/04_analysis.jl", BlueStyle())
-format("./src/04_analysis.jl", BlueStyle(); pipe_to_function_call=false)
+format("./src/04_full-extent.jl", BlueStyle())
+format("./src/04_full-extent.jl", BlueStyle(); pipe_to_function_call=false)
 
 # Use formatter on main scripts
 mainfiles = readdir("./src/"; join=true)

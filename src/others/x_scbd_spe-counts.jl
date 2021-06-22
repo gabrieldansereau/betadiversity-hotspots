@@ -1,6 +1,6 @@
 outcome = "bart"
 
-include(abspath("src", "04_analysis.jl"))
+include(abspath("src", "04_full-extent.jl"))
 
 ## SCBD
 # Prep values
