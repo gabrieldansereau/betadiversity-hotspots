@@ -155,8 +155,6 @@ map_sp1 = plotSDM2(
     colorbar=:none,
     dpi=200,
 )
-# scatter!(map_sp1, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
-#                         legend = :bottomright, legendfontsize = 5)
 # Species 2
 sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM2(
@@ -166,15 +164,3 @@ map_sp2 = plotSDM2(
     colorbar=:none,
     dpi=200,
 )
-# scatter!(map_sp2, [NaN], label = "Occurrence", color = :purple, markershape = :rect, markersize = 2,
-#                         legend = :bottomright, legendfontsize = 5)
-
-## Export figures
-# save_figures = true # should figures be overwritten (optional)
-if (@isdefined save_figures) && save_figures == true
-    @info "Figures saved ($(outcome) distributions)"
-    savefig(map_sp1, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp1).png"))
-    savefig(map_sp2, joinpath("fig", outcome, "01_$(outcome)_sp-$(sp2).png"))
-else
-    @info "Figures not saved ($(outcome) distributions)"
-end
