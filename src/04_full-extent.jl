@@ -4,7 +4,6 @@ include("required.jl")
 # outcome = "raw" # desired outcome (required)
 # outcome = "bart"
 # save_figures = true # should figures be overwritten (optional)
-# save_quantile_figures = true # should quantile figures be overwritten (optional)
 
 # Make sure "outcome" is defined
 if !(@isdefined outcome)
@@ -46,14 +45,6 @@ richness_plot = plotSDM2(
     colorbar_title="Species richness",
     size=(650, 400),
 )
-# Plot richness quantiles
-richness_qplot = plotSDM2(
-    quantiles(richness);
-    c=:viridis,
-    # title = "Richness quantiles ($outcome distributions)",
-    colorbar_title="Species richness (quantiles)",
-    size=(650, 400),
-)
 
 ## LCBD
 
@@ -85,15 +76,6 @@ lcbdtr_plot = plotSDM2(
     c=:viridis,
     # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
     colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
-    size=(650, 400),
-)
-
-# Plot quantile scores
-lcbdtr_qplot = plotSDM2(
-    quantiles(lcbd);
-    c=:viridis,
-    # title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",
-    colorbar_title="LCBD value (quantiles)",
     size=(650, 400),
 )
 
@@ -159,19 +141,4 @@ if (@isdefined save_figures) && save_figures == true
     )
 else
     @info "Figures not saved ($(outcome))"
-end
-
-# save_quantile_figures = true # should quantile figures be overwritten (optional)
-if (@isdefined save_quantile_figures) && save_quantile_figures == true
-    @info "Quantile figures saved ($(outcome))"
-    savefig(
-        plot(richness_qplot; dpi=200),
-        joinpath("fig", "quantiles", "04_$(outcome)_richness_quantiles.png"),
-    )
-    savefig(
-        plot(lcbdtr_qplot; dpi=200),
-        joinpath("fig", "quantiles", "04_$(outcome)_lcbd.png"),
-    )
-else
-    @info "Quantile figures not saved ($(outcome) richness)"
 end

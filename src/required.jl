@@ -33,7 +33,6 @@ include(joinpath("lib", "csvdata.jl"))
 include(joinpath("lib", "landcover.jl"))
 include(joinpath("lib", "plotSDM.jl"))
 include(joinpath("lib", "presence-absence.jl"))
-include(joinpath("lib", "quantiles.jl"))
 include(joinpath("lib", "shapefiles.jl"))
 include(joinpath("lib", "zipfile.jl"))
 

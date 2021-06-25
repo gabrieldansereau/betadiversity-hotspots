@@ -50,7 +50,6 @@ save_figures = true # should figures be overwritten (optional)
 outcome = "raw" # desired outcome (required), choose either raw or bart
 outcome = "bart"
 save_figures = true # should figures be overwritten (optional)
-save_quantile_figures = true # should figures be overwritten (optional)
 
 # 4. Run main analyses (Y-matrix, richness, LCBD, relationship)
 @info "Running 04_full-extent.jl"
@@ -66,7 +65,6 @@ save_quantile_figures = true # should figures be overwritten (optional)
 # Better to reset the conditional arguments to avoid overwriting things
 outcome = nothing
 save_figures = nothing
-save_quantile_figures = nothing
 save_data = nothing
 
 # Set conditional arguments for additional analyses scripts
