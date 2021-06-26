@@ -73,11 +73,11 @@ if (@isdefined save_data) && save_data == true
 
     ## Export layers
     # Export distribution layers
-    geotiff(joinpath("data", "proc", "distributions_raw.tif"), distributions)
+    geotiff(joinpath("data", "raster", "distributions_raw.tif"), distributions)
     # Export distributions for QC only
     coords_qc = (left=-80.0, right=-55.0, bottom=45.0, top=63.0)
     distributions_qc = [d[coords_qc] for d in distributions]
-    geotiff(joinpath("data", "proc", "distributions_raw_qc.tif"), distributions_qc)
+    geotiff(joinpath("data", "raster", "distributions_raw_qc.tif"), distributions_qc)
 
     ## Export to CSV as Y matrix
     @info "Exporting data to CSV as Y matrix (raw distributions data)"
@@ -97,7 +97,7 @@ else
     @load joinpath("data", "jld2", "spenames.jld2") spenames specommon speindex
     distributions = [
         geotiff(
-            SimpleSDMPredictor, joinpath("data", "proc", "distributions_raw.tif"), i
+            SimpleSDMPredictor, joinpath("data", "raster", "distributions_raw.tif"), i
         ) for i in eachindex(spenames)
     ]
 end

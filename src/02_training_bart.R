@@ -10,13 +10,13 @@ source(file.path("src", "required.R"))
 ## 1. Load data ####
 
 # Select raster files
-env_files <- list(here("data", "proc", "spa_stack.tif"), here("data", "proc", "env_stack.tif"))
-spe_files <- list(here("data", "proc", "spa_stack.tif"), here("data", "proc", "distributions_raw.tif"))
+env_files <- list(here("data", "raster", "spa_stack.tif"), here("data", "raster", "env_stack.tif"))
+spe_files <- list(here("data", "raster", "spa_stack.tif"), here("data", "raster", "distributions_raw.tif"))
 # Select QC data (if subset_qc option correctly set)
 if (exists("subset_qc") && isTRUE(subset_qc)) {
   message("Subsetting to QC data")
-  env_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "env_stack_qc.tif"))
-  spe_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "distributions_raw_qc.tif"))
+  env_files <- list(here("data", "raster", "spa_stack_qc.tif"), here("data", "raster", "env_stack_qc.tif"))
+  spe_files <- list(here("data", "raster", "spa_stack_qc.tif"), here("data", "raster", "distributions_raw_qc.tif"))
 }
 # Load rasters as stack
 (env_stack <- stack(env_files))

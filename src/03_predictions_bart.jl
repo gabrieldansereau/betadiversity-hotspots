@@ -37,7 +37,7 @@ Y[inds_zeros, :] .= nothing
 glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 spenames = filter(:type => ==("species"), glossary).full_name
 distributions = [
-    geotiff(SimpleSDMPredictor, joinpath("data", "proc", "distributions_raw.tif"), i) for
+    geotiff(SimpleSDMPredictor, joinpath("data", "raster", "distributions_raw.tif"), i) for
     i in eachindex(spenames)
 ]
 raw_distributions = copy(distributions)
@@ -64,13 +64,13 @@ distributions
 # save_data = true
 if (@isdefined save_data) && save_data == true
     # Export BART distributions
-    geotiff(joinpath("data", "proc", "distributions_bart.tif"), distributions)
+    geotiff(joinpath("data", "raster", "distributions_bart.tif"), distributions)
     # Extras
     jld_path = joinpath("data", "jld2", "bart-distributions_xtras.jld2")
     @save jld_path prob_distrib lower_distrib upper_distrib
-    geotiff(joinpath("data", "proc", "bart_xtras_prob-distrib.tif"), prob_distrib)
-    geotiff(joinpath("data", "proc", "bart_xtras_lower-distrib.tif"), lower_distrib)
-    geotiff(joinpath("data", "proc", "bart_xtras_upper-distrib.tif"), upper_distrib)
+    geotiff(joinpath("data", "raster", "bart_xtras_prob-distrib.tif"), prob_distrib)
+    geotiff(joinpath("data", "raster", "bart_xtras_lower-distrib.tif"), lower_distrib)
+    geotiff(joinpath("data", "raster", "bart_xtras_upper-distrib.tif"), upper_distrib)
 end
 
 ## Get richness & LCBD

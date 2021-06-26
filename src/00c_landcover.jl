@@ -65,8 +65,8 @@ if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting env & spa to CSV"
     CSV.write(joinpath("data", "proc", "distributions_env_full.csv"), env_df; delim="\t")
     CSV.write(joinpath("data", "proc", "distributions_spa_full.csv"), spa_df; delim="\t")
-    geotiff(joinpath("data", "proc", "env_stack.tif"), env_vars)
-    geotiff(joinpath("data", "proc", "spa_stack.tif"), spa_vars)
+    geotiff(joinpath("data", "raster", "env_stack.tif"), env_vars)
+    geotiff(joinpath("data", "raster", "spa_stack.tif"), spa_vars)
 end
 
 # Test load
@@ -92,6 +92,6 @@ spa_vars_qc = [v[coords_qc] for v in spa_vars]
 if (@isdefined save_prepdata) && save_prepdata == true
     @info "Exporting QC env & spa to CSV"
     CSV.write(joinpath("data", "proc", "distributions_spa_qc.csv"), spa_qc; delim="\t")
-    geotiff(joinpath("data", "proc", "env_stack_qc.tif"), env_vars_qc)
-    geotiff(joinpath("data", "proc", "spa_stack_qc.tif"), spa_vars_qc)
+    geotiff(joinpath("data", "raster", "env_stack_qc.tif"), env_vars_qc)
+    geotiff(joinpath("data", "raster", "spa_stack_qc.tif"), spa_vars_qc)
 end

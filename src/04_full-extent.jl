@@ -19,7 +19,7 @@ glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 spenames = filter(:type => ==("species"), glossary).full_name
 distributions = [
     geotiff(
-        SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i
+        SimpleSDMPredictor, joinpath("data", "raster", "distributions_$(outcome).tif"), i
     ) for i in eachindex(spenames)
 ]
 
