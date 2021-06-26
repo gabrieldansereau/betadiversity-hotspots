@@ -4,7 +4,6 @@ Pkg.activate(".")
 Pkg.instantiate()
 
 # Load required packages (sorted alphabetically)
-using ArchGDAL
 using CSV
 using DataFrames
 using Dates
