@@ -66,8 +66,6 @@ if (@isdefined save_data) && save_data == true
     # Export BART distributions
     geotiff(joinpath("data", "raster", "distributions_bart.tif"), distributions)
     # Extras
-    jld_path = joinpath("data", "jld2", "bart-distributions_xtras.jld2")
-    @save jld_path prob_distrib lower_distrib upper_distrib
     geotiff(joinpath("data", "raster", "bart_xtras_prob-distrib.tif"), prob_distrib)
     geotiff(joinpath("data", "raster", "bart_xtras_lower-distrib.tif"), lower_distrib)
     geotiff(joinpath("data", "raster", "bart_xtras_upper-distrib.tif"), upper_distrib)
