@@ -169,16 +169,14 @@ combined_plot = plot(
     layout=grid(2, 1),
     size=(900, 600),
     bottommargin=0.0mm,
-    title=["a) Northeast subregion" "" "b) Southwest subregion" ""]
+    title=["a) Northeast subregion" "" "b) Southwest subregion" ""],
+    dpi=200,
 )
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(
-        plot(combined_plot, dpi=200),
-        joinpath("fig", outcome, "05_$(outcome)_subareas.png")
-    )
+    savefig(combined_plot, joinpath("fig", outcome, "05_$(outcome)_subareas.png"))
 end
 
 #### Repeat for different subareas

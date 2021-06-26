@@ -44,6 +44,7 @@ richness_plot = plotSDM2(
     # clim = (0.0, maximum(richness)),
     colorbar_title="Species richness",
     size=(650, 400),
+    dpi=200,
 )
 
 ## LCBD
@@ -66,6 +67,7 @@ lcbdtr_plot = plotSDM2(
     # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
     colorbar_title="Relative LCBD value",
     size=(650, 400),
+    dpi=200,
 )
 # Plot absolute values
 scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
@@ -77,6 +79,7 @@ lcbdtr_plot = plotSDM2(
     # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
     colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
     size=(650, 400),
+    dpi=200,
 )
 
 ## Relationship
@@ -110,6 +113,7 @@ rel2d_plot = histogram2d(
     # aspect_ratio = 40,
     size=(650, 400),
     # bottom_margin = 5.0mm,
+    dpi=200,
 )
 vline!([median(richness)]; label=:none, linestyle=:dash, c=:grey)
 hline!([median(lcbd_resc)]; label=:none, linestyle=:dash, c=:grey)
@@ -127,18 +131,9 @@ rectangle!(
 # save_figures = true # should figures be overwritten (optional)
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome))"
-    savefig(
-        plot(richness_plot; dpi=200),
-        joinpath("fig", outcome, "04_$(outcome)_richness.png"),
-    )
-    savefig(
-        plot(lcbdtr_plot; dpi=200),
-        joinpath("fig", outcome, "04_$(outcome)_lcbd.png"),
-    )
-    savefig(
-        plot(rel2d_plot; dpi=200),
-        joinpath("fig", outcome, "04_$(outcome)_relationship.png"),
-    )
+    savefig(richness_plot, joinpath("fig", outcome, "04_$(outcome)_richness.png"))
+    savefig(lcbdtr_plot, joinpath("fig", outcome, "04_$(outcome)_lcbd.png"))
+    savefig(rel2d_plot, joinpath("fig", outcome, "04_$(outcome)_relationship.png"))
 else
     @info "Figures not saved ($(outcome))"
 end

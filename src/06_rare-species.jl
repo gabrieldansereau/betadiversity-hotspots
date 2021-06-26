@@ -236,12 +236,6 @@ rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, ri
 p4 = plotSDM2(rarespecies_layer_SW_total; c=:viridis)
 
 p_subareas = plot(p1, p2, p3, p4; dpi=200)
-if (@isdefined save_additional_figures) && save_additional_figures == true
-    savefig(
-        p_subareas,
-        joinpath("archive", "fig", outcome, "08_$(outcome)_rare-species_spatial_subareas.png"),
-    )
-end
 
 ## Ascending & descending parts
 

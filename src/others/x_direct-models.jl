@@ -53,6 +53,7 @@ richness_plot = plotSDM2(
     c=:viridis,
     title="Direct richness predictions ($(uppercase(outcome)))",
     colorbar_title="Predicted number of species",
+    dpi=200,
 )
 
 ## Plot differences
@@ -110,7 +111,7 @@ function difference_plot(layer, lim; title="")
     )
     diff_title = plot(; annotation=(0.5, 0.5, "$(title)"), framestyle=:none)
     l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
-    diff_plot = plot(diff_title, diff_map, diff_hist; size=(800, 400), layout=l)
+    diff_plot = plot(diff_title, diff_map, diff_hist; size=(800, 400), dpi=200, layout=l)
     return diff_plot
 end
 
@@ -131,6 +132,7 @@ richness_absdiff = plotSDM2(
     c=:inferno, # clim = (-Inf, Inf),
     title="Direct richness predictions difference ($(uppercase(outcome)))",
     colorbar_title="Difference from SDM-predicted richness (absolute)",
+    dpi=200,
 )
 
 # LCBD predictions
@@ -140,6 +142,7 @@ lcbd_plot = plotSDM2(
     title="Direct LCBD predictions ($(uppercase(outcome)))",
     colorbar_title="LCBD scores",
     clim=(0, 1),
+    dpi=200,
 )
 
 # LCBD difference
@@ -148,40 +151,5 @@ lcbd_diff = plotSDM2(
     c=:inferno, # clim = (-Inf, Inf),
     title="Direct richness predictions difference ($(uppercase(outcome)))",
     colorbar_title="Difference in predicted LCBD (absolute)",
+    dpi=200,
 )
-
-## Export figures
-# save_figures = true
-if (@isdefined save_figures) && save_figures == true
-    savefig(
-        plot(richness_plot; dpi=150),
-        joinpath("fig", outcome, "x_$(outcome)_direct-richness.png"),
-    )
-    savefig(
-        plot(plot_pred_sdm; dpi=150),
-        joinpath("fig", outcome, "x_$(outcome)_direct-richness_diff-pred-sdm.png"),
-    )
-    savefig(
-        plot(plot_pred_raw; dpi=150),
-        joinpath("fig", outcome, "x_$(outcome)_direct-richness_diff-pred-raw.png"),
-    )
-    savefig(
-        plot(plot_sdm_raw; dpi=150),
-        joinpath("fig", outcome, "x_$(outcome)_direct-richness_diff-sdm-raw.png"),
-    )
-end
-# save_extras = true
-if (@isdefined save_extras) && save_extras == true
-    savefig(
-        plot(richness_absdiff_plot; dpi=150),
-        joinpath("archive", "fig", outcome, "x_$(outcome)_diff-richness-abs.png"),
-    )
-    savefig(
-        plot(lcbd_plot; dpi=150),
-        joinpath("archive", "fig", outcome, "x_$(outcome)_direct-lcbd.png"),
-    )
-    savefig(
-        plot(lcbd_diff_plot; dpi=150),
-        joinpath("archive", "fig", outcome, "x_$(outcome)_diff-lcbd.png"),
-    )
-end

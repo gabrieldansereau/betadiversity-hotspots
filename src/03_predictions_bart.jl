@@ -120,9 +120,9 @@ function uncertainty_plot(layer; title="")
     unc_plot = plot(unc_title, unc_map, unc_hist; size=(800, 400), layout=l)
     return unc_plot
 end
-unc_plot = uncertainty_plot(uncertainty_mean; title="Uncertainty mean (BART SDMs)")
+unc_plot = uncertainty_plot(uncertainty_mean; title="Uncertainty mean (BART SDMs)", dpi=200)
 
 # Export uncertainty plot
 if (@isdefined save_figures) && save_figures == true
-    savefig(plot(unc_plot; dpi=150), joinpath("fig", "bart", "x_bart_uncertainty.png"))
+    savefig(unc_plot, joinpath("fig", "bart", "x_bart_uncertainty.png"))
 end
