@@ -62,19 +62,6 @@ end
 ## Export distributions
 # save_data = true # should data files be overwritten (optional)
 if (@isdefined save_data) && save_data == true
-    ## Export to JLD2
-    # Export data to JLD2
-    @info "Exporting data to JLD2 file (raw distributions data)"
-    @save joinpath("data", "jld2", "raw-distributions.jld2") distributions spenames specommon speindex
-    # Export to ZIP archive
-    @info "Exporting data from JLD2 to ZIP archive (raw distributions data)"
-    _zip_jld2(
-        joinpath("data", "jld2", "raw-distributions.zip"),
-        joinpath("data", "jld2", "raw-distributions.jld2"),
-    )
-    # Make sure JLD2 timestamp is more recent than ZIP archive
-    touch(joinpath("data", "jld2", "raw-distributions.jld2"))
-
     ## Export species names
     @info "Exporting species names to JLD2 file"
     @save joinpath("data", "jld2", "spenames.jld2") spenames specommon speindex
@@ -106,8 +93,8 @@ if (@isdefined save_data) && save_data == true
     CSV.write(joinpath("data", "proc", "distributions_spe_full.csv"), spe_df; delim="\t")
 else
     # Load data
-    @info "Data imported from file (raw distributions data)"
-    @load joinpath("data", "jld2", "raw-distributions.jld2") spenames specommon speindex
+    @info "Data imported from file (species names)"
+    @load joinpath("data", "jld2", "spenames.jld2") spenames specommon speindex
     distributions = [
         geotiff(
             SimpleSDMPredictor, joinpath("data", "proc", "distributions_raw.tif"), i

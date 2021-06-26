@@ -34,6 +34,3 @@ include(joinpath("lib", "plotSDM.jl"))
 include(joinpath("lib", "presence-absence.jl"))
 include(joinpath("lib", "shapefiles.jl"))
 include(joinpath("lib", "zipfile.jl"))
-
-# Manual version-control of JLD2 data
-verify_jld2_data(joinpath("data", "jld2"))
