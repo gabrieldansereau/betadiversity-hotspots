@@ -41,8 +41,8 @@ xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:
 # Create raster layers
 sp_layer <- df_to_layer(x = sp_full[[1]], lons = vars_full$lon, lats = vars_full$lat)
 vars_layers <- map(
-    vars_full[,xnames], 
-    ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
+  vars_full[,xnames],
+  ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
 )
 wc_layer <- vars_layers$wc1
 
@@ -56,11 +56,11 @@ plot(vars_stack)
 # Train model
 set.seed(42)
 system.time(
-    sdm <- bart(
-        y.train = sp[[1]],
-        x.train = vars[,xnames],
-        keeptrees = TRUE
-    )
+  sdm <- bart(
+    y.train = sp[[1]],
+    x.train = vars[,xnames],
+    keeptrees = TRUE
+  )
 ) # 5 sec. for QC, 90 sec. at full scale
 
 # Model diagnostics
@@ -74,70 +74,70 @@ predictions <- predict2.bart(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby
 
 # Plot probability predictions
 plot(
-    wc_layer, 
-    main = "Original distribution",
-    col = "grey",  
-    legend = FALSE, box = FALSE, axes = FALSE
+  wc_layer,
+  main = "Original distribution",
+  col = "grey",
+  legend = FALSE, box = FALSE, axes = FALSE
 )
 plot(sp_layer, add = TRUE, col = viridis(2))
 plot(
-    predictions[[1]], 
-    main = 'Probability predictions - Posterior mean', 
-    col = viridis(255),
-    zlim = c(0, 1),
-    legend.args=list(text='Probability', side=2, line=1.3),
-    box = FALSE, axes = FALSE
+  predictions[[1]],
+  main = 'Probability predictions - Posterior mean',
+  col = viridis(255),
+  zlim = c(0, 1),
+  legend.args=list(text='Probability', side=2, line=1.3),
+  box = FALSE, axes = FALSE
 )
 plot(
-    predictions[[2]], 
-    main = 'Probability predictions - Lower 95% CI bound', 
-    col = viridis(255),
-    zlim = c(0, 1), 
-    legend.args=list(text='Probability', side=2, line=1.3),
-    box = FALSE, axes = FALSE
+  predictions[[2]],
+  main = 'Probability predictions - Lower 95% CI bound',
+  col = viridis(255),
+  zlim = c(0, 1),
+  legend.args=list(text='Probability', side=2, line=1.3),
+  box = FALSE, axes = FALSE
 )
 plot(
-    predictions[[3]], 
-    main = 'Probability predictions - Upper 95% CI bound', 
-    col = viridis(255),
-    zlim = c(0, 1),
-    legend.args=list(text='Probability', side=2, line=1.3),
-    box = FALSE, axes = FALSE
+  predictions[[3]],
+  main = 'Probability predictions - Upper 95% CI bound',
+  col = viridis(255),
+  zlim = c(0, 1),
+  legend.args=list(text='Probability', side=2, line=1.3),
+  box = FALSE, axes = FALSE
 )
 plot(
-    predictions[[3]] - predictions[[2]], 
-    main = 'Probability predictions - Credible interval width', 
-    col = viridis(255),
-    zlim = c(0, 1),
-    legend.args=list(text='Probability', side=2, line=1.3),
-    box = FALSE, axes = FALSE
+  predictions[[3]] - predictions[[2]],
+  main = 'Probability predictions - Credible interval width',
+  col = viridis(255),
+  zlim = c(0, 1),
+  legend.args=list(text='Probability', side=2, line=1.3),
+  box = FALSE, axes = FALSE
 )
 
 # Plot threshold predictions
 threshold <- diagnostics$threshold
 plot(
-    predictions[[1]] > threshold, 
-    main = 'Threshold predictions - Posterior mean', 
-    col = viridis(2),
-    box = FALSE, axes = FALSE
+  predictions[[1]] > threshold,
+  main = 'Threshold predictions - Posterior mean',
+  col = viridis(2),
+  box = FALSE, axes = FALSE
 )
 plot(
-    predictions[[2]] > threshold, 
-    main = 'Threshold predictions - Lower 95% CI bound', 
-    col = viridis(2),
-    box = FALSE, axes = FALSE
+  predictions[[2]] > threshold,
+  main = 'Threshold predictions - Lower 95% CI bound',
+  col = viridis(2),
+  box = FALSE, axes = FALSE
 )
 plot(
-    predictions[[3]] > threshold, 
-    main = 'Threshold predictions - Upper 95% CI bound', 
-    col = viridis(255),
-    box = FALSE, axes = FALSE
+  predictions[[3]] > threshold,
+  main = 'Threshold predictions - Upper 95% CI bound',
+  col = viridis(255),
+  box = FALSE, axes = FALSE
 )
 plot(
-    (predictions[[3]] > threshold) - (predictions[[2]] > threshold), 
-    main = 'Threshold predictions - Upper-lower site difference', 
-    col = viridis(2),
-    box = FALSE, axes = FALSE
+  (predictions[[3]] > threshold) - (predictions[[2]] > threshold),
+  main = 'Threshold predictions - Upper-lower site difference',
+  col = viridis(2),
+  box = FALSE, axes = FALSE
 )
 
 
@@ -145,38 +145,38 @@ plot(
 
 varimp(sdm, plot = TRUE)
 system.time(
-    # varimp.diag(vars[,xnames], sp[[1]], iter = 50)
+  # varimp.diag(vars[,xnames], sp[[1]], iter = 50)
 ) # ~ 15 min
 
 # Stepwise variable set reduction
 system.time(
-    step.model <- variable.step(
-        x.data = vars[,xnames], 
-        y.data = sp[[1]]
-    )
+  step.model <- variable.step(
+    x.data = vars[,xnames],
+    y.data = sp[[1]]
+  )
 ) # ~5 min
 step.model
 
-# 2:30:00 for full scale 
+# 2:30:00 for full scale
 # wc1  wc5  wc6  wc12 wc14 wc15 lc7  lc8  lc9
 
 
 ## 5. Partial dependence plots ####
 
 system.time(
-    partial(
-        sdm, 
-        x.vars = c('wc1'),
-        trace = FALSE,
-        ci = FALSE,
-        smooth = 5,
-        equal = TRUE
-    )
+  partial(
+    sdm,
+    x.vars = c('wc1'),
+    trace = FALSE,
+    ci = FALSE,
+    smooth = 5,
+    equal = TRUE
+  )
 ) # ~ 3 min.
 
 # Spartial dependence plot
 system.time(
-    p <- spartial(sdm, vars_stack, x.vars='wc1', equal=TRUE, smooth=5)
+  p <- spartial(sdm, vars_stack, x.vars='wc1', equal=TRUE, smooth=5)
 ) # ~ 3 min.
 plot(p)
 
@@ -185,17 +185,17 @@ plot(p)
 
 # Show first iterations
 system.time(
-     plot.mcmc(sdm, vars_stack, iter=5, quiet = TRUE)
+   plot.mcmc(sdm, vars_stack, iter=5, quiet = TRUE)
 )
 
 # Show burn-in with fewer trees
 set.seed(42)
 sdm.tiny <- bart(
-    y.train=sp[[1]],
-    x.train=vars[,xnames],
-    keeptrees = TRUE,
-    ntree=5, # 5 tree models
-    nskip=0
+  y.train=sp[[1]],
+  x.train=vars[,xnames],
+  keeptrees = TRUE,
+  ntree=5, # 5 tree models
+  nskip=0
 ) # No burnin
 summary(sdm.tiny)
 plot.mcmc(sdm.tiny, vars_stack, iter=100)
@@ -203,8 +203,7 @@ plot.mcmc(sdm.tiny, vars_stack, iter=100)
 # Timelapse of tree learning
 library(animation)
 saveGIF(
-    plot.mcmc(sdm, vars_stack, iter=50), 
-    movie.name = "Timelapse.gif", #interval = 0.15, 
-    ani.width = 800, ani.height = 400
+  plot.mcmc(sdm, vars_stack, iter=50),
+  movie.name = "Timelapse.gif", #interval = 0.15,
+  ani.width = 800, ani.height = 400
 )
-

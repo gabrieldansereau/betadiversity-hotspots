@@ -26,25 +26,25 @@ augment(lm_lcbd)
 
 # Check model assumptions
 plotlm <- function(model) {
-    opar <- par(mfrow=c(2,2))
-    plot(model)
-    par(opar)    
+  opar <- par(mfrow=c(2,2))
+  plot(model)
+  par(opar)  
 }
 plotlm(lm_richness) # not met
 plotlm(lm_lcbd) # not met
 
 # Plot fitted model
 plotfit <- function(model) {
-    model %>% 
-        augment(type.predict = "response") %>% 
-        rename(.y = 1, .x = 2) %>% 
-        ggplot(aes(x = .x, y = .y)) +
-            geom_point() +
-            geom_line(
-                aes(y = .fitted),
-                color = "red"
-            ) +
-            labs(y = names(model$model)[1], x = names(model$model)[2])
+  model %>% 
+    augment(type.predict = "response") %>% 
+    rename(.y = 1, .x = 2) %>% 
+    ggplot(aes(x = .x, y = .y)) +
+      geom_point() +
+      geom_line(
+        aes(y = .fitted),
+        color = "red"
+      ) +
+      labs(y = names(model$model)[1], x = names(model$model)[2])
 }
 plotfit(lm_richness)
 plotfit(lm_lcbd)
@@ -66,7 +66,7 @@ glance(glm_richness)
 
 # Check for overdispersion
 glance(glm_richness) %>% 
-    transmute(dispersion = deviance/df.residual)
+  transmute(dispersion = deviance/df.residual)
 # Overdispersion (residual deviance ~3-4x residual degrees of freedom)
 # Too much dispersion for Poisson
 
@@ -80,14 +80,14 @@ plotfit(glm_richness)
 
 # Map residuals
 results %>% 
-    ggplot(aes(longitude, latitude, colour = residuals(glm_richness))) +
-    scale_color_gradient2() +
-    geom_point(size = 1)
+  ggplot(aes(longitude, latitude, colour = residuals(glm_richness))) +
+  scale_color_gradient2() +
+  geom_point(size = 1)
 # Map richness
 results %>% 
-    ggplot(aes(longitude, latitude, colour = richness_raw)) +
-    scale_color_viridis() +
-    geom_point(size = 1)
+  ggplot(aes(longitude, latitude, colour = richness_raw)) +
+  scale_color_viridis() +
+  geom_point(size = 1)
 
 ## Quasi-Poisson
 glm_qp_richness <- glm(richness_sdm ~ richness_raw, data = results, family = quasipoisson)
@@ -156,13 +156,13 @@ plotfit(beta_lcbd)
 
 ## Assemble residuals ####
 residuals_df <- tibble(
-    longitude = results$longitude,
-    latitude = results$latitude,
-    richness = residuals(glm_richness),
-    richness_qp = residuals(glm_qp_richness),
-    richness_nb = residuals(glm_nb_richness),
-    lcbd = residuals(glm_lcbd),
-    lcbd_br = residuals(beta_lcbd)    
+  longitude = results$longitude,
+  latitude = results$latitude,
+  richness = residuals(glm_richness),
+  richness_qp = residuals(glm_qp_richness),
+  richness_nb = residuals(glm_nb_richness),
+  lcbd = residuals(glm_lcbd),
+  lcbd_br = residuals(beta_lcbd)  
 )
 residuals_df
 
@@ -174,14 +174,14 @@ write_tsv(residuals_df, here("data", "proc", "comparison-residuals.csv"))
 # Subset results to NE subregion
 coords_NE <- list(left = -80.0, right = -60.0, bottom = 40.0, top = 50.0)
 results_NE <- results %>% 
-    filter(coords_NE$left < longitude & longitude < coords_NE$right) %>% 
-    filter(coords_NE$bottom < latitude & latitude < coords_NE$top)
+  filter(coords_NE$left < longitude & longitude < coords_NE$right) %>% 
+  filter(coords_NE$bottom < latitude & latitude < coords_NE$top)
 results_NE
 # Map to verify extent
 results_NE %>% 
-    ggplot(aes(longitude, latitude, colour = richness_sdm)) +
-        geom_point() +
-        scale_colour_viridis()
+  ggplot(aes(longitude, latitude, colour = richness_sdm)) +
+    geom_point() +
+    scale_colour_viridis()
 
 ## Test at NE scale
 # Computing the modified t-test of spatial association

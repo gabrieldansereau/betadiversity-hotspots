@@ -14,9 +14,9 @@ env_files <- list(here("data", "proc", "spa_stack.tif"), here("data", "proc", "e
 spe_files <- list(here("data", "proc", "spa_stack.tif"), here("data", "proc", "distributions_raw.tif"))
 # Select QC data (if subset_qc option correctly set)
 if (exists("subset_qc") && isTRUE(subset_qc)) {
-    message("Subsetting to QC data")
-    env_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "env_stack_qc.tif"))
-    spe_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "distributions_raw_qc.tif"))
+  message("Subsetting to QC data")
+  env_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "env_stack_qc.tif"))
+  spe_files <- list(here("data", "proc", "spa_stack_qc.tif"), here("data", "proc", "distributions_raw_qc.tif"))
 }
 # Load rasters as stack
 (env_stack <- stack(env_files))
@@ -35,9 +35,9 @@ names(spe_stack) <- c("site", "lon", "lat", paste0("sp", 1:(nlayers(spe_stack)-3
 (spe_full <- arrange(spe_full, site))
 
 # Select sites with observations only & replace NA by zero
-spe <- spe_full %>% 
-    filter(if_any(contains("sp"), ~ !is.na(.x))) %>% 
-    mutate(across(contains("sp"), ~ replace(., is.na(.), 0)))
+spe <- spe_full %>%
+  filter(if_any(contains("sp"), ~ !is.na(.x))) %>%
+  mutate(across(contains("sp"), ~ replace(., is.na(.), 0)))
 env <- filter(env_full, site %in% spe$site)
 spe
 env
@@ -45,17 +45,17 @@ env
 # Remove site with NAs for landcover variables
 (inds_withNAs <- unique(unlist(map(env, ~ which(is.na(.x))))))
 if (length(inds_withNAs) > 0) {
-    message("Removing sites with observations but NA for land cover values")
-    spe <- spe[-inds_withNAs,]
-    env <- env[-inds_withNAs,]
+  message("Removing sites with observations but NA for land cover values")
+  spe <- spe[-inds_withNAs,]
+  env <- env[-inds_withNAs,]
 }
 
 # Remove species without observations
 (spe_withoutobs <- names(which(colSums(spe) == 0)))
 if (length(spe_withoutobs) > 0) {
-    message("Removing ", length(spe_withoutobs), " species without observations")
-    spe <- dplyr::select(spe, -all_of(spe_withoutobs))
-    spe_full <- dplyr::select(spe_full, -all_of(spe_withoutobs))
+  message("Removing ", length(spe_withoutobs), " species without observations")
+  spe <- dplyr::select(spe, -all_of(spe_withoutobs))
+  spe_full <- dplyr::select(spe_full, -all_of(spe_withoutobs))
 }
 
 # Select fewer variables
@@ -76,17 +76,17 @@ spe_groups <- map(spe_splits, ~ select(spe, all_of(.)))
 
 # Function to run BART in parallel
 bart_parallel <- function(x.train, y.train, ...) {
-    # BART SDM
-    sdm <- bart(
-        y.train = y.train,
-        x.train = x.train,
-        keeptrees = TRUE,
-        verbose = FALSE,
-        ...
-    )
-    # Touch state so that saving will work
-    invisible(sdm$fit$state)
-    return(sdm)
+  # BART SDM
+  sdm <- bart(
+    y.train = y.train,
+    x.train = x.train,
+    keeptrees = TRUE,
+    verbose = FALSE,
+    ...
+  )
+  # Touch state so that saving will work
+  invisible(sdm$fit$state)
+  return(sdm)
 }
 
 # Prepare global sets
@@ -95,23 +95,23 @@ sdms_list <- list()
 predictions_list <- list()
 # Summary results for every species
 results_global <- tibble(
-    spe = names(select(spe, contains("sp"))),
-    auc = NA_real_,
-    threshold = NA_real_,
-    tss = NA_real_,
-    type_I = NA_real_,
-    type_II = NA_real_
+  spe = names(select(spe, contains("sp"))),
+  auc = NA_real_,
+  threshold = NA_real_,
+  tss = NA_real_,
+  type_I = NA_real_,
+  type_II = NA_real_
 )
 # Variable importance for every variable & species
 varimps_global <- spe_full %>%
-    slice(1:length(xnames)) %>% 
-    mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_))) %>% 
-    mutate(vars = xnames) %>% 
-    select(vars, everything(), -c(site, lon, lat))
+  slice(1:length(xnames)) %>%
+  mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_))) %>%
+  mutate(vars = xnames) %>%
+  select(vars, everything(), -c(site, lon, lat))
 # Predictions assembled as tibbles
-pred_df_global <- spe_full %>% 
-    select(-c(site, lon, lat)) %>% 
-    mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_)))
+pred_df_global <- spe_full %>%
+  select(-c(site, lon, lat)) %>%
+  mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_)))
 lower_df_global <- pred_df_global
 upper_df_global <- pred_df_global
 pres_df_global <- pred_df_global
@@ -131,141 +131,141 @@ message("Training multi-species models & predicting distributions")
 system.time(
 for (gp in seq_along(spe_groups)) {
 
-    message(paste0("Training multi-species group (", gp, "/", length(spe_groups)), ")")
+  message(paste0("Training multi-species group (", gp, "/", length(spe_groups)), ")")
 
-    ## 3.1 Create BART models ####
+  ## 3.1 Create BART models ####
 
-    # Set file paths for .RData
-    modelname <- ifelse(exists("subset_qc") && isTRUE(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
-    filepath <- here("data", "rdata", modelname)
-    # Create models (and optionally save to .RData) or load from existing RData
-    # create_models <- TRUE
-    if (exists("create_models") && isTRUE(create_models)){
-        # Run models in parallel
-        message("Creating models in parallel: ", modelname)
-        set.seed(42)
-        system.time(
-            sdms <- future_map(
-                spe_groups[[gp]],
-                ~ bart_parallel(
-                    y.train = .x,
-                    x.train = env[, xnames]
-                ),
-                .progress = TRUE,
-                .options = furrr_options(seed = TRUE) # disables warning about seed
-            )
-        ) # ~ 4 min in parallel
-        
-        # Export results
-        # save_models <- TRUE
-        if (exists("save_models") && isTRUE(save_models)) {
-            message("Saving models to RData: ", modelname)
-            save(sdms, file = filepath)
-        }
-    } else {
-        # Load models from files
-        message("Loading models from RData: ", modelname)
-        load(filepath)
-    }
-
-    ## 3.2 Extract summary data ####
-
-    # Extract summary statistics
-    summaries <-  future_map(sdms, summary_inner)
-
-    # Organize as tibble
-    results <- summaries %>% 
-        map_df(`[`, c("auc", "threshold", "tss", "type_I", "type_II")) %>% 
-        mutate(spe = names(summaries)) %>% 
-        select(spe, everything())
-    print(results, n = Inf)
-    summary(results)
-
-    # Extract variable importance
-    varimps <- map(sdms, varimp) %>% 
-        map_df("varimps") %>% 
-        mutate(vars = xnames) %>% 
-        select(vars, everything())
-    varimps
-    varimps %>% 
-        pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>% 
-        pivot_wider(spe, names_from = "vars", values_from = "varimp")
-    varimps %>% 
-        transmute(
-            vars = vars,
-            mean = rowMeans(select(., -vars))
-        ) %>% 
-        arrange(desc(mean))
-
-    ## 3.3 Predict species distributions ####
-
-    message("Predicting species distributions: ", modelname)
-
-    # Quantile Predictions
+  # Set file paths for .RData
+  modelname <- ifelse(exists("subset_qc") && isTRUE(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
+  filepath <- here("data", "rdata", modelname)
+  # Create models (and optionally save to .RData) or load from existing RData
+  # create_models <- TRUE
+  if (exists("create_models") && isTRUE(create_models)){
+    # Run models in parallel
+    message("Creating models in parallel: ", modelname)
+    set.seed(42)
     system.time(
-        predictions <- future_map(
-            sdms,
-            # sdms_backup,
-            function(x) predict2.bart(
-                object = x, 
-                x.layers = vars_stack,
-                quantiles = c(0.025, 0.975),
-                splitby = 20,
-                quiet = TRUE
-            ),
-            .progress = TRUE
-        )
-    ) # ~ 3 min in parallel
+      sdms <- future_map(
+        spe_groups[[gp]],
+        ~ bart_parallel(
+          y.train = .x,
+          x.train = env[, xnames]
+        ),
+        .progress = TRUE,
+        .options = furrr_options(seed = TRUE) # disables warning about seed
+      )
+    ) # ~ 4 min in parallel
 
-    # Collect predictions
-    pred_df <- predictions %>% 
-        map(~ .x$layer.1) %>% 
-        stack() %>% 
-        as.data.frame(xy = TRUE) %>% 
-        as_tibble() %>% 
-        arrange(x, y) %>% 
-        select(-c(x, y))
-    pred_df
-    # Lower quantiles
-    lower_df <- predictions %>% 
-        map(~ .x$layer.2) %>% 
-        stack() %>% 
-        as.data.frame(xy = TRUE) %>% 
-        as_tibble() %>% 
-        arrange(x, y) %>% 
-        select(-c(x, y))
-    lower_df
-    # Upper quantiles
-    upper_df <- predictions %>% 
-        map(~ .x$layer.3) %>%
-        stack() %>% 
-        as.data.frame(xy = TRUE) %>%  
-        as_tibble() %>% 
-        arrange(x, y) %>% 
-        select(-c(x, y))
-    upper_df
+    # Export results
+    # save_models <- TRUE
+    if (exists("save_models") && isTRUE(save_models)) {
+      message("Saving models to RData: ", modelname)
+      save(sdms, file = filepath)
+    }
+  } else {
+    # Load models from files
+    message("Loading models from RData: ", modelname)
+    load(filepath)
+  }
 
-    # Convert to presence-absence based on recommended threshold per species
-    pres_df <- map2_df(
-        pred_df, results$threshold, 
-        function(pred, thresh) ifelse(pred > thresh, 1, 0) 
+  ## 3.2 Extract summary data ####
+
+  # Extract summary statistics
+  summaries <-  future_map(sdms, summary_inner)
+
+  # Organize as tibble
+  results <- summaries %>%
+    map_df(`[`, c("auc", "threshold", "tss", "type_I", "type_II")) %>%
+    mutate(spe = names(summaries)) %>%
+    select(spe, everything())
+  print(results, n = Inf)
+  summary(results)
+
+  # Extract variable importance
+  varimps <- map(sdms, varimp) %>%
+    map_df("varimps") %>%
+    mutate(vars = xnames) %>%
+    select(vars, everything())
+  varimps
+  varimps %>%
+    pivot_longer(-vars, names_to = "spe", values_to = "varimp") %>%
+    pivot_wider(spe, names_from = "vars", values_from = "varimp")
+  varimps %>%
+    transmute(
+      vars = vars,
+      mean = rowMeans(select(., -vars))
+    ) %>%
+    arrange(desc(mean))
+
+  ## 3.3 Predict species distributions ####
+
+  message("Predicting species distributions: ", modelname)
+
+  # Quantile Predictions
+  system.time(
+    predictions <- future_map(
+      sdms,
+      # sdms_backup,
+      function(x) predict2.bart(
+        object = x,
+        x.layers = vars_stack,
+        quantiles = c(0.025, 0.975),
+        splitby = 20,
+        quiet = TRUE
+      ),
+      .progress = TRUE
     )
-    pres_df
+  ) # ~ 3 min in parallel
 
-    ## 3.4 Export results ####
+  # Collect predictions
+  pred_df <- predictions %>%
+    map(~ .x$layer.1) %>%
+    stack() %>%
+    as.data.frame(xy = TRUE) %>%
+    as_tibble() %>%
+    arrange(x, y) %>%
+    select(-c(x, y))
+  pred_df
+  # Lower quantiles
+  lower_df <- predictions %>%
+    map(~ .x$layer.2) %>%
+    stack() %>%
+    as.data.frame(xy = TRUE) %>%
+    as_tibble() %>%
+    arrange(x, y) %>%
+    select(-c(x, y))
+  lower_df
+  # Upper quantiles
+  upper_df <- predictions %>%
+    map(~ .x$layer.3) %>%
+    stack() %>%
+    as.data.frame(xy = TRUE) %>%
+    as_tibble() %>%
+    arrange(x, y) %>%
+    select(-c(x, y))
+  upper_df
 
-    # Models & predictions objects (not used for now)
-    # sdms_list[[gp]] <- sdms
-    # predictions_list[[gp]] <- predictions
-    # Summary statistics
-    spe_names <- names(spe_groups[[gp]])
-    results_global[results_global$spe %in% spe_names,] <- results
-    varimps_global[names(varimps_global) %in% spe_names] <- select(varimps, -vars)
-    # Prediction tibbles
-    pred_df_global[names(pred_df_global) %in% spe_names] <- pred_df
-    lower_df_global[names(lower_df_global) %in% spe_names] <- lower_df
-    upper_df_global[names(upper_df_global) %in% spe_names] <- upper_df
-    pres_df_global[names(pres_df_global) %in% spe_names] <- pres_df
+  # Convert to presence-absence based on recommended threshold per species
+  pres_df <- map2_df(
+    pred_df, results$threshold,
+    function(pred, thresh) ifelse(pred > thresh, 1, 0)
+  )
+  pres_df
+
+  ## 3.4 Export results ####
+
+  # Models & predictions objects (not used for now)
+  # sdms_list[[gp]] <- sdms
+  # predictions_list[[gp]] <- predictions
+  # Summary statistics
+  spe_names <- names(spe_groups[[gp]])
+  results_global[results_global$spe %in% spe_names,] <- results
+  varimps_global[names(varimps_global) %in% spe_names] <- select(varimps, -vars)
+  # Prediction tibbles
+  pred_df_global[names(pred_df_global) %in% spe_names] <- pred_df
+  lower_df_global[names(lower_df_global) %in% spe_names] <- lower_df
+  upper_df_global[names(upper_df_global) %in% spe_names] <- upper_df
+  pres_df_global[names(pres_df_global) %in% spe_names] <- pres_df
 }
 )
 
@@ -286,21 +286,21 @@ pres_df_global
 # Export to CSV
 # save_predictions <- TRUE
 if (exists("save_predictions") && isTRUE(save_predictions)) {
-    write_tsv(results_global,  here("data", "proc", "bart_summaries.csv"))
-    write_tsv(varimps_global,  here("data", "proc", "bart_varimps.csv"))
-    write_tsv(pred_df_global,  here("data", "proc", "bart_predictions_prob.csv"))
-    write_tsv(lower_df_global, here("data", "proc", "bart_predictions_lower.csv"))
-    write_tsv(upper_df_global, here("data", "proc", "bart_predictions_upper.csv"))
-    write_tsv(pres_df_global,  here("data", "proc", "bart_predictions_pres.csv"))
+  write_tsv(results_global,  here("data", "proc", "bart_summaries.csv"))
+  write_tsv(varimps_global,  here("data", "proc", "bart_varimps.csv"))
+  write_tsv(pred_df_global,  here("data", "proc", "bart_predictions_prob.csv"))
+  write_tsv(lower_df_global, here("data", "proc", "bart_predictions_lower.csv"))
+  write_tsv(upper_df_global, here("data", "proc", "bart_predictions_upper.csv"))
+  write_tsv(pres_df_global,  here("data", "proc", "bart_predictions_pres.csv"))
 }
 
 ## 4. Visualize results ####
 
 # Empty canvas
 pred_plot <- ggplot(env_full, aes(lon, lat)) +
-    scale_fill_viridis_c(na.value = "white", "Value") +
-    coord_quickmap() +
-    theme_minimal()
+  scale_fill_viridis_c(na.value = "white", "Value") +
+  coord_quickmap() +
+  theme_minimal()
 
 # Plot predictions
 sp_no <- 2
@@ -324,39 +324,39 @@ names(vars_sel) <- spe_sel
 # Run variable selection
 # variable_selection <- TRUE
 if (exists("variable_selection") && isTRUE(variable_selection)) {
-    tictoc::tic("total")
-    for(sp in spe_sel){
-        tictoc::tic(sp)
-        set.seed(42)
-        message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
-        # Save plot to png
-        png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
-        step_vars <- variable.step(
-            y.data = spe[[sp]], 
-            x.data = env[xnames],
-            iter = 50
-        )
-        dev.off()
-        # Save variables to list
-        vars_sel[[sp]] <- step_vars
-        tictoc::toc()
-    }
+  tictoc::tic("total")
+  for(sp in spe_sel){
+    tictoc::tic(sp)
+    set.seed(42)
+    message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
+    # Save plot to png
+    png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
+    step_vars <- variable.step(
+      y.data = spe[[sp]],
+      x.data = env[xnames],
+      iter = 50
+    )
+    dev.off()
+    # Save variables to list
+    vars_sel[[sp]] <- step_vars
     tictoc::toc()
-    vars_sel
+  }
+  tictoc::toc()
+  vars_sel
 }
 
 ## 3 species QC scale
 # $sp1
-#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc12" "wc13" "wc15" "lc1"  "lc2"  "lc3"  "lc5"  "lc8" 
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc12" "wc13" "wc15" "lc1"  "lc2"  "lc3"  "lc5"  "lc8"
 # $sp17
-#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc8" 
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc8"
 # $sp9
 # [1] "wc1"  "wc5"  "wc6"  "wc15" "lc3"  "lc8"  "lc10"
 
 ## 3 species full scale
 # $sp1
-#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc13" "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc7"  "lc8"  "lc9" 
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc13" "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc7"  "lc8"  "lc9"
 # $sp6
-#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc12" "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc7"  "lc8"  "lc9" 
+#  [1] "wc1"  "wc2"  "wc5"  "wc6"  "wc12" "wc14" "wc15" "lc2"  "lc3"  "lc5"  "lc7"  "lc8"  "lc9"
 # $sp17
 # [1] "wc1"  "wc5"  "wc6"  "wc12" "wc14" "wc15" "lc7"  "lc8"  "lc9"
