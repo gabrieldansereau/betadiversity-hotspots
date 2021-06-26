@@ -12,3 +12,7 @@ data/proc/bart_*.csv
 data/proc/bart_*.tif
 # Processed data: EBD prepared data (too large)
 data/proc/ebd*.csv
+
+# But really keep
+!data/jld2/spenames.jld2
+

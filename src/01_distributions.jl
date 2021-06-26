@@ -75,6 +75,15 @@ if (@isdefined save_data) && save_data == true
     # Make sure JLD2 timestamp is more recent than ZIP archive
     touch(joinpath("data", "jld2", "raw-distributions.jld2"))
 
+    ## Export species names
+    @info "Exporting species names to JLD2 file"
+    @save joinpath("data", "jld2", "spenames.jld2") spenames specommon speindex
+
+    ## Export glossary
+    @info "Exporting species names to glossary"
+    # Add species names in correct order to glossary
+    include(joinpath("others", "data_glossary.jl"))
+
     ## Export layers
     # Export distribution layers
     geotiff(joinpath("data", "proc", "distributions_raw.tif"), distributions)
@@ -82,10 +91,6 @@ if (@isdefined save_data) && save_data == true
     coords_qc = (left=-80.0, right=-55.0, bottom=45.0, top=63.0)
     distributions_qc = [d[coords_qc] for d in distributions]
     geotiff(joinpath("data", "proc", "distributions_raw_qc.tif"), distributions_qc)
-
-    ## Export glossary
-    # Add species names in correct order to glossary
-    include(joinpath("others", "data_glossary.jl"))
 
     ## Export to CSV as Y matrix
     @info "Exporting data to CSV as Y matrix (raw distributions data)"

@@ -51,7 +51,7 @@ wcdf = DataFrame(;
 )
 
 # Species data
-@load joinpath("data", "jld2", "raw-distributions.jld2") spenames specommon
+@load joinpath("data", "jld2", "spenames.jld2") spenames specommon
 spenames
 specommon
 spdf = DataFrame(;
