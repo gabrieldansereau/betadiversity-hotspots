@@ -1,34 +1,5 @@
 ## Data preparation functions
 
-# GBIF data preparation (from DataFrame)
-function prepare_gbif_data(df::DataFrame)
-    # Rename coordinate columns names
-    df = rename(df, :decimalLatitude => :latitude)
-    df = rename(df, :decimalLongitude => :longitude)
-    # Select subset with specific columns
-    df = select(df, [:species, :year, :latitude, :longitude])
-    # Remove entries with missing data
-    df = dropmissing(df, :year)
-    df = dropmissing(df, :species)
-    # Replace spaces by underscores in species names
-    df.species .= replace.(df.species, " " .=> "_")
-    return df
-end
-
-function prepare_gbif_data!(df::DataFrame)
-    # Rename coordinate columns names
-    rename!(df, :decimalLatitude => :latitude)
-    rename!(df, :decimalLongitude => :longitude)
-    # Select subset with specific columns
-    select!(df, [:species, :year, :latitude, :longitude])
-    # Remove entries with missing data
-    dropmissing!(df, :year)
-    dropmissing!(df, :species)
-    # Replace spaces by underscores in species names
-    df.species .= replace.(df.species, " " .=> "_")
-    return df
-end
-
 # eBird data preparation (from DataFrame)
 function prepare_ebd_data(df::DataFrame)
     # Fix names case & spacing

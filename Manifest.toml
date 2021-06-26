@@ -277,12 +277,6 @@ version = "1.0.10+0"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
-[[GBIF]]
-deps = ["Dates", "HTTP", "JSON", "Requires"]
-git-tree-sha1 = "0e502febb626d28c5dba7f31bf6786b7469fabf1"
-uuid = "ee291a33-5a6c-5552-a3c8-0f29a1181037"
-version = "0.3.3"
-
 [[GDAL]]
 deps = ["CEnum", "GDAL_jll", "NetworkOptions", "PROJ_jll"]
 git-tree-sha1 = "899e159dab7953918c3615290743c401121f02f9"

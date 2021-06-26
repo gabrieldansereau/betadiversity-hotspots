@@ -11,7 +11,6 @@ using Dates
 using DelimitedFiles
 using Distributed
 using Formatting
-using GBIF
 using JLD2
 using Plots
 using Plots.PlotMeasures
