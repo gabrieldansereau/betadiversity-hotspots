@@ -20,4 +20,4 @@ conflict_prefer("intersect", "dplyr")
 conflict_prefer("select", "dplyr")
 
 # Load custom functions
-source(here("src", "lib", "R", "bart.R"))
+source(here("src", "lib", "bart.R"))
