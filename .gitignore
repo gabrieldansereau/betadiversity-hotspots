@@ -13,6 +13,8 @@ data/proc/bart_*.csv
 data/raster/bart_*.tif
 # Processed data: EBD prepared data (too large)
 data/proc/ebd*.csv
+# Raw data
+data/raw/*
 
 ## But really keep
 # Species names for glossary
