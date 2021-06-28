@@ -1,4 +1,15 @@
 ## List files to version control manually
+
+# Raw files
+# Normally these should not be changed
+_raw_files = [
+    "data/raw/ebd_sample.txt",
+    "data/raw/ebd_warblers_cut.csv",
+    "data/raw/ebd_warblers_head.csv",
+    "data/raw/ebd_warblers.csv",
+]
+
+# Processed files
 # The corresponding placeholder should also be created anywhere these files are written.
 _jld_files = [
     # "data/jld2/bart-distributions_xtras.jld2",
@@ -22,12 +33,6 @@ _raster_files = [
     "data/raster/bart_xtras_prob-distrib.tif",
     "data/raster/bart_xtras_upper-distrib.tif",
 ]
-_raw_files = [
-    "data/raw/ebd_sample.txt",
-    "data/raw/ebd_warblers_cut.csv",
-    "data/raw/ebd_warblers_head.csv",
-    "data/raw/ebd_warblers.csv",
-]
 
 ## Create placeholders
 _placeholder_files = vcat(_jld_files, _proc_files, _raster_files, _raw_files)
@@ -48,15 +53,18 @@ end
     verify_raw_files(; touch_placeholders=false)
     verify_proc_files(; touch_placeholders=false)
 
-Verifies if the data files are more recent than their corresponding placeholder files.
-Placeholder files are empty and were only created for important data files which
-are too big to be version controlled. This function will throw a warning when the data files
-are more recent than their placeholder files, indicating a possibly unwanted and dangerous
-change for which verifications should be performed.
+Verifies if the data files are more recent than their corresponding placeholder
+files. Placeholder files were created for important data files which are too big
+to be version controlled.
 
-Using `touch_placeholders=true` will call `touch()` on the placeholders to update their
-timestamps so they are more recent than the data files. The placeholders should then be
-committed with a description of the changes made to the data files.
+This function will throw a warning when the data files are more recent than
+their placeholder files, indicating a possibly unwanted and dangerous change for
+which verifications should be performed.
+
+Using `touch_placeholders=true` will update the placeholders' timestampsso they
+are more recent than the data files. The placeholders should then be committed
+with a description of the changes made to the data files (or discarded if it's
+confirmed not important change was made).
 
 """
 function verify_raw_files(; touch_placeholders=false)
@@ -77,7 +85,7 @@ function verify_raw_files(; touch_placeholders=false)
             verify_raw_files(; touch_placeholders=true)
         """
         if touch_placeholders
-            @info "Touching files to update timestap and disable the warning"
+            @info "Re-writing placeholder files to update timestaps and disable the warning"
             for p in placeholder_files[more_recent]
                 open(p, "w") do io
                     write(io, string(Dates.now()))
@@ -106,7 +114,7 @@ function verify_proc_files(; touch_placeholders=false)
             verify_proc_files(; touch_placeholders=true)
         """
         if touch_placeholders
-            @info "Touching files to update timestap and disable the warning"
+            @info "Re-writing placeholder files to update timestaps and disable the warning"
             for p in placeholder_files[more_recent]
                 open(p, "w") do io
                     write(io, string(Dates.now()))
