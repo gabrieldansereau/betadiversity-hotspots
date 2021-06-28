@@ -33,15 +33,15 @@ _raw_files = [
 _placeholder_files = vcat(_jld_files, _proc_files, _raster_files, _raw_files)
 _placeholder_files = replace.(_placeholder_files, "." => "_placeholder.")
 
-function _create_placeholder_files(files)
-    missing_files = filter(!isfile, (files))
-    if length(missing_files) > 0
-        for f in missing_files
-            touch(f)
-        end
+function _create_placeholder_files!(files)
+    for f in files
+        touch(f)
+        open(f, "w") do io
+            write(io, string(Dates.now()))
+        end;
     end
 end
-# _create_placeholder_files(_placeholder_files)
+# _create_placeholder_files!(_placeholder_files)
 
 ## Create function to manually version control files (separately for raw & proc)
 """
@@ -78,7 +78,11 @@ function verify_raw_files(; touch_placeholders=false)
         """
         if touch_placeholders
             @info "Touching files to update timestap and disable the warning"
-            touch.(placeholder_files[more_recent])
+            for p in placeholder_files[more_recent]
+                open(p, "w") do io
+                    write(io, string(Dates.now()))
+                end;
+            end
         end
     end
 end
@@ -103,10 +107,12 @@ function verify_proc_files(; touch_placeholders=false)
         """
         if touch_placeholders
             @info "Touching files to update timestap and disable the warning"
-            touch.(placeholder_files[more_recent])
+            for p in placeholder_files[more_recent]
+                open(p, "w") do io
+                    write(io, string(Dates.now()))
+                end;
+            end
         end
-
     end
-
 end
 # verify_proc_files()
