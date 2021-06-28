@@ -59,6 +59,25 @@ if (@isdefined create_distributions) && create_distributions == true
     @time distributions = @showprogress [presence_absence(w, env_vars[1]) for w in warblers]
 end
 
+bg_layer = similar(wc_vars[1])
+# Most occurrences
+tmpdf = DataFrame(warblers[1])
+@time test = mask(bg_layer, tmpdf)
+@time presence_absence(warblers[1], env_vars[1]) # twice as fast
+# Least occurrences
+tmpdf = DataFrame(warblers[end])
+@time test = mask(bg_layer, tmpdf)
+@time presence_absence(warblers[end], env_vars[end]) # not much difference
+# 10 random species
+randsp = randperm(62)[1:10]
+tmpdf = [DataFrame(w) for w in warblers[randsp]]
+@time [mask(bg_layer, t) for t in tmpdf]
+@time [presence_absence(w, env_vars[1]) for w in warblers[randsp]] # twice as fast
+# All species
+tmpdf = [DataFrame(w) for w in warblers]
+@time [mask(bg_layer, t) for t in tmpdf] # 120 sec, 358M alloc, 75 GB
+@time [presence_absence(w, env_vars[1]) for w in warblers] # 60 sec, 90M alloc, 33 GB
+
 ## Export distributions
 # save_data = true # should data files be overwritten (optional)
 if (@isdefined save_data) && save_data == true
