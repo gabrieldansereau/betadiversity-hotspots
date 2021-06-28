@@ -31,3 +31,8 @@ include(joinpath("lib", "landcover.jl"))
 include(joinpath("lib", "plotSDM.jl"))
 include(joinpath("lib", "presence-absence.jl"))
 include(joinpath("lib", "shapefiles.jl"))
+
+# Many version-control for oversized files
+include(joinpath("lib", "version-control.jl"))
+verify_raw_files()
+verify_proc_files()

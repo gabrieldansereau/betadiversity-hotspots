@@ -1,3 +1,4 @@
+## Ignore
 tags
 .Rproj.user
 .vscode
@@ -13,6 +14,9 @@ data/raster/bart_*.tif
 # Processed data: EBD prepared data (too large)
 data/proc/ebd*.csv
 
-# But really keep
+## But really keep
+# Species names for glossary
 !data/jld2/spenames.jld2
+# Empty files for manual version-control of oversized files
+!data/*/*_placeholder.*
 
