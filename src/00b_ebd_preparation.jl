@@ -27,8 +27,14 @@ newdf = vcat(df_nogroups, df_groups_unique)
 ## Export prepared data
 # save_prepdata = true # should prepared data be overwritten (optional)
 if (@isdefined save_prepdata) && save_prepdata == true
+    # Export file
     @info "Data exported to file (data preparation)"
     CSV.write(joinpath("data", "proc", "ebd_warblers_prep.csv"), newdf; delim="\t")
+    # Update placeholder file (as file is too big for version control)
+    placeholder_path = joinpath("data", "proc", "ebd_warblers_prep_placeholder.csv")
+    open(placeholder_path, "w") do io
+        write(io, string(Dates.now()))
+    end
 else
     @info "Data not exported (data preparation)"
 end

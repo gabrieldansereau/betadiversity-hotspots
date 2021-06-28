@@ -69,6 +69,17 @@ if (@isdefined save_data) && save_data == true
     geotiff(joinpath("data", "raster", "bart_xtras_prob-distrib.tif"), prob_distrib)
     geotiff(joinpath("data", "raster", "bart_xtras_lower-distrib.tif"), lower_distrib)
     geotiff(joinpath("data", "raster", "bart_xtras_upper-distrib.tif"), upper_distrib)
+    # Update placeholder files (as files are too big for version control)
+    placeholder_paths = [
+        joinpath("data", "raster", "bart_xtras_prob-distrib_placeholder.tif"),
+        joinpath("data", "raster", "bart_xtras_lower-distrib_placeholder.tif"),
+        joinpath("data", "raster", "bart_xtras_upper-distrib_placeholder.tif"),
+    ]
+    for p in placeholder_paths
+        open(placeholder_path, "w") do io
+            write(io, string(Dates.now()))
+        end
+    end
 end
 
 ## Get richness & LCBD

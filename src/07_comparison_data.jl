@@ -59,8 +59,14 @@ sdm = (sdm..., lcbdcom=lcbdcom_sdm)
 
 # Export to JLD2
 if (@isdefined save_additional_data) && save_additional_data == true
+    # Export to JLD2
     jld_path = joinpath("data", "jld2", "comparison-results.jld2")
     @save jld_path raw sdm
+    # Update placeholder file (as file is too big for version control)
+    placeholder_path = joinpath("data", "jld2", "comparison-results_placeholder.jld2")
+    open(placeholder_path, "w") do io
+        write(io, string(Dates.now()))
+    end
 end
 
 ## Prepare data for GLMs
