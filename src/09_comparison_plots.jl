@@ -98,9 +98,6 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # scalevalues = rescale([lims[1], 0.0, lims[2]], 0, 1)
     diff_map = plotSDM2(
         layer;
-        # c = cgrad(:PuOr, centervalue, rev = true),
-        # c = rescalegrad(:PuOr, extrema(layer); rev = true),
-        # c = cgrad(:PuOr, scalevalues, rev = true),
         c=recentergrad(:PuOr, lims; rev=true),
         clims=lims,
         title="Difference map",
@@ -120,14 +117,12 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
     l = @layout [a{0.6w} b{0.38w}]
     diff_plot = plot(
-        # diff_title,
         diff_map,
         diff_hist,
         size=(850, 340),
         layout=l,
         bottommargin=3.0mm,
         dpi=200,
-        # rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
         rightmargin=[5.0mm 0mm],
         leftmargin=[5.0mm 5.0mm],
         kw...,
@@ -136,22 +131,16 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
 end
 richness_diffplot = difference_plot(
     richness_diff;
-    # title = "Predicted richness compared to observed richness",
-    # yticks = [:auto :auto (-30:10:40, string.(-30:10:40))],
     yticks=[:auto (-30:10:40, string.(-30:10:40))],
     colorbar_title="Richness difference",
-    # ylabel = ["" "Latitude" "Richness difference"]
     ylabel=["Latitude" "Richness difference"],
 )
 lcbd_diff_resc = rescale(lcbd_diff, extrema(lcbd_diff) .* 100_000)
 lcbd_diffplot = difference_plot(
     lcbd_diff_resc;
-    # title = "Predicted LCBD compared to observed LCBD",
     colorbar_title="LCBD difference (x 100,000)",
     ylabel=["Latitude" "LCBD difference (x 100,000)"],
-    # yticks = [:auto :auto (-4:1:3, string.(-4:1:3))],
     yticks=[:auto (-4:1:3, string.(-4:1:3))],
-    # ylim = [:auto extrema(latitudes(lcbd_diff_resc)) extrema(lcbd_diff_resc)],
     ylim=[extrema(latitudes(lcbd_diff_resc)) extrema(lcbd_diff_resc)],
     clim=extrema(lcbd_diff_resc),
 )
@@ -160,11 +149,8 @@ combined_diffplot = plot(
     deepcopy(lcbd_diffplot);
     layout=(2, 1),
     title=[
-        "a) Difference between richness estimates",
-        "",
-        "b) Difference between LCBD estimates",
-        "",
-    ] |> permutedims,
+        "a) Difference between richness estimates" "" "b) Difference between LCBD estimates" ""
+    ],
     titleloc=:left,
     dpi=200,
     size=(850, 680),
@@ -226,15 +212,12 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
     # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
     l = @layout [a{0.6w} b{0.38w}]
-    diff_plot = plot(
-        # diff_title,
-        diff_map,
-        diff_hist,
+        res_map,
+        res_hist,
         size=(850, 340),
         layout=l,
         bottommargin=3.0mm,
         dpi=200,
-        # rightmargin = [0mm 5.0mm 0mm], leftmargin = [0mm 5.0mm 5.0mm];
         rightmargin=[5.0mm 0mm],
         leftmargin=[5.0mm 5.0mm],
         kw...,
@@ -268,6 +251,5 @@ combined_resplot = plot(
 
 # Save figures
 if (@isdefined save_additional_figures) && save_additional_figures == true
-    # savefig(richness_resplot, joinpath("fig", "bart", "09_bart_residuals_richness-poisson.png"))
     savefig(combined_resplot, joinpath("fig", "bart", "09_bart_residuals.png"))
 end

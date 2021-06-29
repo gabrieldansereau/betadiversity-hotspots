@@ -40,8 +40,6 @@ richness = calculate_richness(Y, distributions[1])
 richness_plot = plotSDM2(
     richness;
     c=:viridis,
-    # title = "Richness ($outcome distributions)",
-    # clim = (0.0, maximum(richness)),
     colorbar_title="Species richness",
     size=(650, 400),
     dpi=200,
@@ -64,7 +62,6 @@ beta_total = calculate_BDtotal(Y)
 lcbdtr_plot = plotSDM2(
     lcbd_rel;
     c=:viridis,
-    # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
     colorbar_title="Relative LCBD value",
     size=(650, 400),
     dpi=200,
@@ -76,7 +73,6 @@ lcbd_resc = rescale(lcbd, extrema(lcbd) .* scaling_value)
 lcbdtr_plot = plotSDM2(
     lcbd_resc;
     c=:viridis,
-    # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",
     colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
     size=(650, 400),
     dpi=200,
@@ -104,15 +100,11 @@ rel2d_plot = histogram2d(
     lcbd_resc;
     c=:viridis,
     bins=40,
-    # title = "Relationship",
     xlabel="Richness",
     ylabel="LCBD value (x 100,000)",
     colorbar_title="Number of sites",
     xlim=(1.0, Inf),
-    # ylim = (0.0, 1.0),
-    # aspect_ratio = 40,
     size=(650, 400),
-    # bottom_margin = 5.0mm,
     dpi=200,
 )
 vline!([median(richness)]; label=:none, linestyle=:dash, c=:grey)

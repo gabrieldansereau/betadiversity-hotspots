@@ -86,7 +86,6 @@ function plot_lcbd_relationship(
     p1 = eval(plotfct)(
         lcbd;
         c=:viridis,
-        # title = "LCBD",
         colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
         clim=extrema(lcbd)
     )
@@ -95,14 +94,11 @@ function plot_lcbd_relationship(
         lcbd;
         c=:viridis,
         bins=40,
-        # title = "Relationship",
         colorbar_title="Number of sites",
         xlabel="Richness",
         ylabel="LCBD value (x $(format(scaling_value, commas=true)))",
         xlim=(1, 50),
         ylim=(-Inf, Inf),
-        # clim = (1, 450),
-        # bottommargin = 4.0mm
     )
     vline!([median(richness)], label=:none, linestyle=:dash, c=:grey)
     hline!([median(lcbd)], label=:none, linestyle=:dash, c=:grey)
@@ -118,32 +114,18 @@ function plot_lcbd_relationship(
         7,
     )
 
-    if maintitle != ""
-        l = @layout [t{.01h}; grid(1, 2)]
-        ptitle = plot(annotation=(0.0, 0.5, "$maintitle", :left), framestyle=:none)
-        p = plot(
-            ptitle,
-            p1,
-            p2;
-            layout=l,
-            size=(900, 300),
-            rightmargin=[0mm 5.0mm 0mm],
-            leftmargin=[0mm 5.0mm 5.0mm],
-            kw...
-        )
-    else
-        l = @layout [a{0.5w} b{0.5w,0.9h}]
-        p = plot(
-            p1,
-            p2;
-            layout=l,
-            size=(900, 300),
-            # bottommargin = [0.0mm 5.0mm],
-            rightmargin=[5.0mm 0mm],
-            leftmargin=[5.0mm 5.0mm],
-            kw...
-        )
-    end
+    # Combine in subpanels in single plot
+    l = @layout [a{0.5w} b{0.5w,0.9h}]
+    p = plot(
+        p1,
+        p2;
+        layout=l,
+        size=(900, 300),
+        # bottommargin = [0.0mm 5.0mm],
+        rightmargin=[5.0mm 0mm],
+        leftmargin=[5.0mm 5.0mm],
+        kw...
+    )
     return p
 end
 
@@ -185,7 +167,6 @@ function plot_subareas(
     initial_distributions;
     display_coords=coords,
     transform=true,
-    relative=false,
     kw...
 )
     distributions = [d[coords] for d in initial_distributions]
@@ -195,14 +176,13 @@ function plot_subareas(
         Y,
         distributions[1];
         transform=transform,
-        relative=relative
     )
     beta_total = calculate_BDtotal(Y)
-    if display_coords != coords
-        richness = richness[display_coords]
-        lcbd = [l[display_coords] for l in lcbd]
-    end
+
+    # Plot subareas
     p = plot_lcbd_relationship(richness, lcbd, beta_total; kw...)
+
+    return p
 end
 
 # Initial subarea
@@ -213,7 +193,6 @@ p = plot_subareas(
     coords_subarea,
     distributions;
     formatter=[f -> "$(Int(f))" :plain],
-    # clim = [:auto :auto],
     title=["LCBD" "Relationship"]
 )
 
@@ -239,10 +218,7 @@ for sc in subarea_coords
     local p = plot_subareas(
         sc,
         distributions;
-        # formatter = f -> "$(round(f, digits = 1))",
         formatter=[f -> "$(Int(round(f, digits=0)))" :plain],
-        # clim = [:auto :auto],
-        # leftmargin = 4.0mm,
         title=["LCBD" "Relationship"],
         dpi=200
     )
@@ -323,14 +299,7 @@ lcbd_medians
 beta_values
 gamma_values
 
-# Get absolute LCBD values
-abs_extr = extrema.(lcbd_abs_medians[[1, mid_ind, end]])
-[round.(Float64.(a); sigdigits=4) for a in abs_extr]
-
-# Get absolute medians
-extrema.([richness_medians, lcbd_medians, beta_values, gamma_values])
-
-# Transform to relative values
+# Transform to relative values (to plot all variables on same axis)
 medians_df = DataFrame(
     idx=eachindex(richness_medians),
     richness=richness_medians ./ maximum(richness_medians),

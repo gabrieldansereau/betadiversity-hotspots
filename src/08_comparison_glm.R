@@ -128,31 +128,12 @@ plotfit(glm_lcbd)
 ## Beta regression
 # Relative LCBD values (works because lcbd_sdm == 1 were removed as they had no raw values to compare)
 beta_lcbd <- betareg(lcbd_sdm ~ lcbd_raw, data = results, link = "logit")
-# Non-relative LCBD values
-# Careful for memory overload!!!
-# beta_lcbdnr <- betareg(lcbdnr_sdm ~ lcbdnr_raw, data = results)
 
 summary(beta_lcbd)
 tidy(beta_lcbd)
 glance(beta_lcbd)
 plotlm(beta_lcbd)
 plotfit(beta_lcbd)
-
-## LCBD-richness models ####
-
-# ## Linear model
-# lm_uniqueness <- lm(lcbd_raw ~ richness_raw, data = results)
-# summary(lm_uniqueness)
-# plotlm(lm_uniqueness)
-# AIC(lm_uniqueness)
-
-# ## Beta regression
-# # beta_uniqueness <- betareg(lcbd_sdm ~ richness_sdm, data = results) # not working, somes values == 1
-# beta_uniqueness <- betareg(lcbd_sdm ~ richness_sdm, data = results)
-# summary(beta_uniqueness)
-# plotlm(beta_uniqueness)
-# AIC(beta_uniqueness)
-# plotfit(beta_uniqueness)
 
 ## Assemble residuals ####
 residuals_df <- tibble(
