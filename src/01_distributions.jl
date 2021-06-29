@@ -26,7 +26,7 @@ filter!(:latitude => <(coords.top), df)
 # Separate warblers species
 warblers = groupby(df, :species)
 
-# Reorder species by frequency
+# Reorder species by decreasing frequency
 warblers = warblers |>
     x -> combine(nrow, x) |>
     x -> sortperm(x, :nrow, rev=true) |>
@@ -51,8 +51,7 @@ lc_vars = SimpleSDMPredictor(Copernicus, LandCover, 1:10; resolution=10.0, coord
 env_vars = vcat(wc_vars, lc_vars)
 
 ## Get distribution for all species
-# Runs only if create_distributions = true, as it can take a while. Loaded from file otherwise
-# create_distributions = true # should distributions be computed (optional, loaded otherwise)
+# create_distributions = true # should distributions be computed (optional)
 if (@isdefined create_distributions) && create_distributions == true
     @info "Raw distributions to be created"
     # Get raw distributions
@@ -72,8 +71,10 @@ if (@isdefined save_data) && save_data == true
     include(joinpath("others", "data_glossary.jl"))
 
     ## Export layers
+
     # Export distribution layers
     geotiff(joinpath("data", "raster", "distributions_raw.tif"), distributions)
+
     # Export distributions for QC only
     coords_qc = (left=-80.0, right=-55.0, bottom=45.0, top=63.0)
     distributions_qc = [d[coords_qc] for d in distributions]
@@ -81,14 +82,17 @@ if (@isdefined save_data) && save_data == true
 
     ## Export to CSV as Y matrix
     @info "Exporting data to CSV as Y matrix (raw distributions data)"
+
     # Get Y matrix
     Y = calculate_Y(distributions)
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
+
     # Convert to dataframe
     spe_df = DataFrame(Yobs, :auto)
     rename!(spe_df, Symbol.("sp", 1:ncol(spe_df)))
     insertcols!(spe_df, 1, :site => inds_obs)
+
     # Export to CSV
     CSV.write(joinpath("data", "proc", "distributions_spe_full.csv"), spe_df; delim="\t")
 else
@@ -109,6 +113,7 @@ pres_counts = [
 sort(pres_counts)
 
 ## Plot result
+
 # Species 1
 sp1 = "Setophaga_townsendi"
 map_sp1 = plotSDM2(
@@ -118,6 +123,7 @@ map_sp1 = plotSDM2(
     colorbar=:none,
     dpi=200,
 )
+
 # Species 2
 sp2 = "Setophaga_petechia"
 map_sp2 = plotSDM2(

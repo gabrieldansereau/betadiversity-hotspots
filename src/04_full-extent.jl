@@ -6,17 +6,19 @@ include("required.jl")
 # save_figures = true # should figures be overwritten (optional)
 
 # Make sure "outcome" is defined
-if !(@isdefined outcome)
-    @warn "'outcome' not defined, must be either 'raw', 'bio', 'rf, or 'bart'"
-elseif !(outcome in ("raw", "bio", "rf", "bart"))
-    @warn "'outcome' invalid, must be either 'raw', 'bio', 'rf', or 'bart'"
+if !(@isdefined outcome) || !(outcome in ["raw", "bart"])
+    @error "'outcome' must be either 'raw' or 'bart'"
 else
     @info "'outcome' currently set to '$(outcome)'"
 end
 
 ## Load presence-absence data for all species
+
+# Load species names
 glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 spenames = filter(:type => ==("species"), glossary).full_name
+
+# Load distributions
 distributions = [
     geotiff(
         SimpleSDMPredictor, joinpath("data", "raster", "distributions_$(outcome).tif"), i

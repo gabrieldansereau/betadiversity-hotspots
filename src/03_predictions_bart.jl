@@ -27,6 +27,7 @@ Y = replace(Array(pres_df), missing => nothing) |> Array{Union{Nothing,Float32}}
 Yprob = replace(Array(pred_df), missing => nothing) |> Array{Union{Nothing,Float32}}
 Ylower = replace(Array(lower_df), missing => nothing) |> Array{Union{Nothing,Float32}}
 Yupper = replace(Array(upper_df), missing => nothing) |> Array{Union{Nothing,Float32}}
+
 # Set values to nothing if no species present
 inds_zeros = _indsnotobs(Y)
 Y[inds_zeros, :] .= nothing
@@ -41,9 +42,11 @@ distributions = [
     i in eachindex(spenames)
 ]
 raw_distributions = copy(distributions)
+
 # Cut to Quebec coordinates (optional)
 # coords_qc = (left = -80.0, right = -55.0, bottom = 45.0, top = 63.0)
 # raw_distributions = [d[coords_qc] for d in raw_distributions]
+
 # Get layer dimensions & limits
 dims = size(raw_distributions[1])
 lims = boundingbox(raw_distributions[1])
@@ -65,10 +68,12 @@ distributions
 if (@isdefined save_data) && save_data == true
     # Export BART distributions
     geotiff(joinpath("data", "raster", "distributions_bart.tif"), distributions)
+
     # Extras
     geotiff(joinpath("data", "raster", "bart_xtras_prob-distrib.tif"), prob_distrib)
     geotiff(joinpath("data", "raster", "bart_xtras_lower-distrib.tif"), lower_distrib)
     geotiff(joinpath("data", "raster", "bart_xtras_upper-distrib.tif"), upper_distrib)
+
     # Update placeholder files (as files are too big for version control)
     placeholder_paths = [
         joinpath("data", "raster", "bart_xtras_prob-distrib_placeholder.tif"),
@@ -82,11 +87,6 @@ if (@isdefined save_data) && save_data == true
     end
 end
 
-## Get richness & LCBD
-
-richness = calculate_richness(Y, distributions[1])
-lcbd = calculate_lcbd(Y, distributions[1])
-
 ## Map uncertainty
 
 # Get uncertainty per species
@@ -96,6 +96,7 @@ plotSDM2(uncertainty[1]; c=:viridis)
 # Uncertainty sum
 uncertainty_sum = sum(uncertainty)
 plotSDM2(uncertainty_sum; c=:viridis)
+
 # Uncertainty mean
 uncertainty_mean = mean(uncertainty)
 plotSDM2(uncertainty_mean; c=:viridis)

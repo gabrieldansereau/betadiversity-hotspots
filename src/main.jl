@@ -77,20 +77,24 @@ outcome = "raw"
 outcome = "bart"
 @info "Running 06_rare-species.jl"
 @time include("06_rare-species.jl")
+
 # Better to reset the outcome after this script
 outcome = nothing
 
-# 7. Run comparison analyses (between raw data & predictions)
-# (This script doesn't need to set the outcome)
-outcome = nothing
-# Prepare data
+# 7-8-9. Run comparison analyses (between raw data & predictions)
+# (These scripts don't need to set the outcome)
+
+# 7. Prepare data
 @info "Running 07_comparison_data.jl"
 @time include("07_comparison_data.jl")
-# Run GLMs
+
+# 8. Run GLMs
 @info "Running 08_comparison_glm.R"
 @time run(`Rscript src/08_comparison_glm.R`) # this script might overflow memory
-# Compare results
+
+# 9. Compare results
 @info "Running 09_comparison_plots.jl"
 @time include("09_comparison_plots.jl")
-# Better to reset the outcome after this script
+
+# Better to reset the outcome after these scripts
 outcome = nothing

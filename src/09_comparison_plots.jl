@@ -4,11 +4,16 @@ include("required.jl")
 # save_additional_figures = true
 
 ## Get data
+
+# Load raw & sdm data
 @load joinpath("data", "jld2", "comparison-results.jld2") raw sdm
+
+# Load GLM results
 results = CSV.read(joinpath("data", "proc", "comparison-results.csv"), DataFrame)
 residuals_df = CSV.read(joinpath("data", "proc", "comparison-residuals.csv"), DataFrame)
 
 ## Plot distributions
+
 # Get colorbar limits
 lims_richness = extrema(mapreduce(collect, vcat, [raw.richness, sdm.richness]))
 lims_lcbd = extrema(mapreduce(collect, vcat, [raw.lcbd, sdm.lcbd]))
@@ -49,6 +54,7 @@ if (@isdefined save_additional_figures) && save_additional_figures == true
 end
 
 ## Difference plots
+
 # Difference between values from SDM models & raw observations
 richness_diff = sdm.richness - raw.richness
 lcbd_diff = sdm.lcbdcom - raw.lcbdcom
@@ -94,8 +100,8 @@ recentergrad(:PuOr, lims; rev=true)
 function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # Center colorscale at zero instead of midpoint between extremas
     lims = extrema(layer)
-    # centervalue = abs(lims[1])/(lims[2] - lims[1])
-    # scalevalues = rescale([lims[1], 0.0, lims[2]], 0, 1)
+
+    # Difference map subpanel
     diff_map = plotSDM2(
         layer;
         c=recentergrad(:PuOr, lims; rev=true),
@@ -103,6 +109,8 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         title="Difference map",
         colorbar_title="Difference from observed value",
     )
+
+    # Difference histogram subpanel
     diff_hist = histogram(
         layer;
         bins=50,
@@ -113,8 +121,8 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         xlabel="Frequency",
         orientation=:horizontal,
     )
-    # diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
-    # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+
+    # Combine subpanels in single plot
     l = @layout [a{0.6w} b{0.38w}]
     diff_plot = plot(
         diff_map,
@@ -129,12 +137,16 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     )
     return diff_plot
 end
+
+# Richness difference plot
 richness_diffplot = difference_plot(
     richness_diff;
     yticks=[:auto (-30:10:40, string.(-30:10:40))],
     colorbar_title="Richness difference",
     ylabel=["Latitude" "Richness difference"],
 )
+
+# LCBD difference plot
 lcbd_diff_resc = rescale(lcbd_diff, extrema(lcbd_diff) .* 100_000)
 lcbd_diffplot = difference_plot(
     lcbd_diff_resc;
@@ -144,6 +156,8 @@ lcbd_diffplot = difference_plot(
     ylim=[extrema(latitudes(lcbd_diff_resc)) extrema(lcbd_diff_resc)],
     clim=extrema(lcbd_diff_resc),
 )
+
+# Combine richess & LCBD difference plots
 combined_diffplot = plot(
     deepcopy(richness_diffplot),
     deepcopy(lcbd_diffplot);
@@ -157,12 +171,14 @@ combined_diffplot = plot(
 )
 
 # Save figures
+# save_additional_figures = true
 if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(combined_diffplot, joinpath("fig", "bart", "09_bart_comparison.png"))
 end
 
 ## Residual visualization
-# Arrange data
+
+# Arrange data as layers (values & residuals)
 richres_layer = SimpleSDMResponse(
     residuals_df, :richness, similar(raw.richness); latitude=:latitude, longitude=:longitude
 )
@@ -191,14 +207,18 @@ lcbdres_br_layer = SimpleSDMResponse(
 function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     # Center colorscale at zero instead of midpoint between extremas
     lims = extrema(layer)
-    diff_map = plotSDM2(
+
+    # Residual map subpanel
+    res_map = plotSDM2(
         layer;
         c=recentergrad(:PuOr, lims; rev=true),
         title="Residuals map",
         colorbar_title="Deviance residuals",
         clims=lims,
     )
-    diff_hist = histogram(
+
+    # Residual histogram subpanel
+    res_hist = histogram(
         layer;
         bins=50,
         c=:PuOr,
@@ -209,9 +229,10 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         orientation=:horizontal,
         ylims=lims,
     )
-    # diff_title = plot(annotation = (0.5, 0.5, "$(title)"), framestyle = :none)
-    # l = @layout [t{0.01h}; a{0.6w} b{0.38w}]
+
+    # Combine in single plot
     l = @layout [a{0.6w} b{0.38w}]
+    res_plot = plot(
         res_map,
         res_hist,
         size=(850, 340),
@@ -222,8 +243,10 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         leftmargin=[5.0mm 5.0mm],
         kw...,
     )
-    return diff_plot
+    return res_plot
 end
+
+# Richness residuals plots
 # richness_resplot residuals_plot(richres_layer; title = "Richness Poisson GLM")
 richness_qp_resplot = residuals_plot(richres_qp_layer; title="Richness Quasipoisson GLM")
 richness_nb_resplot = residuals_plot(
@@ -232,9 +255,12 @@ richness_nb_resplot = residuals_plot(
     # yticks = [:auto :auto (-3:1:4, string.(-3:1:4))]
     yticks=[:auto (-3:1:4, string.(-3:1:4))],
 )
+
+# LCBD residuals plots
 lcbd_resplot = residuals_plot(lcbdres_layer; title="LCBD Gamma GLM")
 lcbd_br_resplot = residuals_plot(lcbdres_br_layer; title="LCBD Beta Regression")
 
+# Combine richness & LCBD plots
 combined_resplot = plot(
     deepcopy(richness_nb_resplot),
     deepcopy(lcbd_br_resplot);

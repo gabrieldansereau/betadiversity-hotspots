@@ -12,12 +12,14 @@ source(file.path("src", "required.R"))
 # Select raster files
 env_files <- list(here("data", "raster", "spa_stack.tif"), here("data", "raster", "env_stack.tif"))
 spe_files <- list(here("data", "raster", "spa_stack.tif"), here("data", "raster", "distributions_raw.tif"))
+
 # Select QC data (if subset_qc option correctly set)
 if (exists("subset_qc") && isTRUE(subset_qc)) {
   message("Subsetting to QC data")
   env_files <- list(here("data", "raster", "spa_stack_qc.tif"), here("data", "raster", "env_stack_qc.tif"))
   spe_files <- list(here("data", "raster", "spa_stack_qc.tif"), here("data", "raster", "distributions_raw_qc.tif"))
 }
+
 # Load rasters as stack
 (env_stack <- stack(env_files))
 (spe_stack <- stack(spe_files))
@@ -89,10 +91,12 @@ bart_parallel <- function(x.train, y.train, ...) {
   return(sdm)
 }
 
-# Prepare global sets
+## Prepare global sets
+
 # Models (not currently used)
 sdms_list <- list()
 predictions_list <- list()
+
 # Summary results for every species
 results_global <- tibble(
   spe = names(select(spe, contains("sp"))),
@@ -102,12 +106,14 @@ results_global <- tibble(
   type_I = NA_real_,
   type_II = NA_real_
 )
+
 # Variable importance for every variable & species
 varimps_global <- spe_full %>%
   slice(1:length(xnames)) %>%
   mutate(across(everything(), ~ replace(.x, !is.na(.), NA_real_))) %>%
   mutate(vars = xnames) %>%
   select(vars, everything(), -c(site, lon, lat))
+
 # Predictions assembled as tibbles
 pred_df_global <- spe_full %>%
   select(-c(site, lon, lat)) %>%
@@ -138,6 +144,7 @@ for (gp in seq_along(spe_groups)) {
   # Set file paths for .RData
   modelname <- ifelse(exists("subset_qc") && isTRUE(subset_qc), paste0("bart_models_qc", gp, ".RData"), paste0("bart_models", gp, ".RData"))
   filepath <- here("data", "rdata", modelname)
+
   # Create models (and optionally save to .RData) or load from existing RData
   # create_models <- TRUE
   if (exists("create_models") && isTRUE(create_models)){
@@ -257,10 +264,12 @@ for (gp in seq_along(spe_groups)) {
   # Models & predictions objects (not used for now)
   # sdms_list[[gp]] <- sdms
   # predictions_list[[gp]] <- predictions
+
   # Summary statistics
   spe_names <- names(spe_groups[[gp]])
   results_global[results_global$spe %in% spe_names,] <- results
   varimps_global[names(varimps_global) %in% spe_names] <- select(varimps, -vars)
+
   # Prediction tibbles
   pred_df_global[names(pred_df_global) %in% spe_names] <- pred_df
   lower_df_global[names(lower_df_global) %in% spe_names] <- lower_df
@@ -270,6 +279,7 @@ for (gp in seq_along(spe_groups)) {
 )
 
 ## Check results
+
 # Summary statistics
 results_global
 # Variable importance

@@ -12,7 +12,8 @@ else
     @info "'outcome' currently set to '$(outcome)'"
 end
 
-## Occupancy
+## Species occupancy
+
 # Prep values
 include("04_full-extent.jl")
 include("05_subareas.jl")
@@ -69,12 +70,17 @@ function getrarespecies(
     end
     return rarespecies
 end
+
+# Local occupancy
 threshold = 0.4
 rarespecies = getrarespecies(occupancy, threshold)
 rarespecies_NE = getrarespecies(occupancy_NE, 0.4)
 rarespecies_SW = getrarespecies(occupancy_SW, 0.4)
+
+# Total occupancy
 rarespecies_NE_total = getrarespecies(occupancy_NE, occupancy, 0.4)
 rarespecies_SW_total = getrarespecies(occupancy_SW, occupancy, 0.4)
+
 # Percentage of rarespecies
 rarespecies_p = mean(skipmissing(rarespecies))
 rarespecies_p_NE = mean(skipmissing(rarespecies_NE))
@@ -82,7 +88,7 @@ rarespecies_p_SW = mean(skipmissing(rarespecies_SW))
 rarespecies_p_NE_total = mean(skipmissing(rarespecies_NE_total))
 rarespecies_p_SW_total = mean(skipmissing(rarespecies_SW_total))
 
-# Wrap as function
+# Wrap all steps as single function
 function get_rarespecies_p(Y, threshold)
     occupancy = getoccupancy(Y)
     rarespecies = getrarespecies(occupancy, threshold)
@@ -97,8 +103,10 @@ eusrr = get_eusrr(richness, lcbd)
 eusrr_NE = get_eusrr(richness_NE, lcbd_NE)
 eusrr_SW = get_eusrr(richness_SW, lcbd_SW)
 
-# Plot EUSRR ~ rare species percentage
+## Plot EUSRR ~ rare species percentage
 # Similar to Fig. 3 of Yao et al. 2021
+
+# Subareas & rarity based on local occupancy
 scatter(
     [rarespecies_p rarespecies_p_NE rarespecies_p_SW],
     [eusrr eusrr_NE eusrr_SW];
@@ -126,7 +134,7 @@ scatter(
 ) |> x -> hline!(x, [0.0]; style=:dash, c=:grey, label=:none)
 # EUSRR negative whatever subarea & percentage of rare species?
 
-## Effect of thresholds
+# Effect of thresholds
 # Thresholds variation only
 thresholds = [0.1, 0.2, 0.3, 0.4, 0.5]
 [get_rarespecies_p(Y, t) for t in thresholds]
@@ -170,7 +178,8 @@ if (@isdefined save_additional_figures) && save_additional_figures == true
     )
 end
 
-## Effect of scaling
+## Effect of scaling on rarespecies
+
 # Scaling EUSRR
 rarespecies_scaling = Vector{Float64}()
 eusrr_scaling = Vector{Float64}()
@@ -189,7 +198,7 @@ end
 rarespecies_scaling
 eusrr_scaling
 
-# Scaling EUSRR
+# Plot scaling EUSRR
 scatter(
     rarespecies_scaling,
     eusrr_scaling;
@@ -207,6 +216,8 @@ show(stdout, "text/plain", eusrr_scaling)
 # Whatever
 
 ## Spatial distribution of rare species proportion
+
+# Rarespecies proportion per site
 function get_site_rarespecies(Y, rarespecies, richness)
     if any(ismissing, rarespecies)
         rarespecies = replace(rarespecies, missing => 0)
@@ -220,18 +231,24 @@ function get_site_rarespecies(Y, rarespecies, richness)
     rarespecies_layer.grid[inds_obs] .= vec(Yrare_p)
     return rarespecies_layer
 end
+
+# Full extent
 rarespecies_layer = get_site_rarespecies(Y, rarespecies, richness)
 plotSDM2(rarespecies_layer; c=:viridis)
 
+# NE local rarity
 rarespecies_layer_NE = get_site_rarespecies(Y_NE, rarespecies_NE, richness_NE)
 p1 = plotSDM2(rarespecies_layer_NE; c=:viridis)
 
+# NE total rarity
 rarespecies_layer_NE_total = get_site_rarespecies(Y_NE, rarespecies_NE_total, richness_NE)
 p2 = plotSDM2(rarespecies_layer_NE_total; c=:viridis)
 
+# SW local rarity
 rarespecies_layer_SW = get_site_rarespecies(Y_SW, rarespecies_SW, richness_SW)
 p3 = plotSDM2(rarespecies_layer_SW; c=:viridis)
 
+# SW total rarity
 rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, richness_SW)
 p4 = plotSDM2(rarespecies_layer_SW_total; c=:viridis)
 
@@ -242,20 +259,27 @@ p_subareas = plot(p1, p2, p3, p4; dpi=200)
 # Check relationship plots
 combined_plot
 
+# Separate ascending & descending portions in plots
 function ascending_plots(richness, lcbd, rarespecies)
     # Choose threshold
     ascending_threshold = minimum(lcbd)
     min_indx = findall(x -> x == ascending_threshold, lcbd.grid)
     abs_min = median(richness.grid[min_indx])
 
+    # Apply threshold
     binlayer = replace(richness, Pair.(unique(richness), unique(richness) .> abs_min)...)
+
+    # Thresholded rarity map subpanel
     lplot = plotSDM2(binlayer; c=cgrad(:PuOr; rev=true), colorbar=:none)
 
+    # Create two group labels
     bin_names = map(x -> isone(x) ? "Ascending" : "Descending", collect(binlayer))
     isascending = isequal.(bin_names, "Ascending")
 
+    # Select occurrence values only
     rare_values = collect(rarespecies)
 
+    # Density subpanel
     dplot = density(rare_values[isascending]; c=:PuOr, label="Ascending")
     density!(rare_values[.!isascending]; c=cgrad(:PuOr; rev=true), label="Descending")
     plot!(; xlabel="Rare species percentage", ylabel="Density", bottommargin=4.0mm)
@@ -263,12 +287,18 @@ function ascending_plots(richness, lcbd, rarespecies)
     l = @layout [a{0.5w} b{0.45w}]
     return plot(lplot, dplot; size=(900, 300), layout=l)
 end
+
+# Create subarea plots
 p_asc1 = ascending_plots(richness_NE, lcbd_NE, rarespecies_layer_NE)
 p_asc2 = ascending_plots(richness_SW, lcbd_SW, rarespecies_layer_SW)
+
+# Fix axes & dimensions
 yticks!(p_asc1[1], 40:2:50)
 yticks!(p_asc2[1], 30:2:40)
 xticks!(p_asc1[1], -80:4:-60)
 xticks!(p_asc2[1], -120:4:-100)
+
+# Combine plots
 asc_plots = plot(
     p_asc1,
     p_asc2;
@@ -277,6 +307,9 @@ asc_plots = plot(
     title=["a) Northeast subregion" "" "b) Southwest subregion" ""],
     titleloc=:left,
 )
+
+# Export plot
+# save_additional_figures = true
 if (@isdefined save_additional_figures) && save_additional_figures == true
     savefig(
         asc_plots,

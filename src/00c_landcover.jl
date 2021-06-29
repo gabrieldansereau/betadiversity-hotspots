@@ -6,11 +6,14 @@ include("required.jl")
 
 ## Run bash scripts to download & coarsen landcover data from Zenodo (if files missing)
 if (@isdefined save_prepdata) && save_prepdata == true
+    # List files in landcover folder
     @info "Starting landcover data saving process"
     lc_files = readdir("assets/landcover/")
+
     # Check if landcover files are missing
     if !any(startswith.(lc_files, r"^lc_"))
         @info "Landcover files missing. Starting extraction"
+
         # Check if full resolution files are missing
         if !any(startswith.(lc_files, r"^landcover_copernicus_global_100m"))
             # Download full resolution files
@@ -18,6 +21,7 @@ if (@isdefined save_prepdata) && save_prepdata == true
             @info "Full resolution files missing. Starting download"
             run(`bash src/shell/landcover_download.sh`)
         end
+
         # Coarsen resolution
         @info "Coarsening resolution"
         run(`bash src/shell/landcover_coarsen.sh`)
@@ -42,17 +46,19 @@ wc_vars = SimpleSDMPredictor(WorldClim, BioClim, 1:19; resolution=10.0, coords..
 
 # Combine environmental data
 env_vars = vcat(wc_vars, lc_vars)
-# Create env dataframe
+
+# Create env dataframe (environmental data)
 env_df = DataFrame(convert.(Float64, env_vars))
 select!(env_df, Not([:longitude, :latitude]))
 rename!(env_df, vcat(Symbol.("wc", 1:size(wc_vars, 1)), Symbol.("lc", 1:size(lc_vars, 1))))
 insertcols!(env_df, 1, :site => 1:nrow(env_df))
 
-# Create spa DataFrame
+# Create spa DataFrame (spatial coordinates)
 spa_df = DataFrame(wc_vars[1])
 select!(spa_df, Not(:values))
 insertcols!(spa_df, 1, :site => Float64.(1:nrow(spa_df)))
 rename!(spa_df, [:site, :lon, :lat])
+
 # Create spa layers
 spa_vars = [
     SimpleSDMPredictor(spa_df, x, wc_vars[1]; latitude=:lat, longitude=:lon) for
@@ -77,12 +83,15 @@ testjoin = innerjoin(testspa, testenv, on = :site) =#
 
 ## Export QC sites coordinates (for smaller scale analyses)
 
+# Define Quebec coordinates
 coords_qc = (left=-80.0, right=-55.0, bottom=45.0, top=63.0)
+
 # Get site indices
 spa_qc = filter(:lon => >=(coords_qc.left - stride(wc_vars[1]; dims=2)), spa_df)
 filter!(:lon => <(coords_qc.right), spa_qc)
 filter!(:lat => >=(coords_qc.bottom - stride(wc_vars[1], dims=1)), spa_qc)
 filter!(:lat => <(coords_qc.top), spa_qc)
+
 # Subset layers to QC only
 env_vars_qc = [v[coords_qc] for v in env_vars]
 spa_vars_qc = [v[coords_qc] for v in spa_vars]

@@ -43,7 +43,11 @@ sdm = (
 )
 
 ## Recalculate LCBD values on same sites
+
+# Get indices in common (with values for both raw & sdm)
 inds_common = intersect(_indsobs(raw.Y), _indsobs(sdm.Y))
+
+# Recalculate LCBD values on same sites
 function recalculate_lcbd(Y, layer, inds_common)
     Ycommon = copy(Y)
     Ycommon[Not(inds_common), :] .= nothing
@@ -70,6 +74,7 @@ if (@isdefined save_additional_data) && save_additional_data == true
 end
 
 ## Prepare data for GLMs
+
 # Assemble in DataFrame
 results = DataFrame([
     raw.richness, raw.lcbdcom, sdm.richness, sdm.lcbdcom, raw.lcbdnr, sdm.lcbdnr
@@ -83,8 +88,10 @@ rename!(
     :x5 => :lcbdnr_raw,
     :x6 => :lcbdnr_sdm,
 )
+
 # Remove lines with missing values
 dropmissing!(results)
+
 # Convert to Float64 (cannot write to CSV otherwise)
 results = convert.(Float64, results)
 

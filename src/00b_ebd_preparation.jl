@@ -15,6 +15,7 @@ include("required.jl")
 
 # Select subset with specific columns
 newdf = select(df, [:species, :commonName, :year, :latitude, :longitude, :groupIdentifier])
+
 # Remove 1 Aleutian Islands observation with positive longitude
 filter!(:longitude => <(0.0), newdf)
 
@@ -30,6 +31,7 @@ if (@isdefined save_prepdata) && save_prepdata == true
     # Export file
     @info "Data exported to file (data preparation)"
     CSV.write(joinpath("data", "proc", "ebd_warblers_prep.csv"), newdf; delim="\t")
+
     # Update placeholder file (as file is too big for version control)
     placeholder_path = joinpath("data", "proc", "ebd_warblers_prep_placeholder.csv")
     open(placeholder_path, "w") do io
