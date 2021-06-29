@@ -36,8 +36,8 @@ coords_SW = (left=-120.0, right=-100.0, bottom=30.0, top=40.0)
 distributions_SW = [d[coords_SW] for d in distributions]
 
 # Get Ymatrices
-Y_NE = calculate_Y(distributions_NE)
-Y_SW = calculate_Y(distributions_SW)
+Y_NE = Ymatrix(distributions_NE)
+Y_SW = Ymatrix(distributions_SW)
 
 # Richness
 richness_NE = calculate_richness(Y_NE, distributions_NE[1])
@@ -187,7 +187,7 @@ function plot_subareas(
 )
     # Get analysis values
     distributions = [d[coords] for d in initial_distributions]
-    Y = calculate_Y(distributions)
+    Y = Ymatrix(distributions)
     richness = calculate_richness(Y, distributions[1])
     lcbd = calculate_lcbd(
         Y,
@@ -306,7 +306,7 @@ gamma_values = []
 # Get analysis values for all subareas
 for sc in subarea_coords
     local distribs = [d[sc] for d in distributions]
-    local Y = calculate_Y(distribs)
+    local Y = Ymatrix(distribs)
     local richness = calculate_richness(Y, distribs[1])
     local lcbd = calculate_lcbd(Y, distribs[1]; relative=false)
     local lcbd_abs = calculate_lcbd(Y, distribs[1]; relative=false)

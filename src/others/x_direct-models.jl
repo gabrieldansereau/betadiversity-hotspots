@@ -59,8 +59,8 @@ richness_plot = plot_layer(
 ## Plot differences
 
 # Get comparisons richness & lcbd
-Yraw = calculate_Y(raw_distributions)
-Ysdm = calculate_Y(sdm_distributions)
+Yraw = Ymatrix(raw_distributions)
+Ysdm = Ymatrix(sdm_distributions)
 raw, sdm = [
     (
         richness=calculate_richness(Y, raw_distributions[1]),

@@ -4,7 +4,7 @@ include("../required.jl")
 # Checkout 41a9e9 & load data
 verify_jld2_data("data/jld2"; extract_recent=true)
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions spenames specommon speindex
-Y = calculate_Y(distributions)
+Y = Ymatrix(distributions)
 inds_obs = _indsobs(Y)
 Yobs = _Yobs(Y, inds_obs)
 env_df = CSV.read(

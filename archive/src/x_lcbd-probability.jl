@@ -13,7 +13,7 @@ plot_layer(prob_distrib[1])
 plot_layer(prob_distrib[1]; c=:BuPu)
 
 # Create matrix Y
-Y = calculate_Y(prob_distrib; transform=false)
+Y = Ymatrix(prob_distrib; transform=false)
 
 # Create matrix of observed sites only
 Yobs = _Yobs(Y)

@@ -28,7 +28,7 @@ distributions = [
 ## Y matrix (site-by-species community data table)
 
 # Create matrix Y
-Y = calculate_Y(distributions; transform=false)
+Y = Ymatrix(distributions; transform=false)
 
 # Create matrix of observed sites only
 Yobs = _Yobs(Y)

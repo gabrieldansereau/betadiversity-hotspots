@@ -23,7 +23,7 @@ distributions = [
     ) for i in eachindex(spenames)
 ]
 
-Y = calculate_Y(distributions)
+Y = Ymatrix(distributions)
 richness = calculate_richness(Y, distributions[1])
 lcbd = calculate_lcbd(Y, distributions[1]; transform=true)
 
@@ -60,7 +60,7 @@ end
 # Apply moving windows
 @time begin
     # Get matrix Y
-    Y = calculate_Y(distributions)
+    Y = Ymatrix(distributions)
     # Create matrix of indices
     index_mat = reshape(eachindex(distributions[1].grid), size(distributions[1])) |> Array
     # Get windows indices

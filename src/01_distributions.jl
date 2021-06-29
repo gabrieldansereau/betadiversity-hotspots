@@ -84,7 +84,7 @@ if (@isdefined save_data) && save_data == true
     @info "Exporting data to CSV as Y matrix (raw distributions data)"
 
     # Get Y matrix
-    Y = calculate_Y(distributions)
+    Y = Ymatrix(distributions)
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
 

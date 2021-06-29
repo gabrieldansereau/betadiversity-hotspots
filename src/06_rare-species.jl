@@ -19,10 +19,10 @@ include("04_full-extent.jl")
 include("05_subareas.jl")
 
 # Count sites with occurrences per species
-function getoccupancy(Ymatrix; count_sites=false)
-    occupancy = vec(sum(_Yobs(Ymatrix); dims=1))
+function getoccupancy(Y; count_sites=false)
+    occupancy = vec(sum(_Yobs(Y); dims=1))
     if !count_sites
-        occupancy = occupancy ./ size(_Yobs(Ymatrix), 1)
+        occupancy = occupancy ./ size(_Yobs(Y), 1)
     end
     return occupancy
 end
@@ -185,7 +185,7 @@ rarespecies_scaling = Vector{Float64}()
 eusrr_scaling = Vector{Float64}()
 for sc in subarea_coords
     distributions_sc = [d[sc] for d in distributions]
-    Y_sc = calculate_Y(distributions_sc)
+    Y_sc = Ymatrix(distributions_sc)
     richness_sc = calculate_richness(Y_sc, distributions_sc[1])
     lcbd_sc = calculate_lcbd(Y_sc, distributions_sc[1]; relative=false)
 

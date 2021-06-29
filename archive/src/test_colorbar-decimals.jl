@@ -7,7 +7,7 @@ outcome = "bart"
 # Load presence-absence data for all species
 @load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
 # Create matrix Y
-Y = calculate_Y(distributions; transform=false)
+Y = Ymatrix(distributions; transform=false)
 # Create matrix of observed sites only
 Yobs = _Yobs(Y)
 # Get richness
