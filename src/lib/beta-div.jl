@@ -1,7 +1,7 @@
 #### Beta diversity calculation functions
 
 ## Function to calculate beta diversity statistics
-function BD(Y)
+function betadiv(Y)
     # S -> squared deviations from column mean
     S = (Y .- mean(Y; dims=1)) .^ 2.0
     # SStotal -> total sum of squares
@@ -28,18 +28,18 @@ function permtest(Y, res)
     # Permutation of matrix Y
     Y_perm = hcat(shuffle.(eachcol(Y))...)
     # Recalculate BD statistics
-    res_p = BD(Y_perm)
+    res_p = betadiv(Y_perm)
     # Test if permuted LCBD is greater than original LCBD
     ge = res_p.LCBDi .>= res.LCBDi
     return ge
 end
 
 ## Function combining BD calculation & permutation tests
-function BDperm(Y; nperm=999, distributed=true)
+function betadiv_perm(Y; nperm=999, distributed=true)
     n = size(Y, 1)
     p = size(Y, 2)
     # Initial BD results
-    res = BD(Y)
+    res = betadiv(Y)
     # Permutations
     if nperm > 0
         nGE_L = ones(Int64, n)

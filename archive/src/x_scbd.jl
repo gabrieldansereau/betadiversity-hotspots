@@ -7,7 +7,7 @@ include(abspath("src", "04_full-extent.jl"))
 inds_obs = _indsobs(Y)
 Yobs = _Yobs(Y, inds_obs)
 Ytransf = _Ytransf(Yobs)
-BDstats = BD(Ytransf)
+BDstats = betadiv(Ytransf)
 
 # Get SCBD values
 scbd = vec(BDstats.SCBDj)

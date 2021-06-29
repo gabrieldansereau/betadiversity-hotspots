@@ -96,7 +96,7 @@ function calculate_lcbd(Y, layer; transform=true, relative=true)
         Yobs = _Ytransf(Yobs)
     end
     # Compute beta diversity statistics
-    BDstats = BD(Yobs)
+    BDstats = betadiv(Yobs)
 
     # Extract LCBD values
     LCBDvals = BDstats.LCBDi
@@ -124,7 +124,7 @@ function calculate_BDtotal(Y; transform=true)
         Yobs = _Ytransf(Yobs)
     end
     # Compute beta diversity statistics
-    BDstats = BD(Yobs)
+    BDstats = betadiv(Yobs)
 
     # Extract LCBD values
     BDtotal = BDstats.BDtotal
