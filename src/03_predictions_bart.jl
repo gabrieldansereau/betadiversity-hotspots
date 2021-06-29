@@ -91,20 +91,20 @@ end
 
 # Get uncertainty per species
 uncertainty = upper_distrib .- lower_distrib
-plotSDM2(uncertainty[1]; c=:viridis)
+plot_layer(uncertainty[1]; c=:viridis)
 
 # Uncertainty sum
 uncertainty_sum = sum(uncertainty)
-plotSDM2(uncertainty_sum; c=:viridis)
+plot_layer(uncertainty_sum; c=:viridis)
 
 # Uncertainty mean
 uncertainty_mean = mean(uncertainty)
-plotSDM2(uncertainty_mean; c=:viridis)
+plot_layer(uncertainty_mean; c=:viridis)
 histogram(uncertainty_mean)
 
 # Plot uncertainty & histogram
 function uncertainty_plot(layer; title="")
-    unc_map = plotSDM2(
+    unc_map = plot_layer(
         layer;
         c=:viridis,
         clim=extrema(layer),

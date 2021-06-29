@@ -39,7 +39,7 @@ Yobs = _Yobs(Y)
 richness = calculate_richness(Y, distributions[1])
 
 # Plot richness
-richness_plot = plotSDM2(
+richness_plot = plot_layer(
     richness;
     c=:viridis,
     colorbar_title="Species richness",
@@ -61,7 +61,7 @@ lcbd = lcbd_abs
 beta_total = calculate_BDtotal(Y)
 
 # Plot relative values
-lcbdtr_plot = plotSDM2(
+lcbdtr_plot = plot_layer(
     lcbd_rel;
     c=:viridis,
     colorbar_title="Relative LCBD value",
@@ -72,7 +72,7 @@ lcbdtr_plot = plotSDM2(
 scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
 scaling_value = 10^scaling_factor
 lcbd_resc = rescale(lcbd, extrema(lcbd) .* scaling_value)
-lcbdtr_plot = plotSDM2(
+lcbdtr_plot = plot_layer(
     lcbd_resc;
     c=:viridis,
     colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",

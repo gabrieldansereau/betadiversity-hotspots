@@ -9,8 +9,8 @@ outcome = "bart"
 prob_distrib[1].grid
 filter(!isnothing, prob_distrib[1].grid)
 
-plotSDM2(prob_distrib[1])
-plotSDM2(prob_distrib[1]; c=:BuPu)
+plot_layer(prob_distrib[1])
+plot_layer(prob_distrib[1]; c=:BuPu)
 
 # Create matrix Y
 Y = calculate_Y(prob_distrib; transform=false)
@@ -36,7 +36,7 @@ richness = calculate_richness(Y, prob_distrib[1])
 richness.grid
 
 # Plot richness
-richness_plot = plotSDM2(
+richness_plot = plot_layer(
     richness;
     c=:viridis,
     # title = "Richness ($outcome distributions)",
@@ -50,7 +50,7 @@ richness_plot = plotSDM2(
 lcbd = calculate_lcbd(Y, prob_distrib[1]; transform=true, relative=true)
 
 # Plot relative values
-lcbdtr_plot = plotSDM2(
+lcbdtr_plot = plot_layer(
     lcbd;
     c=:viridis,
     # title = "LCBD values per site ($(outcome) distributions, hellinger transformed)",

@@ -26,7 +26,7 @@ mwe = rand(10, 10) / 2e5
 gr()
 heatmap(mwe; c=:viridis, colorbar_title="LCBD value")
 heatmap(lcbd; c=:viridis, colorbar_title="LCBD value")
-plotSDM2(lcbd; c=:viridis, colorbar_title="LCBD value")
+plot_layer(lcbd; c=:viridis, colorbar_title="LCBD value")
 
 #= Problems:
     - Colorbar title overlaps with colorbar ticks
@@ -40,7 +40,7 @@ gr()
 heatmap(mwe * 1e5; c=:viridis, colorbar_title="LCBD value (x 10⁻⁵)")
 layer1e5 = replace(similar(lcbd), 0.0 => 1e5)
 heatmap(lcbd * layer1e5; c=:viridis, colorbar_title="LCBD value (x 10⁻⁵)")
-plotSDM2(lcbd * layer1e5; c=:viridis, colorbar_title="LCBD value (x 10⁻⁵)")
+plot_layer(lcbd * layer1e5; c=:viridis, colorbar_title="LCBD value (x 10⁻⁵)")
 
 # Alternative to rescale
 lcbd_scaled = lcbd_abs .* 1e5
@@ -61,7 +61,7 @@ pyplot()
 heatmap(mwe; c=:viridis, colorbar_title="LCBD value")
 heatmap(lcbd; c=:viridis, colorbar_title="LCBD value")
 heatmap(replace(lcbd.grid, nothing => NaN); c=:viridis, colorbar_title="LCBD value")
-plotSDM2(lcbd; c=:viridis, colorbar_title="LCBD value")
+plot_layer(lcbd; c=:viridis, colorbar_title="LCBD value")
 
 # Customize colorbar ticks
 # New features from https://github.com/JuliaPlots/Plots.jl/pull/3346
@@ -76,7 +76,7 @@ plotattr("colorbar")
     - super slow for layers (long to display)
     - looks terrible for layers
     - some weird lines on the heatmap, like a bad printer...
-    - doesn't work with plotSDM2
+    - doesn't work with plot_layer
     - python
    Pros:
     - has scientific notation out-of-the-box
@@ -88,7 +88,7 @@ plotlyjs()
 heatmap(mwe; c=:viridis, colorbar_title="LCBD value")
 heatmap(lcbd; c=:viridis, colorbar_title="LCBD value")
 heatmap(lcbd; c=:viridis, colorbar_title="LCBD value", leftmargin=100px)
-plotSDM2(lcbd; c=:viridis, colorbar_title="LCBD value")
+plot_layer(lcbd; c=:viridis, colorbar_title="LCBD value")
 savefig("test-plotlyjs.png")
 savefig("test-plotlyjs.pdf")
 
@@ -99,7 +99,7 @@ savefig("test-plotlyjs.pdf")
     - terrible png quality, but pdf is OK and not too big
    Pros:
     - overall fast & still nice
-    - works with plotSDM2
+    - works with plot_layer
 =#
 
 ## Option 4: PlotlyJS.jl (not the same as the plotlyjs backend)
@@ -114,7 +114,7 @@ trace = PlotlyJS.heatmap(;
 PlotlyJS.plot(trace)
 
 #= Problems:
-    - doesn't work with plotSDM2
+    - doesn't work with plot_layer
     - works differently from Plots, so I don't know how to tweak it
     - not sure if it can be used to combine plots either, which I need for subplots
    Pros:
@@ -147,7 +147,7 @@ begin
     plot(p1, p2; layout=l, leftmargin=[0.0mm -7.0mm])
 end
 begin
-    p1 = plotSDM2(lcbd; c=:viridis)
+    p1 = plot_layer(lcbd; c=:viridis)
     p2 = plot(; frame=:none)
     annotate!(p2, 0.5, 0.5, text("LCBD value", 11, :center, 90.0))
     l = @layout [a b{0.01w}]
@@ -155,17 +155,17 @@ begin
 end
 # Comparison with relative values
 begin
-    p1 = plotSDM2(lcbd_rel; c=:viridis)
+    p1 = plot_layer(lcbd_rel; c=:viridis)
     p2 = plot(; frame=:none)
     annotate!(p2, 0.5, 0.5, text("LCBD value", 11, :center, 90.0))
     l = @layout [a b{0.01w}]
     plot(p1, p2; layout=l, leftmargin=[0.0mm -20.0mm])
 end
-plotSDM2(lcbd_rel; c=:viridis, colorbar_title="LCBD value")
+plot_layer(lcbd_rel; c=:viridis, colorbar_title="LCBD value")
 # Just need to play with margins
 
 #= Problems:
     - cannot format colorbar to similar units
    Pros:
-    - Should work with everything I have if I simply define a new plotSDM2 function
+    - Should work with everything I have if I simply define a new plot_layer function
 =#

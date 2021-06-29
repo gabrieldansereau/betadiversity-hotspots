@@ -38,7 +38,7 @@ Yobs = _Yobs(Y)
 richness = calculate_richness(Y, distributions[1])
 
 # Plot richness quantiles
-richness_qplot = plotSDM2(
+richness_qplot = plot_layer(
     quantiles(richness);
     c=:viridis,
     # title = "Richness quantiles ($outcome distributions)",
@@ -52,7 +52,7 @@ richness_qplot = plotSDM2(
 lcbd_rel = calculate_lcbd(Y, distributions[1]; transform=true, relative=true)
 
 # Plot quantile scores
-lcbdtr_qplot = plotSDM2(
+lcbdtr_qplot = plot_layer(
     quantiles(lcbd_rel);
     c=:viridis,
     # title = "LCBD quantiles ($(outcome) distributions, hellinger transformed)",

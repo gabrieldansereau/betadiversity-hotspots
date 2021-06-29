@@ -73,13 +73,13 @@ diversity2 = SimpleSDMResponse(
 )
 
 ## Plot result
-diversity_plot = plotSDM2(
+diversity_plot = plot_layer(
     diversity;
     c=:BuPu,
     title="Community evenness ($(outcome) distributions)",
     colorbar_title="Pielou's evenness index (site richness)",
 )
-diversity_plot2 = plotSDM2(
+diversity_plot2 = plot_layer(
     diversity2;
     c=:BuPu,
     title="Community evenness ($(outcome) distributions)",

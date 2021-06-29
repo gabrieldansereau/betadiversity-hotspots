@@ -42,14 +42,14 @@ endemism = SimpleSDMResponse(Array(endemism_grid), distributions[1])
 
 ## Plot results
 # Raw endemism scores
-endemism_plot = plotSDM2(
+endemism_plot = plot_layer(
     endemism;
     c=:viridis,
     title="Endemism ($outcome distributions)",
     colorbar_title="Weigthed endemism (area of occurrence)",
 )
 # Quantile endemism scores
-endemism_qplot = plotSDM2(
+endemism_qplot = plot_layer(
     quantiles(endemism);
     c=:viridis,
     title="Endemism quantiles ($outcome distributions)",

@@ -234,23 +234,23 @@ end
 
 # Full extent
 rarespecies_layer = get_site_rarespecies(Y, rarespecies, richness)
-plotSDM2(rarespecies_layer; c=:viridis)
+plot_layer(rarespecies_layer; c=:viridis)
 
 # NE local rarity
 rarespecies_layer_NE = get_site_rarespecies(Y_NE, rarespecies_NE, richness_NE)
-p1 = plotSDM2(rarespecies_layer_NE; c=:viridis)
+p1 = plot_layer(rarespecies_layer_NE; c=:viridis)
 
 # NE total rarity
 rarespecies_layer_NE_total = get_site_rarespecies(Y_NE, rarespecies_NE_total, richness_NE)
-p2 = plotSDM2(rarespecies_layer_NE_total; c=:viridis)
+p2 = plot_layer(rarespecies_layer_NE_total; c=:viridis)
 
 # SW local rarity
 rarespecies_layer_SW = get_site_rarespecies(Y_SW, rarespecies_SW, richness_SW)
-p3 = plotSDM2(rarespecies_layer_SW; c=:viridis)
+p3 = plot_layer(rarespecies_layer_SW; c=:viridis)
 
 # SW total rarity
 rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, richness_SW)
-p4 = plotSDM2(rarespecies_layer_SW_total; c=:viridis)
+p4 = plot_layer(rarespecies_layer_SW_total; c=:viridis)
 
 p_subareas = plot(p1, p2, p3, p4; dpi=200)
 
@@ -270,7 +270,7 @@ function ascending_plots(richness, lcbd, rarespecies)
     binlayer = replace(richness, Pair.(unique(richness), unique(richness) .> abs_min)...)
 
     # Thresholded rarity map subpanel
-    lplot = plotSDM2(binlayer; c=cgrad(:PuOr; rev=true), colorbar=:none)
+    lplot = plot_layer(binlayer; c=cgrad(:PuOr; rev=true), colorbar=:none)
 
     # Create two group labels
     bin_names = map(x -> isone(x) ? "Ascending" : "Descending", collect(binlayer))

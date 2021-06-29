@@ -98,7 +98,7 @@ plot(LCBDwindow; c=:viridis)
 
 ## Visualize result
 if outcome == "raw"
-    plotfct = :plotSDM2
+    plotfct = :plot_layer
 else
     plotfct = :plot
 end

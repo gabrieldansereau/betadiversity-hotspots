@@ -116,7 +116,7 @@ sort(pres_counts)
 
 # Species 1
 sp1 = "Setophaga_townsendi"
-map_sp1 = plotSDM2(
+map_sp1 = plot_layer(
     distributions[speindex[sp1]];
     c=:BuPu,
     title="$(replace(sp1, "_" => " ")) distribution (raw)",
@@ -126,7 +126,7 @@ map_sp1 = plotSDM2(
 
 # Species 2
 sp2 = "Setophaga_petechia"
-map_sp2 = plotSDM2(
+map_sp2 = plot_layer(
     distributions[speindex[sp2]];
     c=:BuPu,
     title="$(replace(sp2, "_" => " ")) distribution (raw)",

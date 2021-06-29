@@ -112,9 +112,9 @@ savefig(plot(rel2d_plot, dpi = 200), joinpath(figdir, "res_relationship.png"))
 
 ## Distribution figures
 # Single species distributions
-spplot1 = plotSDM2(distributions[1][coords_qc], c = :BuPu)
-spplot2 = plotSDM2(distributions[17][coords_qc], c = :BuPu)
-spplot3 = plotSDM2(distributions[22][coords_qc], c = :BuPu)
+spplot1 = plot_layer(distributions[1][coords_qc], c = :BuPu)
+spplot2 = plot_layer(distributions[17][coords_qc], c = :BuPu)
+spplot3 = plot_layer(distributions[22][coords_qc], c = :BuPu)
 # Remove backgrounds
 removebackground!(spplot1)
 removebackground!(spplot2)
@@ -131,9 +131,9 @@ distributions_bart = copy(distributions)
 distributions_raw = copy(distributions)
 distributions = distributions_bart
 # Plot
-spplot1_raw = plotSDM2(distributions_raw[1][coords_qc], c = :BuPu)
-spplot2_raw = plotSDM2(distributions_raw[17][coords_qc], c = :BuPu)
-spplot3_raw = plotSDM2(distributions_raw[22][coords_qc], c = :BuPu)
+spplot1_raw = plot_layer(distributions_raw[1][coords_qc], c = :BuPu)
+spplot2_raw = plot_layer(distributions_raw[17][coords_qc], c = :BuPu)
+spplot3_raw = plot_layer(distributions_raw[22][coords_qc], c = :BuPu)
 # Remove backgrounds
 removebackground!(spplot1_raw)
 removebackground!(spplot2_raw)

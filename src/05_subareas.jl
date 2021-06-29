@@ -61,7 +61,7 @@ beta_SW = calculate_BDtotal(Y_SW)
 
 # Choose plotting function according to outcome
 if outcome == "raw"
-    plotfct = :plotSDM2 # slower, but background is nice for sparse data
+    plotfct = :plot_layer # slower, but background is nice for sparse data
 else
     plotfct = :plot # faster, sufficient for continuous data
 end

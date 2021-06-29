@@ -21,12 +21,12 @@ lims_lcbd = extrema(mapreduce(collect, vcat, [raw.lcbd, sdm.lcbd]))
 # Plot combined distributions
 p1 = plot(raw.richness_plot; clim=lims_richness)
 p2 = plot(sdm.richness_plot; clim=lims_richness)
-p3 = plotSDM2(
+p3 = plot_layer(
     rescale(raw.lcbd, extrema(raw.lcbd) .* 100_000);
     c=:viridis,
     colorbar_title="LCBD value (x 100,000)",
 )
-p4 = plotSDM2(
+p4 = plot_layer(
     rescale(sdm.lcbd, extrema(sdm.lcbd) .* 100_000);
     c=:viridis,
     colorbar_title="LCBD value (x 100,000)",
@@ -102,7 +102,7 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     lims = extrema(layer)
 
     # Difference map subpanel
-    diff_map = plotSDM2(
+    diff_map = plot_layer(
         layer;
         c=recentergrad(:PuOr, lims; rev=true),
         clims=lims,
@@ -209,7 +209,7 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     lims = extrema(layer)
 
     # Residual map subpanel
-    res_map = plotSDM2(
+    res_map = plot_layer(
         layer;
         c=recentergrad(:PuOr, lims; rev=true),
         title="Residuals map",

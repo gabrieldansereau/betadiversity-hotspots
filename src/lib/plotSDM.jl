@@ -1,7 +1,7 @@
 ## Functions to plot SimpleSDMLayer elements more easily
 
 # Plot layer as a heatmap with worldmap background
-function plotSDM2(layer::SimpleSDMLayer; kw...)
+function plot_layer(layer::SimpleSDMLayer; kw...)
     ## Arguments
     # layer: SimpleSDMLayer to plot
     # scatter: add observations as points in scatter plot, requires to define occ

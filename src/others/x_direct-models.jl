@@ -48,7 +48,7 @@ lcbd_pred.grid[:] = predictions[:, 2]
 pred = (richness=richness_pred, lcbd=lcbd_pred)
 
 ## Plot predictions
-richness_plot = plotSDM2(
+richness_plot = plot_layer(
     richness_pred;
     c=:viridis,
     title="Direct richness predictions ($(uppercase(outcome)))",
@@ -90,7 +90,7 @@ maxlim = 30
 # Custom plot function
 function difference_plot(layer, lim; title="")
     limrange = (-lim, lim)
-    diff_map = plotSDM2(
+    diff_map = plot_layer(
         layer;
         c=:diverging,
         clim=limrange,
@@ -127,7 +127,7 @@ plot_sdm_raw = difference_plot(diff_sdm_raw, maxlim; title="SDM richness vs raw 
 ## Extras
 
 # Absolute richness difference
-richness_absdiff = plotSDM2(
+richness_absdiff = plot_layer(
     difference(pred.richness, sdm.richness; absolute=true);
     c=:inferno, # clim = (-Inf, Inf),
     title="Direct richness predictions difference ($(uppercase(outcome)))",
@@ -136,7 +136,7 @@ richness_absdiff = plotSDM2(
 )
 
 # LCBD predictions
-lcbd_plot = plotSDM2(
+lcbd_plot = plot_layer(
     lcbd_pred;
     c=:viridis,
     title="Direct LCBD predictions ($(uppercase(outcome)))",
@@ -146,7 +146,7 @@ lcbd_plot = plotSDM2(
 )
 
 # LCBD difference
-lcbd_diff = plotSDM2(
+lcbd_diff = plot_layer(
     difference(pred.lcbd, sdm.lcbd; absolute=true);
     c=:inferno, # clim = (-Inf, Inf),
     title="Direct richness predictions difference ($(uppercase(outcome)))",
