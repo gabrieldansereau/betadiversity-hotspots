@@ -64,7 +64,7 @@ function _Ytransf(Yobs)
 end
 
 ## Richness
-function calculate_richness(Y, layer)
+function richness(Y, layer)
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
@@ -76,21 +76,20 @@ function calculate_richness(Y, layer)
     # Reshape to grid format
     sums = reshape(sums, size(layer)) |> Array
     ## Create SimpleSDMLayer
-    return richness = SimpleSDMResponse(sums, layer)
+    return SimpleSDMResponse(sums, layer)
 end
 
-function calculate_gamma(Y)
+function gamma(Y)
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
     sp_counts = sum(Yobs; dims=1)
-    gamma = sum(sp_counts .> 0)
-    return gamma
+    return sum(sp_counts .> 0)
 end
 
 ## LCBD
 # Load functions
-function calculate_lcbd(Y, layer; transform=true, relative=true)
+function lcbd(Y, layer; transform=true, relative=true)
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
@@ -115,10 +114,11 @@ function calculate_lcbd(Y, layer; transform=true, relative=true)
     LCBDgrid[inds_obs] = LCBDvals
     # Create SimpleSDMLayer with LCBD values
     LCBDlayer = SimpleSDMResponse(LCBDgrid, layer)
+
     return LCBDlayer
 end
 
-function calculate_BDtotal(Y; transform=true)
+function beta_total(Y; transform=true)
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
@@ -130,8 +130,5 @@ function calculate_BDtotal(Y; transform=true)
     # Compute beta diversity statistics
     BDstats = betadiv(Yobs)
 
-    # Extract LCBD values
-    BDtotal = BDstats.BDtotal
-
-    return BDtotal
+    return BDstats.BDtotal
 end

@@ -63,8 +63,8 @@ Yraw = Ymatrix(raw_distributions)
 Ysdm = Ymatrix(sdm_distributions)
 raw, sdm = [
     (
-        richness=calculate_richness(Y, raw_distributions[1]),
-        lcbd=calculate_lcbd(Y, raw_distributions[1]),
+        richness=richness(Y, raw_distributions[1]),
+        lcbd=lcbd(Y, raw_distributions[1]),
     ) for Y in (Yraw, Ysdm)
 ]
 

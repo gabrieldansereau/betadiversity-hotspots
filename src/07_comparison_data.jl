@@ -8,18 +8,14 @@ include("required.jl")
 outcome = "raw"
 include("04_full-extent.jl")
 
-# Add non-relative LCBD values
-lcbdnr = calculate_lcbd(Y, lcbd; relative=false)
-
 # Assemble results
 raw = (
     Y=Y,
-    richness=richness,
+    richness=richness_full,
     richness_plot=richness_plot,
-    lcbd=lcbd,
-    lcbdnr=lcbdnr,
+    lcbd=lcbd_full,
     beta_total=beta_total,
-    lcbd_plot=lcbdtr_plot,
+    lcbd_plot=lcbd_plot,
     rel_plot=rel2d_plot,
 )
 
@@ -27,18 +23,14 @@ raw = (
 outcome = "bart"
 include("04_full-extent.jl")
 
-# Add non-relative LCBD values
-lcbdnr = calculate_lcbd(Y, lcbd; relative=false)
-
 # Assemble results
 sdm = (
     Y=Y,
-    richness=richness,
+    richness=richness_full,
     richness_plot=richness_plot,
-    lcbd=lcbd,
-    lcbdnr=lcbdnr,
+    lcbd=lcbd_full,
     beta_total=beta_total,
-    lcbd_plot=lcbdtr_plot,
+    lcbd_plot=lcbd_plot,
     rel_plot=rel2d_plot,
 )
 
@@ -48,14 +40,14 @@ sdm = (
 inds_common = intersect(_indsobs(raw.Y), _indsobs(sdm.Y))
 
 # Recalculate LCBD values on same sites
-function recalculate_lcbd(Y, layer, inds_common)
+function common_lcbd(Y, layer, inds_common)
     Ycommon = copy(Y)
     Ycommon[Not(inds_common), :] .= nothing
-    lcbd_common = calculate_lcbd(Ycommon, layer; relative=false)
+    lcbd_common = lcbd(Ycommon, layer; relative=false)
     return lcbd_common
 end
-lcbdcom_raw = recalculate_lcbd(raw.Y, raw.lcbd, inds_common)
-lcbdcom_sdm = recalculate_lcbd(sdm.Y, sdm.lcbd, inds_common)
+lcbdcom_raw = common_lcbd(raw.Y, raw.lcbd, inds_common)
+lcbdcom_sdm = common_lcbd(sdm.Y, sdm.lcbd, inds_common)
 
 # Add to NamedTuples
 raw = (raw..., lcbdcom=lcbdcom_raw)
@@ -76,17 +68,9 @@ end
 ## Prepare data for GLMs
 
 # Assemble in DataFrame
-results = DataFrame([
-    raw.richness, raw.lcbdcom, sdm.richness, sdm.lcbdcom, raw.lcbdnr, sdm.lcbdnr
-])
+results = DataFrame([raw.richness, raw.lcbdcom, sdm.richness, sdm.lcbdcom])
 rename!(
-    results,
-    :x1 => :richness_raw,
-    :x2 => :lcbd_raw,
-    :x3 => :richness_sdm,
-    :x4 => :lcbd_sdm,
-    :x5 => :lcbdnr_raw,
-    :x6 => :lcbdnr_sdm,
+    results, :x1 => :richness_raw, :x2 => :lcbd_raw, :x3 => :richness_sdm, :x4 => :lcbd_sdm,
 )
 
 # Remove lines with missing values

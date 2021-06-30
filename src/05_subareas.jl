@@ -44,22 +44,16 @@ Yobs_NE = Ymatrix(distributions_NE)
 Yobs_SW = Ymatrix(distributions_SW)
 
 # Richness
-richness_NE = calculate_richness(Y_NE, distributions_NE[1])
-richness_SW = calculate_richness(Y_SW, distributions_SW[1])
-
-# Relative LCBD values
-lcbd_rel_NE = calculate_lcbd(Y_NE, distributions_NE[1])
-lcbd_rel_SW = calculate_lcbd(Y_SW, distributions_SW[1])
+richness_NE = richness(Y_NE, distributions_NE[1])
+richness_SW = richness(Y_SW, distributions_SW[1])
 
 # Absolute LCBD values
-lcbd_abs_NE = calculate_lcbd(Y_NE, distributions_NE[1]; relative=false)
-lcbd_abs_SW = calculate_lcbd(Y_SW, distributions_SW[1]; relative=false)
-lcbd_NE = lcbd_abs_NE
-lcbd_SW = lcbd_abs_SW
+lcbd_NE = lcbd(Y_NE, distributions_NE[1]; relative=false)
+lcbd_SW = lcbd(Y_SW, distributions_SW[1]; relative=false)
 
 # Total beta
-beta_NE = calculate_BDtotal(Y_NE)
-beta_SW = calculate_BDtotal(Y_SW)
+beta_NE = beta_total(Y_NE)
+beta_SW = beta_total(Y_SW)
 
 ## Subarea figures
 
@@ -82,30 +76,30 @@ end
 
 # Function to produce combined plots
 function plot_lcbd_relationship(
-    richness, lcbd, beta_total; scale=true, scaling_value=1, kw...
+    richness_layer, lcbd_layer, beta_total; scale=true, scaling_value=1, kw...
 )
     # Scale values for a nicer result
     if scale
         # Set scaling value automatically (optional, set scaling_value=... otherwise)
         if scaling_value == 1
-            scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
+            scaling_factor = lcbd_layer |> maximum |> log10 |> abs |> ceil |> Int
             scaling_value = 10^scaling_factor
         end
-        lcbd = rescale(lcbd, extrema(lcbd) .* scaling_value)
+        lcbd_layer = rescale(lcbd_layer, extrema(lcbd_layer) .* scaling_value)
     end
 
     # LCBD map subpanel
     p1 = eval(plotfct)(
-        lcbd;
+        lcbd_layer;
         c=:viridis,
         colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
-        clim=extrema(lcbd)
+        clim=extrema(lcbd_layer)
     )
 
     # Relationship subpanel
     p2 = histogram2d(
-        richness,
-        lcbd;
+        richness_layer,
+        lcbd_layer;
         c=:viridis,
         bins=40,
         colorbar_title="Number of sites",
@@ -114,11 +108,11 @@ function plot_lcbd_relationship(
         xlim=(1, 50),
         ylim=(-Inf, Inf),
     )
-    vline!([median(richness)], label=:none, linestyle=:dash, c=:grey)
-    hline!([median(lcbd)], label=:none, linestyle=:dash, c=:grey)
+    vline!([median(richness_layer)], label=:none, linestyle=:dash, c=:grey)
+    hline!([median(lcbd_layer)], label=:none, linestyle=:dash, c=:grey)
 
     # Add total beta value in rectangle box (fitted to dimensions)
-    lmin, lmax = extrema(lcbd)
+    lmin, lmax = extrema(lcbd_layer)
     lrange = lmax - lmin
     rectangle!(
         16.0,
@@ -190,18 +184,14 @@ function plot_subareas(
     kw...
 )
     # Get analysis values
-    distributions = [d[coords] for d in initial_distributions]
+    d = [d[coords] for d in initial_distributions]
     Y = Ymatrix(distributions)
-    richness = calculate_richness(Y, distributions[1])
-    lcbd = calculate_lcbd(
-        Y,
-        distributions[1];
-        transform=transform,
-    )
-    beta_total = calculate_BDtotal(Y)
+    r = richness(Y, distributions[1])
+    l = lcbd(Y, d[1]; transform=transform)
+    bt = beta_total(Y)
 
     # Plot subareas
-    p = plot_lcbd_relationship(richness, lcbd, beta_total; kw...)
+    p = plot_lcbd_relationship(r, l, bt; kw...)
 
     return p
 end
@@ -309,21 +299,21 @@ gamma_values = []
 
 # Get analysis values for all subareas
 for sc in subarea_coords
-    local distribs = [d[sc] for d in distributions]
-    local Y = Ymatrix(distribs)
-    local richness = calculate_richness(Y, distribs[1])
-    local lcbd = calculate_lcbd(Y, distribs[1]; relative=false)
-    local lcbd_abs = calculate_lcbd(Y, distribs[1]; relative=false)
-    local beta_total = calculate_BDtotal(Y)
-    local gamma = calculate_gamma(Y)
+    local d = [d[sc] for d in distributions]
+    local y = Ymatrix(d)
+    local r = richness(y, d[1])
+    local l = lcbd(y, d[1]; relative=false)
+    local l_abs = lcbd(y, d[1]; relative=false)
+    local bt = beta_total(y)
+    local g = gamma(y)
 
-    push!(richness_medians, median(richness))
-    push!(lcbd_medians, median(lcbd))
-    push!(lcbd_mins, minimum(lcbd))
-    push!(lcbd_maxs, maximum(lcbd))
-    push!(lcbd_abs_medians, lcbd_abs)
-    push!(beta_values, beta_total)
-    push!(gamma_values, gamma)
+    push!(richness_medians, median(r))
+    push!(lcbd_medians, median(l))
+    push!(lcbd_mins, minimum(l))
+    push!(lcbd_maxs, maximum(l))
+    push!(lcbd_abs_medians, l_abs)
+    push!(beta_values, bt)
+    push!(gamma_values, g)
 end
 
 # Check values

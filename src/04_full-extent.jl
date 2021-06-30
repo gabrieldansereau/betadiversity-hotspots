@@ -36,11 +36,11 @@ Yobs = Ymatrix(distributions; transform=false, observed=true)
 ## Richness
 
 # Get richness
-richness = calculate_richness(Y, distributions[1])
+richness_full = richness(Y, distributions[1])
 
 # Plot richness
 richness_plot = plot_layer(
-    richness;
+    richness_full;
     c=:viridis,
     colorbar_title="Species richness",
     size=(650, 400),
@@ -49,30 +49,29 @@ richness_plot = plot_layer(
 
 ## LCBD
 
-# Get LCBD values
-lcbd_rel = calculate_lcbd(Y, distributions[1]; transform=true, relative=true)
+# Get relative LCBD values
+lcbd_rel = lcbd(Y, distributions[1]; transform=true, relative=true)
 
 # Get non-relative values
-lcbd_abs = calculate_lcbd(Y, distributions[1]; transform=true, relative=false)
-round.(Float64.(extrema(lcbd_abs)); sigdigits=4)
-lcbd = lcbd_abs
+lcbd_full = lcbd(Y, distributions[1]; transform=true, relative=false)
 
 # Get total beta
-beta_total = calculate_BDtotal(Y)
+beta_total = beta_total(Y)
 
 # Plot relative values
-lcbdtr_plot = plot_layer(
+lcbd_rel_plot = plot_layer(
     lcbd_rel;
     c=:viridis,
     colorbar_title="Relative LCBD value",
     size=(650, 400),
     dpi=200,
 )
-# Plot absolute values
-scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
+
+# Plot absolute values (scaled for a nicer result)
+scaling_factor = lcbd_full |> maximum |> log10 |> abs |> ceil |> Int
 scaling_value = 10^scaling_factor
-lcbd_resc = rescale(lcbd, extrema(lcbd) .* scaling_value)
-lcbdtr_plot = plot_layer(
+lcbd_resc = rescale(lcbd_full, extrema(lcbd_full) .* scaling_value)
+lcbd_plot = plot_layer(
     lcbd_resc;
     c=:viridis,
     colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
@@ -98,7 +97,7 @@ lmin, lmax = extrema(lcbd_resc)
 lrange = lmax - lmin
 
 rel2d_plot = histogram2d(
-    richness,
+    richness_full,
     lcbd_resc;
     c=:viridis,
     bins=40,
@@ -109,7 +108,7 @@ rel2d_plot = histogram2d(
     size=(650, 400),
     dpi=200,
 )
-vline!([median(richness)]; label=:none, linestyle=:dash, c=:grey)
+vline!([median(richness_full)]; label=:none, linestyle=:dash, c=:grey)
 hline!([median(lcbd_resc)]; label=:none, linestyle=:dash, c=:grey)
 rectangle!(
     16.0,
@@ -126,7 +125,7 @@ rectangle!(
 if (@isdefined save_figures) && save_figures == true
     @info "Figures saved ($(outcome))"
     savefig(richness_plot, joinpath("fig", outcome, "04_$(outcome)_richness.png"))
-    savefig(lcbdtr_plot, joinpath("fig", outcome, "04_$(outcome)_lcbd.png"))
+    savefig(lcbd_plot, joinpath("fig", outcome, "04_$(outcome)_lcbd.png"))
     savefig(rel2d_plot, joinpath("fig", outcome, "04_$(outcome)_relationship.png"))
 else
     @info "Figures not saved ($(outcome))"

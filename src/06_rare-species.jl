@@ -99,7 +99,7 @@ get_rarespecies_p(Yobs, threshold)
 
 # LCBD-richness correlation
 get_eusrr(richness, lcbd) = corspearman(collect(richness), collect(lcbd))
-eusrr = get_eusrr(richness, lcbd)
+eusrr = get_eusrr(richness_full, lcbd_full)
 eusrr_NE = get_eusrr(richness_NE, lcbd_NE)
 eusrr_SW = get_eusrr(richness_SW, lcbd_SW)
 
@@ -186,8 +186,8 @@ eusrr_scaling = Vector{Float64}()
 for sc in subarea_coords
     distributions_sc = [d[sc] for d in distributions]
     Y_sc = Ymatrix(distributions_sc)
-    richness_sc = calculate_richness(Y_sc, distributions_sc[1])
-    lcbd_sc = calculate_lcbd(Y_sc, distributions_sc[1]; relative=false)
+    richness_sc = richness(Y_sc, distributions_sc[1])
+    lcbd_sc = lcbd(Y_sc, distributions_sc[1]; relative=false)
 
     rarespecies_sc = get_rarespecies_p(Y_sc, threshold)
     eusrr_sc = get_eusrr(richness_sc, lcbd_sc)
@@ -218,21 +218,21 @@ show(stdout, "text/plain", eusrr_scaling)
 ## Spatial distribution of rare species proportion
 
 # Rarespecies proportion per site
-function get_site_rarespecies(Yobs, rarespecies, richness)
+function get_site_rarespecies(Yobs, rarespecies, richness_layer)
     if any(ismissing, rarespecies)
         rarespecies = replace(rarespecies, missing => 0)
     end
     Yrare = Yobs + repeat(permutedims(rarespecies), size(Yobs, 1)) .- 1.0
     Yrare_p = sum(isone, Yrare; dims=2) ./ sum(Yobs; dims=2)
 
-    rarespecies_layer = copy(richness)
+    rarespecies_layer = copy(richness_layer)
     inds_obs = findall(!isnothing, rarespecies_layer.grid)
     rarespecies_layer.grid[inds_obs] .= vec(Yrare_p)
     return rarespecies_layer
 end
 
 # Full extent
-rarespecies_layer = get_site_rarespecies(Yobs, rarespecies, richness)
+rarespecies_layer = get_site_rarespecies(Yobs, rarespecies, richness_full)
 plot_layer(rarespecies_layer; c=:viridis)
 
 # NE local rarity
