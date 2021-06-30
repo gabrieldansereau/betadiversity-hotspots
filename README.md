@@ -122,7 +122,7 @@ environmental variables, and also store the ouput of the prediction.
 
 1. `analysis.jl` contains the functions to perform the main analyses.
 
-1. `beta-div.jl` contains functions to compute beta-diversity statitstics.
+1. `betadiv.jl` contains functions to compute beta-diversity statitstics.
 
 1. `bioclim.jl` contains functions to perform the BIOCLIM SDM model.
 

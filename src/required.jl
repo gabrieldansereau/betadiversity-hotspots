@@ -25,7 +25,7 @@ using ZipFile
 
 # Load custom functions
 include(joinpath("lib", "analysis.jl"))
-include(joinpath("lib", "beta-div.jl"))
+include(joinpath("lib", "betadiv.jl"))
 include(joinpath("lib", "csvdata.jl"))
 include(joinpath("lib", "landcover.jl"))
 include(joinpath("lib", "plotSDM.jl"))
