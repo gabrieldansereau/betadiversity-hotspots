@@ -27,7 +27,7 @@ save_figures = true # should figures be overwritten (optional)
 ## Part II - Distributions & modelling ####
 
 # Set conditional arguments
-outcome = "raw" # desired outcome (required) # "raw", "bio", or "rf"
+outcome = "raw" # desired outcome (required)
 create_distributions = true # should distributions be computed (optional, loaded otherwise)
 save_data = true # should data files be overwritten (optional)
 save_figures = true # should figures be overwritten (optional)

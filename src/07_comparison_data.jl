@@ -14,7 +14,7 @@ raw = (
     richness=richness_full,
     richness_plot=richness_plot,
     lcbd=lcbd_full,
-    beta_total=beta_total,
+    beta_total=beta_full,
     lcbd_plot=lcbd_plot,
     rel_plot=rel2d_plot,
 )
@@ -29,7 +29,7 @@ sdm = (
     richness=richness_full,
     richness_plot=richness_plot,
     lcbd=lcbd_full,
-    beta_total=beta_total,
+    beta_total=beta_full,
     lcbd_plot=lcbd_plot,
     rel_plot=rel2d_plot,
 )

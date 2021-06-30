@@ -56,7 +56,7 @@ lcbd_rel = lcbd(Y, distributions[1]; transform=true, relative=true)
 lcbd_full = lcbd(Y, distributions[1]; transform=true, relative=false)
 
 # Get total beta
-beta_total = beta_total(Y)
+beta_full = beta_total(Y)
 
 # Plot relative values
 lcbd_rel_plot = plot_layer(
@@ -115,7 +115,7 @@ rectangle!(
     0.15 * lrange,
     33.0,
     lmax - 0.2 * lrange,
-    "BDtot = $(round(beta_total; digits=3))",
+    "BDtot = $(round(beta_full; digits=3))",
     10,
 )
 

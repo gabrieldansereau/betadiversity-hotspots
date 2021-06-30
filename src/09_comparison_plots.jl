@@ -126,7 +126,7 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     l = @layout [a{0.6w} b{0.38w}]
     diff_plot = plot(
         diff_map,
-        diff_hist,
+        diff_hist;
         size=(850, 340),
         layout=l,
         bottommargin=3.0mm,
@@ -234,7 +234,7 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     l = @layout [a{0.6w} b{0.38w}]
     res_plot = plot(
         res_map,
-        res_hist,
+        res_hist;
         size=(850, 340),
         layout=l,
         bottommargin=3.0mm,

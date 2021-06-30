@@ -186,10 +186,11 @@ eusrr_scaling = Vector{Float64}()
 for sc in subarea_coords
     distributions_sc = [d[sc] for d in distributions]
     Y_sc = Ymatrix(distributions_sc)
+    Yobs_sc = Ymatrix(distributions_sc; observed=true)
     richness_sc = richness(Y_sc, distributions_sc[1])
     lcbd_sc = lcbd(Y_sc, distributions_sc[1]; relative=false)
 
-    rarespecies_sc = get_rarespecies_p(Y_sc, threshold)
+    rarespecies_sc = get_rarespecies_p(Yobs_sc, threshold)
     eusrr_sc = get_eusrr(richness_sc, lcbd_sc)
 
     push!(rarespecies_scaling, rarespecies_sc)

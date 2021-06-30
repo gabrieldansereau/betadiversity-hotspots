@@ -40,8 +40,8 @@ Y_NE = Ymatrix(distributions_NE)
 Y_SW = Ymatrix(distributions_SW)
 
 # Get Y matrices for observed sites only
-Yobs_NE = Ymatrix(distributions_NE)
-Yobs_SW = Ymatrix(distributions_SW)
+Yobs_NE = Ymatrix(distributions_NE; observed=true)
+Yobs_SW = Ymatrix(distributions_SW; observed=true)
 
 # Richness
 richness_NE = richness(Y_NE, distributions_NE[1])
@@ -184,11 +184,11 @@ function plot_subareas(
     kw...
 )
     # Get analysis values
-    d = [d[coords] for d in initial_distributions]
-    Y = Ymatrix(distributions)
-    r = richness(Y, distributions[1])
-    l = lcbd(Y, d[1]; transform=transform)
-    bt = beta_total(Y)
+    ds = [d[coords] for d in initial_distributions]
+    y = Ymatrix(ds)
+    r = richness(y, ds[1])
+    l = lcbd(y, ds[1]; transform=transform)
+    bt = beta_total(y)
 
     # Plot subareas
     p = plot_lcbd_relationship(r, l, bt; kw...)
@@ -249,7 +249,7 @@ gif(anim, fps=3)
 # Export GIF
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    gif(anim, joinpath("fig", outcome, "05-3_$(outcome)_subareas.gif"); fps=3)
+    gif(anim, joinpath("fig", outcome, "05_$(outcome)_scaling.gif"); fps=3)
 end
 
 ## 3 extents comparison
@@ -299,11 +299,11 @@ gamma_values = []
 
 # Get analysis values for all subareas
 for sc in subarea_coords
-    local d = [d[sc] for d in distributions]
-    local y = Ymatrix(d)
-    local r = richness(y, d[1])
-    local l = lcbd(y, d[1]; relative=false)
-    local l_abs = lcbd(y, d[1]; relative=false)
+    local ds = [d[sc] for d in distributions]
+    local y = Ymatrix(ds)
+    local r = richness(y, ds[1])
+    local l = lcbd(y, ds[1]; relative=false)
+    local l_abs = lcbd(y, ds[1]; relative=false)
     local bt = beta_total(y)
     local g = gamma(y)
 

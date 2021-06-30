@@ -81,7 +81,7 @@ if (@isdefined save_data) && save_data == true
         joinpath("data", "raster", "bart_xtras_upper-distrib_placeholder.tif"),
     ]
     for p in placeholder_paths
-        open(placeholder_path, "w") do io
+        open(p, "w") do io
             write(io, string(Dates.now()))
         end
     end
@@ -103,7 +103,7 @@ plot_layer(uncertainty_mean; c=:viridis)
 histogram(uncertainty_mean)
 
 # Plot uncertainty & histogram
-function uncertainty_plot(layer; title="")
+function uncertainty_plot(layer; title="", kw...)
     unc_map = plot_layer(
         layer;
         c=:viridis,
