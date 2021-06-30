@@ -1,5 +1,5 @@
 ## Y matrix
-function Ymatrix(distributions; transform=false)
+function Ymatrix(distributions; transform=false, observed=false)
     ## Create matrix Y (site-by-species community data table)
     # Get distributions as vectors
     distributions_vec = [vec(d.grid) for d in distributions]
@@ -17,7 +17,11 @@ function Ymatrix(distributions; transform=false)
     # Replace values in original matrix
     Y[inds_obs, :] = Yobs
 
-    return Y
+    if observed
+        return Yobs
+    else
+        return Y
+    end
 end
 
 function _indsobs(Y)

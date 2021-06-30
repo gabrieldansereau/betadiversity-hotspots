@@ -39,6 +39,10 @@ distributions_SW = [d[coords_SW] for d in distributions]
 Y_NE = Ymatrix(distributions_NE)
 Y_SW = Ymatrix(distributions_SW)
 
+# Get Y matrices for observed sites only
+Yobs_NE = Ymatrix(distributions_NE)
+Yobs_SW = Ymatrix(distributions_SW)
+
 # Richness
 richness_NE = calculate_richness(Y_NE, distributions_NE[1])
 richness_SW = calculate_richness(Y_SW, distributions_SW[1])

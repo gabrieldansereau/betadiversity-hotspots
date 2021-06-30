@@ -31,7 +31,7 @@ distributions = [
 Y = Ymatrix(distributions; transform=false)
 
 # Create matrix of observed sites only
-Yobs = _Yobs(Y)
+Yobs = Ymatrix(distributions; transform=false, observed=true)
 
 ## Richness
 

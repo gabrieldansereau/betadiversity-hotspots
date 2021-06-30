@@ -85,8 +85,8 @@ if (@isdefined save_data) && save_data == true
 
     # Get Y matrix
     Y = Ymatrix(distributions)
+    Yobs = Ymatrix(distributions; observed=true)
     inds_obs = _indsobs(Y)
-    Yobs = _Yobs(Y, inds_obs)
 
     # Convert to dataframe
     spe_df = DataFrame(Yobs, :auto)

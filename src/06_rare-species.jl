@@ -19,17 +19,17 @@ include("04_full-extent.jl")
 include("05_subareas.jl")
 
 # Count sites with occurrences per species
-function getoccupancy(Y; count_sites=false)
-    occupancy = vec(sum(_Yobs(Y); dims=1))
+function getoccupancy(Yobs; count_sites=false)
+    occupancy = vec(sum(Yobs; dims=1))
     if !count_sites
-        occupancy = occupancy ./ size(_Yobs(Y), 1)
+        occupancy = occupancy ./ size(Yobs, 1)
     end
     return occupancy
 end
-occupancy_count = getoccupancy(Y; count_sites=true)
-occupancy = getoccupancy(Y)
-occupancy_NE = getoccupancy(Y_NE)
-occupancy_SW = getoccupancy(Y_SW)
+occupancy_count = getoccupancy(Yobs; count_sites=true)
+occupancy = getoccupancy(Yobs)
+occupancy_NE = getoccupancy(Yobs_NE)
+occupancy_SW = getoccupancy(Yobs_SW)
 
 # Visualize
 scatter(
@@ -89,13 +89,13 @@ rarespecies_p_NE_total = mean(skipmissing(rarespecies_NE_total))
 rarespecies_p_SW_total = mean(skipmissing(rarespecies_SW_total))
 
 # Wrap all steps as single function
-function get_rarespecies_p(Y, threshold)
-    occupancy = getoccupancy(Y)
+function get_rarespecies_p(Yobs, threshold)
+    occupancy = getoccupancy(Yobs)
     rarespecies = getrarespecies(occupancy, threshold)
     rarespecies_p = mean(skipmissing(rarespecies))
     return rarespecies_p
 end
-get_rarespecies_p(Y, threshold)
+get_rarespecies_p(Yobs, threshold)
 
 # LCBD-richness correlation
 get_eusrr(richness, lcbd) = corspearman(collect(richness), collect(lcbd))
@@ -137,9 +137,9 @@ scatter(
 # Effect of thresholds
 # Thresholds variation only
 thresholds = [0.1, 0.2, 0.3, 0.4, 0.5]
-[get_rarespecies_p(Y, t) for t in thresholds]
+[get_rarespecies_p(Yobs, t) for t in thresholds]
 # Thresholds and region
-Ys = [Y, Y_NE, Y_SW]
+Ys = [Yobs, Yobs_NE, Yobs_SW]
 rarespecies_matrix = [get_rarespecies_p(y, t) for t in thresholds, y in Ys]
 
 # Subareas & thresholds
@@ -218,11 +218,10 @@ show(stdout, "text/plain", eusrr_scaling)
 ## Spatial distribution of rare species proportion
 
 # Rarespecies proportion per site
-function get_site_rarespecies(Y, rarespecies, richness)
+function get_site_rarespecies(Yobs, rarespecies, richness)
     if any(ismissing, rarespecies)
         rarespecies = replace(rarespecies, missing => 0)
     end
-    Yobs = _Yobs(Y)
     Yrare = Yobs + repeat(permutedims(rarespecies), size(Yobs, 1)) .- 1.0
     Yrare_p = sum(isone, Yrare; dims=2) ./ sum(Yobs; dims=2)
 
@@ -233,23 +232,23 @@ function get_site_rarespecies(Y, rarespecies, richness)
 end
 
 # Full extent
-rarespecies_layer = get_site_rarespecies(Y, rarespecies, richness)
+rarespecies_layer = get_site_rarespecies(Yobs, rarespecies, richness)
 plot_layer(rarespecies_layer; c=:viridis)
 
 # NE local rarity
-rarespecies_layer_NE = get_site_rarespecies(Y_NE, rarespecies_NE, richness_NE)
+rarespecies_layer_NE = get_site_rarespecies(Yobs_NE, rarespecies_NE, richness_NE)
 p1 = plot_layer(rarespecies_layer_NE; c=:viridis)
 
 # NE total rarity
-rarespecies_layer_NE_total = get_site_rarespecies(Y_NE, rarespecies_NE_total, richness_NE)
+rarespecies_layer_NE_total = get_site_rarespecies(Yobs_NE, rarespecies_NE_total, richness_NE)
 p2 = plot_layer(rarespecies_layer_NE_total; c=:viridis)
 
 # SW local rarity
-rarespecies_layer_SW = get_site_rarespecies(Y_SW, rarespecies_SW, richness_SW)
+rarespecies_layer_SW = get_site_rarespecies(Yobs_SW, rarespecies_SW, richness_SW)
 p3 = plot_layer(rarespecies_layer_SW; c=:viridis)
 
 # SW total rarity
-rarespecies_layer_SW_total = get_site_rarespecies(Y_SW, rarespecies_SW_total, richness_SW)
+rarespecies_layer_SW_total = get_site_rarespecies(Yobs_SW, rarespecies_SW_total, richness_SW)
 p4 = plot_layer(rarespecies_layer_SW_total; c=:viridis)
 
 p_subareas = plot(p1, p2, p3, p4; dpi=200)
