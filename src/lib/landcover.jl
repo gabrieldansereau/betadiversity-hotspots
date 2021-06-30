@@ -1,5 +1,13 @@
 ## Landcover variables loading functions
 
+"""
+    Copernicus
+
+Data from the Copernicus v2.0.1 land cover data from the Copernicus Glocal Land
+Service. The original data by Buchhorn et al. is archived on Zenodo at
+https://zenodo.org/record/3243509. See `SimpleSDMPredictor(Copernicus,
+LandCover, ...)` for the list of variables.
+"""
 struct Copernicus end
 
 import SimpleSDMLayers: SimpleSDMPredictor
@@ -8,17 +16,17 @@ import SimpleSDMLayers: SimpleSDMPredictor
     SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layer::Integer=1; resolution::Float64=10.0, path::AbstractString=joinpath("assets", "landcover"), kwargs...)
     SimpleSDMPredictor(::Type{Copernicus}, ::Type{LandCover}, layers::AbstractArray; kwargs...)
 
-Prepares the Copernicus v2.0.1 landcover data, and returns them as an array of 
+Prepares the Copernicus v2.0.1 landcover data, and returns them as an array of
 `SimpleSDMPredictor`s. Layers are called by their number, from 1 to 10. The list
 of available layers is given in the table below.
 
-This function loads the pre-downloaded and coarsened data from the 
-`assets/landcover/` folder (the `path` argument). These steps can be performed 
-with the scripts in `src/shell/` using Bash and GDAL. The available resolutions 
-are 10 and 5 arc-minutes, and must be specified as a floating point value with 
+This function loads the pre-downloaded and coarsened data from the
+`assets/landcover/` folder (the `path` argument). These steps can be performed
+with the scripts in `src/shell/` using Bash and GDAL. The available resolutions
+are 10 and 5 arc-minutes, and must be specified as a floating point value with
 the `resolution` keyword (with `10.0` as the default).
 
-The original data by Buchhorn et al. is archived on Zenodo at 
+The original data by Buchhorn et al. is archived on Zenodo at
 https://zenodo.org/record/3243509, and is available at a much finer resolution.
 
 | Variable | Description        |

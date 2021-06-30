@@ -1,7 +1,16 @@
 #### Beta diversity calculation functions
 
 ## Function to calculate beta diversity statistics
-function betadiv(Y)
+"""
+    betadiv(Y::Matrix)
+
+Computes the beta diversity statistics from the community matrix `Y` based on
+Legendre & De Cáceres (2013). This function was based on the `beta.div` R
+function from the supplementary material of that paper, and results were also
+tested against the `beta.div` function from `adespatial`.
+"""
+function betadiv(Y::Matrix)
+    @assert !any(isnothing, Y) "Y must only contain observed sites and no nothing values"
     # S -> squared deviations from column mean
     S = (Y .- mean(Y; dims=1)) .^ 2.0
     # SStotal -> total sum of squares

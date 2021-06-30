@@ -1,7 +1,15 @@
 ## Functions to plot SimpleSDMLayer elements more easily
 
 # Plot layer as a heatmap with worldmap background
-function plot_layer(layer::SimpleSDMLayer; kw...)
+"""
+    plot_layer(layer::SimpleSDMLayer; shape=true, kw...)
+
+Plots the layer over a grey background based on a WorldClim layer. Note that the
+warning about multiple series sharing a color bar is normal. If `shape=true`, it
+will also draw a shape countour around the land based on the shapefile return by
+`worldmap` (this is slower). Normal plot options can be passed afterwards.
+"""
+function plot_layer(layer::SimpleSDMLayer; shape=true, kw...)
     ## Arguments
     # layer: SimpleSDMLayer to plot
     # scatter: add observations as points in scatter plot, requires to define occ
@@ -24,14 +32,17 @@ function plot_layer(layer::SimpleSDMLayer; kw...)
         kw..., # additional keyword arguments
     )
 
-    # Load & clip worldmap background to SimpleSDMLayer (from shp in /assets folder)
-    worldmap = clip(worldshape(50), layer)
-    # Redraw polygons' outer lines over heatmap values
-    for p in worldmap # loop for each polygon
-        # Get outer lines coordinates
-        xy = map(x -> (x.x, x.y), p.points)
-        # Add outer lines to plot
-        plot!(sdm_plot, xy; c=:grey, lab="")
+    # Add shape countour around land
+    if shape
+        # Load & clip worldmap background to SimpleSDMLayer (from shp in /assets folder)
+        worldmap = clip(worldshape(50), layer)
+        # Redraw polygons' outer lines over heatmap values
+        for p in worldmap # loop for each polygon
+            # Get outer lines coordinates
+            xy = map(x -> (x.x, x.y), p.points)
+            # Add outer lines to plot
+            plot!(sdm_plot, xy; c=:grey, lab="")
+        end
     end
 
     return sdm_plot

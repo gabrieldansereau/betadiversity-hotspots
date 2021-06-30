@@ -65,7 +65,6 @@ Using `touch_placeholders=true` will update the placeholders' timestampsso they
 are more recent than the data files. The placeholders should then be committed
 with a description of the changes made to the data files (or discarded if it's
 confirmed not important change was made).
-
 """
 function verify_raw_files(; touch_placeholders=false)
     files = _raw_files
@@ -96,6 +95,9 @@ function verify_raw_files(; touch_placeholders=false)
 end
 # verify_raw_files()
 
+"""
+See `verify_raw_files` for details.
+"""
 function verify_proc_files(; touch_placeholders=false)
     files = vcat(_proc_files, _jld_files, _raster_files)
     placeholder_files = filter(!startswith("data/raw/"), _placeholder_files)
