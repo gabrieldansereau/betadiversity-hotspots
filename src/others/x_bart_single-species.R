@@ -5,18 +5,14 @@ source(file.path("src", "required.R"))
 subset_qc <- TRUE # subset to QC data (optional)
 # save_models <- TRUE # save & overwrite models
 
-
 ## 1. Load data ####
 
 # Load data
-source(here("src", "others", "x_training_data-preparation.R"))
+source(here("src", "others", "x_training_data.R"))
 
 # Check prepared data
-spa_full
 env_full
 spe_full
-vars_full
-spa
 env
 spe
 
@@ -36,29 +32,14 @@ table(sp)
 # xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:10)))
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
 
-## 2. Create layers ####
-
-# Create raster layers
-sp_layer <- df_to_layer(x = sp_full[[1]], lons = vars_full$lon, lats = vars_full$lat)
-vars_layers <- map(
-  vars_full[,xnames],
-  ~ df_to_layer(.x, lons = vars_full$lon, lats = vars_full$lat)
-)
-wc_layer <- vars_layers$wc1
-
-# Stack variables layers
-vars_stack <- stack(vars_layers, names = xnames)
-plot(vars_stack)
-
-
-## 3. Basic BART model ####
+## 2. Single species BART model ####
 
 # Train model
 set.seed(42)
 system.time(
   sdm <- bart(
     y.train = sp[[1]],
-    x.train = vars[,xnames],
+    x.train = env[,xnames],
     keeptrees = TRUE
   )
 ) # 5 sec. for QC, 90 sec. at full scale
@@ -74,12 +55,12 @@ predictions <- predict2.bart(sdm, vars_stack, quantiles=c(0.025, 0.975), splitby
 
 # Plot probability predictions
 plot(
-  wc_layer,
+  env_stack$wc1,
   main = "Original distribution",
   col = "grey",
   legend = FALSE, box = FALSE, axes = FALSE
 )
-plot(sp_layer, add = TRUE, col = viridis(2))
+plot(spe_stack$sp1, add = TRUE, col = viridis(2))
 plot(
   predictions[[1]],
   main = 'Probability predictions - Posterior mean',
