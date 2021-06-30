@@ -1,6 +1,26 @@
-## Y matrix
-function Ymatrix(distributions; transform=false, observed=false)
-    ## Create matrix Y (site-by-species community data table)
+## Y matrix function
+
+"""
+    Ymatrix(distributions::Vector{<:SimpleSDMLayer}; transform::Bool=false, observed::Bool=false)
+
+Creates a matrix Y (a site-by-species community data table) from a vector of
+layers with species distributions. Sites (rows) are ordered as in the layer
+grids and species (columns) are ordered as in the vector of layers.
+
+In the matrix Y, values for sites where at least one species is present are
+either 0.0 for absence and 1.0 for presence. On the other hand, values for sites
+where no species are present are all `nothing`. These sites can be removed with
+`observed=true` (default is `false`).
+
+Setting `transform=true` (default is `false`) will apply the Hellinger
+transformation to the Y matrix using the function `decostand` from the package
+`vegan` in *R*. However, as this step is only needed to compute LCBD scores, it
+is recommended to keep the default and use the `transform` argument from the
+`lcbd` function instead.
+"""
+function Ymatrix(
+    distributions::Vector{<:SimpleSDMLayer}; transform::Bool=false, observed::Bool=false
+)
     # Get distributions as vectors
     distributions_vec = [vec(d.grid) for d in distributions]
     # Create matrix Y by combining distribution vectors
@@ -63,8 +83,17 @@ function _Ytransf(Yobs)
     return Ytransf
 end
 
-## Richness
-function richness(Y, layer)
+## Richness functions
+
+"""
+    richness(Y::Matrix, layer::SimpleSDMLayer)
+
+Computes the species richness for the sites in the community matrix `Y` and
+returns a `SimpleSDMResponse` with the same dimensions and coordinates and
+dimensions as `layer`.
+"""
+function richness(Y::Matrix, layer::SimpleSDMLayer)
+    @assert size(Y, 1) == length(layer.grid) "Y and layer must have the same number of sites"
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
@@ -79,22 +108,44 @@ function richness(Y, layer)
     return SimpleSDMResponse(sums, layer)
 end
 
-function gamma(Y)
-    # Create necessary Y elements
+"""
+    gamma(Y::Matrix)
+
+Returns the gamma diversity in the region covered by the matrix `Y`, i.e. the
+number of species with a least one presence in `Y`. Note that this will differ
+from the number of columns when some species have no observations in the region.
+"""
+function gamma(Y::Matrix)
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
     sp_counts = sum(Yobs; dims=1)
     return sum(sp_counts .> 0)
 end
 
-## LCBD
-# Load functions
-function lcbd(Y, layer; transform=true, relative=true)
+## Beta diversity function
+
+"""
+    lcbd(Y::Matrix, layer::SimpleSDMLayer; transform::Bool=true, relative::Bool=true)
+
+Computes the LCBD (local contributions to beta diversity) scores for the sites
+in the matrix `Y` and returns a `SimpleSDMResponse` with the same dimensions and
+coordinates as `layer`.
+
+Setting `transform=true` (the default) will apply the Hellinger transformation
+to the Y matrix using the function `decostand` from the package `vegan` in *R*,
+which is appropriate for presence-absence data.
+
+Setting `relative=true` (default is `false`) will rescale the LCBD scores as
+relative to the maximum score (whose value will be one).
+"""
+function lcbd(Y::Matrix, layer::SimpleSDMLayer; transform::Bool=true, relative::Bool=false)
+    @assert size(Y, 1) == length(layer.grid) "Y and layer must have the same number of sites"
+
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
 
-    # Apply hellinger transformation
+    # Apply hellinger transformation (if requested)
     if transform
         Yobs = _Ytransf(Yobs)
     end
@@ -118,7 +169,13 @@ function lcbd(Y, layer; transform=true, relative=true)
     return LCBDlayer
 end
 
-function beta_total(Y; transform=true)
+"""
+    beta_total(Y::Matrix; transform::Bool=true)
+
+Returns the total beta diversity from the matrix `Y`, i.e. the unbiased &
+comparable estimator of variance in `Y`.
+"""
+function beta_total(Y::Matrix; transform::Bool=true)
     # Create necessary Y elements
     inds_obs = _indsobs(Y)
     Yobs = _Yobs(Y, inds_obs)
