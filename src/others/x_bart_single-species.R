@@ -9,7 +9,7 @@ subset_qc <- TRUE # subset to QC data (optional)
 ## 1. Load data ####
 
 # Load data
-source(here("src", "02a_training_data-preparation.R"))
+source(here("src", "others", "x_training_data-preparation.R"))
 
 # Check prepared data
 spa_full
