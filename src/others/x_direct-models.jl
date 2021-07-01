@@ -1,13 +1,9 @@
-using RCall
-R"source(file.path('src', 'required.R'))"; # bug with `velox` if not called here
-using Distributed
-@time include(joinpath("..", "required.jl"))
+include(joinpath("..", "required.jl"))
 
 ## Conditional arguments
 outcome = "bart"
-# outcome = "rf"
+subset_qc = true
 # save_figures = true
-# subset_qc = true
 
 # Subset to QC data (optional)
 if (@isdefined subset_qc) && subset_qc == true
@@ -21,19 +17,30 @@ model_script = joinpath("src", "others", "x_direct-models_$(outcome).R")
     R"""
     source(model_script)
     """
-end
+end # about 1 minute
 @rget results
 
 ## Fix missing values
-predictions =
-    replace(Array(results[:predictions]), missing => nothing) |>
-    Array{Union{Nothing,Float32}}
+predictions = results[:predictions]
 
 ## Get comparison layers
-@load joinpath("data", "jld2", "raw-distributions.jld2") distributions
-raw_distributions = distributions
-@load joinpath("data", "jld2", "$(outcome)-distributions.jld2") distributions
-sdm_distributions = distributions
+# Load species names
+glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
+spenames = filter(:type => ==("species"), glossary).full_name
+
+# Load distributions
+raw_distributions = [
+    geotiff(
+        SimpleSDMPredictor, joinpath("data", "raster", "distributions_raw.tif"), i
+    ) for i in eachindex(spenames)
+]
+sdm_distributions = [
+    geotiff(
+        SimpleSDMPredictor, joinpath("data", "raster", "distributions_bart.tif"), i
+    ) for i in eachindex(spenames)
+]
+
+# Subset to Quebec
 if (@isdefined subset_qc) && subset_qc == true
     coords_qc = (left=-80.0, right=-55.0, bottom=45.0, top=63.0)
     raw_distributions = [d[coords_qc] for d in raw_distributions]
@@ -41,10 +48,10 @@ if (@isdefined subset_qc) && subset_qc == true
 end
 
 ## Arrange predictions as layers
-richness_pred = copy(raw_distributions[1])
-richness_pred.grid[:] = predictions[:, 1]
-lcbd_pred = copy(raw_distributions[1])
-lcbd_pred.grid[:] = predictions[:, 2]
+richness_pred = SimpleSDMResponse(predictions, :richness, raw_distributions[1])
+lcbd_pred = SimpleSDMResponse(predictions, :lcbd, raw_distributions[1])
+replace!(richness_pred, missing => nothing)
+replace!(lcbd_pred, missing => nothing)
 pred = (richness=richness_pred, lcbd=lcbd_pred)
 
 ## Plot predictions
@@ -92,7 +99,7 @@ function difference_plot(layer, lim; title="")
     limrange = (-lim, lim)
     diff_map = plot_layer(
         layer;
-        c=:diverging,
+        c=cgrad(:PuOr; rev=true),
         clim=limrange,
         title="Richness difference",
         colorbar_title="Difference",
@@ -103,7 +110,7 @@ function difference_plot(layer, lim; title="")
             filter(x -> !isnothing(x) && x <= 0, layer.grid),
         ];
         bins=:rice,
-        c=[:diverging_r :diverging],
+        c=cgrad(:PuOr; rev=true),
         legend=:none,
         ylim=limrange, # xlabel = "Difference",
         title="Distribution of difference values",

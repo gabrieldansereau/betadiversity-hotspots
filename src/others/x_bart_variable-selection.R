@@ -1,9 +1,30 @@
-## Variable selection ####
+#### Variable selection ####
+# Also see x_bart_single-species.R for a complete single-species attempt
 
-# To run after main bart script (where data is prepared)
+## 0. Load data ####
 
-warning("Testing variable selection for 3 species only. This can take a while to run at full scale.")
-pred_plot
+# Conditional evaluations
+subset_qc <- TRUE # subset to QC data (optional)
+
+# Load data
+source(file.path("src", "others", "x_training_data.R"))
+
+# Check prepared data
+env_full # environmental data for all sites
+spe_full # occurrence data for all sites
+env # environmental data for sites with observations
+spe # occurrence data for sites with observations
+env_stack # environmental data layers
+spe_stack # species distribution layers
+xnames # variables selected for analyses
+vars_stack # layers of selected variables
+
+## 1. Variable Selection ###
+
+warning(
+  "Testing variable selection for 3 species only.
+   This takes 12 min per species for Quebec and 2.5 hours at full scale."
+)
 
 # Select fewer species
 sort(colSums(spe)/nrow(spe), decreasing = TRUE)
@@ -12,25 +33,22 @@ vars_sel <- map(spe_sel, ~ NULL)
 names(vars_sel) <- spe_sel
 
 # Run variable selection
-# variable_selection <- TRUE
-if (exists("variable_selection") && isTRUE(variable_selection)) {
-  tictoc::tic("total")
-  for(sp in spe_sel){
-    tictoc::tic(sp)
-    set.seed(42)
-    message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
-    # Save plot to png
-    png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
-    step_vars <- variable.step(
-      y.data = spe[[sp]],
-      x.data = env[xnames],
-      iter = 50
-    )
-    dev.off()
-    # Save variables to list
-    vars_sel[[sp]] <- step_vars
-    tictoc::toc()
-  }
-  tictoc::toc()
-  vars_sel
+tic("total")
+for(sp in spe_sel){
+  tic(sp)
+  set.seed(42)
+  message(paste0("Variable selection for ", sp, " (", which(sp == spe_sel), "/", length(spe_sel)), ")")
+  # Save plot to png
+  png(here("fig", "bart", paste0("x_bart_vars-select_", sp, ".png")))
+  step_vars <- variable.step(
+    y.data = spe[[sp]],
+    x.data = env[xnames],
+    iter = 50
+  )
+  dev.off()
+  # Save variables to list
+  vars_sel[[sp]] <- step_vars
+  toc()
 }
+toc()
+vars_sel

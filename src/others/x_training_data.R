@@ -1,3 +1,6 @@
+#### Prepare training data ####
+# Exactly the same code as the first lines in the main BART script
+
 ## 0. Load packages ####
 source(file.path("src", "required.R"))
 
@@ -60,4 +63,3 @@ if (length(spe_withoutobs) > 0) {
 # Select fewer variables
 xnames <- c(paste0("wc", c(1, 2, 5, 6, 12, 13, 14, 15)), paste0("lc", c(1:3,5,7:10)))
 vars_stack <- subset(env_stack, xnames)
-plot(vars_stack)
