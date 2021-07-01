@@ -5,17 +5,15 @@
        title = "Species richness">
 </p>
 
-This repository contains work for my *M.Sc.* on the identification of beta-diversity hotspots using species distribution models (SDMs). It is based on previous proof of concept by @tpoisot, my advisor, at <https://gitlab.com/tpoisot/BioClim>.
+This repository contains work for my *M.Sc.* on the identification of beta diversity hotspots using species distribution models (SDMs). The manuscript based on my results is available as a [preprint on EcoEvoRxiv](https://ecoevorxiv.org/tvmyg). There is also [a specific repository](https://github.com/gabrieldansereau/ms_betadiversity_hotspots) for the manuscript.
 
-This project is implemented in *Julia v1.6.1*. The required packages and versions are listed in `Project.toml`.
+This project is implemented in _Julia v1.6.1_. The required packages and versions are listed in `Project.toml`. To install them, run the first lines of [src/required.jl](./src/required.jl). Some steps are also implemented in _R v4.0.1_, with packages & versions tracked by `renv`. More details below. 
 
-The data used in this project comes from the *eBird Basic Dataset*. The project is for now focused on all warblers species (*Parulidae* family) in North America (CA, US, MX).
+The data used in this project comes from the [eBird Basic Dataset](https://ebird.org/science/use-ebird-data/download-ebird-data-products) from June 2019. The project is for now focused on all warblers species (*Parulidae* family) in North America (CA, US, MX).
 
     eBird Basic Dataset. Version: EBD_relJun-2019. Cornell Lab of Ornithology,  Ithaca, New York. Jun 2019.
 
-Note however that neither the data is not hosted in this remote repository, due to size limitations. More details below.
-
-The manuscript is in development in [this repo](https://github.com/gabrieldansereau/ms_betadiversity_hotspots).
+Note however that the data is not hosted in this remote repository, due to size limitations.
 
 ## Repository structure
 
@@ -120,3 +118,4 @@ This code is built around the `SimpleSDMLayer` types, which are used to store th
 
 - Further updates will make all data accessible and everything reproducible once a proper storage solution is found.
 - The initial project used to download data through the `GBIF` package. Although some functions still support the `GBIFRecords` type, it has been abandoned in the analyses. Compatibility with later functions is not guaranteed.
+- This project is based on previous proof of concept by @tpoisot, my advisor, at <https://gitlab.com/tpoisot/BioClim>.
