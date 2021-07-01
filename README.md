@@ -1,13 +1,12 @@
 # Beta Diversity Hotspots
 
-<p align="center">
-  <img align = "center" src="./fig/bart/04_bart_lcbd.png" width="75%"
-       title = "Species richness">
-</p>
+![Effect of scaling - BARTs][bart_scaling]
 
-This repository contains work for my *M.Sc.* on the identification of beta diversity hotspots using species distribution models (SDMs). The manuscript based on my results is available as a [preprint on EcoEvoRxiv](https://ecoevorxiv.org/tvmyg). There is also [a specific repository](https://github.com/gabrieldansereau/ms_betadiversity_hotspots) for the manuscript.
+[bart_scaling]: fig/bart//05_bart_scaling.gif
 
-This project is implemented in _Julia v1.6.1_. The required packages and versions are listed in `Project.toml`. To install them, run the first lines of [src/required.jl](./src/required.jl). Some steps are also implemented in _R v4.0.1_, with packages & versions tracked by `renv`. More details below. 
+This repository contains work for my *M.Sc.* on the identification of beta diversity hotspots using species distribution models (SDMs). The results are part of a manuscript available as a [preprint on EcoEvoRxiv](https://ecoevorxiv.org/tvmyg). There is also [a specific repository](https://github.com/gabrieldansereau/ms_betadiversity_hotspots) for the manuscript.
+
+This project is implemented in _Julia v1.6.1_. The required packages and versions are listed in `Project.toml`. To install them, run the first lines of [src/required.jl](./src/required.jl). Some steps are also implemented in _R v4.1.0_, with packages & versions tracked by `renv`. More details below. 
 
 The data used in this project comes from the [eBird Basic Dataset](https://ebird.org/science/use-ebird-data/download-ebird-data-products) from June 2019. The project is for now focused on all warblers species (*Parulidae* family) in North America (CA, US, MX).
 
@@ -19,66 +18,66 @@ Note however that the data is not hosted in this remote repository, due to size 
 
 The repository is organized has follows:
 
-- `archive/` contains outdated elements kept in case of future need.
+- `archive/` contains possibly useful elements kept in case of future need. Archived scripts are not maintained and probably do not work as-is.
 
-- `assets/` contains the *Worldclim 2.0* climate data (downloaded through the `SimpleSDMLayers` package) and the *Copernicus* land cover data (downloaded in `src/00c_data_landcover-copernicus.jl`)
+- `assets/` contains the pre-coarsened *Copernicus* land cover data (downloaded and coarsened in `src/00c_data_landcover-copernicus.jl`).
 
-- `data/` is used locally to store the data.
-  - `jld2/` contains exported *Julia* `.jld2` elements, such as SDM predictions. As these are rather large, only `.zip` archives are version-controlled.
-  - `proc/` contains processed CSV data.
+- `data/` is used to store the data.
+  - `jld2/` contains exported *Julia* `.jld2` elements, such as SDM predictions. Earlier versions relied heavily on these, but since they were too large to be version controlled, they have now been replaced by raster files in `raster/`. Some `.jld2` are still exported here, but are not central to the analyses.
+  - `proc/` contains processed CSV data. Importantly, the prepared eBird data and some BART predictions are locally stored here but are not version controlled due to their size.
+  - `raster/` contains raster files with species distributions (observed and predicted) and environmental data layers. Raster files are now central to the workflow and are used to save and reload data between scripts.
   - `raw/` contains the raw CSV datasets from eBird (not version controlled)
+  - `rdata/` contains `.RData` files used as backups in the R scripts, but are not essential and are not version controlled.
 
-- `docs/` contains documents such as reports and presentations about the project.
+- `docs/` contains documents such as reports and presentations about the project, either for my committee meeting or QCBS conferences.
 
-- `fig/` contains the figures produced, organized by outcome.
+- `fig/` contains the figures produced, organized by outcome (`bart` for figures based on predicted data and `raw` for figures based on observed data).
 
 - `src/` contains all the scripts used in the project. Ordered scripts in this directory represent the main steps of the analyses. Subfolders contain scripts with a more specific use.
-  - `lib/` is the library of the custom functions used.
-  - `others/` contains useful scripts that are not part of the main analyses. These are not necessarily maintained.
+  - `lib/` is the library of the custom functions used in the main scripts.
+  - `others/` contains useful scripts that are not part of the main analyses. I try to maintain these (if I know I won't maintain a script, I'll archive or delete it).
   - `shell/` contains Bash scripts used for some operations.
 
 ## Analysis workflow
 
 All analysis scripts are in `src/`.
 
-- `master.jl` can be used to run all the analyses and produce the figures.
+- `main.jl` can be used to run all the analyses and produce the figures.
 - `required.jl` loads all the required packages and library functions.
 
 Else, the general workflow of the analyses is as follows:
 
 1. `00a_ebd_extraction.jl` extracts the Warblers data from the complete EBD to `data/raw` (not version controlled).
 
-1. `00b_ebd_preparation.jl` prepares the Warblers data in `data/raw` for for the analyses, then saves the results in `data/proc` (not version controlled)
+1. `00b_ebd_preparation.jl` prepares the Warblers data in `data/raw` for the analyses, then saves the results in `data/proc` (not version controlled)
 
-1. `00c_landcover.jl` prepares the landcover data from Copernicus and exports the environmental data to CSV in `data/proc`.
+1. `00c_landcover.jl` prepares the landcover data from Copernicus and exports the environmental data as CSVs in `data/proc` and as TIFF files in `data/raster`.
 
-1. `01_distributions` assembles species distributions from the raw data as layers and as a Y-matrix. It also produces examples of single species maps.
+1. `01_distributions` assembles the species distributions from the raw data as layers, then exports these to `data/raster`. It also produces examples of single species maps.
 
-1. `02_training_random-forests.R` trains random Forest models in R (package `ranger`) based on the Y-matrix and environmental data CSV files.
+1. `02_training_bart.R` trains BARTs (Bayesian Additive Regression Trees) in _R_ (package `embarcadero`) based on the distribution and environmental rasters, then predict the species distributions (exported as CSV files, which are not version controlled).
 
-1. `03_predictions_random-forests` applies the models on the full-scale continuous environmental data and arranges the predictions as layers.
+1. `03_predictions_bart.jl` assembles the predicted distributions as layers and exports them as raster files.
 
-1. `04_full-extent.jl` performs the main analysis steps: getting species richness and LCBD values per site, as well as showing the relationship between the two.
+1. `04_full-extent.jl` performs the main analysis steps (on the full spatial extent): getting species richness and LCBD values per site, and verifying the relationship between the two. These steps can be performed on either the observed or predicted distributions.
 
-1. `05_subareas.jl` investigates the effect of scale and performs the analyses on smaller regions.
+1. `05_subareas.jl`  reapplies the analyses on smaller regions and investigates the effect of the spatial scale on the results.
 
-1. `06_moving-windows.jl` computes LCBD values from subareas of smaller scales with a moving windows algorithm.
+1. `06_moving-windows.jl` investigates the effect of the proportion of rare species on the relationship between species richness and LCBD values at varying scales.
+
+1. `07_comparison_data.jl` re-runs the main analysis steps on both the observed and predicted data, and prepares the results for comparison in the following scripts.
+
+1. `08_comparison_glm.jl` performs GLMs in _R_ to compare the observed and predicted results, and saves the results to be plotted in the next script.
+
+1. `09_comparison_plots.jl` produces plots comparing the observed and predicted results. The comparison is made by comparing the results directly (called difference plots) or the GLM residuals produced in the preceding scripts (called residual plots).
 
 ## Main results
 
-### Species richness
+### Observed vs predicted values
 
-<p align="center">
-    <img src="fig/raw/04_raw_richness.png" width="49%" />
-    <img src="fig/bart/04_bart_richness.png" width="49%" />
-</p>
+![Comparison of observed & predicted results][comparison_results]
 
-### LCBD & relationship to richness
-
-<p align="center">
-    <img src="fig/bart/04_bart_lcbd.png" width="49%" />
-    <img src="fig/bart/04_bart_relationship.png" width="49%" />
-</p>
+[comparison_results]: fig/bart/09_bart_combined.png
 
 ### Subareas
 
@@ -94,28 +93,27 @@ Else, the general workflow of the analyses is as follows:
 
 ## Details on library scripts
 
-This code is built around the `SimpleSDMLayer` types, which are used to store the environmental variables, and also store the ouput of the prediction.
+This code is built around the package [SimpleSDMLayers.jl](https://github.com/EcoJulia/SimpleSDMLayers.jl) and its `SimpleSDMLayer` types, which are used to store the environmental variables and the species distributions.
 
 1. `analysis.jl` contains the functions to perform the main analyses.
 
-1. `betadiv.jl` contains functions to compute beta-diversity statitstics.
+1. `bart.R` contains utility functions for the BART analyses.
 
-1. `bioclim.jl` contains functions to perform the BIOCLIM SDM model.
+1. `betadiv.jl` contains functions to compute beta diversity statistics.
 
 1. `csvdata.jl` contains functions to prepare the data extracted from CSV files.
 
-1. `landcover.jl` contains functions to extract and prepare the landcover data.
-
-1. `overloads.jl` contains some utility functions to extend those from `SimpleSDMLayers`, notably to manipulate and integrate `DataFrames`.
+1. `landcover.jl` contains functions to extract and prepare the landcover data (similarly to the other data sources in `SimpleSDMLayers.jl`).
 
 1. `plotting.jl` contains a function to allow easier plotting of the `SimpleSDMLayer` type elements.
 
-7. `presence-absence.jl` contains the function to convert the raw data into a presence-absence layer.
+1. `presence-absence.jl` contains the function to convert the raw data into a presence-absence layer.
 
-8. `shapefiles.jl` contains a function to download the shapefiles for plotting, and a function to clip them so that they overlap with a `SimpleSDMLayer`.
+1. `shapefiles.jl` contains a function to download the background shapefiles for plotting, and a function to clip them so that they overlap with a `SimpleSDMLayer`.
+
+2. `version-control.jl` contains the list of important files which are too large to be version controlled and a set of custom functions to track their changes. See additional notes for details.
 
 ## Additional notes
 
-- Further updates will make all data accessible and everything reproducible once a proper storage solution is found.
-- The initial project used to download data through the `GBIF` package. Although some functions still support the `GBIFRecords` type, it has been abandoned in the analyses. Compatibility with later functions is not guaranteed.
+- For each important file that is too large to be version controlled, a version-controlled placeholder file was created (for example `data/proc/ebd_warblers_prep_placeholder.csv`) to record the time where the large file was last updated on purpose. The placeholder is updated when the files are changed and the functions will trigger a warning prompting to make sure the change was made on purpose. If it was, the placeholder should be re-committed with the new modification time. If the file was overwritten without a change (and the user is sure of it), the placeholder change can be discarded.
 - This project is based on previous proof of concept by @tpoisot, my advisor, at <https://gitlab.com/tpoisot/BioClim>.
