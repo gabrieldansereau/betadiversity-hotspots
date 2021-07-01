@@ -1,19 +1,20 @@
-# Load packages
+# Avoid function names conflicts
 library(conflicted)
-library(tidyverse)
-library(here)
-library(rgdal)
-library(raster)
-library(embarcadero)
-library(viridis)
-library(furrr)
-library(ranger)
-library(caret)
-library(pbapply)
-library(broom)
-library(MASS)
+# Load packages
 library(betareg)
+library(broom)
+library(caret)
+library(embarcadero)
+library(furrr)
+library(here)
+library(MASS)
+library(pbapply)
+library(ranger)
+library(raster)
+library(rgdal)
 library(SpatialPack)
+library(tidyverse)
+library(viridis)
 
 # Select parallel processing option
 if (future::supportsMulticore()) {
