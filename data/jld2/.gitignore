@@ -1,7 +1,0 @@
-# Ignore everything in this repository
-*
-# Except
-!.gitignore
-!*.zip
-# But really ignore
-bart-distributions_xtras.zip

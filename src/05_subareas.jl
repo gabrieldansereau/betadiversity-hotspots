@@ -1,71 +1,70 @@
-using Pkg: Pkg
-Pkg.activate(".")
 include("required.jl")
 
 ## Conditional arguments
-# outcome = "rf"
+# outcome = "raw"
 # outcome = "bart"
 # save_figures = true
 
 # Make sure "outcome" is defined
-if !(@isdefined outcome)
-    @warn "'outcome' not defined, must be either 'raw', 'bio', 'rf', or 'bart'"
-elseif !(outcome in ["raw", "bio", "rf", "bart"])
-    @warn "'outcome' invalid, must be either 'raw', 'bio', 'rf', or 'bart'"
+if !(@isdefined outcome) || !(outcome in ["raw", "bart"])
+    @error "'outcome' must be either 'raw' or 'bart'"
 else
     @info "'outcome' currently set to '$(outcome)'"
 end
 
 ## Load distribution data for all species
+
+# Load species names
 glossary = CSV.read(joinpath("data", "proc", "glossary.csv"), DataFrame)
 spenames = filter(:type => ==("species"), glossary).full_name
+
+# Load distributions
 distributions = [
     geotiff(
-        SimpleSDMPredictor, joinpath("data", "proc", "distributions_$(outcome).tif"), i
+        SimpleSDMPredictor, joinpath("data", "raster", "distributions_$(outcome).tif"), i
     ) for i in eachindex(spenames)
 ]
 
 ## Extract subareas
+
 # Northeast subarea
 coords_NE = (left=-80.0, right=-60.0, bottom=40.0, top=50.0)
 distributions_NE = [d[coords_NE] for d in distributions]
+
 # Southwest subarea
 coords_SW = (left=-120.0, right=-100.0, bottom=30.0, top=40.0)
 distributions_SW = [d[coords_SW] for d in distributions]
 
-## Get Ymatrices
-Y_NE = calculate_Y(distributions_NE)
-Y_SW = calculate_Y(distributions_SW)
+# Get Ymatrices
+Y_NE = Ymatrix(distributions_NE)
+Y_SW = Ymatrix(distributions_SW)
 
-## Richness
-richness_NE = calculate_richness(Y_NE, distributions_NE[1])
-richness_SW = calculate_richness(Y_SW, distributions_SW[1])
+# Get Y matrices for observed sites only
+Yobs_NE = Ymatrix(distributions_NE; observed=true)
+Yobs_SW = Ymatrix(distributions_SW; observed=true)
 
-## LCBD
-# Relative values
-lcbd_rel_NE = calculate_lcbd(Y_NE, distributions_NE[1])
-lcbd_rel_SW = calculate_lcbd(Y_SW, distributions_SW[1])
+# Richness
+richness_NE = richness(Y_NE, distributions_NE[1])
+richness_SW = richness(Y_SW, distributions_SW[1])
 
-# Absolute values
-lcbd_abs_NE = calculate_lcbd(Y_NE, distributions_NE[1]; relative=false)
-lcbd_abs_SW = calculate_lcbd(Y_SW, distributions_SW[1]; relative=false)
-round.(Float64.(extrema(lcbd_abs_NE)); sigdigits=4)
-round.(Float64.(extrema(lcbd_abs_SW)); sigdigits=4)
-lcbd_NE = lcbd_abs_NE
-lcbd_SW = lcbd_abs_SW
+# Absolute LCBD values
+lcbd_NE = lcbd(Y_NE, distributions_NE[1]; relative=false)
+lcbd_SW = lcbd(Y_SW, distributions_SW[1]; relative=false)
 
-## BDtot
-beta_NE = calculate_BDtotal(Y_NE)
-beta_SW = calculate_BDtotal(Y_SW)
+# Total beta
+beta_NE = beta_total(Y_NE)
+beta_SW = beta_total(Y_SW)
 
 ## Subarea figures
+
 # Choose plotting function according to outcome
 if outcome == "raw"
-    plotfct = :plotSDM2
+    plotfct = :plot_layer # slower, but background is nice for sparse data
 else
-    plotfct = :plot
+    plotfct = :plot # faster, sufficient for continuous data
 end
-# Functions to add total beta diversity in rectangle
+
+# Functions to add total beta diversity in rectangle box
 rectangle(w, h, x, y) = Shape(x .+ [0, w, w, 0], y .+ [0, 0, h, h])
 function rectangle!(w, h, x, y, textstring, textsize)
     plot!(
@@ -74,42 +73,46 @@ function rectangle!(w, h, x, y, textstring, textsize)
         annotations=(x + (w / 2), y + (h / 2), text(textstring, textsize, :center)),
     )
 end
+
 # Function to produce combined plots
 function plot_lcbd_relationship(
-    richness, lcbd, beta_total; scale=true, scaling_value=1, maintitle="", kw...
+    richness_layer, lcbd_layer, beta_total; scale=true, scaling_value=1, kw...
 )
+    # Scale values for a nicer result
     if scale
+        # Set scaling value automatically (optional, set scaling_value=... otherwise)
         if scaling_value == 1
-            scaling_factor = lcbd |> maximum |> log10 |> abs |> ceil |> Int
+            scaling_factor = lcbd_layer |> maximum |> log10 |> abs |> ceil |> Int
             scaling_value = 10^scaling_factor
         end
-        lcbd = rescale(lcbd, extrema(lcbd) .* scaling_value)
+        lcbd_layer = rescale(lcbd_layer, extrema(lcbd_layer) .* scaling_value)
     end
+
+    # LCBD map subpanel
     p1 = eval(plotfct)(
-        lcbd;
+        lcbd_layer;
         c=:viridis,
-        # title = "LCBD",
         colorbar_title="LCBD value (x $(format(scaling_value, commas=true)))",
-        clim=extrema(lcbd)
+        clim=extrema(lcbd_layer)
     )
+
+    # Relationship subpanel
     p2 = histogram2d(
-        richness,
-        lcbd;
+        richness_layer,
+        lcbd_layer;
         c=:viridis,
         bins=40,
-        # title = "Relationship",
         colorbar_title="Number of sites",
         xlabel="Richness",
         ylabel="LCBD value (x $(format(scaling_value, commas=true)))",
         xlim=(1, 50),
         ylim=(-Inf, Inf),
-        # clim = (1, 450),
-        # bottommargin = 4.0mm
     )
-    vline!([median(richness)], label=:none, linestyle=:dash, c=:grey)
-    hline!([median(lcbd)], label=:none, linestyle=:dash, c=:grey)
+    vline!([median(richness_layer)], label=:none, linestyle=:dash, c=:grey)
+    hline!([median(lcbd_layer)], label=:none, linestyle=:dash, c=:grey)
 
-    lmin, lmax = extrema(lcbd)
+    # Add total beta value in rectangle box (fitted to dimensions)
+    lmin, lmax = extrema(lcbd_layer)
     lrange = lmax - lmin
     rectangle!(
         16.0,
@@ -120,38 +123,26 @@ function plot_lcbd_relationship(
         7,
     )
 
-    if maintitle != ""
-        l = @layout [t{.01h}; grid(1, 2)]
-        ptitle = plot(annotation=(0.0, 0.5, "$maintitle", :left), framestyle=:none)
-        p = plot(
-            ptitle,
-            p1,
-            p2;
-            layout=l,
-            size=(900, 300),
-            rightmargin=[0mm 5.0mm 0mm],
-            leftmargin=[0mm 5.0mm 5.0mm],
-            kw...
-        )
-    else
-        l = @layout [a{0.5w} b{0.5w,0.9h}]
-        p = plot(
-            p1,
-            p2;
-            layout=l,
-            size=(900, 300),
-            # bottommargin = [0.0mm 5.0mm],
-            rightmargin=[5.0mm 0mm],
-            leftmargin=[5.0mm 5.0mm],
-            kw...
-        )
-    end
+    # Combine in subpanels in single plot
+    l = @layout [a{0.5w} b{0.5w,0.9h}]
+    p = plot(
+        p1,
+        p2;
+        layout=l,
+        size=(900, 300),
+        # bottommargin = [0.0mm 5.0mm],
+        rightmargin=[5.0mm 0mm],
+        leftmargin=[5.0mm 5.0mm],
+        kw...
+    )
     return p
 end
 
-# Combined subarea figures
+# Create subarea figures
 resNEtr = plot_lcbd_relationship(richness_NE, lcbd_NE, beta_NE)
-resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW, beta_SW, scaling_value=1000)
+resSWtr = plot_lcbd_relationship(richness_SW, lcbd_SW, beta_SW; scaling_value=1000)
+
+# Fix axis dimensions
 yticks!(resNEtr[1], 40:2:50)
 yticks!(resSWtr[1], 30:2:40)
 xticks!(resNEtr[1], -80:4:-60)
@@ -165,70 +156,69 @@ elseif outcome == "raw"
     resNEtr[2][:clims] = (-Inf, cmax)
     resSWtr[2][:clims] = (-Inf, cmax)
 end
+
+# Combine subarea figures in 4 panel figure
 combined_plot = plot(
     resNEtr,
     resSWtr;
     layout=grid(2, 1),
     size=(900, 600),
     bottommargin=0.0mm,
-    title=["a) Northeast subregion" "" "b) Southwest subregion" ""]
+    title=["a) Northeast subregion" "" "b) Southwest subregion" ""],
+    dpi=200,
 )
 
 # Export figures
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(
-        plot(combined_plot, dpi=200),
-        joinpath("fig", outcome, "05-1_$(outcome)_subareas_combined.png")
-    )
+    savefig(combined_plot, joinpath("fig", outcome, "05_$(outcome)_subareas.png"))
 end
 
-#### Repeat for different subareas
+## Repeat for different subareas
+
 function plot_subareas(
     coords,
     initial_distributions;
     display_coords=coords,
     transform=true,
-    relative=false,
     kw...
 )
-    distributions = [d[coords] for d in initial_distributions]
-    Y = calculate_Y(distributions)
-    richness = calculate_richness(Y, distributions[1])
-    lcbd = calculate_lcbd(
-        Y,
-        distributions[1];
-        transform=transform,
-        relative=relative
-    )
-    beta_total = calculate_BDtotal(Y)
-    if display_coords != coords
-        richness = richness[display_coords]
-        lcbd = [l[display_coords] for l in lcbd]
-    end
-    p = plot_lcbd_relationship(richness, lcbd, beta_total; kw...)
+    # Get analysis values
+    ds = [d[coords] for d in initial_distributions]
+    y = Ymatrix(ds)
+    r = richness(y, ds[1])
+    l = lcbd(y, ds[1]; transform=transform)
+    bt = beta_total(y)
+
+    # Plot subareas
+    p = plot_lcbd_relationship(r, l, bt; kw...)
+
+    return p
 end
 
-# Initial subarea
+# Set coordinates for initial subarea
 left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
 coords_subarea = (left=left, right=right, bottom=bottom, top=top)
-# Relative LCBD values
+
+# Test plot initial subarea
 p = plot_subareas(
     coords_subarea,
     distributions;
     formatter=[f -> "$(Int(f))" :plain],
-    # clim = [:auto :auto],
     title=["LCBD" "Relationship"]
 )
 
-## Expanding GIF
+## Create expanding GIF
+
 # Set initial coordinates
 left = -71.0; right = -64.0; bottom = 46.0; top = 50.0;
 coords_subarea = (left=left, right=right, bottom=bottom, top=top)
-# Set other values
+
+# Set values to control spatial expansion
 asp_ratio = 92.60 / 60.75
 dim_ratio = (top - bottom)/(right - left)
-# Get increasing subarea coordinates
+
+# Get increasing subareas coordinates
 subarea_coords = []
 @time while left > -145.0 + asp_ratio && bottom > 20.0 + asp_ratio * dim_ratio
     global left -= asp_ratio
@@ -237,16 +227,13 @@ subarea_coords = []
     push!(subarea_coords, bbox)
 end
 
-# Plot subareas
+# Plot all expanding subareas
 subarea_plots = []
 for sc in subarea_coords
     local p = plot_subareas(
         sc,
         distributions;
-        # formatter = f -> "$(round(f, digits = 1))",
         formatter=[f -> "$(Int(round(f, digits=0)))" :plain],
-        # clim = [:auto :auto],
-        # leftmargin = 4.0mm,
         title=["LCBD" "Relationship"],
         dpi=200
     )
@@ -258,17 +245,20 @@ anim = @animate for p in subarea_plots[Not(1)]
     plot(p)
 end
 gif(anim, fps=3)
+
+# Export GIF
+# save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    gif(anim, joinpath("fig", outcome, "05-3_$(outcome)_subareas.gif"); fps=3)
+    gif(anim, joinpath("fig", outcome, "05_$(outcome)_scaling.gif"); fps=3)
 end
 
-#### 3 scales comparison
+## 3 extents comparison
 
-# Extract LCBD & relationship subplots for first, middle, last GIF plots
+# Extract LCBD & relationship subplots for first, middle & last GIF plots
 mid_ind = median(1:length(subarea_plots)) |> round |> Int64
 ps = subarea_plots[[1, mid_ind, end]]
 
-# Combine 3 scales
+# Combine 3 scales in single figure
 p = plot(
     deepcopy(ps)...;
     dpi=200,
@@ -278,6 +268,8 @@ p = plot(
     titleloc=:left,
     bottommargin=-2.0mm,
 )
+
+# Tweak axes
 yticks!(p[3], 34:3:50)
 if outcome == "bart"
     yticks!(p[6], 1.5:0.5:5.0)
@@ -287,14 +279,15 @@ elseif outcome == "raw"
 end
 p
 
-# Export figures
+# Export figure
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
-    savefig(p, joinpath("fig", outcome, "05-2_$(outcome)_subareas_3scales.png"))
+    savefig(p, joinpath("fig", outcome, "05_$(outcome)_extents.png"))
 end
 
 
 ## Scaling medians figure
+
 # Create empty elements
 richness_medians = []
 lcbd_medians = []
@@ -303,38 +296,33 @@ lcbd_maxs = []
 lcbd_abs_medians = []
 beta_values = []
 gamma_values = []
+
 # Get analysis values for all subareas
 for sc in subarea_coords
-    local distribs = [d[sc] for d in distributions]
-    local Y = calculate_Y(distribs)
-    local richness = calculate_richness(Y, distribs[1])
-    local lcbd = calculate_lcbd(Y, distribs[1]; relative=false)
-    local lcbd_abs = calculate_lcbd(Y, distribs[1]; relative=false)
-    local beta_total = calculate_BDtotal(Y)
-    local gamma = calculate_gamma(Y)
+    local ds = [d[sc] for d in distributions]
+    local y = Ymatrix(ds)
+    local r = richness(y, ds[1])
+    local l = lcbd(y, ds[1]; relative=false)
+    local l_abs = lcbd(y, ds[1]; relative=false)
+    local bt = beta_total(y)
+    local g = gamma(y)
 
-    push!(richness_medians, median(richness))
-    push!(lcbd_medians, median(lcbd))
-    push!(lcbd_mins, minimum(lcbd))
-    push!(lcbd_maxs, maximum(lcbd))
-    push!(lcbd_abs_medians, lcbd_abs)
-    push!(beta_values, beta_total)
-    push!(gamma_values, gamma)
+    push!(richness_medians, median(r))
+    push!(lcbd_medians, median(l))
+    push!(lcbd_mins, minimum(l))
+    push!(lcbd_maxs, maximum(l))
+    push!(lcbd_abs_medians, l_abs)
+    push!(beta_values, bt)
+    push!(gamma_values, g)
 end
+
 # Check values
 richness_medians
 lcbd_medians
 beta_values
 gamma_values
 
-# Get absolute LCBD values
-abs_extr = extrema.(lcbd_abs_medians[[1, mid_ind, end]])
-[round.(Float64.(a); sigdigits=4) for a in abs_extr]
-
-# Get absolute medians
-extrema.([richness_medians, lcbd_medians, beta_values, gamma_values])
-
-# Transform to relative values
+# Transform to relative values (to plot all variables on same axis)
 medians_df = DataFrame(
     idx=eachindex(richness_medians),
     richness=richness_medians ./ maximum(richness_medians),
@@ -342,6 +330,7 @@ medians_df = DataFrame(
     beta=beta_values ./ maximum(beta_values),
     gamma=gamma_values ./ maximum(gamma_values)
 )
+
 # Plot values across scales (step-by-step plots)
 medians_p1 = plot(
     medians_df.idx,
@@ -363,5 +352,5 @@ medians_p4 = plot!(deepcopy(medians_p3), medians_df.gamma, label="Gamma diversit
 # save_figures = true
 if (@isdefined save_figures) && save_figures == true
     # Final plot
-    savefig(medians_p4, joinpath("fig", outcome, "05-4_$(outcome)_subareas_medians.png"))
+    savefig(medians_p4, joinpath("fig", outcome, "05_$(outcome)_medians.png"))
 end

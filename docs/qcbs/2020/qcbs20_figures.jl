@@ -98,7 +98,7 @@ savefig(plot(rectplot, dpi = 200), joinpath(figdir, "subarea_map.png"))
 # Predefine desired outcome
 outcome = "bart"
 # Load analysis script
-include(joinpath("..", "..", "..", "src", "04_analysis.jl"))
+include(joinpath("..", "..", "..", "src", "04_full-extent.jl"))
 
 # Remove backgrounds
 plot!(richness_plot, bg_outside = :transparent, title = "")
@@ -112,9 +112,9 @@ savefig(plot(rel2d_plot, dpi = 200), joinpath(figdir, "res_relationship.png"))
 
 ## Distribution figures
 # Single species distributions
-spplot1 = plotSDM2(distributions[1][coords_qc], c = :BuPu)
-spplot2 = plotSDM2(distributions[17][coords_qc], c = :BuPu)
-spplot3 = plotSDM2(distributions[22][coords_qc], c = :BuPu)
+spplot1 = plot_layer(distributions[1][coords_qc], c = :BuPu)
+spplot2 = plot_layer(distributions[17][coords_qc], c = :BuPu)
+spplot3 = plot_layer(distributions[22][coords_qc], c = :BuPu)
 # Remove backgrounds
 removebackground!(spplot1)
 removebackground!(spplot2)
@@ -131,9 +131,9 @@ distributions_bart = copy(distributions)
 distributions_raw = copy(distributions)
 distributions = distributions_bart
 # Plot
-spplot1_raw = plotSDM2(distributions_raw[1][coords_qc], c = :BuPu)
-spplot2_raw = plotSDM2(distributions_raw[17][coords_qc], c = :BuPu)
-spplot3_raw = plotSDM2(distributions_raw[22][coords_qc], c = :BuPu)
+spplot1_raw = plot_layer(distributions_raw[1][coords_qc], c = :BuPu)
+spplot2_raw = plot_layer(distributions_raw[17][coords_qc], c = :BuPu)
+spplot3_raw = plot_layer(distributions_raw[22][coords_qc], c = :BuPu)
 # Remove backgrounds
 removebackground!(spplot1_raw)
 removebackground!(spplot2_raw)
@@ -151,7 +151,7 @@ savefig(plot(combined_plot, dpi = 200), joinpath(figdir, "subarea_comparison.png
 ## Relationship plot
 @load joinpath("data", "jld2", "raw-distributions.jld2") distributions
 outcome = "raw"
-include(joinpath("..", "..", "..", "src", "04_analysis.jl"))
+include(joinpath("..", "..", "..", "src", "04_full-extent.jl"))
 plot(richness, lcbd, colour = :transparent, smooth = true)
 
 # Arrange data
@@ -189,8 +189,8 @@ plot!(labelfontsize = 16,
       ticks = false,
       thickness_scaling = 2)
 # plot!(xlim = (-0.25, 10.0),
-#       ylim = (-4.75, Inf), 
+#       ylim = (-4.75, Inf),
 #       aspect_ratio = 4.5
 #       ) # for Silva 2018
-savefig(plot(relplot, dpi = 50, bg = :transparent), 
+savefig(plot(relplot, dpi = 50, bg = :transparent),
         joinpath(figdir, "relationship-plot.png"))

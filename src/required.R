@@ -1,18 +1,29 @@
-# Load packages
+# Avoid function names conflicts
 library(conflicted)
-library(tidyverse)
-library(here)
-library(embarcadero)
-library(viridis)
-library(furrr)
-library(ranger)
-library(caret)
-library(pbapply)
-library(broom)
-library(MASS)
+# Load packages
 library(betareg)
+library(broom)
+library(caret)
+library(embarcadero)
+library(furrr)
+library(here)
+library(MASS)
+library(patchwork)
+library(pbapply)
+library(ranger)
+library(raster)
+library(rgdal)
 library(SpatialPack)
-plan(multiprocess)
+library(tictoc)
+library(tidyverse)
+library(viridis)
+
+# Select parallel processing option
+if (future::supportsMulticore()) {
+    future::plan(future::multicore) # Preferred option when possible (Linux & Mac, not on RStudio)
+} else {
+    future::plan(future::multisession) # For Windows and RStudio (also works on Linux & Mac)
+}
 
 # Resolve conflicts
 conflict_prefer("filter", "dplyr")
@@ -20,4 +31,4 @@ conflict_prefer("intersect", "dplyr")
 conflict_prefer("select", "dplyr")
 
 # Load custom functions
-source(here("src", "lib", "R", "bart.R"))
+source(here("src", "lib", "bart.R"))

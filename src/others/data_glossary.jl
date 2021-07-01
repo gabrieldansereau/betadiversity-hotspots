@@ -1,6 +1,3 @@
-using Pkg: Pkg
-Pkg.activate(".")
-using Distributed
 @time include(joinpath("..", "required.jl"))
 
 ## Create glossary dataframe
@@ -54,7 +51,7 @@ wcdf = DataFrame(;
 )
 
 # Species data
-@load joinpath("data", "jld2", "raw-distributions.jld2") spenames specommon
+@load joinpath("data", "jld2", "spenames.jld2") spenames specommon
 spenames
 specommon
 spdf = DataFrame(;

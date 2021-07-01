@@ -1,40 +1,40 @@
+# Activate project
+using Pkg: Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+
+# Load required packages (sorted alphabetically)
+using CSV
+using DataFrames
+using Dates
+using DelimitedFiles
 using Distributed
+using Formatting
 using JLD2
 using Plots
 using Plots.PlotMeasures
-using Shapefile
-using GBIF
-using StatsBase
-using Statistics
-using DataFrames
-using CSV
-using DelimitedFiles
-using Dates
-using SimpleSDMLayers
-using Random
 using ProgressMeter
-using ArchGDAL
+using Random
 using RCall
-using ZipFile
-using Formatting
+using Shapefile
+using SimpleSDMLayers
+using Statistics
+using StatsBase
 using StatsPlots
+using ZipFile
 
+# Load custom functions
 include(joinpath("lib", "analysis.jl"))
-include(joinpath("lib", "beta-div.jl"))
-include(joinpath("lib", "bioclim.jl"))
+include(joinpath("lib", "betadiv.jl"))
 include(joinpath("lib", "csvdata.jl"))
 include(joinpath("lib", "landcover.jl"))
-include(joinpath("lib", "plotSDM.jl"))
+include(joinpath("lib", "plotting.jl"))
 include(joinpath("lib", "presence-absence.jl"))
-include(joinpath("lib", "quantiles.jl"))
 include(joinpath("lib", "shapefiles.jl"))
-include(joinpath("lib", "zipfile.jl"))
 
-# if nprocs() == 1
-#     include("BetadiversityHotspots.jl")
-# else
-#     @everywhere include(joinpath("src", "BetadiversityHotspots.jl"))
-# end
-# using .BetadiversityHotspots
-
-verify_jld2_data(joinpath("data", "jld2"))
+# Manual version-control for oversized files
+include(joinpath("lib", "version-control.jl"))
+verify_raw_files()
+verify_proc_files()
+# verify_raw_files(; touch_placeholders=true)
+# verify_proc_files(; touch_placeholders=true)
