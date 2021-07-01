@@ -28,7 +28,7 @@ include(joinpath("lib", "analysis.jl"))
 include(joinpath("lib", "betadiv.jl"))
 include(joinpath("lib", "csvdata.jl"))
 include(joinpath("lib", "landcover.jl"))
-include(joinpath("lib", "plotSDM.jl"))
+include(joinpath("lib", "plotting.jl"))
 include(joinpath("lib", "presence-absence.jl"))
 include(joinpath("lib", "shapefiles.jl"))
 

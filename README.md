@@ -108,7 +108,7 @@ This code is built around the `SimpleSDMLayer` types, which are used to store th
 
 1. `overloads.jl` contains some utility functions to extend those from `SimpleSDMLayers`, notably to manipulate and integrate `DataFrames`.
 
-1. `plotSDM.jl` contains a function to allow easier plotting of the `SimpleSDMLayer` type elements.
+1. `plotting.jl` contains a function to allow easier plotting of the `SimpleSDMLayer` type elements.
 
 7. `presence-absence.jl` contains the function to convert the raw data into a presence-absence layer.
 
