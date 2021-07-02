@@ -1,6 +1,6 @@
 # Beta Diversity Hotspots
 
-#### Evaluating ecological uniqueness over broad spatial extents using species distribution modelling
+### Evaluating ecological uniqueness over broad spatial extents using species distribution modelling
 
 ![Effect of scaling - BARTs][bart_scaling]
 
