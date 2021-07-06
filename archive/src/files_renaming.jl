@@ -12,7 +12,7 @@ files = [
     "fig/$(outcome)/05-3_$(outcome)_subareas.gif"                    "fig/$(outcome)/05_$(outcome)_scaling.gif";
     "fig/$(outcome)/05-1_$(outcome)_subareas_combined.png"           "fig/$(outcome)/05_$(outcome)_subareas.png";
     "fig/$(outcome)/07_$(outcome)_combined-maps.png"                 "fig/$(outcome)/09_$(outcome)_combined.png";
-    "fig/$(outcome)/07_$(outcome)_comparison-combined.png"           "fig/$(outcome)/09_$(outcome)_comparison.png";
+    "fig/$(outcome)/07_$(outcome)_comparison-combined.png"           "fig/$(outcome)/09_$(outcome)_difference.png";
     "fig/$(outcome)/07_$(outcome)_residuals-combined.png"            "fig/$(outcome)/09_$(outcome)_residuals.png";
     "fig/$(outcome)/08_$(outcome)_rare-species_eusrr_thresholds.png" "fig/$(outcome)/06_$(outcome)_eusrr.png";
     "fig/$(outcome)/08_$(outcome)_rare-species_ascending_plots.png"  "fig/$(outcome)/06_$(outcome)_rare-species.png";

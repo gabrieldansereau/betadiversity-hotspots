@@ -173,7 +173,7 @@ combined_diffplot = plot(
 # Save figures
 # save_additional_figures = true
 if (@isdefined save_additional_figures) && save_additional_figures == true
-    savefig(combined_diffplot, joinpath("fig", "bart", "09_bart_comparison.png"))
+    savefig(combined_diffplot, joinpath("fig", "bart", "09_bart_difference.png"))
 end
 
 ## Residual visualization
