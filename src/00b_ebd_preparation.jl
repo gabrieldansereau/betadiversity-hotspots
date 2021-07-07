@@ -5,10 +5,19 @@ include("required.jl")
 
 ## EBD data preparation
 
+# Select subset of columns to load from CSV file (overflows memory otherwise)
+cols = [
+    "COMMON NAME",
+    "SCIENTIFIC NAME",
+    "LATITUDE",
+    "LONGITUDE",
+    "OBSERVATION DATE",
+    "GROUP IDENTIFIER",
+    "APPROVED",
+]
+
 # Load data from CSV files (from file cut with terminal)
-@time df = CSV.read(
-    joinpath("data", "raw", "ebd_warblers_cut.csv"), DataFrame; header=true, delim="\t"
-)
+@time df = CSV.read(joinpath("data", "raw", "ebd_warblers_cut.csv"), DataFrame; select=cols)
 
 # Prepare data (arrange values & columns)
 @time prepare_ebd_data!(df)
