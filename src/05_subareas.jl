@@ -100,7 +100,7 @@ function plot_lcbd_relationship(
     p2 = histogram2d(
         richness_layer,
         lcbd_layer;
-        c=:viridis,
+        c=:cividis,
         bins=40,
         colorbar_title="Number of sites",
         xlabel="Richness",
