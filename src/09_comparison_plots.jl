@@ -111,6 +111,7 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     )
 
     # Difference histogram subpanel
+    @infiltrate
     diff_hist = histogram(
         layer;
         bins=50,
@@ -120,6 +121,7 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         title="Difference distribution",
         xlabel="Frequency",
         orientation=:horizontal,
+        normalize=:probability
     )
 
     # Combine subpanels in single plot
@@ -137,6 +139,18 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
     )
     return diff_plot
 end
+
+histogram([1, 2, 2, 3, 3]; bins=5, normalize=false, title="none")
+histogram([1, 2, 2, 3, 3]; bins=5, normalize=:pdf, title="pdf")
+histogram([1, 2, 2, 3, 3]; bins=5, normalize=:probability, title="probability")
+histogram([1, 2, 2, 3, 3]; bins=5, normalize=:density, title="density")
+
+tmp = randn(10)
+histogram(tmp; bins=10, normalize=false, title="none")
+histogram(tmp; bins=10, normalize=:pdf, title="pdf")
+histogram(tmp; bins=10, normalize=:probability, title="probability")
+histogram(tmp; bins=10, normalize=:density, title="density")
+
 
 # Richness difference plot
 richness_diffplot = difference_plot(
