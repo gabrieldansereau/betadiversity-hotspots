@@ -14,9 +14,6 @@ copy_layer = SimpleSDMPredictor(WorldClim, BioClim, 1; coords...)
 # Load data from CSV files
 df = CSV.read(joinpath("data", "proc", "ebd_warblers_prep.csv"), DataFrame)
 
-# Remove groupIdentifier column (causing bug)
-select!(df, Not(:groupIdentifier))
-
 # Filter observations outside coordinates range
 filter!(:longitude => >(coords.left), df)
 filter!(:longitude => <(coords.right), df)
