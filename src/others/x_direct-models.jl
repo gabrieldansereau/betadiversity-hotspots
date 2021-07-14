@@ -57,7 +57,7 @@ pred = (richness=richness_pred, lcbd=lcbd_pred)
 ## Plot predictions
 richness_plot = plot_layer(
     richness_pred;
-    c=:viridis,
+    c=:cividis,
     title="Direct richness predictions ($(uppercase(outcome)))",
     colorbar_title="Predicted number of species",
     dpi=200,
