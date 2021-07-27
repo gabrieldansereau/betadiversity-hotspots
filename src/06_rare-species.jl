@@ -282,7 +282,7 @@ function ascending_plots(richness, lcbd, rarespecies)
     # Density subpanel
     dplot = density(rare_values[isascending]; c=:PuOr, label="Ascending")
     density!(rare_values[.!isascending]; c=cgrad(:PuOr; rev=true), label="Descending")
-    plot!(; xlabel="Rare species percentage", ylabel="Density", bottommargin=4.0mm)
+    plot!(; xlabel="Rare species percentage", ylabel="Probability Density", bottommargin=4.0mm)
 
     l = @layout [a{0.5w} b{0.45w}]
     return plot(lplot, dplot; size=(900, 300), layout=l)

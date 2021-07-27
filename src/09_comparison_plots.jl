@@ -118,8 +118,9 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         ylims=lims,
         legend=:none,
         title="Difference distribution",
-        xlabel="Frequency",
+        xlabel="Relative frequency",
         orientation=:horizontal,
+        normalize=:probability
     )
 
     # Combine subpanels in single plot
@@ -169,6 +170,8 @@ combined_diffplot = plot(
     dpi=200,
     size=(850, 680),
 )
+xlims!(combined_diffplot[2], (-0.005, 0.185))
+xlims!(combined_diffplot[4], (-0.005, 0.185))
 
 # Save figures
 # save_additional_figures = true
@@ -224,10 +227,11 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         c=:PuOr,
         legend=:none,
         title="Residuals distribution",
-        xlabel="Frequency",
+        xlabel="Relative frequency",
         ylabel="Deviance residuals",
         orientation=:horizontal,
         ylims=lims,
+        normalize=:probability
     )
 
     # Combine in single plot
@@ -274,6 +278,8 @@ combined_resplot = plot(
     layout=(2, 1),
     size=(850, 680),
 )
+xlims!(combined_resplot[2], (-0.003, 0.11))
+xlims!(combined_resplot[4], (-0.003, 0.11))
 
 # Save figures
 if (@isdefined save_additional_figures) && save_additional_figures == true

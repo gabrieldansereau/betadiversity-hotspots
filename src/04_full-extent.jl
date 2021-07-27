@@ -41,7 +41,7 @@ richness_full = richness(Y, distributions[1])
 # Plot richness
 richness_plot = plot_layer(
     richness_full;
-    c=:viridis,
+    c=:cividis,
     colorbar_title="Species richness",
     size=(650, 400),
     dpi=200,
@@ -99,7 +99,7 @@ lrange = lmax - lmin
 rel2d_plot = histogram2d(
     richness_full,
     lcbd_resc;
-    c=:viridis,
+    c=:cividis,
     bins=40,
     xlabel="Richness",
     ylabel="LCBD value (x 100,000)",
