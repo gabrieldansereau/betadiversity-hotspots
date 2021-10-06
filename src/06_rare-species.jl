@@ -306,6 +306,7 @@ asc_plots = plot(
     size=(900, 660),
     title=["a) Northeast subregion" "" "b) Southwest subregion" ""],
     titleloc=:left,
+    dpi=600
 )
 
 # Export plot

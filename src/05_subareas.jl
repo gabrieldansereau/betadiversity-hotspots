@@ -165,7 +165,7 @@ combined_plot = plot(
     size=(900, 600),
     bottommargin=0.0mm,
     title=["a) Northeast subregion" "" "b) Southwest subregion" ""],
-    dpi=200,
+    dpi=600,
 )
 
 # Export figures
@@ -261,7 +261,7 @@ ps = subarea_plots[[1, mid_ind, end]]
 # Combine 3 scales in single figure
 p = plot(
     deepcopy(ps)...;
-    dpi=200,
+    dpi=600,
     layout=(3, 1),
     size=(900, 960),
     title=["a) Regional extent" "" "b) Intermediate extent" "" "c) Continental extent" ""],

@@ -45,7 +45,7 @@ combined_plot = plot(
     titleloc=:left,
     leftmargin=3.0mm,
     size=(940, 680),
-    dpi=200,
+    dpi=600,
 )
 
 # Save result
@@ -131,7 +131,7 @@ function difference_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         size=(850, 340),
         layout=l,
         bottommargin=3.0mm,
-        dpi=200,
+        dpi=600,
         rightmargin=[5.0mm 0mm],
         leftmargin=[5.0mm 5.0mm],
         kw...,
@@ -167,7 +167,7 @@ combined_diffplot = plot(
         "a) Difference between richness estimates" "" "b) Difference between LCBD estimates" ""
     ],
     titleloc=:left,
-    dpi=200,
+    dpi=600,
     size=(850, 680),
 )
 xlims!(combined_diffplot[2], (-0.005, 0.185))
@@ -242,7 +242,7 @@ function residuals_plot(layer::T; title="", kw...) where {T<:SimpleSDMLayer}
         size=(850, 340),
         layout=l,
         bottommargin=3.0mm,
-        dpi=200,
+        dpi=600,
         rightmargin=[5.0mm 0mm],
         leftmargin=[5.0mm 5.0mm],
         kw...,
