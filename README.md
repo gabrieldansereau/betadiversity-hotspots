@@ -20,8 +20,6 @@ Note however that the data is not hosted in this remote repository due to size l
 
 The repository is organized as follows:
 
-- `archive/` contains possibly useful elements kept in case of future need. Archived scripts are not maintained and probably do not work as-is.
-
 - `assets/` contains the pre-coarsened *Copernicus* land cover data (downloaded and coarsened in `src/00c_data_landcover-copernicus.jl`).
 
 - `data/` is used to store the data.
@@ -31,13 +29,11 @@ The repository is organized as follows:
   - `raw/` contains the raw CSV datasets from eBird (not version-controlled).
   - `rdata/` contains `.RData` files used as backups in the R scripts, which are not essential and are not version controlled.
 
-- `docs/` contains documents such as reports and presentations about the project, either for my committee meeting or QCBS conferences.
-
 - `fig/` contains the figures produced, organized by outcome (`bart` for figures based on predicted data and `raw` for figures based on observed data).
 
 - `src/` contains all the scripts used in the project. Ordered scripts in this directory represent the main steps of the analyses. Subfolders contain scripts with a more specific use.
   - `lib/` is the library of the custom functions used in the main scripts.
-  - `others/` contains useful scripts that are not part of the main analyses. I try to maintain these (if I know I won't maintain a script, I'll archive or delete it).
+  - `others/` contains useful scripts that are not part of the main analyses
   - `shell/` contains Bash scripts used for some operations.
 
 ## Analysis workflow
