@@ -1,5 +1,7 @@
 # Beta Diversity Hotspots
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6024392.svg)](https://doi.org/10.5281/zenodo.6024392)
+
 ### Evaluating ecological uniqueness over broad spatial extents using species distribution modelling
 
 ![Effect of scaling - BARTs][bart_scaling]
